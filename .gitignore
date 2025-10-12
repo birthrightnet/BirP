@@ -1,0 +1,11 @@
+*.bat
+*.cur
+*.dat
+*.err
+*.exe
+*.ico
+*.lib
+*.log
+*.map
+*.obj
+*.res
