@@ -681,7 +681,7 @@ void MainLoop(void)
 	}       // if in domain turn else..
 
 	// Show frames per second
-//#if !defined(_RELEASE)
+#if !defined(_RELEASE)
 	UpdateFPS();
 	color_rect( render_width/2, render_top+5, 60, 15, 0);
 	print_textf( render_width/2, render_top + 5, 31,"^F00F/S %ld  T/F %ld", fps, AverageTicksPerFrame());
@@ -707,7 +707,7 @@ void MainLoop(void)
 //			(sDrawType == iDIRECTTOCARD) ? "ToCard" : "Blt" );
 //#endif
 
-//#endif
+#endif
 
 	// GWP HACK ALERT! HACK ALERT!
 	// GWP Prevents drawing to the screen after the demo has tried to Exit.

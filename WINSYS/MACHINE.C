@@ -435,29 +435,18 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 			else if(strcmp(cpBuffer,"[CD]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
-				strcpy(CDDrive,cpBuffer);
-				strcat(CDDrive,":\\");
+				if (strcmp(cpBuffer,".") == 0) {
+					strcpy(CDDrive,".\\");
+				} else {
+					strcpy(CDDrive,cpBuffer);
+					strcat(CDDrive,":\\");
+				}
 			}
 		}
 	}while(fileResult != EOF);
-	// 2 = english, 1 = french, 0 = german
 
-// FOREIGN LANGUAGES ARE NOT IN SEPERATE SUBDIRECTORIES [ABC] 9/23/97
-//	switch(InstallationType)
-//	{
-//		case 2:
-			strcpy(InstallPath,".\\");
-//			break;
-//		case 1:
-//			strcpy(InstallPath,"french\\");
-//			break;
-//		case 0:
-//			strcpy(InstallPath,"german\\");
-//			break;
-//		default:
-//			strcpy(InstallPath,".\\");
-//			break;
-//	}
+	strcpy(InstallPath,".\\");
+
 	fclose(fp);
 	#ifdef _WINDOWS
 	#ifdef _DEBUG
