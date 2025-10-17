@@ -6,7 +6,7 @@ The Birthright Preservation Patch is an enhancement for the Windows version of B
 
 Before you install the Birthright Preservation Patch, make sure you have Birthright: The Gorgon's Alliance and Patch 1.4 already installed. You can refer to the [installation guide][kw-install].
 
-To install the Birthright Preservation Patch, download the ZIP archive from the [Releases][releases] page and extract the files into your installation folder.
+To install the Birthright Preservation Patch, download the latest ZIP archive from the [ModDB][moddb] page and extract the files into your installation folder.
 
 ## Changelog
 
@@ -55,6 +55,7 @@ The patch is developed as a community effort. The original developers retain the
 
 [archive-directx]: https://archive.org/details/idx5sdk
 [kw-install]: https://www.kiranwelle.com/birthright/
+[moddb-birp]: https://www.moddb.com/mods/birthright-preservation-patch
 [releases]: https://github.com/Shiryou/BirP/releases
 [winworld-watcom]: https://winworldpc.com/product/watcom-c-c/106
 [winworld-winddk]: https://winworldpc.com/product/windows-sdk-ddk/windows-95-ddk

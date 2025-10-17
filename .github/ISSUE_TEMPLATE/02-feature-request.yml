@@ -1,5 +1,6 @@
 name: Feature Request
 description: Submit a feature you'd like to see in the game.
+title: "[Feature] "
 labels: ["feature request", "triage"]
 body:
   - type: textarea
