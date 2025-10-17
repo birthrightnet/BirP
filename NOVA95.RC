@@ -2,6 +2,7 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
+#include "pversion.hxx"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -59,8 +60,8 @@ END
 #else
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,4,0,1
- PRODUCTVERSION 1,4,0,1
+ FILEVERSION BUILD_MAJOR,BUILD_MINOR,BUILD_PATCH,BUILD_BUILD
+ PRODUCTVERSION BUILD_MAJOR,BUILD_MINOR,BUILD_PATCH,BUILD_BUILD
  FILEFLAGSMASK 0x3fL
  FILEFLAGS 0x0L
  FILEOS 0x40004L
@@ -73,12 +74,12 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "Synergistic Software Inc. / Sierra On-Line\0"
             VALUE "FileDescription", "Birthright Preservation Patch\0"
-            VALUE "FileVersion", "1, 4, 0, 1\0"
+            VALUE "FileVersion", BUILD_VERSION
             VALUE "InternalName", "WinBR\0"
             VALUE "LegalCopyright", "Copyright © 1997\0"
             VALUE "OriginalFilename", "WinBR.exe\0"
             VALUE "ProductName", "Birthright: The Gorgon's Alliance\0"
-            VALUE "ProductVersion", "1.4.0.1\0"
+            VALUE "ProductVersion", BUILD_VERSION
         END
     END
     BLOCK "VarFileInfo"

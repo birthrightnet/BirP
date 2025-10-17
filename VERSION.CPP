@@ -27,6 +27,7 @@
 #include "strmgr.h"
 #include "strenum.h"
 #include "version.hxx"
+#include "pversion.hxx"
 
 /* ------------------------------------------------------------------------
    Notes
@@ -127,11 +128,10 @@ static void AboutPaint(LONG MenuCombo, LONG /* unused */ )
 	LONG ButtonId;
 	char ProgramCompileDate[100];
 	
-	sprintf(ProgramCompileDate, "Verion %3.2f\nRealm AI Ver. %3.2f\nFrom: %s %s",
+	sprintf(ProgramCompileDate, "Verion %3.2f\nRealm AI Ver. %3.2f\nPreservation Patch: %s",
 		ProductVersionNumber,
 		RealmAIVersionNumber,
-		__TIME__,
-		__DATE__ 
+		BUILD_VERSION
 		);
 	
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);

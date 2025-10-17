@@ -67,6 +67,7 @@
 #include "units.hxx"
 #include "places.hxx"
 #include "task.h"
+#include "pversion.hxx"
 
 #ifdef _WINDOWS
 #include "winsys\DDrawPro.h"
@@ -633,7 +634,9 @@ void MainLoop(void)
 		if (fShowMessage)
 		{
 			char szTemp[128];
-			sprintf (szTemp, "WAD Builders Edition, %s, %s", __DATE__, __TIME__);
+			sprintf (szTemp, "WAD Builders Edition, %s",
+				BUILD_VERSION
+			);
 			// TitledMessageBox::Display ("Special Version", szTemp);
 			MessageBox (NULL, szTemp, "Special Version", MB_OK);
 			fShowMessage = FALSE;
