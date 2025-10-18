@@ -648,7 +648,7 @@ STRMGR_OBJ = $(OBJD)\strmake.obj
 ## Makefile rules ##
 ####################
 
-install : version.cpp CleanVersion strmake.exe strdat.dat $(Exe_file)
+install : version.cpp CleanVersion $(Exe_file)
 
 ## Realm AI version number remainder
 version.cpp: mapai.cpp gamemap.cpp actnmenu.cpp multimap.cpp multiui.cpp mapaitbl.cpp
@@ -792,4 +792,3 @@ CleanBrowser : .SYMBOLIC
 	
 ##      proto : .SYMBOLIC
 ##              protit *.c pcsys\*.c
-
