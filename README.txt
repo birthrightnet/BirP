@@ -1,5 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-10/14/2025
+1.4.0.3
+10/21/2025
 
 TABLE OF CONTENTS
 
@@ -10,7 +11,9 @@ TABLE OF CONTENTS
 
 [1] WHAT THE PATCH FIXES
 ====================================
-Removes the requirement for the CD to be present in the drive
+
+* Removes the requirement for the CD to be present in the drive
+* Fixes picking up the quest goal item in custom adventures
 
 !!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!
 
@@ -51,7 +54,7 @@ You only need a few things to get started:
 [CD]
 .
 
-9. Double-click WINBR.EXE to start the game in Windows or run BR.EXE in DOS.
+9. Double-click WINBR.EXE to start the game in Windows or run NOVA.EXE in DOS.
 
 [3] ADDITIONAL INFORMATION
 ====================================
@@ -61,4 +64,4 @@ development team, check us out at any of the following places:
  * https://kiranwelle.com/birthright
  * https://github.com/Shiryou/BirP
  * https://moddb.com/mods/birthright-preservation-patch
- * http://birthright.net
+ * http://www.birthright.net/forums/showthread.php?29331-Birthright-The-Gorgon-s-Alliance-Preservation-Patch
