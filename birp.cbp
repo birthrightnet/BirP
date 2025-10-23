@@ -1,0 +1,2223 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="Birthright Preservation Patch" />
+		<Option makefile="MAKEFILE" />
+		<Option makefile_is_custom="1" />
+		<Option pch_mode="2" />
+		<Option compiler="ow" />
+		<MakeCommands>
+			<Build command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG)" />
+			<CompileFile command="$make -f $makefile $file OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG)" />
+			<Clean command="$make -f $makefile clean OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG)" />
+			<DistClean command="$make -f $makefile distclean$target" />
+			<AskRebuildNeeded command="$make -q -f $makefile $target" />
+			<SilentBuild command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) &gt; $(CMD_NULL)" />
+		</MakeCommands>
+		<Build>
+			<Target title="Debug WIN95">
+				<Option output="bin/Debug/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="ow" />
+				<Compiler>
+					<Add option="-d2" />
+				</Compiler>
+				<ExtraCommands>
+					<Add after="MOVEDEBUG.BAT $(OS)" />
+				</ExtraCommands>
+				<Environment>
+					<Variable name="DEBUG" value="ON" />
+					<Variable name="OS" value="WIN95" />
+					<Variable name="RELEASE" value="OFF" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Debug DOS">
+				<Option output="birp" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="ow" />
+				<ExtraCommands>
+					<Add after="MOVEDEBUG.BAT $(OS)" />
+				</ExtraCommands>
+				<Environment>
+					<Variable name="DEBUG" value="ON" />
+					<Variable name="OS" value="DOS" />
+					<Variable name="RELEASE" value="OFF" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release WIN95">
+				<Option output="bin/Release/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="ow" />
+				<Compiler>
+					<Add option="-ox" />
+					<Add option="-ot" />
+				</Compiler>
+				<ExtraCommands>
+					<Add after="MOVEREL.BAT $(OS)" />
+				</ExtraCommands>
+				<Environment>
+					<Variable name="DEBUG" value="OFF" />
+					<Variable name="OS" value="WIN95" />
+					<Variable name="RELEASE" value="ON" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Release DOS">
+				<Option output="birp" prefix_auto="1" extension_auto="1" />
+				<Option type="0" />
+				<Option compiler="ow" />
+				<ExtraCommands>
+					<Add after="MOVEREL.BAT $(OS)" />
+				</ExtraCommands>
+				<Environment>
+					<Variable name="DEBUG" value="OFF" />
+					<Variable name="OS" value="DOS" />
+					<Variable name="RELEASE" value="ON" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Environment>
+				<Variable name="SOUND" value="ON" />
+			</Environment>
+		</Build>
+		<VirtualTargets>
+			<Add alias="Debug" targets="Debug DOS;Debug WIN95;" />
+			<Add alias="Release" targets="Release DOS;Release WIN95;" />
+		</VirtualTargets>
+		<Compiler>
+			<Add option="-wx" />
+		</Compiler>
+		<Unit filename="2DMOUSE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="2DMOUSE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ABILITY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ABILITY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ACTIONS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ACTIONS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ACTNMENU.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ACTNMENU.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ADVENTUR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ADVENTUR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ADVPREP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ADVPREP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIBTLCAP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIBTLCAP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFIREBL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFIREBL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFNDTYP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLCAP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLID.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLPLY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLPLY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLPTH.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFOLPTH.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFTSEQ.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIFTSEQ.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIGARGL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIGARGL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIGUARD.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHARPY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHARPY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHHOUND.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHHOUND.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHORSE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIHORSE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AILEADER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AILEADER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPATHPT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPONG.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPONG.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPTHATT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPTHATT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPTHLDR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISPECTR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISPECTR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISPIDER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISPIDER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISTUN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AISTUN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIWYVERN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIWYVERN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AI_UTILS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AI_UTILS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ALIGNMNT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ALIGNMNT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ANIM.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ANIM.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="APPEAR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="APPEAR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ARMOR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ARMOR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ARROW.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ASSERT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ATHING.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ATHING.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AVA.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AVA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AVATAR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AVATAR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BATTLE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BATTLE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BATTLEUI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BATTLEUI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOCKM.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOOD.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOOD.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOODEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOODEFX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOODREQ.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BLOODREQ.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BUMP.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="BUMP.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CAMERA.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CAMERA.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CAMRDATA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CD16.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARED.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARED.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARED.RC">
+			<Option compilerVar="CPP" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHAREDIN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHAREDIN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHAREDSY.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARISMA.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARISMA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARSEL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARSEL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CHARTEXT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CLIP.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COLORS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBATUI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBATUI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBCAMR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBCAMR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBCNTL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBCNTL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBDATA.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBDATA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBOPTS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBOPTS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBTARG.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="COMBTARG.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CONSTITN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CONSTITN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CONTEXT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CONVERT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CTHING.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CUE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CUEX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="CUSTMSYS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="C_LIB.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEBUG.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEBUG.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEMOFLIC.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DESCRIBE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DESCRIBE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEU.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEXTERIT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DEXTERIT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DIALOG.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DICE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DICE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DLG_EDIT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DLG_EDIT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DOORS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DOORS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DOSHELP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DOSHELP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DYNAMTEX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DYNAMTEX.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EDIT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EDIT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EFFSEPAR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EFFSEPER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ENGINE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ENGINT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EXPERIEN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EXPERIEN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EXPLEVEL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EXPLEVEL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="EXTENT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FILENAME.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FILEUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FILEUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FINDFILE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FINDFILE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FLICPLAY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FLICPLAY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FOO.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FOPEN.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="FOPEN.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAME.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAME.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMECAMR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEKEY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEKEY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEMAP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEMAP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEMENU.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMEOPT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMESTR.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMETYPE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMETYPE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GAMETYPX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GETFILE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GETFILE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="GMENUENM.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="HANDLE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="HMGR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="HMGR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INFOBOX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INFOBOX.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INTELLI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INTELLI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INTRO.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INVNBUTS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INVNGUI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INVNGUI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INVNTORY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="INVNTORY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMEFFX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMEQP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMEQP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMTYPE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMTYPE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMTYPX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMUTIL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="ITEMUTIL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LEVEL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LIGHT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LINKLIST.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LINKLIST.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LISTBOX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LISTBOX.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LOADSAVE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LOADSAVE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MACHINE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MACHINT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAGIC.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAGIC.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAIN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAIN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAINCHED.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAKEAVD.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAP.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAP.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPAI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPAI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPAITBL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPEFFX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MAPICON.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MARGIN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MARGIN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MEM.ASM">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MEMMANAG.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MEMMANAG.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MENU.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MENU.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MENUDATA.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MENUEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MENUPROT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MULTIMAP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MULTIMAP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MULTIUI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="MULTIUI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="NETNOVA.RC">
+			<Option compilerVar="CPP" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="NEWSYS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="NLNCLIP.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="NLNCLIP.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="NOVA95.RC">
+			<Option compilerVar="CPP" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PANEL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PANEL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PANORAMA.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PANORAMA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PARCH.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PARCH.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/KEYINT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/MACHINE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/MOUSE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/STATISTI.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/SYSGRAPH.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PCSYS/UTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLACES.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLACES.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYCLAS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYCLAS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYHIT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYHIT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYID.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYID.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYRACE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYRACE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYSTAT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PLAYSTAT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="POINT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="POISON.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PRACTICE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PROTO.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PROVDATA.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PROVDATA.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PROVTAX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PROVTAX.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="PVERSION.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RANDOM.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RANDOM.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REALM.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REALM.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REDBOOK.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REDBOOK.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REDBOOKX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGEN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGEN.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGENTS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGENTS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGENTSX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGIONS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGIONS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGRELIC.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGRELIC.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REGUTIL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REJECT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RELIC.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RELICEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RELICEFX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RENDER.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REPORT.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REPORT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REQUEST.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="REQUEST.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESMANAG.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESMANAG.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESOURCE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESURECT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/LZSS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/LZSSDCOD.ASM">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/LZSSENCD.ASM">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/RESUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/RESUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/SYSTEM.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RESUTIL/TYPEDEFS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RLMSPELL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="RLMSPELL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SAVEPWAD.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SAVEPWAD.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCAN.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCENE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCENE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNAI.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNAI.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNCAMR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNCAMR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNDEMO.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNDLGS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNEXIT.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNINFO.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNKEY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNKEY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNMAP.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNMAP.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNMGR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNMGR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNMUSIC.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNNOTES.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNPLACE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNSCTOR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNVER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SCNVER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SECTORS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SECTORS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SINCOS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SKEL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SLFRDEMO.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SLFRDEMO.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SND.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SND.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SNDDATA.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SNDVOX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SNDVOX.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/AUDIO.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/AUDIODIR.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/AUDIODOS.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/AUDIOW.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/AUDIOWIN.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/CUSTMSYX.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/Custmsys.hpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/DSOUND.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/INTRPTW.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/KERNAUD.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/KERNCALL.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/OLDCUSTM.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/SCIWIN.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/SKEL.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/INC/WINODEF.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/AUDIO.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/AUDIOA.ASM">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/CUSTMSYX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/Custmsys.cpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/FATAL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/KERNAUD.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/DOS/SKEL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIO.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIOA.ASM">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIODIR.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIODIX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIOW.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/AUDIOWIN.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/Audiodir.cpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/CUSTMSYS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/Custmsys.hpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/DSOUND.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/Dsound.cpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/FATAL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/INTRPTW.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/INTRPTW.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/KERNAUD.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/KERNAUD.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/KERNCALL.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/SKEL.HPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/SKEL.RC">
+			<Option compilerVar="CPP" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOLAUDIO/SOURCE/WIN/Skel.cpp">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOUND.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOUND.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOUNDFX.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SOUNDS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPANS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPECIAL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELL.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELLEFF.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELLEFX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELLPRO.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SPELLPRO.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STATSMOD.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRENGTH.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRENGTH.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRINT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRMAKE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRMGR.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="STRMGR.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SYSINT.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SYSTEM.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SYSTEM.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="SYSTEMX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TASK.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TASK.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TESTMOVE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TEXTURES.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="THINGS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="THINGS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="THINGTYP.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TIMER.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TMSGBOX.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TMSGBOX.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TOTALS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TUTOR.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TUTOR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TUTRMENU.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TUTRMENU.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="TYPEDEFS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="UNITS.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="UNITS.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="VDPMI.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="VECTOR.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="VERSION.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="VERSION.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WADTHING.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WEAPON.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WEAPON.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/AFXRES.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/CRC.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DBSTRING.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DDRAW.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DDRAWPRO.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DPLAYRES.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DPLAYRES.RC">
+			<Option compilerVar="CPP" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DPLAYUTL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DPLAYUTL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/DPLAYUTS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/FILEXFER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/FILEXFER.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/GMULPLAY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/GMULPLAY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/GOTOURL.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/GOTOURL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/KEYINT.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MACHINE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MACHINEX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MCIUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MCIUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MDS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MDSUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MESSQUE.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MESSQUE.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MONO.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MONO.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MONO_C.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MONO_C.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MOUSE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MOUSEX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MULPLAY.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MULPLAY.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MUSIUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MUSIUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/MUSIUTIS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/PNETMOD.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/PNETMOD.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/PNETTYPE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/REGISTRS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/REGISTRY.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/REGISTRY.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SIERRANW.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SNDUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SNDUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SNDUTILS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SNTYPES.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SNWVALID.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/STATISTI.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/STATUS.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/STATUS.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SWINUTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SWINUTIL.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SYSGRAPH.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/SYSGRAPX.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/TEMP.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/UTIL.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/WAVE.C">
+			<Option compilerVar="CC" />
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/WAVE.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WINSYS/WINRES.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WISDOM.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="WISDOM.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="strenum.h">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

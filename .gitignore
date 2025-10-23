@@ -9,3 +9,5 @@
 *.map
 *.obj
 *.res
+
+*.layout
