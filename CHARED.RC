@@ -1,6 +1,7 @@
 //Microsoft Developer Studio generated resource script.
 //
 #include "resource.h"
+#include "pversion.hxx"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -206,8 +207,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,0,0,0
- PRODUCTVERSION 1,0,0,0
+ FILEVERSION CHARED_BUILD_MAJOR,CHARED_BUILD_MINOR,CHARED_BUILD_PATCH,CHARED_BUILD_BUILD
+ PRODUCTVERSION CHARED_BUILD_MAJOR,CHARED_BUILD_MINOR,CHARED_BUILD_PATCH,CHARED_BUILD_BUILD
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -223,13 +224,13 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "CompanyName", "Synergistic Software Inc. / Sierra On-Line\0"
-            VALUE "FileDescription", "CHARED\0"
-            VALUE "FileVersion", "1, 0, 0, 0\0"
+            VALUE "FileDescription", "Birthright Character Editor Preservation Patch\0"
+            VALUE "FileVersion", CHARED_BUILD_VERSION
             VALUE "InternalName", "Chared\0"
             VALUE "LegalCopyright", "Copyright © 1997\0"
             VALUE "OriginalFilename", "CHARED.EXE\0"
             VALUE "ProductName", "Birthright Character Editor\0"
-            VALUE "ProductVersion", "1, 0, 0, 0\0"
+            VALUE "ProductVersion", CHARED_BUILD_VERSION
         END
     END
     BLOCK "VarFileInfo"

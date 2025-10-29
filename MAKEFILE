@@ -684,7 +684,6 @@ chared.exe: $(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ
                 file {$(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) } &
                 $(LIBPATH) $(LIBRARIES)
         *wrc $(RSC_FLAGS) chared.rc
-        *copy strdat.dat chared.dat
 
 strdat.dat: strdat.txt strmake.exe
 	echo Making $^.
