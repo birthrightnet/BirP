@@ -3,7 +3,7 @@
    All Rights Reserved.
    =======================================================================
    Filename: MACHINE.C   -Handles machine specific things
-   
+
    Author: Chris Phillips
    ========================================================================
    Contains the following internal functions:
@@ -94,7 +94,7 @@ BOOL fMusic = TRUE;        // [d11-09-96 JPC] moved here from REGISTRS.H
 #if !defined(_RELEASE)
 BOOL gDontFight = FALSE;
 #endif
-							
+
 extern UINT wCDDeviceID;
 extern int iWhichTrack;
 
@@ -185,7 +185,7 @@ static LONG lStyle = WS_SYSMENU|WS_POPUP|WS_CAPTION;
 //		none
 //
 //	Returns:	none
-//									
+//
 // -------------------------------------------------------------------
 void CombineMouseMoveMessages( void )
 {
@@ -288,6 +288,7 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	FILE *fp;
 	char cpBuffer[256];
 	LONG fileResult;
+	BOOL BypassCD = FALSE;
 	char path[256];
 	int X2, Y2;
 	HWND hwndTemp;
@@ -365,7 +366,7 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	 // --
 	cx = 2;
 	cy = GetSystemMetrics(SM_CYCAPTION) + 1 ;
-	
+
 	X2 = GetSystemMetrics(SM_CXFULLSCREEN) / 2;
 	Y2 = GetSystemMetrics(SM_CYFULLSCREEN) / 2;
 
@@ -436,15 +437,23 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
 				if (strcmp(cpBuffer,".") == 0) {
-					strcpy(CDDrive,".\\");
+					BypassCD = TRUE;
 				} else {
 					strcpy(CDDrive,cpBuffer);
 					strcat(CDDrive,":\\");
 				}
 			}
+			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
+			{
+				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
+				BypassCD = (atoi(cpBuffer) != 0) ? TRUE : FALSE;
+			}
 		}
 	}while(fileResult != EOF);
 
+	if(BypassCD) {
+		strcpy(CDDrive,".\\");
+	}
 	strcpy(InstallPath,".\\");
 
 	fclose(fp);
@@ -458,18 +467,18 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	// start up the redbook player
 	InitRedBook();
 	//InitializeSoundSystem();
-	
+
 /*
    GameMain is the name of the MAIN for the game.  Fill it in in order to
    compile and run a application
 */
-	
+
 	//GEH GEH GEH!!!!!!!!!!!!!!!!!!!!!!!!!
 	//GEH SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
-	
+
 
 #if defined (_RELEASE)
-	// make sure the cd is in	
+	// make sure the cd is in
 	CheckCD();
 	if(fQuitting == TRUE)
 		return (FALSE);
@@ -506,7 +515,7 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	// check the appropriate menu items
 	//GEH obsolete CheckMenuItem(hMenuInit, ID_APP_OPTIONS_MUSIC, (fMusic == 0) ? MF_UNCHECKED : MF_CHECKED);
 	//GEH obsolete CheckMenuItem(hMenuInit, ID_APP_TEST_ANIMATE, (fAIAnimate == TRUE) ? MF_CHECKED : MF_UNCHECKED);
-	
+
 	return ( TRUE );
 
 } // AppInit
@@ -533,7 +542,7 @@ void DefaultMainWindowSize( UINT flags )
 	XF = GetSystemMetrics( SM_CXFULLSCREEN );
 	YF = GetSystemMetrics( SM_CYFULLSCREEN );
 
-	rc.top = 0;			
+	rc.top = 0;
 	rc.left = 0;
 	rc.right = 640;
 	rc.bottom = 480;
@@ -554,7 +563,7 @@ void DefaultMainWindowSize( UINT flags )
 				lSavedY = 0;
 		}
 		SetWindowPos( hwndApp, HWND_NOTOPMOST,
-								lSavedX, lSavedY,	
+								lSavedX, lSavedY,
 										(rc.right  - rc.left), (rc.bottom - rc.top), flags );
 	}
 	else
@@ -562,7 +571,7 @@ void DefaultMainWindowSize( UINT flags )
 		SetWindowLong( hwndApp, GWL_STYLE, lStyle & (~WS_CAPTION) );
 		AdjustWindowRect( &rc, lStyle & (~WS_CAPTION), FALSE );
 
-		SetWindowPos( hwndApp, HWND_NOTOPMOST, 0, 0,	
+		SetWindowPos( hwndApp, HWND_NOTOPMOST, 0, 0,
 								(rc.right  - rc.left), (rc.bottom - rc.top), flags );
 	}
 
@@ -624,9 +633,9 @@ void WinCursorSet()
 	{
 		SetCursor(hcStd);
 	}
-	
+
 }
-	
+
 /*----------------------------------------------------------------------------*\
 |   WinMain( hInst, hPrev, lpszCmdLine, cmdShow )                              |
 |                                                                              |
@@ -666,17 +675,17 @@ int WINAPI WinMain( HINSTANCE hInstExe, HINSTANCE hInstPrev, LPSTR szCmdLine, in
     // Polling messages from event queue
 	while ( !fQuitting && msg.message != WM_QUIT )
 	{
-	
+
 		// -- Look for messages
 		if ( PeekMessage(&msg, NULL, 0, 0, PM_REMOVE) )
 		{
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		} // end if a message in the queue
-	
+
 		// process a frame
 		AppIdle();
-	
+
 	} // while ! WM_QUIT
 
 	 // -- we're done now
@@ -720,7 +729,7 @@ void AppExit(void)
 	// Must be called before HeapDestroy!
 	//ShutDownSoundSystem();
 	ShutdownRedBook();
-	
+
 	QuitMemManag();	// Call this before you distroy the heap.
 	HeapDestroy(hHeap);
 	// [d11-09-96 JPC] No longer use registry.
@@ -767,7 +776,7 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			hdc = BeginPaint ( hwnd, &ps );
 
 			SelectPalette ( hdc, hpalApp, FALSE );
-			RealizePalette( hdc );			
+			RealizePalette( hdc );
 
 			update_screen();
 
@@ -792,7 +801,7 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				SetCursor(hcStd);
 			}
 			return 1;
-			
+
 
 
 //		case WM_MOUSEMOVE:
@@ -877,7 +886,7 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				//GEH for now, only allow 640,480
 				WindowWidth = MAX_VIEW_WIDTH;
 				WindowHeight = MAX_VIEW_HEIGHT;
-				
+
 				// WindowWidth = LOWORD(lParam);
 				// WindowHeight = HIWORD(lParam);
 				//
@@ -898,7 +907,7 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				// 	WindowWidth /= 2;
 				// 	WindowHeight /= 2;
 				// }
-			
+
 				set_screen_size(WindowWidth,WindowHeight);
 			}
 			//GEH FALL THROUGH!  break;
@@ -1076,11 +1085,11 @@ static void ParseCmdLine (LPSTR szCmdLine)
 		// peel off the color-challenged spaces
 		while(*szCmdLine == ' ')
 			szCmdLine++;
-		
+
 		// if we reached the end of the string to parse
 		if(*szCmdLine == NULL)
 			return;
-			
+
 		// stamp a NULL at the end of the next argument
 		pArgEnd = strchr(szCmdLine, ' ');
 		if(pArgEnd != NULL)
@@ -1099,7 +1108,7 @@ static void ParseCmdLine (LPSTR szCmdLine)
 				// if we reached the end of the string to parse
 				if(*szCmdLine == NULL)
 					return;
-					
+
 				// stamp a NULL at the end of the next argument
 				pArgEnd = strchr(szCmdLine, ' ');
 
@@ -1108,7 +1117,7 @@ static void ParseCmdLine (LPSTR szCmdLine)
 
 				sprintf(pInitScene, szCmdLine);
 				break;
-				
+
 			case 'w':
 			case 'W':
 				szCmdLine+=2;
@@ -1146,11 +1155,11 @@ static void ParseCmdLine (LPSTR szCmdLine)
 
 
 		}
-		
+
 		// move the pointer to the next non-NULL space
 		if(pArgEnd == NULL)
 			return;
-			
+
 		szCmdLine = pArgEnd+1;
 	}
 }

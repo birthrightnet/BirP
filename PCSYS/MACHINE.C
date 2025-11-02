@@ -79,6 +79,7 @@ int main(int argc,char * argv[])
 	FILE *fp;
 	char cpBuffer[256];
 	LONG fileResult;
+	BOOL BypassCD = FALSE;
 	// UNUSED char path[256];
 
 
@@ -99,7 +100,7 @@ int main(int argc,char * argv[])
 			fatal_error("Unable to open brsetup.cfg file.  Game not properly installed.");
 			return FALSE;
 	}
-	InstallationType = 2;  // set to English as default 
+	InstallationType = 2;  // set to English as default
 	do
 	{
 		fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
@@ -114,15 +115,23 @@ int main(int argc,char * argv[])
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
 				if (strcmp(cpBuffer,".") == 0) {
-					strcpy(CDDrive,".\\");
+					BypassCD = TRUE;
 				} else {
 					strcpy(CDDrive,cpBuffer);
 					strcat(CDDrive,":\\");
 				}
 			}
+			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
+			{
+				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
+				BypassCD = (atoi(cpBuffer) != 0) ? TRUE : FALSE;
+			}
 		}
 	}while(fileResult != EOF);
 
+	if(BypassCD) {
+		strcpy(CDDrive,".\\");
+	}
 	strcpy(InstallPath,".\\");
 
 	if(fp != NULL)
@@ -152,7 +161,7 @@ int main(int argc,char * argv[])
 	//InitializeSoundSystem();
 
 	GameMain();
-	
+
 	return EXIT_SUCCESS;
 }
 
@@ -367,17 +376,17 @@ void StopTimerThread(void)
 void __interrupt __far timer_routine (void)
 {
 	static BOOL bInProcess = FALSE;
-	
+
 	if(bInProcess)
 		return;
-	
-	bInProcess = TRUE;	
-	
+
+	bInProcess = TRUE;
+
 	(*prev_int_08)();
 	(*NewTimerProc)();
-	
-	bInProcess = FALSE;	
-	
+
+	bInProcess = FALSE;
+
 }
 
 /* ======================================================================= */

@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-1.4.0.3
-10/21/2025
+1.4.0.4
+11/02/2025
 
 TABLE OF CONTENTS
 
@@ -12,13 +12,19 @@ TABLE OF CONTENTS
 [1] WHAT THE PATCH FIXES
 ====================================
 
-* Removes the requirement for the CD to be present in the drive
+* Removes the requirement for the CD to be present in the drive (including the
+  character editor)
 * Fixes picking up the quest goal item in custom adventures
 
 !!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!
 
 For the patch to work, you must follow the installation instructions carefully!
 This applies to both the Windows and DOS versions.
+
+/!\ The instructions have changed since the previous release. /!\
+If you have applied the patch in the past, please check step 8 for new
+configuration instructions. The previous instructions still work, but
+may cause issues using the original Scenario Editor.
 
 [2] HOW TO INSTALL THE PATCH
 ====================================
@@ -47,14 +53,13 @@ You only need a few things to get started:
    require any action.
 6. Move the resulting files from the last two steps to the BIRTHRT folder.
 7. Extract the contents of the Preservation Patch into the BIRTHRT folder.
-8. Open BRSETUP.CFG in a text editor and replace the text inside with this:
+8. Open BRSETUP.CFG in a text editor and add the following lines to the end:
 
-[INSTALL_TYPE]
-4
-[CD]
-.
+[CD_BYPASS]
+1
 
 9. Double-click WINBR.EXE to start the game in Windows or run NOVA.EXE in DOS.
+   Run CHARED.EXE to start the Character Editor
 
 [3] ADDITIONAL INFORMATION
 ====================================

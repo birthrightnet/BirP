@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Descriptive [README](README.md) and this CHANGELOG.
+- Patch the Character Editor (`CHARED.EXE`)
 
 ### Changed
 
