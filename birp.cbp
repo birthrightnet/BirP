@@ -17,16 +17,14 @@
 		</MakeCommands>
 		<Build>
 			<Target title="Debug WIN95">
-				<Option output="bin/Debug/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
+				<Option output="bin/Debug/Windows/nova95" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Debug/Windows" />
+				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
 					<Add option="-d2" />
 				</Compiler>
-				<ExtraCommands>
-					<Add after="MOVEDEBUG.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="WIN95" />
@@ -42,19 +40,16 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Debug CHARED">
-				<Option output="bin/Debug/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
+				<Option output="bin/Debug/Windows/chared" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Debug/Windows" />
+				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
 					<Add option="-d2" />
 				</Compiler>
-				<ExtraCommands>
-					<Add after="MOVEDEBUG.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="CHARED" value="ON" />
-					<Variable name="CMD" value="chared.exe" />
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="WIN95" />
 					<Variable name="RELEASE" value="OFF" />
@@ -69,12 +64,11 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Debug DOS">
-				<Option output="birp" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Debug/Windows/nova" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Debug/DOS" />
 				<Option type="0" />
 				<Option compiler="ow" />
-				<ExtraCommands>
-					<Add after="MOVEDEBUG.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="DOS" />
@@ -90,17 +84,15 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release WIN95">
-				<Option output="bin/Release/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Release/" />
-				<Option type="1" />
+				<Option output="bin/Release/Windows/nova95" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Release/Windows" />
+				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
 					<Add option="-ox" />
 					<Add option="-ot" />
 				</Compiler>
-				<ExtraCommands>
-					<Add after="MOVEREL.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="WIN95" />
@@ -116,22 +108,19 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release CHARED">
-				<Option output="bin/Debug/Birthright Preservation Patch" prefix_auto="1" extension_auto="1" />
-				<Option object_output="obj/Debug/" />
-				<Option type="1" />
+				<Option output="bin/Release/Windows/chared" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Release/Windows" />
+				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
 					<Add option="-d2" />
 				</Compiler>
-				<ExtraCommands>
-					<Add after="MOVEDEBUG.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="CHARED" value="ON" />
-					<Variable name="CMD" value="chared.exe" />
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="WIN95" />
-					<Variable name="RELEASE" value="ON" />
+					<Variable name="RELEASE" value="OFF" />
 				</Environment>
 				<MakeCommands>
 					<Build command="" />
@@ -143,12 +132,11 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release DOS">
-				<Option output="birp" prefix_auto="1" extension_auto="1" />
+				<Option output="bin/Release/Windows/nova" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../SIERRA/BIRTHRT" />
+				<Option object_output="obj/Release/DOS" />
 				<Option type="0" />
 				<Option compiler="ow" />
-				<ExtraCommands>
-					<Add after="MOVEREL.BAT $(OS)" />
-				</ExtraCommands>
 				<Environment>
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="DOS" />
@@ -168,8 +156,8 @@
 			</Environment>
 		</Build>
 		<VirtualTargets>
-			<Add alias="Debug" targets="Debug DOS;Debug WIN95;" />
-			<Add alias="Release" targets="Release DOS;Release WIN95;" />
+			<Add alias="Debug" targets="Debug DOS;Debug WIN95;Debug CHARED;" />
+			<Add alias="Release" targets="Release DOS;Release WIN95;Release CHARED;" />
 		</VirtualTargets>
 		<Compiler>
 			<Add option="-wx" />

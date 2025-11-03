@@ -152,9 +152,12 @@ msg_debugging  = linking $(op_sys) debug version ...
 msg_production = linking $(op_sys) production version ...
 msg_profiling = linking $(op_sys) profile version ...
 
-dos_debugging_object_dir = dosobjsd
-dos_production_object_dir = dosobjsr
-dos_profiling_object_dir = dosobjsd
+dos_debugging_object_dir = obj\Debug\DOS
+dos_profiling_object_dir = obj\Debug\DOS
+dos_production_object_dir = obj\Release\DOS
+dos_debugging_binary_dir = bin\Debug\DOS
+dos_profiling_binary_dir = bin\Debug\DOS
+dos_production_binary_dir = bin\Release\DOS
 dos_browser_dir = dosmbr
 dos_browser_database = nova.dbr
 dos_executable = nova.exe
@@ -171,9 +174,12 @@ dos_sound_off =
 dos_graphics_lib =
 dos_multimedia_lib =
 
-win_debugging_object_dir = winobjsd
-win_profiling_object_dir = winobjsd
-win_production_object_dir = winobjsr
+win_debugging_object_dir = obj\Debug\Windows
+win_profiling_object_dir = obj\Debug\Windows
+win_production_object_dir = obj\Release\Windows
+win_debugging_binary_dir = bin\Debug\Windows
+win_profiling_binary_dir = bin\Debug\Windows
+win_production_binary_dir = bin\Release\Windows
 win_browser_dir = winmbr
 win_browser_database = nova95.dbr
 win_executable = nova95.exe
@@ -192,11 +198,17 @@ win_multimedia_lib = lib winmm.lib
 
 
 OBJD = $($(op_sys)_$(version)_object_dir)
+BIND = $($(op_sys)_$(version)_binary_dir)
 MBRD = $($(op_sys)_browser_dir)
 
 SYS_DIR = $($(op_sys)_sys_dir)
 
-Exe_file     = $($(op_sys)_executable)
+!ifeq CHARED ON
+Exe_file     = $(BIND)/chared.exe
+OBJD = $($(op_sys)_$(version)_object_dir)\Chared
+!else
+Exe_file     = $(BIND)/$($(op_sys)_executable)
+!endif
 System       = $($(op_sys)_system)
 SoundFlag    = $($(op_sys)_sound_$(soundsys))
 
@@ -288,7 +300,7 @@ dos_profiling_Compiler_Options = &
 	-bt=$(System) -fo=$(OBJD)\ &
 	$(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(WadBuildersVer)  &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)
-	
+
 # Following is more optimized
 dos_production_Compiler_Options = &
 	$(optimize_on) &
@@ -314,12 +326,12 @@ dos_browser_options = &
 	$(SoundFlag) $(ReleaseVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(MultiPlayOnly) $(WadBuildersVer) $($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 
 # Linker_options   =
-dos_debugging_Linker_options  = debug all option stack=32k option map
-dos_profiling_Linker_options  = debug all option stack=32k option map
+dos_debugging_Linker_options  = debug all option stack=32k option map=$*.map
+dos_profiling_Linker_options  = debug all option stack=32k option map=$*.map
 !ifeq DEBUGLINK ON
-dos_production_Linker_options  = debug all option stack=32k option map
+dos_production_Linker_options  = debug all option stack=32k option map=$*.map
 !else
-dos_production_Linker_Options = option stack=32k option map
+dos_production_Linker_Options = option stack=32k option map=$*.map
 !endif
 
 
@@ -345,10 +357,10 @@ win_debugging_Compiler_Options = &
 	$(warning_level) &
 	$(quiet) &
 	$(preprocess_flag)
-	
+
 win_production_Compiler_Options = &
 	$(win_debugging_Compiler_Options)
-	
+
 !else
 win_debugging_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
@@ -362,7 +374,7 @@ win_debugging_Compiler_Options = &
 	$(default_signed_chars) &
 	$(large_memory_model) &
 	-bt=nt -fo=$(OBJD)\
-	
+
 win_profiling_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
 	$(LogComments) -dWIN32 -d_WINDOWS $(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Rand_Flag) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(StatusFlag)&
@@ -375,7 +387,7 @@ win_profiling_Compiler_Options = &
 	$(default_signed_chars) &
 	$(large_memory_model) &
 	-bt=nt -fo=$(OBJD)\
-	
+
 win_production_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
 	$(LogComments) -dWIN32 -d_WINDOWS $(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Rand_Flag) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(StatusFlag)&
@@ -402,13 +414,13 @@ win_browser_options = &
 	$(default_signed_chars) &
 	$(large_memory_model) &
 	-bt=nt -fo=$(MBRD)\
-	
-win_debugging_Linker_Options = debug all option map option q option symf
-win_profiling_Linker_Options = debug all option map option q option symf
+
+win_debugging_Linker_Options = debug all option map=$*.map option q option symf
+win_profiling_Linker_Options = debug all option map=$*.map option q option symf
 !ifeq DEBUGLINK ON
-win_production_Linker_Options = debug all option q option map option symf
+win_production_Linker_Options = debug all option q option map=$*.map option symf
 !else
-win_production_Linker_Options = option q option map
+win_production_Linker_Options = option q option map=$*.map
 !endif
 
 
@@ -438,10 +450,10 @@ MACHINE_OBJ =	&
 
 DOS_MAIN_OBJ =		&
 	$(OBJD)\main.obj    &
-	
+
 WIN95_MAIN_OBJ =		&
 	$(OBJD)\main.obj    &
-	
+
 WIN95_OBJ =		&
 	$(OBJD)\swinutil.obj &
 	$(OBJD)\mciutil.obj &
@@ -456,7 +468,7 @@ WIN95_OBJ =		&
 	$(OBJD)\status.obj &
 	$(OBJD)\filexfer.obj &
 	$(OBJD)\gotourl.obj
-				
+
 CHARED_OBJ =	&
 	$(OBJD)\main.obj    &
 	$(OBJD)\chared.obj  &
@@ -466,7 +478,7 @@ CHARED_OBJ =	&
 	$(OBJD)\ava.obj  &
 	$(OBJD)\getfile.obj  &
 	$(OBJD)\playrace.obj  &
-	
+
 ENGINE_OBJ =	&
 	$(OBJD)\2dmouse.obj &
 	$(OBJD)\bump.obj    &
@@ -586,7 +598,6 @@ GAME_OBJ =	&
 	$(OBJD)\infobox.obj &
 	$(OBJD)\units.obj
 
-	
 D_AND_D_OBJ =	&
 	$(OBJD)\armor.obj &
 	$(OBJD)\ability.obj &
@@ -606,7 +617,7 @@ D_AND_D_OBJ =	&
 	$(OBJD)\weapon.obj  &
 	$(OBJD)\wisdom.obj  &
 	$(OBJD)\version.obj &
-				
+
 SOUND_OBJ =	&
 	$(OBJD)\sound.obj &
 	$(OBJD)\redbook.obj &
@@ -634,14 +645,13 @@ sound_off_objs = $(SOUND_OBJ)
 !endif
 
 dos_debugging_OBJ =
-dos_production_OBJ =
 dos_profiling_OBJ =
+dos_production_OBJ =
 
 win_debugging_OBJ = $(OBJD)\debug.obj
 win_profiling_OBJ = $(OBJD)\debug.obj
-			
-win_production_OBJ = $(OBJD)\debug.obj &
-			
+win_production_OBJ = $(OBJD)\debug.obj
+
 STRMGR_OBJ = $(OBJD)\strmake.obj
 
 ####################
@@ -661,29 +671,29 @@ version.cpp: mapai.cpp gamemap.cpp actnmenu.cpp multimap.cpp multiui.cpp mapaitb
 #####################
 ##  Game Exe's     ##
 #####################
-nova.exe: $(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)
-        echo $(msg_$(version))
-        *wlink system $(System) $(dos_$(version)_Linker_Options) name $^. &
-                file {$(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
-                $(LIBPATH) $(LIBRARIES)
+$(BIND)/nova.exe: $(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)
+	echo $(msg_$(version))
+	*wlink system $(System) $(dos_$(version)_Linker_Options) name $@ &
+		file {$(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
+		$(LIBPATH) $(LIBRARIES)
 
-nova95.exe: $(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) nova95.res $($(op_sys)_$(version)_OBJ)
-        echo $(msg_$(version))
-        *wlink system $(System) $(win_$(version)_Linker_Options) name $^. &
-                file {$(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
-                $(LIBPATH) $(LIBRARIES)
-        *wrc $(RSC_FLAGS) nova95.rc
+$(BIND)/nova95.exe: $(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) nova95.res $($(op_sys)_$(version)_OBJ)
+	echo $(msg_$(version))
+	*wlink system $(System) $(win_$(version)_Linker_Options) name $@ &
+		file {$(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
+		$(LIBPATH) $(LIBRARIES)
+	*wrc $(RSC_FLAGS) nova95.rc $@
 
 
 #####################
 ##  Tool Exe's     ##
 #####################
-chared.exe: $(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) chared.res $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)
-        echo $(msg_$(version))
-        *wlink system $(System) $(win_$(version)_Linker_Options) name $^. &
-                file {$(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) } &
-                $(LIBPATH) $(LIBRARIES)
-        *wrc $(RSC_FLAGS) chared.rc
+$(BIND)/chared.exe: $(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) chared.res $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)
+	echo $(msg_$(version))
+	*wlink system $(System) $(win_$(version)_Linker_Options) name $@ &
+		file {$(CHARED_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) } &
+		$(LIBPATH) $(LIBRARIES)
+	*wrc $(RSC_FLAGS) chared.rc $@
 
 strdat.dat: strdat.txt strmake.exe
 	echo Making $^.
@@ -695,9 +705,9 @@ strenum.h: strdat.txt strmake.exe
 
 strmake.exe: $(STRMGR_OBJ)
 	echo Making $^.
-        *wlink system $(System) $(dos_$(version)_Linker_Options) name $^. &
-                file {$(STRMGR_OBJ) } &
-                $(LIBPATH) $(LIBRARIES)
+	*wlink system $(System) $(dos_$(version)_Linker_Options) name $^. &
+		file {$(STRMGR_OBJ) } &
+		$(LIBPATH) $(LIBRARIES)
 
 CleanVersion : .SYMBOLIC
 	del $(OBJD)\version.obj
@@ -726,25 +736,32 @@ CleanVersion : .SYMBOLIC
 	*$(CPPCompiler) $($(op_sys)_browser_options) $<
 
 .asm.obj: .SYMBOLIC
-        *$(ASM) $(AFLAGS) /Fo$(OBJD)\ $<
+	*$(ASM) $(AFLAGS) /Fo$(OBJD)\ $<
 
 clean : .SYMBOLIC
-        del $(OBJD)\*.obj
-        del *.res
-        del *.err
+	del /s $(OBJD)\*.obj
+	del /s $(BIND)\*.map $(BIND)\*.exe $(BIND)\*.sym
+	del *.res
+	del *.err
 
 clean_all : .SYMBOLIC
-	del $(win_debugging_object_dir)\*.obj
-	del $(win_profiling_object_dir)\*.obj
-	del $(win_production_object_dir)\*.obj
-	del $(dos_debugging_object_dir)\*.obj
-	del $(dos_profiling_object_dir)\*.obj
-	del $(dos_production_object_dir)\*.obj
-        del *.res
-        del *.err
+	del /s $(win_debugging_object_dir)\*.obj
+	del /s $(win_profiling_object_dir)\*.obj
+	del /s $(win_production_object_dir)\*.obj
+	del /s $(dos_debugging_object_dir)\*.obj
+	del /s $(dos_profiling_object_dir)\*.obj
+	del /s $(dos_production_object_dir)\*.obj
+	del /s $(win_debugging_binary_dir)\*.map $(win_debugging_binary_dir)\*.exe $(win_debugging_binary_dir)\*.sym
+	del /s $(win_profiling_binary_dir)\*.map $(win_profiling_binary_dir)\*.exe $(win_profiling_binary_dir)\*.sym
+	del /s $(win_production_binary_dir)\*.map $(win_production_binary_dir)\*.exe $(win_production_binary_dir)\*.sym
+	del /s $(dos_debugging_binary_dir)\*.map $(dos_debugging_binary_dir)\*.exe $(dos_debugging_binary_dir)\*.sym
+	del /s $(dos_profiling_binary_dir)\*.map $(dos_profiling_binary_dir)\*.exe $(dos_profiling_binary_dir)\*.sym
+	del /s $(dos_production_binary_dir)\*.map $(dos_production_binary_dir)\*.exe $(dos_production_binary_dir)\*.sym
+	del *.res
+	del *.err
 
 CleanCompile: clean install
-      	echo Done.
+	echo Done.
 
 CleanAllCompile: clean_all install
 	 echo Done.
@@ -757,25 +774,41 @@ CleanSound : .SYMBOLIC
 MakeDirs : $(win_production_object_dir) &
 	$(win_debugging_object_dir) &
 	$(dos_debugging_object_dir) &
-	$(dos_production_object_dir)
+	$(dos_production_object_dir) &
+	$(win_production_binary_dir) &
+	$(win_debugging_binary_dir) &
+	$(dos_debugging_binary_dir) &
+	$(dos_production_binary_dir)
 	
 $(win_production_object_dir) : .SYMBOLIC
-	 MKDIR $^.
+	- MKDIR $@\CHARED
 	
 $(win_debugging_object_dir) : .SYMBOLIC
-	 MKDIR $^.
+	- MKDIR $@\CHARED
 	
 $(dos_production_object_dir) : .SYMBOLIC
-	 MKDIR $^.
+	- MKDIR $@
 	
 $(dos_debugging_object_dir) : .SYMBOLIC
-	 MKDIR $^.
+	- MKDIR $@
+	
+$(win_production_binary_dir) : .SYMBOLIC
+	- MKDIR $@
+	
+$(win_debugging_binary_dir) : .SYMBOLIC
+	- MKDIR $@
+	
+$(dos_production_binary_dir) : .SYMBOLIC
+	- MKDIR $@
+	
+$(dos_debugging_binary_dir) : .SYMBOLIC
+	- MKDIR $@
 	
 #$(win_profiling_object_dir) : .SYMBOLIC
-#	 MKDIR $^.
+#	- MKDIR $@
 
 #$(dos_profiling_object_dir) : .SYMBOLIC
-#	 MKDIR $^.
+#	- MKDIR $@
 	
 CreateBrowser : $($(op_sys)_browser_database)
 
@@ -784,10 +817,10 @@ CleanBrowser : .SYMBOLIC
 
 #nova.dbr: $(MBRD) $(SYSTEM_MBR) $(MACHINE_MBR) $(ENGINE_MBR) $(GAME_MBR) $(D_AND_D_MBR) $(SOUND_MBR) $(SERRIA_SOUND_MBR)
 #	wbrg database $^. file { $(MBRD)/*.mbr }
-	
+
 #nova95.dbr : $(MBRD) $(SYSTEM_MBR) $(MACHINE_MBR) $(WIN95_MBR) $(ENGINE_MBR) $(GAME_MBR) $(D_AND_D_MBR) $(SOUND_MBR) $(WINDOWS_SOUND_MBR)
 #	wbrg database $^. file { $(MBRD)/*.mbr }
-	
-	
-##      proto : .SYMBOLIC
-##              protit *.c pcsys\*.c
+
+
+##	proto : .SYMBOLIC
+##		protit *.c pcsys\*.c
