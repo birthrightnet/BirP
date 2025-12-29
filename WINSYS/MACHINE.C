@@ -658,6 +658,12 @@ int WINAPI WinMain( HINSTANCE hInstExe, HINSTANCE hInstPrev, LPSTR szCmdLine, in
 {
 	MSG     msg;
 
+	#ifdef _CHARED
+	initializeLogging("chared.log");
+	#else
+	initializeLogging("winbr.log");
+	#endif
+
 	/* Call initialization procedure */
 	if ( !AppInit( hInstExe, hInstPrev, szCmdLine, sw ) )
 	{
@@ -731,6 +737,7 @@ void AppExit(void)
 	ShutdownRedBook();
 
 	QuitMemManag();	// Call this before you distroy the heap.
+	closeLogging();
 	HeapDestroy(hHeap);
 	// [d11-09-96 JPC] No longer use registry.
 	// CloseRegistry(hKeyBirthright, TRUE);

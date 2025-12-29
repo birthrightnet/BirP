@@ -88,6 +88,7 @@ int main(int argc,char * argv[])
 		// close_statistics <see statistics.c>
 	// moved to winsys\machine.c
 
+	initializeLogging("dos.log");
 	if (!CheckForMouse ())
 	{
 		puts ("You must have a mouse to run Birthright.  No mouse was detected.");
@@ -181,6 +182,7 @@ void quit_sys(LONG dummy)
 	remove_keyint();
 	StopRedBook();
 	CloseAllFiles();
+	closeLogging();
 	exit(0);
 }
 

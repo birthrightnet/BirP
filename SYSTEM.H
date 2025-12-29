@@ -57,6 +57,9 @@
 #include "random.h"
 #endif
 
+#if !defined(_LOGGER_H)
+#include "logger.h"
+#endif
 
 /* ------------------------------------------------------------------------
 	Misc Defines
@@ -142,7 +145,7 @@
 #define COMBINE_SHORTS(s1,s2,l)	{((l) = (0x00000000 | (s1)<<16) | (s2));}
 #define SPLIT_LONG(l,s1,s2)		{((s1) = (short)((0xFFFF0000 & (l))>>16));\
 								 ((s2) = (short)(0x0000FFFF & (l)));}
-#define HIGH_LONG(l)			((short)((0xFFFF0000 & (l))>>16))								
+#define HIGH_LONG(l)			((short)((0xFFFF0000 & (l))>>16))
 #define LOW_LONG(l)				((short)(0x0000FFFF & (l)))
 
 /* ------------------------------------------------------------------------
@@ -252,10 +255,8 @@ typedef struct
 extern "C" {
 #endif
 
-#if defined(_RELEASE)
-// over-ride the prototype for the release
+// TODO: Remove this once it's confirmed.
 int	printf( const char *__format, ... );
-#endif
 
 /* assert.c */
 // over-ride the assert
@@ -377,4 +378,3 @@ extern LONG				lens_factor;
 }
 #endif
 #endif // _SYSTEM_H
-

@@ -439,6 +439,7 @@ SYSTEM_OBJ =	&
 	$(OBJD)\assert.obj &
 	$(OBJD)\vdpmi.obj &
 	$(OBJD)\random.obj &
+	$(OBJD)\logger.obj &
 
 MACHINE_OBJ =	&
 	$(OBJD)\keyint.obj   &

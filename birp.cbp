@@ -1005,6 +1005,8 @@
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
+		<Unit filename="LOGGER.CPP" />
+		<Unit filename="LOGGER.H" />
 		<Unit filename="MACHINE.H">
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />

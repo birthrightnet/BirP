@@ -4,7 +4,7 @@
 	========================================================================
 	Filename: MAIN.C -the main loop and other things
 	Author: Chris Phillips & Wes Cumberland
-	
+
 	========================================================================
 	Contains the following internal functions:
 	machine_pre_frame     -does preframe things, such as check the mouse
@@ -19,6 +19,7 @@
 	------------------------------------------------------------------------ */
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <conio.h>
 #include <io.h>
 
@@ -264,7 +265,7 @@ void PrintLocationInfo(void)
 	LONG special;
 	LONG tag;
 	LONG sector;
-	
+
 	const LONG player_ssector = find_ssector(PLAYER_INT_VAL(player.x),PLAYER_INT_VAL(player.y));
 	ssector_to_sector_info( PLAYER_INT_VAL(player.x),PLAYER_INT_VAL(player.y),
  		player_ssector, &sector, &floor, &ceiling, &special, &tag);
@@ -274,7 +275,7 @@ void PrintLocationInfo(void)
 	print_textf( render_width/4, 35, 31,"^F00X=%ld, Y=%ld, Z=%ld, H=%ld, A=%ld, P=%ld Sector=%hd ssect=%hd",
  		PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y), player.z, player.h, player.a, player.p,
 		sector, player_ssector);
-		
+
 	print_textf( render_width/4, 45, 31,"^F00CX=%ld, CY=%ld, CZ=%ld, CA=%ld, CP=%ld",
 		CAMERA_INT_VAL(camera.x), CAMERA_INT_VAL(camera.y), camera.z, camera.a, camera.p);
 	if (MapIsActive())
@@ -283,10 +284,10 @@ void PrintLocationInfo(void)
 	}
 #else
 	// just x,y location
-	print_textf( render_width/4, 35, 31,"^F00X=%ld, Y=%ld", 
+	print_textf( render_width/4, 35, 31,"^F00X=%ld, Y=%ld",
 		PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y) );
 #endif
-	
+
 	ScreenCopy(0, render_width/4, 25, render_width, 70, SC_DEFAULT_RES);
 }
 
@@ -479,7 +480,7 @@ static void machine_post_frame()
 			//draw_cursor();
 		}
 	}
-	
+
 	// save new time
 	lTime = get_time();
 
@@ -488,7 +489,7 @@ static void machine_post_frame()
 	{
 
 		if(!fRender)
-			update_screen();
+		update_screen();
 	}
 	else	// direct draw
 	{
@@ -517,7 +518,7 @@ static void machine_post_frame()
 extern "C" {
 void MainLoop(void)
 {
-	
+
 #if defined (_DEBUG)
 	static UCHAR	cMemDebugTimer = 0;
 #endif
@@ -538,7 +539,7 @@ void MainLoop(void)
 		printf("MEM USAGE:	%ld\n", ulMemUsed);
 	}
 #endif
-	
+
 	// Touch all the memory attributes moldy bits.
 	ClearAllMoldyBits();
 	// check status of redbook audio, if stopped, loop it
@@ -556,7 +557,7 @@ void MainLoop(void)
 	if ( IsMultiPlayer() )
 		PingMyMaster();
 	#endif
-	
+
 	//run through regions list executing functions based
 	//from keyboard and mouse input.
 	if (REGION_HANDLED_EVENT == check_regions())
@@ -564,7 +565,7 @@ void MainLoop(void)
 		//mouse_button = 0;     // event handled, clear button
 		mouse_click = 0;
 	}
-	
+
 	// GWP Hack to get tool tips to paint on the map.
 	if (!fRender)
 	{
@@ -587,11 +588,11 @@ void MainLoop(void)
 
 		// display menus into view buffer
 		RunMenus();
-		
+
 		// display any request boxes
 		RunRequests();
 	}
-	
+
 
 	// Render a scene
 	else
@@ -620,7 +621,7 @@ void MainLoop(void)
 				DrawBitmap (X, Y, hBitm, 0, 0, W, H);
 				SetPurge(hBitm);
 			}
-			
+
 			// High-res and low-res are no longer different here.
 			ScreenCopy(0, margin_left, margin_top, render_width, render_height, SC_DEFAULT_RES);
 #if defined (_WADBUILDERS)
@@ -657,10 +658,10 @@ void MainLoop(void)
 
 		// display menus into view buffer
 		RunMenus();
-		
+
 		// display any request boxes
 		RunRequests();
-		
+
 		// paint the tool tips on top of the menus and panels.
 		if (fRender)
 		{
@@ -785,12 +786,12 @@ void MenuLoop()
 
 	// display any request boxes
 	RunRequests();
-	
+
 	#ifdef _WINDOWS
 	if ( IsMultiPlayer() )
 		PingMyMaster();
 	#endif
-	
+
 	fRender = FALSE;					// cause machine_post_frame to update the screen
 	machine_post_frame();
 
@@ -871,7 +872,7 @@ void GameMain(void)
 		sprintf(cpBuffer,"Ultra low memory condition, using fewer rotations.\n", (ULONG) MIN_MEMORY_TO_FULL_ROTATION);
 		puts(cpBuffer);
 	}
-	
+
 	// Setup graph mode AND load any graphical fonts... <graph.c>
 	init_graph(1);          /* init in hires */
 
@@ -890,13 +891,13 @@ void GameMain(void)
 	{
 		fatal_error("You must have a mouse to run Birthright.  No mouse was detected.");
 	}
-#endif	
-	
+#endif
+
 	for (i=0; i<MAX_UNITS; i++)
 		units[i].iIconBitm = fERROR;
 	for (i=0; i<MAX_PLACES; i++)
 		places[i].iIconBitm = fERROR;
-	
+
 	//-------------------
 	// load options here.
 	//-------------------
@@ -906,7 +907,7 @@ void GameMain(void)
 	// load user scenes
 	//-----------------------
 	FindUserSceneFiles ( SCENEFILE_PATH, SCENEFILE_EXT );
-	
+
 	//-----------------------
 	// Register resources here.
 	//-----------------------
@@ -915,12 +916,12 @@ void GameMain(void)
 	RegisterResExtention("IDA", LoadIData, DisposeIDataBlk, SetPurgeRes, ClrPurgeRes, HashCRC);
 	RegisterResExtention("ANT", LoadAnimatedTextureStub, DisposRes, SetPurgeRes, ClrPurgeRes, HashCRC);
 	//RegisterResExtention("WAV", LoadWAV, DisposRes, SetPurgeRes, ClrPurgeRes, HashCRC /* HashID*/);
-	
+
 	// Get these two res files before playing the intro.
 	// get the right language
 	OpenResFile_("wave.res");
 	OpenResFile_("INTRO.RES");
-	
+
 #if !defined (_EDIT)
 //	// -- immediate DirectDraw
 //	ToggleDirectDraw( 0, 0 );
@@ -937,7 +938,7 @@ void GameMain(void)
 #endif
 			PlayIntro();
 
-		
+
 		// SetGlobalVolume(vol);
   		// [d1-07-97 JPC] You can quit while intro is playing--check
 		// for that here.
@@ -958,7 +959,7 @@ void GameMain(void)
 	init_shade_table("nova_l");
 #endif
 
-#ifndef _WINDOWS	
+#ifndef _WINDOWS
 	// only checks for button clicks
 	add_timer(1,update_buttons);
 #endif
@@ -974,7 +975,7 @@ void GameMain(void)
 	init_regions(); //<see regions.c>
 
 	init_game();    //<see game.c>
-	
+
 	// load font
 	init_gfont(FONT_SANS_5PT);
 
@@ -985,7 +986,7 @@ void GameMain(void)
 #endif
 
 	SetupAdvsitePlaces();
-	
+
 	/* function keys */
 
 #if defined(_DEBUG) && !defined(_EDIT)
@@ -1043,9 +1044,9 @@ void GameMain(void)
 	{
 		InitDomainTurn(1);
 	}
-	
+
 	SysShowCursor();
-	
+
 #ifndef _WINDOWS
 	// the Windows main loop takes care of calling our MainLoop
 	while(1)
@@ -1090,22 +1091,22 @@ void CPPQuitSys(LONG, LONG)
 	{
 		// set the proc to null
 		SetButtonProc  (D_QUESTION3, 0, NULL, 0, 0 );
-			
+
 		// set the question text
 		SetButtonLabel  (D_QUESTION3, QUESTION_TEXT, STR_ASK_QUIT_SYS, BLACK );
-			
+
 		// turn on the first button as YES
 		SetButtonLabel  (D_QUESTION3, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 		SetButtonProc   (D_QUESTION3, QUESTION_BTN1, AskQuitSysProc, QUESTION_BTN1, D_KEY_YES );
-			
+
 		// turn on the middle button as No
 		SetButtonLabel  (D_QUESTION3, QUESTION_BTN2, STR_CANCEL, BTN_LABEL_COLOR );
 		SetButtonProc   (D_QUESTION3, QUESTION_BTN2, AskQuitSysProc, QUESTION_BTN2, D_KEY_CANCEL );
-		
+
 		// turn on the last button as Credits
 		SetButtonLabel  (D_QUESTION3, QUESTION_BTN3, STR_CREDITS, BTN_LABEL_COLOR );
 		SetButtonProc   (D_QUESTION3, QUESTION_BTN3, AskQuitSysProc, QUESTION_BTN3, D_KEY_CREDITS );
-			
+
 		ShowMenu(D_QUESTION3);
 	}
 #endif
@@ -1193,7 +1194,7 @@ void AddGameKeys(void)
 	add_key(KEY_4, ShowChatDisplayWindow,0,0);
 	add_key(KEY_5, HideChatDisplayWindow,0,0);
 #endif
-	
+
 	// GWP Remove cheat keys
 #if defined (_EDIT) || defined (_WADBUILDERS)
 	{
@@ -1238,7 +1239,7 @@ void AddGameKeys(void)
 	// This is the scene level map keys.
 	add_key(GAME_KEYS::mfGetKey(GAME_KEYS::MAP_ZOOMOUT),ZoomMap,-1, 0);
 	add_key(GAME_KEYS::mfGetKey(GAME_KEYS::MAP_ZOOMIN),ZoomMap,+1, 0);
-	
+
 #ifdef _DEMO
 	add_key(KEY_SPACEBAR,StartMapIntro,0,5);
 #else
@@ -1274,13 +1275,16 @@ void AddGameKeys(void)
 	Returns     -
 	======================================================================== */
 
-#if defined(_RELEASE)
-// for the release version, we don't want any printf's
+// @TODO: Remove this once it's been verified we got everything.
 int	printf( const char *__format, ... )
 {
+	va_list args; // Declare a variable argument list
+	va_start(args, __format); // Initialize the args
+	logTrace("The following message was provided by printf.");
+	logInfo(__format, args);
+	va_end(args);
 	return 0;
 }
-#endif
 
 /* ========================================================================
 	Function    - PlayIntro
@@ -1300,7 +1304,7 @@ void PlayIntro(void)
 	init_shade_table("intropal");
 	FadeIn(100);
 
-#ifdef _GEH_DEMO	
+#ifdef _GEH_DEMO
 	TurnOffAllSounds();
 #else
  	// add list of sound effects
@@ -1323,9 +1327,9 @@ void PlayIntro(void)
 	AddSndObj(SND_AMBIENT_SCABBARD_HIT1,0,-1);      // sword clank
 	FlcDelay = 34;
 	// if we didn't already bail and we have enough memory, play history intro
-#if !defined(_JUNEDEMO)	
+#if !defined(_JUNEDEMO)
 	FadeOut(900);
-	
+
 	if (fFlicPlayedComplete && !fLowResAni)
 	{
 		NewIntro();
@@ -1376,10 +1380,10 @@ void DrawHintPanel(CSTRPTR szFile)
 	char	buffer[1024];
 	char	buff[80];
 	FILE	*in;
-	
+
 	fAnyKeyChanged = FALSE;
 	mouse_button = 0;
-	
+
 	// draw the hint panel
 	if ((iBitm = GetResourceStd("ui\\hntpanl1.pcx", FALSE)) == fERROR)
 	{
@@ -1419,11 +1423,11 @@ void DrawHintPanel(CSTRPTR szFile)
 	{
 		// we have to do this to keep the sound going in DOS
 		run_timers();
-		
+
 		#ifdef _WINDOWS
 		ClearMessageQueue();
 		#endif
-		
+
 		update_buttons();
 		if(mouse_button)
 		{
@@ -1456,16 +1460,16 @@ void PlayGorgon(LONG arg,LONG)
 	{
 		// start the intro music
 		TurnOffAllSounds();
-	
+
 		FadeOut(100);
 		clear_screen();
 		update_screen();
-	
+
 		switch(arg)
 		{
-			case 1:	
+			case 1:
 				init_pal("gorgon2");
-		
+
 			 	// add list of sound effects
 			 	ClearFlicSound();
 				//	AddFlicSound(  1, SND_SERVANT_VOX_SFX1);
@@ -1484,10 +1488,10 @@ void PlayGorgon(LONG arg,LONG)
 				strcpy(buf, "intro\\gorgon2.flc");
 				strcpy(buf1, "gorgon1.txt");
 				break;
-	
+
 			case 2:
 				init_pal("gorgon3");
-				
+
 			 	// add list of sound effects
 			 	ClearFlicSound();
 				//	AddFlicSound(  1, SND_SERVANT_VOX_SFX2);
@@ -1505,12 +1509,12 @@ void PlayGorgon(LONG arg,LONG)
 				strcpy(buf, "intro\\gorgon3.flc");
 				strcpy(buf1, "gorgon2.txt");
 				break;
-	
+
 			case 3:
 				init_pal("gorgon4");
 				// [d11-11-96 JPC] Don't use shade tables with flics.
 				// init_shade_table("gorgon4");
-				
+
 			 	// add list of sound effects
 			 	ClearFlicSound();
 				//	AddFlicSound(  1, SND_SERVANT_VOX_SFX3);
@@ -1535,17 +1539,17 @@ void PlayGorgon(LONG arg,LONG)
 				strcpy(buf1, "gorgon3.txt");
 				break;
 		}
-	
+
 		clear_key_status(0);
 		FadeIn(100);
 		update_screen();
-		
+
 		FlcDelay = 2;
 		PlayFlic(buf, 4);
-		
+
 		ClearFlicSound();
 		TurnOffAllSounds();
-		
+
 		FadeOut(100);
 	}
 	else
@@ -1568,7 +1572,7 @@ void PlayGorgon(LONG arg,LONG)
 
 	clear_screen();
 	update_screen();
-	
+
 	init_pal("nova_l");
 	init_shade_table("nova_l");
 
@@ -1588,22 +1592,22 @@ void PlayCredits(LONG,LONG)
 	SHORT	i;
 	SHORT	bitm;
 	LONG	now;
-	
+
 	StopRedBook();
 	KillSoundsNoFade();
 	PlayTrack(103);
-	
+
 //	for(i = 1; i <= 8; i++)  //---- Changed 6-6-97 by RC
-	for(i = 1; i <= 7; i++) 
+	for(i = 1; i <= 7; i++)
 	{
 		sprintf(filename, "intro\\credit%02d.pcx", i);
-		
+
 		bitm = GetResourceStd (filename, FALSE);
-  		
+
 		if (bitm != fERROR)
 		{
 			POINT start,bck;
-			
+
 			start.x = 320;
 			start.y = 240;
 			bck.x = 320;
@@ -1616,7 +1620,7 @@ void PlayCredits(LONG,LONG)
 		{
 			continue; // can't find this one, try the next
 		}
-		
+
 		init_gfont(FONT_SANS_8PT);
 		switch(i)
 		{
@@ -1657,7 +1661,7 @@ void PlayCredits(LONG,LONG)
 			print_textf(  9,198,31,"Lady Lan Zhou");
 			print_textf( 63,178,31,"Lord Mike Branham");
 			print_textf(137,190,31,"Assassin Gary");
-			print_textf(152,200,31,"Powell");		
+			print_textf(152,200,31,"Powell");
 			print_textf(196,159,31,"Wizard Wes Cumberland");
 			print_textf(269,175,31,"Alan Ogre Clark");
 			print_textf(538,280,31,"Ranger Cheryl");
@@ -1681,28 +1685,28 @@ void PlayCredits(LONG,LONG)
 		case 8:
 			break;
 		}
-		
+
 		update_screen();
-		
+
 		// delay 20 seconds
 		now=get_time() + (20 * 182 / 10);
-		
+
 		#ifdef _WINDOWS
 		ClearMessageQueue();
 		#endif
-						
+
 		fAnyKeyChanged = FALSE;
 		clear_key_status(0);
 		mouse_button = 0;
-	
+
 		while(get_time()<now)
 		{
 			run_timers();
-			
+
 			#ifdef _WINDOWS
 			ClearMessageQueue();
 			#endif
-						
+
 			update_buttons();
 			if(mouse_button)
 			{
@@ -1726,7 +1730,7 @@ End:
 	fAnyKeyChanged = FALSE;
 	clear_key_status(0);
 	//add_timer(1,draw_cursor);
-	return;	
+	return;
 }
 
 /* ========================================================================
@@ -1748,14 +1752,14 @@ void PlayFinale(LONG WinningRealm,LONG)
 	LONG	now;
 	CHAR 	*Dash;
 	SHORT  prevTrack = ucWhichTrack;
-	
+
 	StopRedBook();
 //	PlayTrack(REDBOOK_REALM);
 	KillSoundsNoFade();
 
 	// this sound doesn't play
-	PlayTrack(SND_WIN_GAME_MUSIC1);	
-	
+	PlayTrack(SND_WIN_GAME_MUSIC1);
+
 	if ( WinningRealm == 0 )
 	{
 		WinningRealm = HomeRealm;
@@ -1778,13 +1782,13 @@ void PlayFinale(LONG WinningRealm,LONG)
 #else
 	bitm = GetResourceStd ("finale\\finale.pcx", FALSE);
 #endif
- 		
+
 	if (bitm != fERROR)
 	{
 		DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
 		SetPurge(bitm);
 	}
-	
+
 #if !defined(_JUNEDEMO)
 	// use only first 8 chars up to a space
 	memset(&name[0], 0, 9);
@@ -1796,9 +1800,9 @@ void PlayFinale(LONG WinningRealm,LONG)
 	{
 		Dash[0] = 0;
 	}
-						
+
 	sprintf(filename, "finale\\%s.PCX",name);
-	
+
 	bitm = GetResourceStd (filename, FALSE);
 	if (bitm == fERROR)
 	{
@@ -1810,13 +1814,13 @@ void PlayFinale(LONG WinningRealm,LONG)
 		sprintf(filename, "finale\\fl%s.PCX",GAME_TTYPE::mfGetArtFileName(dhPlayerStats->mfGetType()));
 		bitm = GetResourceStd (filename, FALSE);
 	}
- 		
+
 	if (bitm != fERROR)
 	{
 		DrawBitmap (280, 152, bitm, 0, 0, 72, 176);
 		SetPurge(bitm);
 	}
-	
+
 	init_gfont(FONT_TITL_16PT);
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN1));
 	// [d4-09-97 JPC] Modified the following to use the access
@@ -1824,12 +1828,12 @@ void PlayFinale(LONG WinningRealm,LONG)
 	// of the REGENT class.
 	sprintf(buffer,temp,regents[realm[WinningRealm].mfGetRegent()].mfGetname());
 	print_textf(175,30,1,buffer);
-	
+
 	init_gfont(FONT_TITL_8PT);
-	
+
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN2));
 	print_textf(190,54,1,temp);
-	
+
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN51));
 
 	if( TypesDiffs[HomeRealm][1] == STR_REALMPLAYTYPE_EAS)
@@ -1841,7 +1845,7 @@ void PlayFinale(LONG WinningRealm,LONG)
 
 	sprintf(buffer,temp,rlm);
 	print_textf(450,130,1,buffer);
-	
+
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN52));
 	if( DifficultyLevel == 1)
 		strcpy(battle,STRMGR_GetStr(STR_FINALE_HARD));
@@ -1865,21 +1869,21 @@ void PlayFinale(LONG WinningRealm,LONG)
 		strcpy(game,STRMGR_GetStr(STR_FINALE_HARD));
 	sprintf(buffer,temp,game);
 	print_textf(450,150,1,buffer);
-	
+
 	if(cheated)
 	{
 		strcpy(temp, STRMGR_GetStr(STR_FINALE_CHEATED));
 		sprintf(buffer, temp, cheated);
 		print_textf(450,160,1,buffer);
 	}
-		
+
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN61));
 	print_textf(450,175,1,temp);
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN62));
 	print_textf(450,185,1,temp);
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN63));
 	print_textf(450,195,1,temp);
-	
+
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN71));
 	print_textf(450,210,1,temp);
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN72));
@@ -1887,16 +1891,16 @@ void PlayFinale(LONG WinningRealm,LONG)
 	strcpy(temp,STRMGR_GetStr(STR_FINALE_SCREEN73));
 	print_textf(450,230,1,temp);
 #endif //_JUNEDEMO
-	
+
 	update_screen();
-		
+
 	// delay 45 seconds
 	now=get_time() + (45 * 182 / 10);
-	
+
 	#ifdef _WINDOWS
 	ClearMessageQueue();
 	#endif
-					
+
 	fAnyKeyChanged = FALSE;
 	clear_key_status(0);
 	mouse_button = 0;
@@ -1904,11 +1908,11 @@ void PlayFinale(LONG WinningRealm,LONG)
 	while(get_time()<now)
 	{
 		run_timers();
-		
+
 		#ifdef _WINDOWS
 		ClearMessageQueue();
 		#endif
-					
+
 		update_buttons();
 		if(mouse_button)
 		{
@@ -1933,21 +1937,21 @@ End:
 
 	clear_screen();
 	update_screen();
-	
+
 	init_pal("nova_l");
 	init_shade_table("nova_l");
 
 	update_screen();
-	
+
 	fRedrawAll = TRUE;
 	fAnyKeyChanged = FALSE;
 	clear_key_status(0);
-	
+
 	FadeIn(100);
-	PlayTrack(prevTrack);	
-	
+	PlayTrack(prevTrack);
+
 	//add_timer(1,draw_cursor);
-	return;	
+	return;
 }
 
 void CoverResetSound( LONG, LONG )
@@ -2017,7 +2021,7 @@ void AskQuitSysProc(LONG MenuCombo, LONG button)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -2035,7 +2039,7 @@ void AskQuitSysProc(LONG MenuCombo, LONG button)
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	// yes, quit
 	if (button == QUESTION_BTN1)
 	{
@@ -2319,14 +2323,14 @@ void NewIntro (void)
 
 //	 0, 0, 0,108,306,306,531,531,531,531,1160,1160,1620,1620,
 //	1750,1750,1862,1862,1974,1974,1974,2210,2210,2304,2304,2304,2516,2516,2685,2685,2685,2750,2750,3060,3060,3337,3466,3466,3530,3568,3568,3568,3588,3588,3588,3608,3608,3608,3624,3624,3624,3646,3646,3646,00,3850,0};
-//		static LONG	effect[] = {																																																																																																																																												
+//		static LONG	effect[] = {
 //	 0,30,70, 24,  1, 60, 13,  2, 23, 40,  51,  52,   3,  60,
 //	  62,  41,  63,  41,  12,   4,  23,   5,  60,  13,   6,  23,  65,  41,  12,   7,  22,  66,  41,  67,  41,  13,   8,  21,  13,   8,  21,  12,   9,  21,  12,   9,  21,  12,  10,  21,  12,  10,  21,  14,00,   0,99};
 
 
  0, 0, 0,108,306,306,580,580,684,1160,1160,1160,1160,1160,1680,1680,
 1760,1760,1862,1862,1974,1974,1974,2210,2210,2304,2304,2304,2516,2516,2685,2685,2685,2750,2750,3060,3060,3337,3466,3466,3530,3568,3568,3568,3586,3586,3586,3606,3606,3606,3624,3624,3624,3646,3646,3646,00,3850,0};
-	static LONG	effect[] = {																																																																																																																																												
+	static LONG	effect[] = {
  0,30,70, 24,  1, 60,  2, 60, 40,  11,  51,  21,  40,  52,   3,  60,
   62,  41,  63,  41,  13,   4,  23,   5,  60,  14,   6,  23,  65,  41,  13,   7,  22,  66,  41,  67,  41,  14,   8,  21,  13,   8,  21,  13,   9,  21,  13,   9,  21,  13,  10,  21,  13,  10,  21,  14,00,   0,99};
 
@@ -2452,7 +2456,7 @@ void NewIntro (void)
 				case 66: wx = 0; wy = 195; ww = 212; wh = 232; break;
 				// Gorgon on crag
 				case 67: wx = 280; wy = 0; ww = 325; wh = 480; break;
-			
+
 				case 70:						// init the screen
 						// this is now done below
 					FadeOut(100);
@@ -2495,4 +2499,3 @@ void NewIntro (void)
 
 /* ======================================================================== */
 
-
