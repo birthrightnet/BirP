@@ -70,25 +70,25 @@ void CAvatar::Save(void)
 		char szFileName[20] = { "scenes\\"};
 		char szID[10];
 		FILE *pFileWrite;
-	
+
 		strcat(szFileName, "id");
 		sprintf(szID, "%ld", Id);
 		strcat(szFileName, szID);
 		strcat(szFileName, ".ava");
-	
+
 		pFileWrite = FileOpen(szFileName,"wb");
-			
+
 		if (pFileWrite == NULL)			// OOPS!  No file
 				return;
-	
+
 		fwrite(&Version, 	sizeof(long), 1, pFileWrite);
 		if (hPlayerStats != fERROR)
 		{
 			PTR_PLAYER_STATS pPlayerStats = (PTR_PLAYER_STATS) BLKPTR(hPlayerStats);
 			pPlayerStats->mfWriteData(pFileWrite);
 		}
-	
-		FileClose(pFileWrite);		
+
+		FileClose(pFileWrite);
 	}
 }
 #endif	// UNUSED
@@ -97,7 +97,7 @@ void CAvatar::Save(void)
 void CAvatar::SetAIFuncIndex(AIFUNC aif)
 {
 	AIFuncIndex = aif;
-	
+
 	switch (aif)
 	{
 		case AI_FUNC_BATTLE_CAPTAIN:
@@ -164,7 +164,7 @@ void CAvatar::SetAIFuncIndex(AIFUNC aif)
 		case AI_FUNC_GARGOYLES:
 			pAvatarFunc = Gargoyles;
 			break;
-		
+
 		case AI_FUNC_HORSE:
 			pAvatarFunc = Horse;
 			break;
@@ -188,11 +188,11 @@ void CAvatar::DeathSequence (CAvatar *pAvatar, CAvatar::AISTATUS )
 	if (pAvatar->mfTestSequenceDone())
 	{
 		// If there are people following me... release them.
-		
-		
-		
+
+
+
 		// Actually we may want to remove the body sometime in the future.
-		
+
 		// Hey! He's Dead! Dead men don't move!
 		pAvatar->SetAIFuncIndex(AI_FUNC_NULL);
 	}
@@ -210,22 +210,22 @@ void CAvatar::FollowId (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 {
 	LONG	index;
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
 	switch( Status )
 	{
 	case AI_INIT:
 		pAvatar->Status = AI_RUNNING;
 		pAvatar->mfStartAnimationLoop(WALKSEQ);
 		break;
-			
+
 	case AI_RELEASE:
 		pAvatar->Status = AI_INIT;
 		break;
-	
+
 	case AI_BEGIN_PAUSE:
 		pAvatar->mfBeginPause();
 		break;
-			
+
 	case AI_PAUSED:
 		pAvatar->mfStandAndFidget();
 		break;
@@ -233,23 +233,23 @@ void CAvatar::FollowId (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	case AI_END_PAUSE:
 		pAvatar->mfEndPause();
 		break;
-			
+
 	case AI_BEGIN_LISTEN:
 		// If I'm following someone else around, send him the message.
 		// otherwise I'll take it as I'm lost.
-		
+
 		pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 		index = pCurrentScene->mfAvatarIndex(pAvatar->fFollowId.Id);
-		
+
 		if (index < MAX_AVATARS && index > 0)
 		{
 			//GEH SetBlockAttr(pCurrentScene->Avatars[index], LOCKED, LOCKED);
 			CAvatar *pLeaderAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[index]);
-			
+
 			pLeaderAvatar->DoAI(AI_BEGIN_LISTEN);
-			
+
 			//GEH ClrLock(pCurrentScene->Avatars[index]);
-			
+
 			// I could tell myself to pause but the leader should decide that.
 		}
 		else
@@ -258,37 +258,37 @@ void CAvatar::FollowId (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			pAvatar->mfBeginListen();
 		}
 		break;
-			
+
 	case AI_LISTEN:
 		// Follow the camera around.
 		pAvatar->mfListen();
 		break;
-			
+
 	case AI_END_LISTEN:
 		pAvatar->mfEndListen();
 		break;
-		
+
 	case AI_BEGIN_LISTEN_BOW:
 		pAvatar->mfBeginListenBow();
 		break;
-	
+
 	case AI_END_LISTEN_BOW:
 		pAvatar->mfEndListenBow();
 		break;
-	
+
 	case AI_ROTATE_TO_CAMERA:
 		pAvatar->mfRotateToCamera();
 		break;
-	
+
 	case AI_RETURN_TO_POSITION:
 		pAvatar->mfReturnToPosition();
 		break;
-	
+
 	case AI_ATTACK:
 		{
 			index = pCurrentScene->mfAvatarIndex(pAvatar->fFollowId.Id);
 			CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[index]);
-			
+
 			// melee
 			if(index != MAX_AVATARS) // the guy I want to follow is missing
 			{
@@ -301,30 +301,30 @@ void CAvatar::FollowId (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 		}
 		break;
-			
+
 	case AI_MOVING:
 	default:
 		pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 		const LONG oldX = pAvatar->mfX();
 		const LONG oldY = pAvatar->mfY();
-		
+
 		index = pCurrentScene->mfAvatarIndex(pAvatar->fFollowId.Id);
 		CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[index]);
 		if(index != MAX_AVATARS) // the guy I want to follow was found.
 		{
 			LONG tx = pAvatar->fFollowId.NewX;
 			LONG ty = pAvatar->fFollowId.NewY;
-			
+
 			//tx += random(5) - 2;
 			//ty += random(5) - 2;
-			
+
 			const LONG dist = pAvatar->MoveToward(tx, ty, 4, pAvatar->fFollowId.Rate);
 			if (dist > 0)
 				pAvatar->mfStartAnimationOnce(STANDSEQ);
 			else
 				pAvatar->mfStartAnimationOnce(WALKSEQ);
-			
-			
+
+
 			pAvatar->mfSetAngle(pAvatar->fFollowId.NewA);
 		}
 		else
@@ -349,21 +349,21 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	LONG	index;
 	CAvatar *pLeaderAvatar;
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-		
+
 	switch( Status )
 	{
 	case AI_INIT:
 			pAvatar->Status = AI_SEARCH;
 			break;
-			
+
 	case AI_RELEASE:
 			pAvatar->Status = AI_INIT;
 			break;
-	
+
 	case AI_BEGIN_PAUSE:
 			pAvatar->mfBeginPause();
 			break;
-			
+
 	case AI_PAUSED:
 			pAvatar->mfStandAndFidget();
 			break;
@@ -371,43 +371,43 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	case AI_END_PAUSE:
 			pAvatar->mfEndPause();
 			break;
-			
+
 	case AI_BEGIN_LISTEN:
 			pAvatar->mfBeginListen();
 			break;
-			
+
 	case AI_LISTEN:
 			// Follow the camera around.
 			pAvatar->mfListen();
 			break;
-			
+
 	case AI_END_LISTEN:
 			pAvatar->mfEndListen();
 			break;
-			
+
 	case AI_BEGIN_LISTEN_BOW:
 			pAvatar->mfBeginListenBow();
 			break;
-	
+
 	case AI_END_LISTEN_BOW:
 			pAvatar->mfEndListenBow();
 			break;
-	
+
 	case AI_ROTATE_TO_CAMERA:
 			pAvatar->mfRotateToCamera();
 			break;
-	
+
 	case AI_RETURN_TO_POSITION:
 			pAvatar->mfReturnToPosition();
 			break;
-		
+
 	case AI_SEARCH:
 			{
 			// find the nearest unengaged enemy
 			//GEH!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			//    This is Wrong
 			//SHORT Id = pAvatar->FindUnengaged( fERROR, pAvatar->fFindType.TargetType );
-			
+
 			// GEH if( MAX_AVATARS == fERROR )
 			// GEH {
 			// GEH		// no more of this type to find
@@ -421,12 +421,12 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			// GEH}
 			}
 			break;
-			
+
 	case AI_ATTACK:
 			// melee
 			index = pCurrentScene->mfAvatarIndex(pAvatar->fFindType.Id);
 			pLeaderAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[index]);
-			
+
 			if(index != MAX_AVATARS)
 			{
 					pAvatar->MoveToward(pLeaderAvatar->mfX(),
@@ -441,11 +441,11 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					pLeaderAvatar->fFindType.Control &= ~AIC_ENGAGED;
 			}
 			break;
-			
+
 	case AI_MOVING:
 			// seek and engage the enemy
 			index = pCurrentScene->mfAvatarIndex(pAvatar->fFindType.Id);
-	
+
 			if(index != MAX_AVATARS) // the guy I want to follow is missing
 			{
 				pLeaderAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[index]);
@@ -464,7 +464,7 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					pAvatar->Status = AI_SEARCH;
 			}
 			break;
-			
+
 	default:
 			break;
 	}
@@ -479,7 +479,7 @@ void CAvatar::FindType (CAvatar *pAvatar, CAvatar::AISTATUS Status)
    ======================================================================== */
 void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 {
-		
+
 		switch( Status )
 		{
 		case AI_INIT:
@@ -488,40 +488,40 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				pAvatar->fGuardPt.GuardPositionAngle = pAvatar->mfAngle();
 				pAvatar->fGuardPt.Wave = 0;
 				break;
-				
+
 		case AI_RELEASE:
 				pAvatar->Status = AI_INIT;
 				break;
-				
+
 		case AI_BEGIN_LISTEN:
 				pAvatar->mfBeginListen();
 				break;
-				
+
 		case AI_LISTEN:
 				// Follow the camera around.
 				pAvatar->mfListen();
 				break;
-				
+
 		case AI_END_LISTEN:
 				pAvatar->mfEndListen();
 				break;
-		
+
 		case AI_BEGIN_LISTEN_BOW:
 				pAvatar->mfBeginListenBow();
 				break;
-		
+
 		case AI_END_LISTEN_BOW:
 				pAvatar->mfEndListenBow();
 				break;
-		
+
 		case AI_ROTATE_TO_CAMERA:
 				pAvatar->mfRotateToCamera();
 				break;
-		
+
 		case AI_RETURN_TO_POSITION:
 				pAvatar->mfReturnToPosition();
 				break;
-		
+
 		default:
 				{
 				BOOL	Move = FALSE;
@@ -536,7 +536,7 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					// If so make the dection distance a bit longer.
 					DectionDistance += 200;
 				}
-				
+
 				if (pAvatar->mfIsVisible())
 				{
 					// First check how far away the camera is.
@@ -544,14 +544,14 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 									pAvatar->mfY(),
 									PLAYER_INT_VAL(player.x),
 									PLAYER_INT_VAL(player.y));
-	
+
 					if (distance < DectionDistance)
 					{
 						// The camera is close, move out of the way.
 						Move = TRUE;
 						TargetX = pAvatar->fGuardPt.StandAsideX;
 						TargetY = pAvatar->fGuardPt.StandAsideY;
-						
+
 						// Face the Camera.
 						pAvatar->FaceTo(PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y));
 #ifdef _WINDOWS
@@ -564,7 +564,7 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						{
 							pfVoiceResp( pAvatar->mfType() );
 						}
-							
+
 						// If I'm a dog Bark at the camera when really close!
 						if (pAvatar->mfType() == DOG )
 						{
@@ -596,35 +596,35 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 					SHORT hAvatar = fERROR;
 					distance = 9999;
-					
+
 					// check the list of avatars for the closest one not on Guard Duty.
 					for(LONG i=0;i<MAX_AVATARS;++i)
 					{
 						if (pCurrentScene->Avatars[i] != fERROR)
 						{
 							CAvatar *pLeaderAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
-							
+
 							if( pLeaderAvatar->hThis == pAvatar->hThis )	// Check for self.
 								continue;
-					
+
 							if (pLeaderAvatar->GetAIFuncIndex() == AI_FUNC_GUARD_POINT)
 								continue;
-							
+
 							// GWP I suppose Harpie and Spiders could be guards for evil things...
 							// GWP So we need to keep track of who is a friend of who.
 							// GWP knowing that it is runtime game dependent.
-							
+
 							if (pLeaderAvatar->mfIsMonster())
 							{
 								continue;
 							}
-							
+
 							d = aprox_dist(
 								pAvatar->mfX(),
 								pAvatar->mfY(),
 								pLeaderAvatar->mfX(),
 								pLeaderAvatar->mfY() );
-							
+
 							if(d < distance)
 							{
 								distance = d;
@@ -632,23 +632,23 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							}
 						}
 					}
-					
+
 					if( hAvatar != fERROR ) // Someone found.
 					{
 						if (distance < DectionDistance )
 						{
 							// Halt, who goes there!
 							CAvatar * pNearAvatar = (CAvatar *) BLKPTR (hAvatar);
-							
+
 							// Face the Approaching Avatar.
 							pAvatar->FaceTo(pNearAvatar->mfX(), pNearAvatar->mfY());
-							
+
 							Move = TRUE;
 							TargetX = pAvatar->fGuardPt.StandAsideX;
 							TargetY = pAvatar->fGuardPt.StandAsideY;
 						}
 					}
-					
+
 					if (Move == FALSE)
 					{
 						// Am I standing at the point I'm supposed to Guard?
@@ -656,7 +656,7 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 										 pAvatar->fGuardPt.Y,
 										 pAvatar->mfX(),
 										 pAvatar->mfY());
-						
+
 						if (distance > 0)
 						{
 							Move = TRUE;
@@ -669,12 +669,12 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						}
 					}
 				}
-				
+
 				if (Move == TRUE)
 				{
 					LONG dx = (TargetX - pAvatar->mfX());
 					LONG dy = (TargetY - pAvatar->mfY());
-					
+
 					if( abs(dx) > pAvatar->mfGetWalkRate() )
 					{
 						if ( dx < 0)
@@ -686,7 +686,7 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							dx = pAvatar->mfGetWalkRate();
 						}
 					}
-					
+
 					if( abs(dy) > pAvatar->mfGetWalkRate() )
 					{
 						if ( dy < 0)
@@ -698,7 +698,7 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							dy = pAvatar->mfGetWalkRate();
 						}
 					}
-				
+
 					if (dx == 0 && dy == 0)
 					{
 						// In case the Rate got set to Zero, don't run in place.
@@ -729,47 +729,47 @@ void CAvatar::GuardPt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
    ======================================================================== */
 void CAvatar::StandStill (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 {
-		
+
 		switch( Status )
 		{
 		case AI_INIT:
 				pAvatar->mfStartAnimationLoop(STANDSEQ);
 				pAvatar->Status = AI_RUNNING;
 				break;
-				
+
 		case AI_RELEASE:
 				pAvatar->Status = AI_INIT;
 				break;
-				
+
 		case AI_BEGIN_LISTEN:
 				pAvatar->mfBeginListen();
 				break;
-				
+
 		case AI_LISTEN:
 				// Follow the camera around.
 				pAvatar->mfListen();
 				break;
-				
+
 		case AI_END_LISTEN:
 				pAvatar->mfEndListen();
 				break;
-		
+
 		case AI_BEGIN_LISTEN_BOW:
 				pAvatar->mfBeginListenBow();
 				break;
-		
+
 		case AI_END_LISTEN_BOW:
 				pAvatar->mfEndListenBow();
 				break;
-		
+
 		case AI_ROTATE_TO_CAMERA:
 				pAvatar->mfRotateToCamera();
 				break;
-		
+
 		case AI_RETURN_TO_POSITION:
 				pAvatar->mfReturnToPosition();
 				break;
-		
+
 		default:
 				break;
 		}
@@ -794,13 +794,13 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			LONG Y;
 			LONG Z;
 			LONG A;
-			
+
 			pAvatar->fPathLeader.FollowPath.mfGetCurrentPt(X, Y, Z, A);
-			
+
 			pAvatar->Status = AI_MOVING;
 
 			pAvatar->mfMoveToXYZA( X, Y, Z, A );
-			
+
 			pAvatar->mfStartAnimationLoop( WALKSEQ);
 		}
 		else
@@ -809,11 +809,11 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 		}
 		pAvatar->fPathLeader.Leader.mfInit(pAvatar);
 		break;
-			
+
 	case AI_RELEASE:
 		pAvatar->Status = AI_INIT;
 		break;
-			
+
 	case AI_MOVING:
 		{
 		// only x and y work right now
@@ -821,9 +821,9 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 		LONG Y;
 		LONG Z;
 		LONG A;
-		
+
 		pAvatar->fPathLeader.FollowPath.mfGetCurrentPt(X, Y, Z, A);
-		
+
 		if( ( pAvatar->mfX() == X ) &&
 			( pAvatar->mfY() == Y ) )
 		{
@@ -831,11 +831,11 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				// requested destination.
 				pAvatar->fPathLeader.FollowPath.mfGetNextPt(X, Y, Z, A);
 		}
-		
+
 		// if not at destination, start moving in that direction
 		LONG dx = (X - pAvatar->mfX());
 		LONG dy = (Y - pAvatar->mfY());
-		
+
 		const LONG h = dist(
 				pAvatar->mfX(),
 				pAvatar->mfY(),
@@ -848,40 +848,40 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			pAvatar->Status = AI_BEGIN_PAUSE;
 			break;
 		}
-		
+
 		if( abs(dx) > pAvatar->mfGetWalkRate() )
 		{
 			dx = dx * pAvatar->mfGetWalkRate() / h;
 		}
-		
+
 		if( abs(dy) > pAvatar->mfGetWalkRate() )
 		{
 			dy = dy * pAvatar->mfGetWalkRate() / h;
 		}
-		
+
 		// check for a bump at the target coords
 		while( iNOTHING != pAvatar->mfCheckNewPosition( dx, dy, pAvatar->mfGetWalkRate()))
 		{
 			dx += random(pAvatar->mfGetWalkRate()*2) - pAvatar->mfGetWalkRate();
 			dy += random(pAvatar->mfGetWalkRate()*2) - pAvatar->mfGetWalkRate();
 		}
-		
+
 		//pAvatar->FaceTo(pAvatar->mfX() + dx,
 		//			   pAvatar->mfY() + dy );
-					
+
 		pAvatar->mfMoveToXYZA( pAvatar->mfX() + dx,
 						  pAvatar->mfY() + dy, Z, A);
-						
+
 		// now update anyone following me
 		pAvatar->fPathLeader.Leader.mfRecordTrail(pAvatar);
 		pAvatar->fPathLeader.Leader.mfMoveFollowers(pAvatar);
 		}
 		break;
-			
+
 	case AI_BEGIN_PAUSE:
 			pAvatar->mfBeginPause();
 			break;
-			
+
 	case AI_PAUSED:
 			pAvatar->mfStandAndFidget();
 			break;
@@ -889,36 +889,36 @@ void CAvatar::PathLeader (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	case AI_END_PAUSE:
 			pAvatar->mfEndPause();
 			break;
-			
+
 	case AI_BEGIN_LISTEN:
 			pAvatar->mfBeginListen();
 			break;
-			
+
 	case AI_LISTEN:
 			// Follow the camera around.
 			pAvatar->mfListen();
 			break;
-			
+
 	case AI_END_LISTEN:
 			pAvatar->mfEndListen();
 			break;
-			
+
 	case AI_BEGIN_LISTEN_BOW:
 			pAvatar->mfBeginListenBow();
 			break;
-	
+
 	case AI_END_LISTEN_BOW:
 			pAvatar->mfEndListenBow();
 			break;
-	
+
 	case AI_ROTATE_TO_CAMERA:
 			pAvatar->mfRotateToCamera();
 			break;
-	
+
 	case AI_RETURN_TO_POSITION:
 			pAvatar->mfReturnToPosition();
 			break;
-	
+
 	default:
 			pAvatar->Status = AI_PAUSED;
 	}
@@ -942,19 +942,19 @@ LONG CAvatar::MoveToward(
 	LONG dx = lTargetX - mfX();
 	LONG dy = lTargetY - mfY();
 	LONG h = dist( mfX(), mfY(), lTargetX, lTargetY );
-			
+
 	if(abs(h) > Bump)
 	{
 		LONG NewX;
 		LONG NewY;
-		
+
 		if (h > 0)
 			h -= Bump;
 		else
 			h += Bump;
-		
+
 		FaceTo(lTargetX, lTargetY );
-		
+
 		if (Bump > 2)
 		{
 			// Introduce some randomness as to exactly where
@@ -962,7 +962,7 @@ LONG CAvatar::MoveToward(
 			dx += random(Bump - 1);
 			dy += random(Bump - 1);
 		}
-		
+
 		if (abs(h) < Rate)
 		{
 			NewX = mfX() + dx;
@@ -979,7 +979,7 @@ LONG CAvatar::MoveToward(
 	{
 		h = 0;
 	}
-	
+
 	return h;
 }
 
@@ -996,7 +996,7 @@ LONG CAvatar::AvatarNear( THINGTYPE type, LONG &closestD, SHORT &hAvatar )
 	LONG ReturnVal=0;
 	LONG d;
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
 	closestD = 9999;
 	// check the list of avatars
 	for(i=0;i<MAX_AVATARS;++i)
@@ -1004,20 +1004,20 @@ LONG CAvatar::AvatarNear( THINGTYPE type, LONG &closestD, SHORT &hAvatar )
 		if (pCurrentScene->Avatars[i] != fERROR)
 		{
 			CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
-			
+
 			if( pAvatar == this )	// Check for self.
 				continue;
-	
+
 			// Check whether the type can be Anytype or is an exact match.
 			if( type != NO_THING && pAvatar->mfType() != type )
 				continue;
-				
+
 			d = aprox_dist(
 				mfX(),
 				mfY(),
 				pAvatar->mfX(),
 				pAvatar->mfY() );
-			
+
 			if(d < closestD)
 			{
 				closestD = d;
@@ -1032,7 +1032,7 @@ LONG CAvatar::AvatarNear( THINGTYPE type, LONG &closestD, SHORT &hAvatar )
 	{
 		d = aprox_dist( mfX(), mfY(),
 			PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y) );
-			
+
 		if(d < closestD)
 		{
 			closestD = d;
@@ -1040,7 +1040,7 @@ LONG CAvatar::AvatarNear( THINGTYPE type, LONG &closestD, SHORT &hAvatar )
 			ReturnVal = MAX_AVATARS;
 		}
 	}
-	
+
 	return(ReturnVal);
 }
 #endif // UNUSED
@@ -1054,13 +1054,13 @@ LONG CAvatar::AvatarNear( THINGTYPE type, LONG &closestD, SHORT &hAvatar )
 SHORT CAvatar::NewAvatar(void)
 {
 	SHORT hAvatar = NewLockedBlock(sizeof(CAvatar));
-	
+
 	if (hAvatar != fERROR)
 	{
 		LONG i;
-		
+
 		CAvatar *pAvatar = (CAvatar *) BLKPTR(hAvatar);
-		
+
 		pAvatar->hThis		= hAvatar; // Self reference pointer needed to attach to other things.
 		pAvatar->attrib.RuntimeCreated	= FALSE;
 		pAvatar->attrib.SceneInstance	= FALSE;
@@ -1093,24 +1093,24 @@ SHORT CAvatar::NewAvatar(void)
 		pAvatar->fHighlightEndTime = ULONG_MAX;
 		pAvatar->fContactDistance = 0;
 		pAvatar->UnitIndex = -1;
-		
+
 		for (i = 0; i < MAX_ATTACK_ROLLS; ++i)
 			pAvatar->fAttackRolls[i] = 0;
-			
+
 		pAvatar->fFightSeq.mfInit();
-		
+
 		pAvatar->CurSequence= INITSEQ;
 		pAvatar->SetAIFuncIndex(AI_FUNC_NULL);
-		
+
 		pAvatar->fPrev.Sequence	= INITSEQ;
 		pAvatar->fPrev.A		= 0;
 	 	pAvatar->fPrev.Status	= pAvatar->Status;
-	 	
+
 		// Initialize the snd array.
 		memset(&(pAvatar->SndData[0].SndId), 0, MAX_SND_QUEUE*sizeof(AVATAR_SND_DATA));
 	}
 
-	return hAvatar;   // return handle	
+	return hAvatar;   // return handle
 }
 
 /* ========================================================================
@@ -1123,17 +1123,17 @@ void CAvatar::mfCreateFireBall(
 			   THINGTYPE Type,
 			   LONG DamageLevel) const
 {
-	
+
 	PTR_SCENE	pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	POINT		PtInFront;
 	LONG		Angle;
-	
+
 	PtInFront.x = 0;
 	PtInFront.y = 2 * mfWidth();
 	Rotate(&PtInFront, mfAngle());
 	PtInFront.x += mfX();
 	PtInFront.y += mfY();
-	
+
 	if(hEnemy != fERROR)
 	{
 		CAvatar const * const pEnemy = (CAvatar const * const)BLKPTR(hEnemy);
@@ -1146,7 +1146,7 @@ void CAvatar::mfCreateFireBall(
 		CAvatar const * const pAvatar = (CAvatar const * const)BLKPTR(hThis);
 		Angle = pAvatar->mfAngle();
 	}
-	
+
 	LONG const i=CAvatar::CreateAvatar(Id, Type,
 							PtInFront.x,
 						    PtInFront.y,
@@ -1159,7 +1159,7 @@ void CAvatar::mfCreateFireBall(
 		pFireball->mfMoveToXYZA(pFireball->mfX(), pFireball->mfY(), mfZ()+mfHeight()-33, pFireball->mfAngle());
 		pFireball->fDamage = DamageLevel;
 		pFireball->ThingType = Type;
-		pFireball->hEnemy=hEnemy;	
+		pFireball->hEnemy=hEnemy;
 		pFireball->fFireBall.hWhoCast = hThis;
 		pFireball->fDamageFlag = 1;
 	}
@@ -1180,13 +1180,13 @@ void CAvatar::mfCreateHorse(
 			   LONG Id,
 			   THINGTYPE Type ) const
 {
-	
+
 	PTR_SCENE	pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	LONG		Angle;
-	
+
 	CAvatar const * const pAvatar = (CAvatar const * const)BLKPTR(hThis);
 	Angle = 32;
-	
+
 	LONG const i=CAvatar::CreateAvatar( Id, Type,
 										pAvatar->mfX(),
 										pAvatar->mfY(),
@@ -1198,7 +1198,7 @@ void CAvatar::mfCreateHorse(
 	{
 		CAvatar * pHorse = (CAvatar *) BLKPTR (pCurrentScene->Avatars[i]);
 		pHorse->ThingType = Type;
-		pHorse->hEnemy=fERROR;	
+		pHorse->hEnemy=fERROR;
 	}
 #if defined (_DEBUG)
 	else
@@ -1219,7 +1219,7 @@ BOOL CAvatar::mfInflictMagicDamage(
 	LONG const Damage)
 {
 	SHORT	result = 0;
-		
+
 	if(NewKillType != NO_THING &&
 	   !mfAmIImmoblized() &&
 	   pEnemy->Status != AI_DEAD)
@@ -1231,7 +1231,7 @@ BOOL CAvatar::mfInflictMagicDamage(
 		}
 		else
 		{
-			
+
 			SET_NOT_FRIENDLY(Realm.HomeRealm, pEnemy->Realm.HomeRealm);
 			if (pEnemy->hPlayerStats == fERROR ||
 			    hPlayerStats == fERROR)
@@ -1245,7 +1245,7 @@ BOOL CAvatar::mfInflictMagicDamage(
 				DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(hPlayerStats);
 				DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 				PLAYER_HIT PlayerHitObj(pPlayerStats, pEnemyStats);
-				
+
 				result = fDamage = PlayerHitObj.mfInflictMagicDamageOnTarget( NewKillType,
 											                                   Damage);
 				// check to see if this kills the enemy
@@ -1292,8 +1292,8 @@ BOOL CAvatar::mfInflictMagicDamage(
 		}
 	}
 	fDamageFlag = 0;
-		
-	return result;	
+
+	return result;
 }
 /* ========================================================================
    Function	- DeleteAvatar
@@ -1304,15 +1304,15 @@ BOOL CAvatar::mfInflictMagicDamage(
 void CAvatar::DeleteAvatar(SHORT hAvatar)
 {
 	CAvatar *pAvatar = (CAvatar *) BLKPTR(hAvatar);
-		
+
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	for(LONG i=0; i<MAX_AVATARS&&pCurrentScene->Avatars[i]!=pAvatar->hThis; ++i)
 	{}
-	
+
 	pCurrentScene->Avatars[i]=fERROR;
 	if (pAvatar->UnitIndex != -1)
 		units[pAvatar->UnitIndex].iHandle = fERROR;
-	
+
 	// give the AI a chance to throw it's stuff away
 	switch(pAvatar->GetAIFuncIndex())
 	{
@@ -1326,11 +1326,11 @@ void CAvatar::DeleteAvatar(SHORT hAvatar)
 	    	pAvatar->fBtlCap.mfDelete();
 	    	break;
 	}
-	
+
 	// disable this in the things array
 	purge_thing(pAvatar->ThingIndex);
 	remove_thing(pAvatar->ThingIndex);
-	
+
 	// get rid of his stats
 	if (pAvatar->hPlayerStats != fERROR)
 	{
@@ -1341,10 +1341,10 @@ void CAvatar::DeleteAvatar(SHORT hAvatar)
 		{
 			DisposBlock(pAvatar->hPlayerStats);
 		}
-		
+
 		pAvatar->hPlayerStats = fERROR;	// just incase something else looks here.
 	}
-	
+
 	// get rid of the memory
 	DisposBlock(hAvatar);
 }
@@ -1368,32 +1368,32 @@ LONG CAvatar::CreateAvatar(
 )
 {
 	LONG	i;
-	
-	
+
+
 	// find an empty Avatar slot, assume for now that we never run out
 	// if find a NULL pointer, allocate space for AVATAR structure
 	for (i=0; i<MAX_AVATARS && pScene->Avatars[i] != fERROR; ++i)
 	{}
-	
+
 	if (i >= MAX_AVATARS)
 	{
 		i = fERROR; 			// We have no more slots!
-		printf("WARNING! Out of Avatar slots!\n");
+		logWarn("Out of Avatar slots!");
 	}
 	else
 	{
 		LONG lMemoryAvail = ReportFreeMem(TRUE);
-		printf("Memory available before creating avatar %ld\n", lMemoryAvail);
+		logInfo("Memory available before creating avatar %ld", lMemoryAvail);
 		// create the avatar
 		pScene->Avatars[i] = CAvatar::NewAvatar();
-	
+
 		if (pScene->Avatars[i] != fERROR)
 		{
-			printf("Creating Avatar Id = %ld\n", Id);
-			
+			logInfo("Creating Avatar Id = %ld", Id);
+
 			//GEH SetBlockAttr(pScene->Avatars[i],LOCKED, LOCKED);
 			CAvatar *pAvatar = (CAvatar *) BLKPTR(pScene->Avatars[i]);
-		
+
 			pAvatar->Id = Id;
 			pAvatar->UnitIndex = -1;
 			pAvatar->Status = CAvatar::AI_INIT;
@@ -1402,20 +1402,20 @@ LONG CAvatar::CreateAvatar(
 			pAvatar->mfInitVals();
 			pAvatar->Realm.HomeRealm = Realm;
 			pAvatar->mfSetOriginalRemapColor(Realm);
-			printf("Used memory = %ld\n", (lMemoryAvail - ReportFreeMem(TRUE)));
-			
+			logInfo("Used memory = %ld", (lMemoryAvail - ReportFreeMem(TRUE)));
+
 			//GEH ClrLock(pScene->Avatars[i]);
 		}
 		else
 		{
-			printf("WARNING! Unable to create Avatar Id = %ld\n", Id);
+			logWarn("Unable to create Avatar Id = %ld", Id);
 			i = fERROR;
 		}
 	}
-	
+
 	return( i );
 }
-	
+
 /* ========================================================================
    Function	- mfRotateToward
    Description - Given an angle generate a new angle that is closer to it.
@@ -1425,19 +1425,19 @@ LONG CAvatar::CreateAvatar(
 
 LONG CAvatar::mfRotateToward(LONG CurrentAngle,
 							 LONG TargetAngle)
-	
+
 {
 	LONG da;
 	LONG lNewAngle;
-	
+
 	da = CurrentAngle - TargetAngle;
 	if (da)
 	{
 		const LONG TurnRate = 15;
-		
+
 		if (da < 0)
 			da += 256;
-		
+
 		if (da >= 128)
 		{
 			lNewAngle = (CurrentAngle + MIN(abs(da),TurnRate)) % 256;
@@ -1454,7 +1454,7 @@ LONG CAvatar::mfRotateToward(LONG CurrentAngle,
 		lNewAngle = TargetAngle;
 	}
 	mfSetAngle(lNewAngle);
-	
+
 	return lNewAngle;
 }
 
@@ -1468,17 +1468,17 @@ LONG CAvatar::mfRotateToward(LONG CurrentAngle,
 void CAvatar::mfSwitchToGuardPt(LONG hAvatar)
 {
 	CAvatar *pAvatar = (CAvatar *) BLKPTR((SHORT) hAvatar);
-	
+
 	pAvatar->SetAIFuncIndex(AI_FUNC_GUARD_POINT);
 	pAvatar->fGuardPt.X = pAvatar->mfX();
 	pAvatar->fGuardPt.Y = pAvatar->mfY();
-	
+
 	// GWP For now just have them stand a bit to the side,
 	// GWP and hope its not in the Wall.
 	// GWP Later put up the map and get a point off it.
 	pAvatar->fGuardPt.StandAsideX = pAvatar->mfX() + (2 * pAvatar->mfGetWalkRate());
 	pAvatar->fGuardPt.StandAsideY = pAvatar->mfY() + (2 * pAvatar->mfGetWalkRate());
-	
+
 	pAvatar->Status = AI_END_LISTEN;
 }
 #endif // UNUSED
@@ -1492,7 +1492,7 @@ void CAvatar::mfSwitchToGuardPt(LONG hAvatar)
 void CAvatar::mfSwitchToStandStill(LONG hAvatar)
 {
 	CAvatar *pAvatar = (CAvatar *) BLKPTR((SHORT) hAvatar);
-	
+
 	pAvatar->SetAIFuncIndex(AI_FUNC_STAND_STILL);
 	pAvatar->Status = AI_END_LISTEN;
 }
@@ -1619,7 +1619,7 @@ SHORT AvatarIdToHdl ( LONG Id )
 	SHORT	i;
 	SHORT	hdl = (SHORT)fERROR; // assume id not found
 	PTR_SCENE pCurrentScene = 0;
-	
+
 	pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	for(i=0;i<MAX_AVATARS;++i)
 	{
@@ -1633,7 +1633,7 @@ SHORT AvatarIdToHdl ( LONG Id )
 			}
 		}
 	}
-	
+
 	return hdl;
 }
 
@@ -1666,7 +1666,7 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 		SHORT next;
 		SHORT prev;
 	} Closest[MAX_CLOSEST];
-	
+
 	// Initialize the closest group array.
 	for (i = 0; i < MAX_CLOSEST; ++i)
 	{
@@ -1679,7 +1679,7 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 	// mark the ends of the list.
 	Closest[0].prev = fERROR;
 	Closest[MAX_CLOSEST -1].next = fERROR;
-	
+
 	for (i = 0; i < MAX_AVATARS; ++i)
 	{
 		if (pCurrentScene->Avatars[i] != fERROR)
@@ -1692,29 +1692,29 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 				SHORT index;
 				const LONG distance = aprox_dist(mfX(), mfY(),
 				                        pAvatar->mfX(), pAvatar->mfY());
-				
+
 				// See if we are smaller than any other distance.
 				for (index = HeadOfList;
 				    index != fERROR && Closest[index].distance < distance;
 					index = Closest[index].next)
 				{ }
-				
+
 				// index is now either fERROR or the location at which to insert
 				// the new distance and avatar handle.
-				
+
 				// Add this hAvatar to the list.
 				if (index != fERROR)
 				{
 					SHORT j;
 					SHORT AvailableSlot = 0;
-					
+
 					// Look for the first unused slot in the array
 					for (j = HeadOfList;
 					     Closest[j].hAvatar != fERROR;
 					     j = Closest[j].next)
 					{
 					}
-					
+
 					if (j == fERROR)
 					{
 						// No unused slots use the last one in the list.
@@ -1727,25 +1727,25 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 					{
 						AvailableSlot = j;
 					}
-					
+
 					// insert the data into the list in sorted order.
-					
+
 					// Connect the pointers.
 					if (Closest[index].prev != fERROR)
 					{
-						
+
 						Closest[Closest[index].prev].next = AvailableSlot;
-						
+
 						if (Closest[AvailableSlot].next != fERROR)
 						{
 							Closest[Closest[AvailableSlot].next].prev = Closest[AvailableSlot].prev;
 						}
-						
+
 						const SHORT oldAvailableNext = Closest[AvailableSlot].next;
-						
+
 						Closest[AvailableSlot].next = index;
 						Closest[AvailableSlot].prev = Closest[index].prev;
-						
+
 						Closest[index].prev = AvailableSlot;
 						Closest[index].next = oldAvailableNext;
 					}
@@ -1753,23 +1753,23 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 					{
 						// We must be pointing at the head of the list.
 						HeadOfList = AvailableSlot;
-						
+
 						const SHORT oldAvailableNext = Closest[AvailableSlot].next;
-						
+
 						if (Closest[AvailableSlot].next != fERROR)
 						{
 							Closest[Closest[AvailableSlot].next].prev = Closest[AvailableSlot].prev;
 						}
-						
+
 						Closest[AvailableSlot].next = index;
 						Closest[AvailableSlot].prev = fERROR;
-						
+
 						Closest[index].next = oldAvailableNext;
 						Closest[index].prev = AvailableSlot;
-						
+
 					}
-					
-					
+
+
 					Closest[AvailableSlot].distance = distance;
 					Closest[AvailableSlot].hAvatar = pCurrentScene->Avatars[i];
 					Closest[AvailableSlot].Engaged = (SHORT)(pAvatar->attrib.Engaged);
@@ -1777,7 +1777,7 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 			}
 		}
 	}
-	
+
 	// Now pick the one with the fewest Engaged attackers.
 	minimumEngaged = Closest[HeadOfList].Engaged;
 	Result = Closest[HeadOfList].hAvatar;
@@ -1799,18 +1799,18 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 	SHORT i;
 	HDL_AVATAR Result = fERROR;
 	LONG prevDistance = LONG_MAX;
-	
-	
+
+
 	for (i = 0; i < MAX_AVATARS; ++i)
 	{
 		if (pCurrentScene->Avatars[i] != fERROR)
 		{
 			CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pCurrentScene->Avatars[i]);
-			
+
 			// Check that its first not me.
 			// And not Immoblized
 			// And not my ally
-			
+
 			if (hThis != pCurrentScene->Avatars[i] &&
 				!pAvatar->mfAmIImmoblized() &&
 				!mfIsAlly(pAvatar) &&
@@ -1822,7 +1822,7 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 				{
 					LONG const distance = aprox_dist(mfX(), mfY(),
 											pAvatar->mfX(), pAvatar->mfY());
-					
+
 					// See if we are smaller than the previous distance.
 					if (distance < prevDistance)
 					{
@@ -1849,18 +1849,18 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 	LONG prevDistance = LONG_MAX;
 	HDL_AVATAR HackOnMe = fERROR;
 	LONG prevHackOnMeDistance = LONG_MAX;
-	
-	
+
+
 	for (i = 0; i < MAX_AVATARS; ++i)
 	{
 		if (pCurrentScene->Avatars[i] != fERROR)
 		{
 			CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pCurrentScene->Avatars[i]);
-			
+
 			// Check that its first not me.
 			// And not Immoblized
 			// And not my ally
-			
+
 			if (hThis != pCurrentScene->Avatars[i] &&
 				!pAvatar->mfAmIImmoblized() &&
 				!mfIsAlly(pAvatar) &&
@@ -1872,7 +1872,7 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 				{
 					LONG const distance = aprox_dist(mfX(), mfY(),
 											pAvatar->mfX(), pAvatar->mfY());
-					
+
 					if (pAvatar->hEnemy == hThis && Engaged > 0)
 					{
 						if (distance < prevHackOnMeDistance)
@@ -1881,14 +1881,14 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 							prevHackOnMeDistance = distance;
 						}
 					}
-					
+
 					// See if we are smaller than the previous distance.
 					if (distance < prevDistance)
 					{
 						PLAYER	TempPlayer;
 						LONG Angle;
 						LONG BumpDistance;
-						
+
 						Angle = AngleFromPoint2 ( mfX(), mfY(),
 												  pAvatar->mfX(),
 												  pAvatar->mfY(), RESOLUTION_1);
@@ -1902,14 +1902,14 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 						TempPlayer.h = 16;
 						TempPlayer.bump = iNOTHING;
 						TempPlayer.ThingIndex = fERROR;
-						
+
 						CheckLongMove(&TempPlayer,
 						          Angle,
 								  distance,
 						          0,
 						          pAvatar->mfZ(),
 						          &BumpDistance);
-						
+
 						switch(TempPlayer.bump)
 						{
 						case iNOTHING:
@@ -1917,7 +1917,7 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 						case iDEEP_WATER:
 						case iLAVA:
 						case iACID:
-						
+
 							Result = pCurrentScene->Avatars[i];
 							prevDistance = distance;
 							break;
@@ -1934,7 +1934,7 @@ HDL_AVATAR CAvatar::mfFindClosestVisibleFoe() const
 			}
 		}
 	}
-	
+
 	// If I for some reason can't see the avatar wacking on me,
 	// wack back at the one who is hitting me. -GWP-
 	if (Result == fERROR)
@@ -1971,13 +1971,13 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 		FIXED_VECTOR_3D NewVector;
 		LONG dx = TargetX - mfX();
 		LONG dy = TargetY - mfY();
-			
+
 		if (distance > 0)
 			distance -= Bump;
 		else
 			distance += Bump;
-		
-		
+
+
 		if (Bump > 2)
 		{
 			// Introduce some randomness as to exactly where
@@ -2007,10 +2007,10 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 				}
 			}
 		}
-		
+
 		FaceTo(TargetX, TargetY);
 		mfConvertPositionToPlayer(TempPlayer);
-		
+
 		if (ABS(distance) < Rate)
 		{
 			NewVector.dx = dx;
@@ -2024,8 +2024,8 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 		NewVector.dx <<= PLAYER_FIXEDPT;
 		NewVector.dy <<= PLAYER_FIXEDPT;
 		NewVector.dz = 0;
-		
-		
+
+
 		// For now ignore the noise we make if we hit something.
 		// GWP optimize by not doing this check if we're not "visible."
 		// GWP if we can't be seen bumping objects who cares?
@@ -2033,7 +2033,7 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 		{
 			bumpObjectType = CheckBump(&TempPlayer, &NewVector, Rate);
 		}
-		
+
 		bumpResult = CheckMove(&TempPlayer, &NewVector, sSpecial, pAngle, &BumpDistance);
 
 		// [d11-30-96 JPC] For a flying thing, treat various nasty sectors as nothing.
@@ -2046,7 +2046,7 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 			    bumpResult == iACID)
 				bumpResult = iNOTHING;
 		}
-		
+
 		if (bumpResult == iNOTHING &&
 		    bumpObjectType != 0)
 		{
@@ -2076,8 +2076,8 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 	{
 		FaceTo(TargetX, TargetY);
 	}
-	
-	
+
+
 	*pmyThingBumped = TempPlayer.BumpIndex;
 	return (TempPlayer.bump);
 }
@@ -2096,18 +2096,18 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 	BOOL bHitOrNot = 0;
 	LONG i;
 	LONG j;
-	
+
 	fDamage = 0;
-	
+
 	if (hEnemyTarget == fERROR)
 	{
 		fDamageFlag = 0;
 		return FALSE;
 	}
-	
+
 	//GEH SetBlockAttr(hEnemyTarget, LOCKED, LOCKED);
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
-	
+
 	if (pEnemyTarget->mfAmIImmoblized())
 	{
 		// Hey you're hitting a dead thing.
@@ -2115,7 +2115,7 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 		fDamageFlag = 0;
 		return FALSE;
 	}
-	
+
 	SET_NOT_FRIENDLY(Realm.HomeRealm, pEnemyTarget->Realm.HomeRealm);
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
@@ -2123,11 +2123,11 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 		//GEH SetBlockAttr(pEnemyTarget->hPlayerStats, LOCKED, LOCKED);
 		DumbAutoLockPtr<PLAYER_STATS> const pAvatarStats(hPlayerStats);
 		DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemyTarget->hPlayerStats);
-		
+
 		LONG const Modifier = mfCalculateAttackModifier(hEnemyTarget);
-		
+
 		PLAYER_HIT PlayerHitObj(pAvatarStats, pEnemyStats);
-		
+
 		for (i = 0, j = 0; i < fDamageFlag; ++i)
 		{
 			LONG const HitThisTime = PlayerHitObj.mfRollAttackTarget( Modifier,
@@ -2137,24 +2137,24 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 				bHitOrNot = TRUE;
 				HitValue += PlayerHitObj.mfInflictDamageOnTarget(pEnemyTarget->mfType());
 			}
-			
+
 			// Its possible we won't save all the hit rolls for every type of
 			// avatar. Most regents only have 2 attacks at best.
 			if ( j < MAX_ATTACK_ROLLS)
 				++j;
 		}
-		
+
 		// Make an attack noise.
-		
+
 		if (bHitOrNot == TRUE)
 		{
 			if (fDamageFlag > 0)
 			{
 				fDamage = HitValue;
 			}
-		
+
 			mfFightHitSounds(pAvatarStats, pEnemyTarget, pEnemyStats);
-		
+
 	   		// Check for severe injury.
 	   		if (pEnemyStats->mfGetCurHitPoints() > 0)
 	   		{
@@ -2164,7 +2164,7 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 					{
 						pEnemyTarget->mfQueueSnd(SND_BONE_CRUSH1, SND_BONE_CRUSH_TOTAL, BIG_HIT_FRAME_CNT);
 			   		}
-			   		
+
 			   	    pEnemyTarget->mfPainSounds();
 				}
 			}
@@ -2180,11 +2180,11 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 	{
 		mfKillAvatar(pEnemyTarget);
 	}
-	
+
 	fDamageFlag = 0;
-		
+
 	//GEH ClrLock(hEnemyTarget);
-	
+
 	return TRUE;
 }
 /* ========================================================================
@@ -2260,23 +2260,23 @@ void CAvatar::mfPainSounds()
 void CAvatar::mfKillAvatar(CAvatar * const pEnemyAvatar)
 {
 	pEnemyAvatar->fDamageFlag = 0;
-	
+
 	if(pEnemyAvatar->hPlayerStats == fERROR)
 	{
 		pEnemyAvatar->mfPlayAnimationOnce(EXPIRESEQ);
 		pEnemyAvatar->Status = AI_DEAD;
 		return;
 	}
-		
+
 	DumbAutoLockPtr<PLAYER_STATS> const pEnemyAvatarStats(pEnemyAvatar->hPlayerStats);
-	
+
 	if (hPlayerStats == fERROR)
 	{
 		return;
 	}
-	
+
 	DumbAutoLockPtr<PLAYER_STATS> const pMyPlayerStats(hPlayerStats);
-	
+
 
 	// Deactivate all enemy's items
 	ItemEffects::DeactivateAvatarsItems(pEnemyAvatar->hPlayerStats);
@@ -2287,7 +2287,7 @@ void CAvatar::mfKillAvatar(CAvatar * const pEnemyAvatar)
 //	pEnemyAvatar->mfSpewAll();
 	//They now get dropped in their AI function....
 
-	
+
 	// You've killed'em.
 	pEnemyAvatarStats->mfKillem();
 	if(ThingType == SPECTRE || ThingType == T_SPECTRE
@@ -2306,7 +2306,7 @@ void CAvatar::mfKillAvatar(CAvatar * const pEnemyAvatar)
 		pEnemyAvatar->mfSethEnemy(fERROR);
 	}
 	mfSethEnemy(fERROR);
-	
+
 	// Hellhounds breath fire for attack1
 	if ((mfType() == T_HELL_HOUND ||
 	     mfType() == HELL_HOUND) &&
@@ -2329,11 +2329,11 @@ void CAvatar::mfKillAvatar(CAvatar * const pEnemyAvatar)
 		pEnemyAvatar->mfPlayAnimationOnce(EXPIRESEQ);
 	}
 	pEnemyAvatar->Status = AI_DEAD;
-	
+
 	pEnemyAvatar->mfClearAllLoopingSnds();
-	
+
 	pEnemyAvatar->mfDieSounds();
-	
+
 }
 /* ========================================================================
    Function    - mfDieSounds
@@ -2408,22 +2408,22 @@ void CAvatar::mfDieSounds()
 void CAvatar::mfFightSounds(HDL_AVATAR const hEnemyTarget)
 {
 	BOOL bHitOrNot = FALSE;
-	
+
 	if (hEnemyTarget == fERROR)
 	{
 		return;
 	}
-	
+
 	//GEH SetBlockAttr(hEnemyTarget, LOCKED, LOCKED);
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
-	
+
 	if (pEnemyTarget->mfAmIImmoblized())
 	{
 		// Hey you're hitting a dead thing.
 		mfSethEnemy(fERROR);
 		return;
 	}
-	
+
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
 		//GEH SetBlockAttr(hPlayerStats, LOCKED, LOCKED);
@@ -2431,14 +2431,14 @@ void CAvatar::mfFightSounds(HDL_AVATAR const hEnemyTarget)
 		DumbAutoLockPtr<PLAYER_STATS> const pAvatarStats(hPlayerStats);
 		DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemyTarget->hPlayerStats);
 		SBYTE AttackRoll;
-		
-		
+
+
 		PLAYER_HIT const PlayerHitObj(pAvatarStats, pEnemyStats);
-		
+
 		LONG const Modifier = mfCalculateAttackModifier(hEnemyTarget);
 		bHitOrNot = PlayerHitObj.mfRollAttackTarget( Modifier,
 											   &AttackRoll);
-		
+
 		if (bHitOrNot == TRUE)
 		{
 			mfFightHitSounds(pAvatarStats, pEnemyTarget, pEnemyStats);
@@ -2448,14 +2448,14 @@ void CAvatar::mfFightSounds(HDL_AVATAR const hEnemyTarget)
 			// We missed.
 		    mfFightMissSounds(pAvatarStats, pEnemyTarget, pEnemyStats);
 		}
-		
+
 		//GEH ClrLock(pEnemyTarget->hPlayerStats);
 		//GEH ClrLock(hPlayerStats);
 	}
 	else
 	{
 	   // The Enemy has no player stats so just clang
-	   	
+
 	   switch(GAME_TTYPE::mfGetSoundType(pEnemyTarget->mfType()))
 	   {
 		case WYVERN_SOUNDS:
@@ -2470,7 +2470,7 @@ void CAvatar::mfFightSounds(HDL_AVATAR const hEnemyTarget)
 			break;
 		}
 	}
-	
+
 	//GEH ClrLock(hEnemyTarget);
 }
 /* ========================================================================
@@ -2584,7 +2584,7 @@ void CAvatar::mfFightStartSounds(PLAYER_STATS const * const pAvatarStats) const
 		}
 		break;
 	}
-	
+
 }
 /* ========================================================================
    Function	- mfFightHitSounds
@@ -2704,7 +2704,7 @@ void CAvatar::mfFightHitSounds(PLAYER_STATS const * const pAvatarStats,
 						break;
 					}
 					break;
-				case 1:	
+				case 1:
 					pEnemyTarget->mfQueueSnd(SND_METAL_ARMOR_HIT1, SND_METAL_ARMOR_HIT_TOTAL, HIT_FRAME_CNT);
 					break;
 				}
@@ -2721,7 +2721,7 @@ void CAvatar::mfFightHitSounds(PLAYER_STATS const * const pAvatarStats,
    Description - turn an avatar to be a spectre
    Returns	 -
    ======================================================================== */
-void CAvatar::mfTurnToSpectre()			
+void CAvatar::mfTurnToSpectre()
 {
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	LONG i=CAvatar::CreateAvatar((LONG)ThingType, ThingType, mfX(),
@@ -2822,10 +2822,10 @@ BOOL CAvatar::mfFallingDamage (WadThingType bump, LONG floor, LONG fallHeight)
 		{
 			mfSethEnemy(fERROR);
 		}
-		
+
 		mfPlayAnimationOnce(EXPIRESEQ);
 		Status = AI_DEAD;
-		
+
 	    mfDieSounds();
 	}
 	return retval;								// [d4-18-97, 4-25-97 JPC]
@@ -2935,12 +2935,12 @@ void CAvatar::mfCheckCrush()
 	// No damage if we are just standing waiting for commands.
 	if (Status == AI_PAUSED || Status == AI_BEGIN_PAUSE)
 		return;
-		
+
 	LONG damageNumber;
 	SHORT crush=FALSE;
 	LONG sector=mfGetSector();
 	BOOL fDamagedByLava=FALSE;
-	
+
 	// crush = GetCrusherDamage(sector, &damageNumber,mfHeight(), mfZ());
 	crush = GetSectorDamage(sector, &damageNumber, this, &fDamagedByLava);
 	if(crush)
@@ -2948,9 +2948,9 @@ void CAvatar::mfCheckCrush()
 		if (hPlayerStats != fERROR)
 		{
 			DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(hPlayerStats);
-			
+
 			pPlayerStats->mfTakeDamage( damageNumber);
-	
+
 			if (pPlayerStats->mfGetCurHitPoints() <= 0)
 			{
 				pPlayerStats->mfKillem();
@@ -2960,7 +2960,7 @@ void CAvatar::mfCheckCrush()
 				}
 				if (fDamagedByLava)
 					attrib.KilledByLava=TRUE;
-	
+
 				mfPlayAnimationOnce(EXPIRESEQ);
 				Status = AI_DEAD;
 				mfDieSounds();
@@ -2972,7 +2972,7 @@ void CAvatar::mfCheckCrush()
 			{
 				mfSethEnemy(fERROR);
 			}
-			
+
 			mfPlayAnimationOnce(EXPIRESEQ);
 			Status = AI_DEAD;
 		    mfDieSounds();
@@ -2989,7 +2989,7 @@ void CAvatar::mfCheckCrush()
 const MOVEMENT_RATE CAvatar::mfGetWalkRate() const
 {
 	MOVEMENT_RATE MR = GAME_TTYPE::mfGetWalkRate(mfType());
-	
+
 	if(hPlayerStats != fERROR)
 	{
 		PLAYER_STATS const *const pPlayerStats = (PLAYER_STATS const * const)BLKPTR(hPlayerStats);
@@ -2997,7 +2997,7 @@ const MOVEMENT_RATE CAvatar::mfGetWalkRate() const
 		if(pPlayerStats->mfSpeedEnhanced())
 			MR *= 2;
 	}
-		
+
 	return MR;
 }
 
@@ -3010,16 +3010,16 @@ const MOVEMENT_RATE CAvatar::mfGetWalkRate() const
 const MOVEMENT_RATE CAvatar::mfGetMarchRate() const
 {
 	MOVEMENT_RATE MR = GAME_TTYPE::mfGetMarchRate(mfType());
-	
+
 	if(hPlayerStats != fERROR)
 	{
 		PLAYER_STATS const * const pPlayerStats = (PLAYER_STATS const * const)BLKPTR(hPlayerStats);
-		
+
 		// if speed enhanced
 		if(pPlayerStats->mfSpeedEnhanced())
 			MR *= 2;
 	}
-		
+
 	return MR;
 }
 
@@ -3032,7 +3032,7 @@ BOOL CAvatar::mfSetKillType(CAvatar *pAvatar, THINGTYPE Type, LONG DamageLevel)
 {
 	if(pAvatar->KillType != NO_THING )
 		return TRUE; // previous kill
-		
+
 	pAvatar->KillType = Type;
 	pAvatar->fDamage = DamageLevel;
 	return FALSE; // no previous kills
@@ -3204,12 +3204,12 @@ const BOOL CAvatar::mfCanSeeAvatar(const CAvatar *pTarget) const
 	PLAYER	TempPlayer;
 	LONG Angle;
 	LONG BumpDistance;
-	
-	
+
+
 	// should we concider this guy at all
 	if(!reject( mfGetSector(), pTarget->mfGetSector()))
 		return FALSE;
-	
+
 	// Is he too far to hear him
 	distance = aprox_dist(mfX(), mfY(), pTarget->mfX(), pTarget->mfY());
 	if(distance > HearingDistance)
@@ -3232,7 +3232,7 @@ const BOOL CAvatar::mfCanSeeAvatar(const CAvatar *pTarget) const
 	    	return(FALSE);
 	    }
 	}
-	
+
 	// now check a line of sight calculation
 	// Test line to this guy
 	//TempVector.dx = 0;
@@ -3240,7 +3240,7 @@ const BOOL CAvatar::mfCanSeeAvatar(const CAvatar *pTarget) const
 	//TempVector.dz = 0;
 	Angle = AngleFromPoint2 ( mfX(), mfY(), pTarget->mfX(), pTarget->mfY(), RESOLUTION_1);
 	//Rotate((POINT *)&TempVector, Angle);
-	
+
 	TempPlayer.x = mfX() << PLAYER_FIXEDPT;
 	TempPlayer.y = mfY() << PLAYER_FIXEDPT;
 	TempPlayer.z = mfZ() + 32;
@@ -3251,14 +3251,14 @@ const BOOL CAvatar::mfCanSeeAvatar(const CAvatar *pTarget) const
 	TempPlayer.h = 16;
 	TempPlayer.bump = iNOTHING;
 	TempPlayer.ThingIndex = fERROR;
-	
+
 	CheckLongMove(&TempPlayer,
 	          Angle,
 			  distance,
 	          0,
 	          pTarget->mfZ(),
 	          &BumpDistance);
-	
+
     // if I hit something, los is blocked
     switch (TempPlayer.bump)
     {
@@ -3274,7 +3274,7 @@ const BOOL CAvatar::mfCanSeeAvatar(const CAvatar *pTarget) const
     default:
     	return (FALSE);
     }
-	
+
 	return (TRUE);
 }
 
@@ -3292,7 +3292,7 @@ void CAvatar::mfTurnToStone()
 		LONG FloorHeight;
 		LONG CeilingHeight;
 		LONG Special;
-		
+
 		// for the moment, freeze the Avatar.
 		mfSetOriginalRemapColor(GRAYSCALE_REMAP);
 		mfSetFrozen(TRUE);
@@ -3337,7 +3337,7 @@ void CAvatar::mfWriteSceneData(FILE * const fp)
 			mfAngle(),
 			GetAIFuncIndex()
 			);
-			
+
 		switch(GetAIFuncIndex())
 		{
 		case AI_FUNC_FOLLOW_PATH:
@@ -3369,7 +3369,7 @@ void CAvatar::mfWriteSceneData(FILE * const fp)
 			break;
 		}
 	}
-	
+
 }
 #endif // 0
 
@@ -3388,10 +3388,10 @@ void CAvatar::mfRotateToCamera()
 	                                         CAMERA_INT_VAL(camera.x),
 	                                         CAMERA_INT_VAL(camera.y),
 	                                         RESOLUTION_8);
-	
+
 	    fPrev.TimeLastRotate = SCENE_MGR::gTick;
 	    const LONG A = mfRotateToward(mfAngle(), NewAngle);
-	
+
 	    // Are we facing the camera yet?
 	    if (A == NewAngle)
 	    {
@@ -3496,7 +3496,7 @@ void CAvatar::mfSpewAll()
 			//the last argument determines whether or not to put it on top
 			//of the person...  useful for when the bodies are dead...
 			//totally silly if they're still alive, because the item would
-			//appear on top of their head.	
+			//appear on top of their head.
 
 			itor.mfDropItem(mfX(), mfY(),TRUE);  // implicit advance... bleh
 		}
@@ -3517,13 +3517,13 @@ WadThingType const CAvatar::mfCheckNewPosition(LONG const dx, LONG const dy, LON
 	LONG   		Angle;
 	LONG		BumpDistance;
 	LONG		BumpObjectType;
-	
+
 	mfConvertPositionToPlayer(AvatarPlayer);
 	newPoint.dx = dx << PLAYER_FIXEDPT;
 	newPoint.dy = dy << PLAYER_FIXEDPT;
 	newPoint.dz = 0;
 	rot8_angle((POINT *)&newPoint, mfAngle());
-	
+
 	BumpObjectType = CheckBump(&AvatarPlayer, &newPoint, Rate);
 	return (CheckMove(&AvatarPlayer, &newPoint, CHECKLINE_PLAYER, &Angle, &BumpDistance));
 }
@@ -3545,9 +3545,9 @@ WadThingType const CAvatar::mfCheckNewPosition2(
 	LONG			BumpDistance;
 	//LONG			BumpObjectType;
 	WadThingType	BumpWadThing;
-	
+
 	mfConvertPositionToPlayer(AvatarPlayer);
-	
+
 	//BumpObjectType = CheckBump(&AvatarPlayer, tp, Rate);
 	//if (BumpObjectType == iOBJECT)
 	//{
@@ -3559,10 +3559,10 @@ WadThingType const CAvatar::mfCheckNewPosition2(
 				(SHORT)((TRUE == mfStayInMonsterBox())
 								? CHECKLINE_MONSTER:0), &Angle, &BumpDistance);
 	//}
-	
+
 	return (BumpWadThing);
 }
-	
+
 /* ========================================================================
    Function    - mfCalculateAttackModifier
    Description - Subroutine used to calculate modifiers to attacks.
@@ -3572,38 +3572,38 @@ WadThingType const CAvatar::mfCheckNewPosition2(
 LONG const CAvatar::mfCalculateAttackModifier( SHORT const hEnemyTarget) const
 {
 	LONG Modifier = 0;
-	
+
 	if (hEnemyTarget == fERROR)
 	{
 		return 0;
 	}
-	
+
 	CAvatar const * const pEnemyTarget = (CAvatar const * const) BLKPTR(hEnemyTarget);
-	
+
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
 		DumbAutoLockPtr<PLAYER_STATS const> const pAvatarStats(hPlayerStats);
 		DumbAutoLockPtr<PLAYER_STATS const> const pEnemyStats(pEnemyTarget->hPlayerStats);
-		
+
 		if (pEnemyTarget->attrib.AttackMode == FIGHT_SEQUENCE::ATM_DEFEND &&
 		    pEnemyTarget->hEnemy == hThis )
 		{
 			Modifier += -4;
 		}
-		
+
 		if (attrib.AttackMode == FIGHT_SEQUENCE::ATM_QUICK_HIGH ||
 		    attrib.AttackMode == FIGHT_SEQUENCE::ATM_QUICK_LOW)
 	    {
 	    	Modifier += -4;
 	    }
-	
+
 	    // See whether the attack you are using is improved against this
 	    // particular weak attack he is using.
 	    if (attrib.AttackMode == pEnemyTarget->fFightSeq.mfGetWeakSequence(pEnemyTarget->mfType()))
 	    {
 	    	Modifier += 2;
 	    }
-	
+
 	    // Adjust for level of difficulty in game play.
 	    if (Realm.HomeRealm == ::HomeRealm)
 	    {
@@ -3625,26 +3625,26 @@ LONG const CAvatar::mfCalculateAttackModifier( SHORT const hEnemyTarget) const
 LONG const CAvatar::mfToHitEnemy(SHORT const hEnemyTarget) const
 {
 	LONG ToHit = 0;
-	
+
 	if (hEnemyTarget == fERROR)
 	{
 		return 0;
 	}
-	
+
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
-	
+
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
 		DumbAutoLockPtr<PLAYER_STATS> const pAvatarStats(hPlayerStats);
 		DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemyTarget->hPlayerStats);
-		
+
 		PLAYER_HIT const PlayerHitObj(pAvatarStats, pEnemyStats);
-		
+
 		LONG const Modifier = mfCalculateAttackModifier(hEnemyTarget);
-		
+
 		ToHit = PlayerHitObj.mfMinimumToHit(Modifier);
 	}
-	
+
 	return ToHit;
 }
 
@@ -3659,7 +3659,7 @@ void CAvatar::mfSetMyTurnToAttack()
 	if (hEnemy != fERROR)	// I have an enemy.
 	{
 		CAvatar * const pEnemy = (CAvatar * const) BLKPTR(hEnemy);
-		
+
 		// I am attacking and they're attacking me back.
 		if (Status == AI_ATTACK && pEnemy->hEnemy == hThis)
 		{
@@ -3676,7 +3676,7 @@ void CAvatar::mfSetMyTurnToAttack()
 					fAttackTurnFlag = 1;
 				}
 			}
-		
+
 			if (pEnemy->Status == AI_ATTACK)
 			{
 				// It's my turn not theirs.
@@ -3788,7 +3788,7 @@ void CAvatar::mfStartNextFightSequence()
 	else
 	{
 		mfDecrementAttackTurnCount();
-		
+
 		if (hPlayerStats != fERROR)
 		{
 			DumbAutoLockPtr<PLAYER_STATS const> const pPlayerStats(hPlayerStats);
@@ -3838,7 +3838,7 @@ void CAvatar::mfStartNextFightSequence()
 		}
 	}
 	mfStartAnimationOnce(CurSequence);
-	
+
 }
 
 /* ========================================================================
@@ -3859,7 +3859,7 @@ void CAvatar::mfSethEnemy(SHORT const EnemyHdl)
 			pEnemy->mfTurnHighlightOff();
 		}
 	}
-	
+
 	if (EnemyHdl != fERROR)
 	{
 		CAvatar * pEnemy = (CAvatar *) BLKPTR(EnemyHdl);
@@ -3886,7 +3886,7 @@ void CAvatar::mfSethEnemy(SHORT const EnemyHdl)
 BOOL const CAvatar::mfIsMyTurnToAttack() const
 {
 	BOOL Result = FALSE;
-	
+
 	if (hEnemy != fERROR)
 	{
 		if (fAttackTurnFlag == ATTACK_TURN_NOT_DECIDED ||
@@ -3904,7 +3904,7 @@ BOOL const CAvatar::mfIsMyTurnToAttack() const
 			}
 		}
 	}
-	
+
 	return Result;
 }
 /* ========================================================================
@@ -3985,7 +3985,7 @@ void CAvatar::mfSetAttackMode(FIGHT_SEQUENCE::ATTACK_MODE const newMode)
 BOOL const CAvatar::mfTestSequenceDone() const
 {
 	BOOL Result = FALSE;
-	
+
 	switch(CurSequence)
 	{
 	case STANDSEQ:		// 1 frame
@@ -4061,7 +4061,7 @@ BOOL const CAvatar::mfTestSequenceDone() const
 			Result = TRUE;
 		break;
 	}
-	
+
 	// GWP When the engine does this correctly do the following instead
 	// return (TestSequenceDone(CurSequence);
 	return Result;
@@ -4071,7 +4071,7 @@ BOOL const CAvatar::mfTestSequenceDone() const
 BOOL const CAvatar::mfTestSequencePastHalf() const
 {
 	BOOL Result = FALSE;
-	
+
 	switch(CurSequence)
 	{
 	case STANDSEQ:		// 1 frame
@@ -4146,7 +4146,7 @@ BOOL const CAvatar::mfTestSequencePastHalf() const
 			Result = TRUE;
 		break;
 	}
-	
+
 	// GWP When the engine does this correctly do the following instead
 	// return (TestSequenceDone(CurSequence);
 	return Result;
@@ -4155,7 +4155,7 @@ BOOL const CAvatar::mfTestSequencePastHalf() const
 BOOL const CAvatar::mfTestSequenceAtHit() const
 {
 	BOOL Result = FALSE;
-	
+
 	switch(CurSequence)
 	{
 	case ATTACK1SEQ:	// 9 frames
@@ -4199,7 +4199,7 @@ BOOL const CAvatar::mfTestSequenceAtHit() const
 		}
 		break;
 	}
-	
+
 	return Result;
 }
 
@@ -4207,7 +4207,7 @@ BOOL const CAvatar::mfTestSequenceAtHit() const
 BOOL const CAvatar::mfTestSequence2ndLastFrame() const
 {
 	BOOL Result = FALSE;
-	
+
 	switch(CurSequence)
 	{
 	case STANDSEQ:		// 1 frame
@@ -4308,13 +4308,13 @@ void CAvatar::mfSetDamageFlag()
 
 	SBYTE NumberOfAttacks = 1;
 	fDamage = -1; // No damage rolled yet.
-	
+
 	if (hPlayerStats != fERROR)
 	{
 		PLAYER_STATS const * const pPlayerStats = (PLAYER_STATS const * const) BLKPTR(hPlayerStats);
 		NumberOfAttacks = pPlayerStats->mfGetNumberOfAttacks();
 	}
-	
+
 	switch(attrib.AttackMode)
 	{
 	case FIGHT_SEQUENCE::ATM_QUICK_HIGH:
@@ -4386,17 +4386,14 @@ void CAvatar::mfTestAndGiveMagicDamage(HDL_AVATAR const hEnemyTarget,
 /* ========================================================================
    Function    - mfIsHomeTeam
 	Description - returns TRUE if on the home team
-	Returns     - 
+	Returns     -
 	======================================================================== */
 BOOL const CAvatar::mfIsHomeTeam() const
 {
 	//Use the scene manager instead of the units info.
 	//GEH wrong question
 	// return (SCENE_MGR::Visitors == Realm.HomeRealm);
-	
+
 	return (units[SCENE_MGR::HomeIndex].Realm == Realm.HomeRealm);
-	
+
 }
-
-
-

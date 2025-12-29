@@ -176,7 +176,7 @@ extern "C" {
 void PushLoadSaveButton(LONG MenuCombo)
 {
 	LONG	MenuId, ButtonId;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -232,7 +232,7 @@ void SaveGameFiles(FILE *fp)
 	fwrite(&usedFreeMagic,		sizeof(SHORT),			1, fp);
 	fwrite(&usedFreeAgitate,	sizeof(SHORT),			1, fp);
 	fwrite(&usedFreeSpy,		sizeof(SHORT),			1, fp);
-	
+
     localWar = !(fPlayerNeverDeclaredWar);		// so 0 is "TRUE"
     localShow = BUILD_LONG(fUnitsAllOn, fHoldingsAllOn);
 
@@ -243,7 +243,7 @@ void SaveGameFiles(FILE *fp)
 	fwrite(&fControlMode,		sizeof(LONG),			1, fp);
 	fwrite(&newIPlaces,			sizeof(LONG),			1, fp);
 	fwrite(&ScenarioInfo,		sizeof(LONG),			1, fp);
-	
+
 	fwrite(&dummy,					sizeof(LONG),			1, fp);
 	fwrite(&dummy,					sizeof(LONG),			1, fp);
 	fwrite(&dummy,					sizeof(LONG),			1, fp);
@@ -418,7 +418,7 @@ void LoadGameFiles(FILE *fp)
 	fread(&usedFreeSpy,			sizeof(SHORT),			1, fp);
 
 	fread(&master_game_type,	sizeof(LONG),			1, fp);
-	
+
 	fread(&localWar,			sizeof(LONG),			1, fp);
     fPlayerNeverDeclaredWar = !(localWar);
 
@@ -429,7 +429,7 @@ void LoadGameFiles(FILE *fp)
 	if (IsMultiPlayer())
     {
 		fread(&dummy,				sizeof(LONG),			1, fp);
-		
+
 //		if ((dummy&0xff) != 0)	// not saved as basic game
 //    		++date;
     }
@@ -448,7 +448,7 @@ void LoadGameFiles(FILE *fp)
     /* Load realm[] */
 
     run_timers();
-    printf("Loading realm[]\n");
+    logInfo("Loading realm[]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == sizeof(REALM_STRUCT));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -495,7 +495,7 @@ void LoadGameFiles(FILE *fp)
     /* Load regents[] */
 
     run_timers();
-    printf("Loading regents[]\n");
+    logInfo("Loading regents[]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == sizeof(REGENT));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -528,7 +528,7 @@ void LoadGameFiles(FILE *fp)
     /* Load RealmReaction[][] */
 
     run_timers();
-    printf("Loading RealmReaction[][]\n");
+    logInfo("Loading RealmReaction[][]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == REALM::REALM_COUNT * sizeof(UBYTE));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -540,7 +540,7 @@ void LoadGameFiles(FILE *fp)
     /* Load RealmStatus[][] */
 
 	run_timers();
-    printf("Loading RealmStatus[][]\n");
+    logInfo("Loading RealmStatus[][]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == REALM::REALM_COUNT * sizeof(UBYTE));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -552,7 +552,7 @@ void LoadGameFiles(FILE *fp)
     /* Load province[] */
 
 	run_timers();
-    printf("Loading province[]\n");
+    logInfo("Loading province[]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == sizeof(PROV_TYPE));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -605,7 +605,7 @@ void LoadGameFiles(FILE *fp)
     /* Load places[] */
 
 	run_timers();
-    printf("Loading places[]\n");
+    logInfo("Loading places[]");
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == sizeof(PLACE_TYPE));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -660,7 +660,7 @@ void LoadGameFiles(FILE *fp)
     /* Load units[] */
 
 	run_timers();
-    printf("Loading units[]\n");
+    logInfo("Loading units[]");
     fread((char *) &size, sizeof(LONG), 1, fp);
 	assert(size == sizeof(UNIT_TYPE));
     fread((char *) &count, sizeof(LONG), 1, fp);
@@ -680,7 +680,7 @@ void LoadGameFiles(FILE *fp)
 
 //	We changed the count of the Units array.  This code should make us
 //	compatible with old save files...
-    
+
     if (count < MAX_UNITS)
     {
     	for (/* count */; count < MAX_UNITS; count++)
@@ -694,7 +694,7 @@ void LoadGameFiles(FILE *fp)
     	}
 		run_timers();
     }
-    
+
     for (i=0; i < count; i++)
     {
 		char iconname[50];
@@ -705,7 +705,7 @@ void LoadGameFiles(FILE *fp)
 		}
 		else
 			units[i].iIconBitm = fERROR;
-		
+
 		if (oldSaveFile)
 		{
 			SetGameData(MP_UNITS, MPUNITS_SALARY, i, 0, FALSE);
@@ -744,7 +744,7 @@ void LoadGameFiles(FILE *fp)
 	run_timers();
 	fread(&size, sizeof(LONG), 1, fp);
 	fread(&count, sizeof(LONG), 1, fp);
-	
+
 	if (size == sizeof(ADV_SITE) && count == MAX_SITES)  // not saved; reset
 	{
 		LONG i, j;
@@ -761,7 +761,7 @@ void LoadGameFiles(FILE *fp)
 		assert(size == (REALM::REALM_COUNT * sizeof(UBYTE)));
 		assert(count == REALM::REALM_COUNT);
 		fread((char *)Tribute, size, count, fp);
-		
+
 		run_timers();
     	fread(&size, sizeof(LONG), 1, fp);
     	assert(size == sizeof(ADV_SITE));
@@ -821,7 +821,7 @@ void LoadGameFiles(FILE *fp)
 
 	ActiveRegent = realm[HomeRealm].mfGetRegent();
 	realm[HomeRealm].mfSetPlayerCtrl(TRUE);
-	
+
 	for (i=0; i < 6; i++)
 		dtrn_ic_active[i] = TRUE;
 	for (i=1; i < 19; i++)
@@ -870,7 +870,7 @@ void LoadGame(LONG, LONG)
 	{
 		if (!fDomainTurn)   // can only do at map level
 			return;
-		
+
 #ifdef _WINDOWS
 		//---- If this is a multiplayer game then shut down the game if this is done
 
@@ -880,12 +880,12 @@ void LoadGame(LONG, LONG)
 			return;
 		}
 #endif
-		
+
 		LoadSave = LS_LOAD;
 		in_question = FALSE;
-	
+
 		// hide main menu
-	
+
 //		GAMEToggleMainMenu(FALSE,0);
 		back_to_main = TRUE;
 
@@ -905,12 +905,12 @@ void LoadGame(LONG, LONG)
    ======================================================================== */
 void LoadGameMulti(LONG, LONG)
 {
-		
+
 	LoadSave = LS_LOAD;
 	in_question = FALSE;
-	
+
 	// hide main menu
-	
+
 //	GAMEToggleMainMenu(FALSE,0);
 
 	back_to_main = FALSE;
@@ -929,27 +929,27 @@ void PaintCantSave(LONG, LONG)
 {
 	LONG menu_x, menu_y, menu_w, menu_h;
 	char buffer[200];
-	
+
 	GetButtonPosition( D_QUESTION1, QUESTION_TEXT, &menu_x, &menu_y );
 	GetButtonSize(D_QUESTION1, QUESTION_TEXT, &menu_w, &menu_h);
-	
+
 	strcpy(buffer, STRMGR_GetStr(STR_SAVE_NOCURGAME));
 	print_textf(menu_x + 20, menu_y + menu_h/2, BLACK, buffer);
-	
+
 }
 
 void CantSaveMsg()
 {
 	in_question = TRUE;
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, -1, 0 );
 	SetButtonProc  (D_QUESTION1, 0, PaintCantSave, 0, NO_KEY );
-	
+
 	// turn on the middle button as DONE
 	SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_OK, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION1, QUESTION_BTN1, HideSubMenuWithClick, D_QUESTION1, D_KEY_OK );
-	
+
 	ShowMenu(D_QUESTION1);
 	return;
 }
@@ -966,7 +966,7 @@ void SaveGame(LONG, LONG)
 //	//---- Dont allow if this is a multiplayer game
 //	if ( IsMultiPlayer() )
 //	{
-//		return;		
+//		return;
 //	}
 // #endif
 
@@ -982,7 +982,7 @@ void SaveGame(LONG, LONG)
 			return;
 //		if (dturn_mode != MIN_MODE && dturn_mode != TAXLVL_MODE && dturn_mode != MAINT_MODE)
 //			return;
-		if (master_game_type == GAME_INTRO)	
+		if (master_game_type == GAME_INTRO)
 			return;
 
 		// Doesn't exist.
@@ -998,7 +998,7 @@ void SaveGame(LONG, LONG)
 		in_question = FALSE;
 
 		// turn off main menu
-	
+
 //		GAMEToggleMainMenu(FALSE,0);
 		back_to_main = TRUE;
 
@@ -1056,25 +1056,25 @@ void HideLoadMenu(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	del_region(ScrollGame, 0);
 	del_region(SelectGame, 0);
-	
+
 	// Click is done by the button itself.
 	//PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	//---- we are in multiplayer bring back up game type screen
 
 	if ( fMultiLoad )
 	{
 		ShowWaitMultiType(0, 0);
 	}
-	
+
 	if (!back_to_main)
 	    GAMEToggleMainMenu(FALSE,0);
 
@@ -1092,9 +1092,9 @@ void CancelLoad(LONG MenuCombo, LONG)
 		AMultiPlayer.SetGameType( iMPGT_NEW );
 		AMultiPlayer.SendGameType();
 		AMultiPlayer.InitPost2();
-	}	
+	}
 	else
-#endif	
+#endif
 		HideLoadMenu(MenuCombo,0);
 
 }
@@ -1103,15 +1103,15 @@ void HideAndReturn(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
     GAMEToggleMainMenu(FALSE,0);
 }
 
@@ -1124,30 +1124,30 @@ void HideSaveMenu(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	del_region(ScrollGame, 0);
 	del_region(SelectGame, 0);
-	
+
 	// click the button
 	// The button does the push.
 	// PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	if (!back_to_main)  // saved.  tell them.
 	{
 		print_global[0] = date+1;
 		// set the question text
 		SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, STR_SAVE_DONE, BLACK );
 		SetButtonProc  (D_QUESTION1, 0, NULL, 0, NO_KEY );
-	
+
 		// turn on the middle button as OK
 		SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_OK, BTN_LABEL_COLOR );
 		SetButtonProc   (D_QUESTION1, QUESTION_BTN1, HideAndReturn, 0, D_KEY_OK );
-	
+
 		ShowMenu(D_QUESTION1);
 		RunMenus();
 	}
@@ -1166,7 +1166,7 @@ void OverwriteGame (LONG MenuCombo, LONG button)
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	iChatKey = 0;
-	
+
     char *p;
     if (strlen(LoadSaveName) > 0)
         p = LoadSaveName + strlen(LoadSaveName) - 1;
@@ -1175,17 +1175,17 @@ void OverwriteGame (LONG MenuCombo, LONG button)
 
     if (*p != ' ' && *p != '_')
         strcat(LoadSaveName, " ");
-	
+
 	// click the button
 	PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	in_question = FALSE;
-	
+
 	SetButtonLabel  (D_QUESTION2, QUESTION_TEXT, -1, BLACK );
 	if(button == QUESTION_BTN1)  // Yes, overwrite
 	{
@@ -1201,7 +1201,7 @@ void OverwriteGame (LONG MenuCombo, LONG button)
 	        }
 	    }
 	    DeleteGameReal(MenuCombo, QUESTION_BTN1);
-		
+
 		LONG tmpcombo = BUILD_LONG(D_SAVE_MENU, 2);
 	    SaveGameDo(tmpcombo, 1);
 	}
@@ -1212,19 +1212,19 @@ void OverwriteGame (LONG MenuCombo, LONG button)
 void QueryOverwrite ()
 {
 	in_question = TRUE;
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION2, QUESTION_TEXT, STR_LOADSAVE_OVERWRITE, BLACK );
 	SetButtonProc  (D_QUESTION2, 0, NULL, 0, NO_KEY );
-	
+
 	// turn on the first button as YES
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, OverwriteGame, QUESTION_BTN1, D_KEY_YES );
-	
+
 	// turn on the last button as CANCEL
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_CANCEL, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, OverwriteGame, QUESTION_BTN2, D_KEY_CANCEL );
-	
+
 	ShowMenu(D_QUESTION2);
 	return;
 }
@@ -1233,15 +1233,15 @@ void HideMaxReached(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	SetButtonLabel  (MenuId, QUESTION_TEXT, -1, BLACK );
 	in_question = FALSE;
 	return;
@@ -1250,15 +1250,15 @@ void HideMaxReached(LONG MenuCombo, LONG)
 void ShowMaxReached()
 {
 	in_question = TRUE;
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, STR_LOADSAVE_MAXREACHED, BLACK );
 	SetButtonProc  (D_QUESTION1, 0, NULL, 0, NO_KEY );
-	
+
 	// turn off the middle button
 	SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_BACK, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION1, QUESTION_BTN1, HideMaxReached, 0, D_KEY_BACK );
-	
+
 	ShowMenu(D_QUESTION1);
 	RunMenus();
 }
@@ -1283,15 +1283,15 @@ void filename_chop(char *filename)
 void ShowDeleteFailed()
 {
 	in_question = TRUE;
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, STR_LOADSAVE_DELETEFAILED, BLACK );
 	SetButtonProc  (D_QUESTION1, 0, NULL, 0, NO_KEY );
-	
+
 	// turn off the middle button
 	SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_BACK, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION1, QUESTION_BTN1, HideMaxReached, 0, D_KEY_BACK );
-	
+
 	ShowMenu(D_QUESTION1);
 	RunMenus();
 }
@@ -1322,7 +1322,7 @@ BOOL CopyAFile(const char * fromname, const char * toname)
     }
     fclose(fp);
     fclose(fp2);
-    
+
     return FALSE;
 }
 
@@ -1335,15 +1335,15 @@ void SaveGameDo(LONG MenuCombo, LONG forsure)
 {
     char buffer[80];
     char buf1[FILENAME_LEN + 2];
-	
+
 	char cur_game[25] = "savegame\\";
 	strcat(cur_game, STRMGR_GetStr(STR_SAVEGAME));
 
 	del_region(ScrollGame, 0);
 	del_region(SelectGame, 0);
-	
+
     iChatKey = 0;
-    
+
     mkdir("SaveGame");
 
     strcpy(buf1, LoadSaveName);
@@ -1408,7 +1408,7 @@ void LoadGameDoMulti( void )
 	{
 		char buf[200];
 
-		AMultiPlayer.Finalize();		
+		AMultiPlayer.Finalize();
 
 		sprintf(buf, "Couldn't open load file %s (len %d).\n", szLoadTemp,
 				strlen(szLoadTemp));
@@ -1424,18 +1424,18 @@ void LoadGameDoMulti( void )
 	HidePanel(D_BUILD_ARMY);
 	HidePanel(D_BUILD_ADV);
 
-	LinkUnits(FALSE); // Don't send to others 
-	
-	
+	LinkUnits(FALSE); // Don't send to others
+
+
 	for (SHORT i=0; i < LAND_REALM_COUNT; i++)
 	{
 		SHORT RegentIdx = realm[i].mfGetRegent();
 		if (regents[RegentIdx].mfGetunit() == fERROR)
 			realm[i].mfSetPlayable(FALSE);
 	}
-	
+
 	ClearOldInvestitureList();
-	
+
 	char_selected = FALSE;
 	for (i=0; i<LAND_REALM_COUNT; i++)
    	action_turn[i] = 1;
@@ -1521,13 +1521,13 @@ void LoadGameDo(LONG MenuCombo, LONG )
 		back_to_main = FALSE;
 		del_region(ScrollGame, 0);
 		del_region(SelectGame, 0);
-		
+
 		LONG	MenuId, ButtonId;
 		SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-		
+
 		// click the button
 		PushLoadSaveButton(MenuCombo);
-		
+
 		HideMenu(MenuId);
 		fUpdatePanels = TRUE;
 		RunPanels();
@@ -1554,7 +1554,7 @@ void LoadGameDo(LONG MenuCombo, LONG )
 			HideLoadMenu(MenuCombo,0);
 			return;
 		}
-		
+
 		LoadGameFiles(fp);
 	 	fclose(fp);
 
@@ -1562,7 +1562,7 @@ void LoadGameDo(LONG MenuCombo, LONG )
 		HidePanel(D_BUILD_ARMY);
 		HidePanel(D_BUILD_ADV);
 
-		LinkUnits(FALSE); // Don't send to others 
+		LinkUnits(FALSE); // Don't send to others
 		char_selected = TRUE;
 		for (i=0; i<LAND_REALM_COUNT; i++)
 			action_turn[i] = 1;
@@ -1583,7 +1583,7 @@ void LoadGameDo(LONG MenuCombo, LONG )
 		iProvInfo = 0;
 		iUnitInfo = 0;
 		iPlaceInfo = 0;
-		
+
 		SetCurAction(0);
 		CurrentRealm = REALM::REALM_OUT_OF_RANGE;
 		new_treasury = 0;
@@ -1593,22 +1593,22 @@ void LoadGameDo(LONG MenuCombo, LONG )
 
 		back_to_main = FALSE;
 		HideLoadMenu(MenuCombo,0);
-		
+
 		ResetToNonTutorialAdventures();
 		master_game_type = GAME_NORMAL;
-		
+
 		// clear any old menu data
 		ResetMenus();
 		ResetPanels();
 		ResetRequests();
-		
+
 		del_all_regions();
 		AddGameKeys();
 
 		fPractice = FALSE;
 		fTutorialSelected = FALSE;
 		fTutorialFirstBattle = FALSE;
-		
+
 		// release a running scene, calls InitDomainTurn
 		if (fDomainTurn == FALSE)
 		{
@@ -1631,26 +1631,26 @@ void LoadGameDo(LONG MenuCombo, LONG )
 	ReconstructMap();
 	SetRedrawMainMapLevel();
 	fFadedOut = -1;
-	
+
 	if (ScenarioInfo.IsScenario)		// [abc] 10/6/97
 		NewGameConfirmed2(FALSE);
-	
+
 	return;
 }
 
 
 
 void DeleteGameReal(LONG , LONG button)
-{	
+{
     char buffer[127];
     char buf1[FILENAME_LEN + 2];
     iChatKey = 0;
-	
+
 	in_question = FALSE;
-	
+
 	if(button != QUESTION_BTN1)  // other than "Yes, delete"
 		return;
-	
+
 	if (highlighted_choice == -1)
 	    return;
 
@@ -1669,18 +1669,18 @@ void DeleteGameConfirmed(LONG MenuCombo, LONG button)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	iChatKey = 0;
 	PushLoadSaveButton(MenuCombo);
-	
+
 	HideMenu(MenuId);
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	SetButtonLabel  (MenuId, QUESTION_TEXT, -1, BLACK );
-	
+
 	DeleteGameReal(0, button);
 }
 
@@ -1690,33 +1690,33 @@ void DeleteGame (LONG MenuCombo, LONG)
 {
 	if (highlighted_choice == -1)
 		return;
-		
+
 	in_question = TRUE;
 	del_region(ScrollGame, 0);
 	del_region(SelectGame, 0);
-	
+
 	LONG MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	LONG tmpcombo;
     if (LoadSave == LS_SAVE)
 		tmpcombo = BUILD_LONG(MenuId, 3);
-	else	
+	else
 		tmpcombo = BUILD_LONG(MenuId, 3);
-	
+
 	PushLoadSaveButton(tmpcombo);
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION2, QUESTION_TEXT, STR_LOADSAVE_DELETEQ, BLACK );
 	SetButtonProc  (D_QUESTION2, 0, NULL, 0, NO_KEY );
-	
+
 	// turn on the first button as YES
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, DeleteGameConfirmed, QUESTION_BTN1, D_KEY_YES );
-	
+
 	// turn on the last button as CANCEL
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_CANCEL, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, DeleteGameConfirmed, QUESTION_BTN2, D_KEY_CANCEL );
-	
+
 	ShowMenu(D_QUESTION2);
 	return;
 }
@@ -1740,7 +1740,7 @@ LONG GetSaveGames(char names[MAX_SAVED_GAMES+1][FILENAME_LEN+1])
         memset(names[i], '\0', FILENAME_LEN);
 
     for ( status = _dos_findfirst(path, attribs, bufptr), num_files=0;
-          status == 0 && 
+          status == 0 &&
           ((LoadSave==LS_SAVE && num_files < MAX_SAVED_GAMES) ||
            (LoadSave==LS_LOAD && num_files <= MAX_SAVED_GAMES));
           status = _dos_findnext(bufptr))
@@ -1764,7 +1764,7 @@ LONG GetSaveGames(char names[MAX_SAVED_GAMES+1][FILENAME_LEN+1])
         // don't show "current" when saving
         if ((LoadSave == LS_SAVE) && !stricmp(names[num_files], "current"))
         	continue;
-        	
+
         num_files++;
     }
 
@@ -1784,7 +1784,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 	LONG	MenuId, ButtonId;
 	char	buffer[80];
 	LONG    menu_x, menu_y;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	if( GetButtonPosition( MenuId, 0, &menu_x, &menu_y ) == fERROR)
@@ -1792,7 +1792,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 
 	del_region(ScrollGame, 0);
 	del_region(SelectGame, 0);
-	
+
 	// paint the background
 	init_gfont(FONT_TITL_40PT);
 	if (LoadSave == LS_SAVE)
@@ -1810,7 +1810,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 	#else
 	print_textf(menu_x + 25, menu_y + 23, 0, buffer);
 	#endif
-	
+
 	// set up the buttons
 	init_gfont(FONT_SANS_8PT);
 	for(i=1; i <= num_buttons; i++)
@@ -1824,19 +1824,19 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 			    else
 	            	SetButtonLabelColor(MenuId, i, BTN_LABEL_COLOR);
 	            break;
-	
+
 	        case 3:  /* delete */
 	            if (highlighted_choice == -1)
 	            	SetButtonLabelColor(MenuId, i, 16);
 			    else
 	            	SetButtonLabelColor(MenuId, i, BTN_LABEL_COLOR);
 	            break;
-	
+
 	        default:
 	            buffer[0] = '\0';
 	            break;
 	    }
-	
+
 	}
 	if (LoadSave == LS_SAVE)
 	{
@@ -1851,7 +1851,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 		        p = LoadSaveName + strlen(LoadSaveName) - 1;
 		    else
 		        p = LoadSaveName;
-		
+
 		    if (*p != ' ' && *p != '_')
 		        strcat(LoadSaveName, " ");
         }
@@ -1860,7 +1860,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 	    if (highlighted_choice >= 0)  // we have a selection
 	    {
 	        char buf1[FILENAME_LEN+2], buf2[FILENAME_LEN+2];
-	
+
 	        strcpy(buf1, saved_games[highlighted_choice]);
 	        filename_chop(buf1);
 	        strcpy(buf2, LoadSaveName);
@@ -1908,10 +1908,10 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 BOOL GetHelpBit(SHORT bitno)
 {
 	unsigned long x;
-	
+
 	if (bitno < 0 || bitno > 31)
 		return TRUE;
-		
+
 	x = (1 << bitno) & helpbits;
 	return (x != 0);
 }
@@ -1920,7 +1920,7 @@ void SetHelpBit(SHORT bitno)
 {
 	if (bitno < 0 || bitno > 31)
 		return;
-	
+
 	helpbits |= (1 << bitno);
 }
 
@@ -1928,5 +1928,3 @@ void SetAllHelpBits(void)
 {
 	helpbits = 0xFFFFFFFF;
 }
-
-

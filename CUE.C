@@ -45,7 +45,7 @@ BOOL gfTestGrayLight;
    ------------------------------------------------------------------------ */
 #define MAX_SCALE_RATE     (1<<7)
 #define RATE               1
-	
+
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
@@ -333,13 +333,13 @@ void CreateShadeTable (
 		r = (r+trans) * red;
 		r = (r > (double)1) ? (double)1 : r ;
 		r = (r < (double)0) ? (double)0 : r ;
-		
+
 		//------------------------------------------
 		g = (double)CurPal[c].bGreen * factor ;
 		g = (g+trans) * green;
 		g = (g > (double)1) ? (double)1 : g ;
 		g = (g < (double)0) ? (double)0 : g ;
-		
+
 		//------------------------------------------
 		b = (double)CurPal[c].bBlue * factor ;
 		b = (b+trans) * blue;
@@ -401,7 +401,7 @@ void init_shade_table(CHAR *Name)
 #ifdef _JPC
 			ErrorMessage (szTemp);
 #else
-			printf (szTemp);
+			logInfo(szTemp);
 #endif
 		}
 		FileClose(f);
@@ -425,7 +425,7 @@ void init_shade_table(CHAR *Name)
 				double g=(double)(CurPal[c].bGreen)*factor;
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
-				
+
 				rgb_to_hsl(r,g,b,&h,&s,&l);
 				l = l - (i * l) / (double)32;
 				hsl_to_rgb(h,s,l,&r,&g,&b);
@@ -455,7 +455,7 @@ void init_shade_table(CHAR *Name)
 				double g=(double)(CurPal[c].bGreen)*factor;
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
-				
+
 				// Do not change red; instead, reduce green and blue.
 				// Brightness is the same as for the standard tables.
 				g /= 4;
@@ -481,10 +481,10 @@ void init_shade_table(CHAR *Name)
 			{
 				int iBaseTable = i * 256;
 				int iTable = (i + REMAP_TABLE_OFFSET + 32 * iRemap) * 256;
-	
+
 				for (c = 0; c < 256; ++c)		// copy the corresponding "base" table
 					shade_table[iTable + c] = shade_table[iBaseTable + c];
-				
+
 				for (c = 0; c < cREMAP_PALETTEENTRIES; ++c)
 				{
 					j = (LONG)gRemapColors[iRemap][0] + c;
@@ -511,7 +511,7 @@ void init_shade_table(CHAR *Name)
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
 				double average;
-				
+
 				average = (r + g + b) / 3;
 				r = average;
 				g = average;
@@ -557,7 +557,7 @@ void init_shade_table(CHAR *Name)
 					double b=(double)(CurPal[c].bBlue)*factor;
 					double h, s, l;
 					double average;
-					
+
 					average = (r + g + b) / 3;
 					r = average;
 					g = average;
@@ -638,7 +638,7 @@ void color_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 {
 	PTR  sptr;
 	// GWP LONG ww;
-	
+
 //#if defined(_DEBUG)
 //	if (x < 0 || x >= MAX_VIEW_WIDTH ||
 //	    y < 0 || y >= MAX_VIEW_HEIGHT ||
@@ -655,20 +655,20 @@ void color_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 	else
 	if (x >= MAX_VIEW_WIDTH)
 		x = MAX_VIEW_WIDTH - 1;
-	
+
 	if (y < 0)
 		y = 0;
 	else
 	if (y >= MAX_VIEW_HEIGHT)
 		y = MAX_VIEW_HEIGHT - 1;
-	
+
 	if ((x + w) >= MAX_VIEW_WIDTH)
 		w = (MAX_VIEW_WIDTH - 1) - x;
-	
+
 	if ((y + h) >= MAX_VIEW_HEIGHT)
 		h = (MAX_VIEW_HEIGHT - 1) - y;
 //#endif
-	
+
 	sptr = screen + (screen_buffer_width * y) + x;
 
 	/* Note this access screen directly for speed */
@@ -682,7 +682,7 @@ void color_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 		// GWP } while (ww--);
 
 		// GWP sptr += screen_buffer_width-w-1;
-		
+
 		memset(sptr, s, w);
 		sptr += screen_buffer_width;
 	} while (h--);
@@ -701,7 +701,7 @@ void color_box (LONG x,LONG y,LONG w,LONG h,LONG s)
 	line(x,y,x,y+h,s); //from UR to LL
 	line(x+w,y+h,x+w,y,s); //from UL to LL
 	line(x+w,y+h,x,y+h,s);   //from LL to LR
-	
+
 }
 
 /* =======================================================================
@@ -725,14 +725,14 @@ void zoom_color_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, SHORT hDest)
 			update_screen();
 			DirectDrawPreFrame();
 		}
-}	
+}
 
 /* =======================================================================
 	Function    - zoomout_color_edged_rect
 	Description - zoom a rectangle
 	Returns     - void
 	=======================================================================  */
-	
+
 void zoomout_color_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, SHORT hDest)
 {
 		LONG scale_rate=1;
@@ -752,8 +752,8 @@ void zoomout_color_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, SHORT hDe
 		update_screen();
 		DirectDrawPreFrame();
 
-}	
-	
+}
+
 
 
 
@@ -770,7 +770,7 @@ void color_edged_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 	color_rect (x+w,y,1,h+1,s+2);
 	color_rect (x,y+1,1,h-1,s-2);
 	color_rect (x,y+h,w,1,s-2);
-	
+
 	if (fHighRes)
 	{
 		color_rect (x-1,y-1,w+2,1,s+2);
@@ -796,7 +796,7 @@ void shade_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 		x=0;
 	if (y<0)
 		y=0;
-	
+
 	/* turn w/h into real screen coords */
 	x_end=x+w;
 	y_end=y+h;
@@ -805,10 +805,10 @@ void shade_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 		x_end=MAX_VIEW_WIDTH;
 	if (y_end>MAX_VIEW_HEIGHT)
 		y_end=MAX_VIEW_HEIGHT;
-	
+
 
 	shade=(CHAR *)&shade_table[256*s];
-		
+
 		/*Note this access screen directly for speed*/
 	screen_y_start = &screen[x + (y*screen_buffer_width)];
 	for(sx=x;sx<x_end;++sx, ++screen_y_start)
@@ -843,8 +843,8 @@ void zoom_shade_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, SHORT hDest)
 			update_screen();
 			DirectDrawPreFrame();
 		}
-}	
-	
+}
+
 /* =======================================================================
 	Function    - zoomout_shade_edged_rect
 	Description - zoom a rectangle
@@ -870,8 +870,8 @@ void zoomout_shade_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, SHORT hDe
 	  	update_screen();
 		DirectDrawPreFrame();
 
-}	
-	
+}
+
 
 #if 0
 void zoom_shade_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, BOOL * f, SHORT * sr, BOOL * fZoom)
@@ -883,8 +883,8 @@ void zoom_shade_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, BOOL * f, SH
 			if((scale_rate) > h/2) (scale_rate) = h/2;
 	 		*f = FALSE;
 	}
-	
-	
+
+
 		if((scale_rate) <= 0)
 		{
 			(scale_rate)	= 1;
@@ -900,10 +900,10 @@ void zoom_shade_edged_rect (LONG x, LONG y, LONG w, LONG h, LONG s, BOOL * f, SH
 									s);
 			(scale_rate) = (scale_rate)/ 2;
 		}
-	
+
 	*sr = (SHORT) scale_rate;
-}	
-	
+}
+
 
 #endif
 
@@ -920,7 +920,7 @@ void shade_edged_rect (LONG x,LONG y,LONG w,LONG h,LONG s)
 	shade_rect (x+w,y,1,h+1,s+1);
 	shade_rect (x,y+1,1,h-1,s-1);
 	shade_rect (x,y+h,w,1,s-1);
-	
+
 	if (fHighRes)
 	{
 		shade_rect (x-1,y-1,w+2,1,s+1);
@@ -942,4 +942,3 @@ void SetArtPath ( CSTRPTR pArtPath )
 }
 
 /* ======================================================================= */
-

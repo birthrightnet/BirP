@@ -82,7 +82,7 @@ extern LONG G_TTypeSize;
 extern LONG frames;
 extern ULONG tot_linedefs;
 extern ULONG tot_things;
-extern LONG	MaxThingLoaded;	
+extern LONG	MaxThingLoaded;
 extern TEXTURE textures[];
 
 /* ------------------------------------------------------------------------
@@ -179,7 +179,7 @@ static MAP_INFO	gMapInfo = {
 						FALSE,			// print mythings numbers
 						FALSE,			// print linedefs numbers
 						FALSE,			// print avatar handles
-						
+
 						};
 
 
@@ -196,7 +196,7 @@ static void MapRegionFunction(LONG a,LONG b)
 {
 	LONG WorldX,WorldY;
 	b=a;
-	
+
 //	printf("in map region func\n");
 
 
@@ -213,16 +213,16 @@ static void MapRegionFunction(LONG a,LONG b)
 //		printf("\n");
 
 		SetPlayer(WorldX,WorldY,point_to_floor_height(WorldX,WorldY),camera.a,camera.p);
-		
+
 		SetCameraPosition(
 			&camera,
 			PLAYER_INT_VAL(player.x),
 			PLAYER_INT_VAL(player.y),
-			(player.z+(player.h - EYE_HEIGHT)), 
-			player.a, 
+			(player.z+(player.h - EYE_HEIGHT)),
+			player.a,
 			player.p
 			);
-		
+
 		MapTeleport(TELEPORT_DONE);
 	}
 }
@@ -251,7 +251,7 @@ void MapTeleport(LONG code)
 		gMapInfo.fFullScreen=TRUE;
 		PrevDM=gMapInfo.fDrawMap;
 		gMapInfo.fDrawMap=TRUE;
-	
+
 
 		PrevOrigin=gMapInfo.ScreenOrigin;
 		PrevCenter=gMapInfo.ScreenCenter;
@@ -259,9 +259,9 @@ void MapTeleport(LONG code)
 		gMapInfo.fFullScreen=TRUE;
 
 		MapHandleZoom(FULL_LEVEL_ZOOM);
-	
+
 		fPause=TRUE;
-		
+
 		HdlMapRegion();
 		gMapInfo.fWaitingForTeleport=TRUE;
 	}
@@ -270,7 +270,7 @@ void MapTeleport(LONG code)
 	{
 //		printf("done\n");
 		fPause=FALSE;
-		
+
 		gMapInfo.fDrawMap=PrevFS;
 		gMapInfo.fFullScreen=FALSE;
 
@@ -280,13 +280,13 @@ void MapTeleport(LONG code)
 		HdlMapRegion();
 		gMapInfo.fWaitingForTeleport=FALSE;
 	}
-	
+
 }
 
 
-	
-	
-	
+
+
+
 
 
 
@@ -320,8 +320,8 @@ static void HdlMapRegion(void)
 	//				1 	  0  		= 0
 	gMapInfo.RegionType=(gMapInfo.fFullScreen&&gMapInfo.fDrawMap)+gMapInfo.fDrawMap;
 
-	// if the region type has 	
-	if (LastFrameMapRegionType!=gMapInfo.RegionType || 
+	// if the region type has
+	if (LastFrameMapRegionType!=gMapInfo.RegionType ||
 		OldMapInfo.ScreenCenter.y!=gMapInfo.ScreenCenter.y)
 	{
 		if (LastFrameMapRegionType!=MAP_REG_NONE)
@@ -334,7 +334,7 @@ static void HdlMapRegion(void)
 	LastFrameMapRegionType=gMapInfo.RegionType;
 	OldMapInfo=gMapInfo;
 
-	
+
 }
 
 
@@ -350,7 +350,7 @@ void SetMapHighlightEnemies(LONG unused,LONG arg)
 
 //	printf("highlighting\n");
 	gMapInfo.Highlight.Enemies=arg*(!gMapInfo.Highlight.Enemies);
-	
+
 //	printf("MHE=%li\n",gMapInfo.Highlight.Enemies);
 }
 
@@ -440,7 +440,7 @@ void SetMapHighlightInvisibleCreatures(LONG unused,LONG arg)
 
 /* ========================================================================
    Function    - SetMapHighlightInvisibleCreatures
-   Description - Flags the map to draw the Quest Object 
+   Description - Flags the map to draw the Quest Object
    Returns     - void
    ======================================================================== */
 void SetMapHighlightQuestObject(LONG unused,LONG arg)
@@ -522,7 +522,7 @@ BOOL SetMapFullScreen(LONG unused, LONG arg)
 	if (arg==TOGGLE)
 	{
 		gMapInfo.fFullScreen=!gMapInfo.fFullScreen;
-		
+
 	}
 	else
 	{
@@ -541,7 +541,7 @@ BOOL SetMapFullScreen(LONG unused, LONG arg)
    ======================================================================== */
 BOOL SetMapDraw(LONG unused, LONG arg)
 {
-	
+
 	BOOL old=gMapInfo.fDrawMap;
 
 	if (arg==TOGGLE)
@@ -551,7 +551,7 @@ BOOL SetMapDraw(LONG unused, LONG arg)
 			gMapInfo.fFullScreen=TRUE;
 
 			MapHandleZoom(FULL_LEVEL_ZOOM);
-	
+
 			fPause=TRUE;
 		}
 		else if (gMapInfo.fDrawMap && gMapInfo.fFullScreen)
@@ -566,13 +566,13 @@ BOOL SetMapDraw(LONG unused, LONG arg)
 		}
 		else
 			gMapInfo.fDrawMap=TRUE;
-		
+
 	}
 	else
 	{
-		gMapInfo.fDrawMap = arg;	
+		gMapInfo.fDrawMap = arg;
 	}
-	
+
 	return old;
 }
 
@@ -591,9 +591,9 @@ BOOL SetMapShowAll(LONG unused1,LONG arg)
 		gMapInfo.fDrawAll=!gMapInfo.fDrawAll;
 	else
 		gMapInfo.fDrawAll=arg;
-		
+
 	return old;
-}	
+}
 
 
 
@@ -624,7 +624,7 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 		hh=MAX_VIEW_HEIGHT-b-t;
 		MapHandleZoom(SERVICE_ZOOM);
 		fPause=TRUE;
-		
+
 	}
 	else
 	{
@@ -632,18 +632,18 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 		gMapInfo.WorldCenter.y=CAMERA_INT_VAL(camera.y);
 	}
 
-	
-	//save the old data, as not to screw up the other stuff that relies on 
+
+	//save the old data, as not to screw up the other stuff that relies on
 	//ScreenOrigin.x and xClip
 	OldScreenOrigin.x=origin_x;
 	OldScreenOrigin.y=origin_y;
 	OldClip.x=clip_x;
 	OldClip.y=clip_y;
-	
-	
-	
-	
-	
+
+
+
+
+
 	// Save this data for other routines which need information about the map.
 	gMapInfo.ScreenOrigin.x= origin_x=xx;
 	gMapInfo.ScreenOrigin.y= origin_y=yy;
@@ -651,14 +651,14 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 	gMapInfo.ScreenClip.y  = clip_y  =(yy+hh);
 	gMapInfo.ScreenCenter.x=(xx+(ww/2));
 	gMapInfo.ScreenCenter.y=(yy+(hh/2));
-	
+
 
 	gMapInfo.BoundingBox.dx=ww;
 	gMapInfo.BoundingBox.dy=hh;
 
 	shade_edged_rect(xx,yy,ww,hh,33);
-	
-	
+
+
 
 
 
@@ -672,7 +672,7 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 	{
 		LONG		v;
 		LONG const ux = gMapInfo.WorldCenter.x+u*128;
-		
+
 		for (v=NegYExt;v<=PosYExt;++v)
 		{
 			SHORT * const bm = get_blockm (ux,(gMapInfo.WorldCenter.y)+v*128);
@@ -681,7 +681,7 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 		}
 	}
 
-	
+
 	HdlMapRegion();
 	MapHandleThings();
 	MapHandleSecretSSect();
@@ -692,12 +692,12 @@ void DrawMap (LONG xx, LONG yy, LONG ww, LONG hh)
 	if (gMapInfo.fDrawCamera) 			DrawMapCamera();
 	if (gMapInfo.fDrawPlayer) 			DrawMapPlayer();
 	if (gMapInfo.Highlight.QuestObject)		DrawMapQuestObject();
-	
-
-	
 
 
-		
+
+
+
+
 	origin_x=OldScreenOrigin.x;
 	origin_y=OldScreenOrigin.y;
 	clip_x=OldClip.x;
@@ -714,21 +714,21 @@ void DrawMapPlayer(void)
 
 	PrintX=WORLD_X_TO_SCREEN_X(p.x)-70/gMapInfo.ZoomFactor;
 	PrintY=WORLD_Y_TO_SCREEN_Y(p.y)-100/gMapInfo.ZoomFactor;
-	
-	
+
+
 	if (gMapInfo.fFullScreen)
 	{
-		
+
 		DrawMapStyledObject(&p,player.a,MAP_RED,MS_DIVROD,
 							30,MAP_SCALED);
 
 		print_textf(PrintX,PrintY,MAP_YELLOW,STRMGR_GetStr(STR_PARTY));
-		
+
 	}
 	else
 		DrawMapStyledObject(&p,player.a,MAP_COLOR_PLAYER,MS_DIVROD,
 							player.w/2,MAP_SCALED);
-	
+
 }
 
 
@@ -773,7 +773,7 @@ void DrawMapQuestObject(void)
 				}
 	}
 
-	//if it's not in the wad, scan for a fiend, he or she (gotta be PC) 
+	//if it's not in the wad, scan for a fiend, he or she (gotta be PC)
 	//probably has it.  An additional scan of inventory may be in order
 	//to determine if he/she actually has the item.
 	if (i==MAX_THINGS)
@@ -785,23 +785,23 @@ void DrawMapQuestObject(void)
 		QuestObjIndex=FiendIndex;
 		fQobjInFiend=TRUE;
 	}
-	
-	
-			
+
+
+
 	if (QuestObjIndex!=-1)
-	{			
-		
+	{
+
 		POINT a;
 		LONG PrintX,PrintY;
-		
+
 		MYTHING mt=mythings[QuestObjIndex];
-		
+
 		a.x=mt.x;
 		a.y=mt.y;
-		printf("QI at %li,%li\n",mt.x,mt.y);
+		logInfo("QI at %li,%li",mt.x,mt.y);
 		DrawMapStyledObject(&a,MAP_NOT_ANGLED,MAP_RED,MS_DIAMOND,30,MAP_SCALED);
 		DrawMapStyledObject(&a,MAP_NOT_ANGLED,MAP_RED,MS_DIAMOND,15,MAP_SCALED);
-		
+
 		PrintX=WORLD_X_TO_SCREEN_X(a.x)-100/gMapInfo.ZoomFactor;
 		PrintY=WORLD_Y_TO_SCREEN_Y(a.y)-100/gMapInfo.ZoomFactor;
 
@@ -809,13 +809,13 @@ void DrawMapQuestObject(void)
 			print_textf(PrintX,PrintY,MAP_YELLOW,STRMGR_GetStr(STR_MAP_QUEST_OBJECT));
 		else
 			print_textf(PrintX,PrintY,MAP_YELLOW,STRMGR_GetStr(STR_MAP_QUEST_OBJECT_FIEND));
-			
+
 	}
-	
+
 }
 
 
-	
+
 
 
 /* ========================================================================
@@ -828,7 +828,7 @@ void DrawMapStyledObject(POINT* a,LONG angle,ULONG color,LONG shape,
 {
 	LONG	oldMapFactor;
 
-	
+
 	if (!scaled)
 	{
 		oldMapFactor = gMapInfo.ZoomFactor;
@@ -837,7 +837,7 @@ void DrawMapStyledObject(POINT* a,LONG angle,ULONG color,LONG shape,
 		else
 			gMapInfo.ZoomFactor = 4;
 	}
-				
+
 	switch(shape)
 	{
 		case MS_DIAMOND:
@@ -864,7 +864,7 @@ void DrawMapStyledObject(POINT* a,LONG angle,ULONG color,LONG shape,
 /* ========================================================================
    Function    - HandleMapAvatar
    Description - Determines if the specified avatar can be drawn, and if so
-                 draws it...   The argument hAvatar is for debugging 
+                 draws it...   The argument hAvatar is for debugging
                  purposes only...
    Returns     - void
    ======================================================================== */
@@ -877,18 +877,18 @@ void HandleMapAvatar(LONG i,SHORT hAvatar,ULONG color,BOOL scaled)
 	if (mythings[i].dist>>8 > gMapInfo.Highlight.Enemies  &&  !mythings[i].fDrawn)
 		return;
 
-	
+
 	if (THING_IN_BNDBOX(i))
 	{
 		shape=GET_MAP_THING_SHAPE(i);
-		
+
 		angle=mythings[i].angle;
-		
+
 		o.x=mythings[i].x;
 		o.y=mythings[i].y;
-		
+
 		radius=mythings[i].widScaled/4;
-		
+
 		DrawMapStyledObject(&o,angle,color,shape,radius,scaled);
 
 
@@ -899,18 +899,18 @@ void HandleMapAvatar(LONG i,SHORT hAvatar,ULONG color,BOOL scaled)
 			PrintX=WORLD_X_TO_SCREEN_X(o.x-20);
 			PrintY=WORLD_Y_TO_SCREEN_Y(o.y+10);
 
-			if (gMapInfo.fPrintMythingIdxs)	
+			if (gMapInfo.fPrintMythingIdxs)
 				sprintf(buffer,"[%li]",i);
 			if (gMapInfo.fPrintAvatarHdls)
 				sprintf(buffer,"%s(%li)",buffer,hAvatar);
-							
+
 			print_textf(PrintX,PrintY,MAP_YELLOW,"[%li]",i);
 		}
 	}
 
 
 }
-	
+
 
 /* ========================================================================
    Function    - DrawMapThing
@@ -942,7 +942,7 @@ void DrawMapThing(LONG i,LONG angled)
 		radius=mythings[i].widScaled/2;
 	}
 
-	
+
 	if (color!=MAP_TRANSPARENT)
 	{
 
@@ -959,7 +959,7 @@ void DrawMapThing(LONG i,LONG angled)
 void DrawMapBoundingBox(void)
 {
 #if _DEBUG
-	
+
 	POINT w,x,y,z;
 
 
@@ -1028,36 +1028,36 @@ static void DrawMapLinedef(long i)
 {
 	POINT a,b;
 	int iSectorF,iSectorB;
-	LONG PrintX; 
-	LONG PrintY; 
+	LONG PrintX;
+	LONG PrintY;
 
 	LONG btex,ttex;
-	
+
 
 	LINEDEF * const Ld=&linedefs[i];
 //	SECTOR FrontSect,BackSect;
 
 	if ((Ld->flags&DRAW_ON_MAP_BIT && !(Ld->flags&NOT_ON_MAP_BIT) )
 		||gMapInfo.fDrawAll)
-	
+
 	{
-				
+
 		a.x=vertexs[Ld->a].x;
 		a.y=vertexs[Ld->a].y;
 		b.x=vertexs[Ld->b].x;
 		b.y=vertexs[Ld->b].y;
-		
-		PrintX=WORLD_X_TO_SCREEN_X((a.x+b.x)/2); 
-		PrintY=WORLD_Y_TO_SCREEN_Y((a.y+b.y)/2); 
-		
-					
+
+		PrintX=WORLD_X_TO_SCREEN_X((a.x+b.x)/2);
+		PrintY=WORLD_Y_TO_SCREEN_Y((a.y+b.y)/2);
+
+
 		if (Ld->psdt < 0)
 		{
 			DrawMapXLine(a,b,IMPASSABLE_LINE_COLOR); //onesided!
 			return;
 		}
 
-		
+
 		if (gMapInfo.Highlight.Traps)
 			if (Ld->special || Ld->tag)
 			{
@@ -1068,12 +1068,12 @@ static void DrawMapLinedef(long i)
 	   	iSectorF = sidedefs[Ld->psdb].sec_ptr;
 
 	   	iSectorB = sidedefs[Ld->psdt].sec_ptr;
-		
-//for readability.  
+
+//for readability.
 #define MIDDLE_TEX n3
 #define UPPER_TEX  n1
 #define LOWER_TEX  n2
-		
+
 		btex=sidedefs[Ld->psdb].MIDDLE_TEX;
 		ttex=sidedefs[Ld->psdt].MIDDLE_TEX;
 
@@ -1082,7 +1082,7 @@ static void DrawMapLinedef(long i)
 				if (!(Ld->flags&IMPASSABLE_BIT))
 				{
 
- 					if ((btex && textures[btex].type!=TRANSP_TEX) || (ttex && textures[ttex].type!=TRANSP_TEX)) 
+ 					if ((btex && textures[btex].type!=TRANSP_TEX) || (ttex && textures[ttex].type!=TRANSP_TEX))
 					{
 						//this is sooooooooooooooooooo kludgy.
 						if (btex)
@@ -1098,19 +1098,19 @@ static void DrawMapLinedef(long i)
 								textures[ttex].name[2]=='O' &&
 								textures[ttex].name[3]=='R')
 								return;
-		
+
 						DrawMapXLine(a,b,HIGHLIGHTED_LINE_COLOR);
 						return;
 					}
 				}
-					
+
 
 
 
 		if (Ld->flags & IMPASSABLE_BIT)
 			DrawMapXLine(a,b,IMPASSABLE_LINE_COLOR);
 
-				
+
 		else if (Ld->flags & SECRET_BIT)
 		{
 			if (gMapInfo.Highlight.SecretDoors)
@@ -1121,7 +1121,7 @@ static void DrawMapLinedef(long i)
 			else
 				DrawMapXLine(a,b,CROSSED_SECRET_LINE_COLOR);
 		}
-		
+
 		else if (sectors[iSectorF].fh != sectors[iSectorB].fh)
 			DrawMapXLine(a,b,CROSSABLE_LINE_COLOR);
 
@@ -1131,9 +1131,9 @@ static void DrawMapLinedef(long i)
 
 		if (gMapInfo.fPrintLinedefIdxs)
 			print_textf(PrintX,PrintY,MAP_YELLOW,"[%li]",i);
-		
+
 	}
-}	   
+}
 /* ========================================================================
    Function    - DrawMapBlockLinedefs
    Description - Draws the Linedefs in a specified block from the blockmap
@@ -1142,10 +1142,10 @@ static void DrawMapLinedef(long i)
 static void DrawMapBlockLinedefs(SHORT * bm)
 {
 	LONG i=0;
-	
+
 	while(bm[i]!=-1 && bm[i]<tot_linedefs)
 		DrawMapLinedef(bm[i++]);
-}		
+}
 
 
 /* =======================================================================
@@ -1160,7 +1160,7 @@ static void DrawMapXLine(POINT a,POINT b,ULONG color)
 	gmiWCenter.x=gMapInfo.WorldCenter.x;
 	gmiWCenter.y=gMapInfo.WorldCenter.y;
 
-	
+
 	//xlatePoint(&a,gmiWCenter);
 	a.x = a.x - gmiWCenter.x;
 	a.y = a.y - gmiWCenter.y;
@@ -1185,10 +1185,10 @@ static void DrawMapTrueLine( POINT* a, POINT* b, ULONG color)
 	LONG bx;
 	LONG ay;
 	LONG by;
-	
+
 	if (gMapInfo.ZoomFactor==0)
-		gMapInfo.ZoomFactor=2;		
-	
+		gMapInfo.ZoomFactor=2;
+
 	ax = (a->x/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.x;
 	ay = (a->y/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.y;
 	bx = (b->x/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.x;
@@ -1198,13 +1198,13 @@ static void DrawMapTrueLine( POINT* a, POINT* b, ULONG color)
 	if (fHighRes)
 	{
 		LONG	deltaX, deltaY;
-		
+
 		// GWP line((a->x/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.x,((a->y/gMapInfo.ZoomFactor))+gMapInfo.ScreenCenter.y,
 		//	(b->x/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.x,((b->y/gMapInfo.ZoomFactor))+gMapInfo.ScreenCenter.y,color);
-		
+
 		deltaX = a->x - b->x;
 		deltaY = a->y - b->y;
-		
+
 		if(abs(deltaX) > abs(deltaY))
 		{
 			//line((a->x/gMapInfo.ZoomFactor)+gMapInfo.ScreenCenter.x,((a->y/gMapInfo.ZoomFactor))+gMapInfo.ScreenCenter.y+1,
@@ -1242,7 +1242,7 @@ static void DrawMapDiamond( POINT *center,LONG angle, LONG r,ULONG color)
 	a.x=0;
 	a.y=+r;
 	b.x=r;
-	b.y=0;		
+	b.y=0;
 	c.x=0;
 	c.y=-r;
 	d.x=-r;
@@ -1262,7 +1262,7 @@ static void DrawMapDiamond( POINT *center,LONG angle, LONG r,ULONG color)
 	a.x+=center->x;
 	a.y+=center->y;
 	b.x+=center->x;
-	b.y+=center->y;		
+	b.y+=center->y;
 	c.x+=center->x;
 	c.y+=center->y;
 	d.x+=center->x;
@@ -1274,7 +1274,7 @@ static void DrawMapDiamond( POINT *center,LONG angle, LONG r,ULONG color)
 	DrawMapXLine(b,c,color);
 	DrawMapXLine(c,d,color);
 	DrawMapXLine(d,a,color);
-	
+
 	//printf("drew diamond at (%li,%li)\n",center->x,center->y);
 
 }
@@ -1289,8 +1289,8 @@ static void DrawMapTriangle( POINT *c,LONG angle,LONG radius,ULONG color)
 
 	POINT l,r,t;		//  t
 						// l r
-	
-	
+
+
 	t.x=0;
 	t.y=0+radius*3;
 
@@ -1300,7 +1300,7 @@ static void DrawMapTriangle( POINT *c,LONG angle,LONG radius,ULONG color)
 	r.x=0+radius;
 	r.y=0-radius;
 
-	
+
 	//rotate to the object's angle
 	if (angle!=MAP_NOT_ANGLED)
 	{
@@ -1338,11 +1338,11 @@ static void DrawMapOctagon( POINT *center,LONG angle,LONG radius,ULONG color)
                         //  f e
 
 	const LONG HalfRadius = radius/2;
-					
+
 						//o and t are for "angled" octogons
 						//to show which way it is pointing.
 
-	//create the octagon		
+	//create the octagon
 	a.x=-HalfRadius;
 	a.y=radius;
 
@@ -1351,7 +1351,7 @@ static void DrawMapOctagon( POINT *center,LONG angle,LONG radius,ULONG color)
 
 	c.x=radius;
 	c.y=HalfRadius;
-	
+
 	d.x=radius;
 	d.y=-HalfRadius;
 
@@ -1363,7 +1363,7 @@ static void DrawMapOctagon( POINT *center,LONG angle,LONG radius,ULONG color)
 
 	g.x=-radius;
 	g.y=-HalfRadius;
-	
+
 	h.x=-radius;
 	h.y=HalfRadius;
 
@@ -1450,7 +1450,7 @@ static void DrawMapDiviningRod( POINT *c,LONG angle,LONG radius,ULONG color)
 	r.x=0+radius;
 	r.y=0-radius;
 
-	
+
 	//rotate to the object's angle
 	if (angle!=MAP_NOT_ANGLED)
 	{
@@ -1474,7 +1474,7 @@ static void DrawMapDiviningRod( POINT *c,LONG angle,LONG radius,ULONG color)
 }
 
 
-	
+
 /* ========================================================================
    Function    - DrawMapGrid
    Description - Draws the grid according to the blockmap
@@ -1485,7 +1485,7 @@ static void DrawMapGrid(void)
 	long bx,by;
 
 	POINT a,b;
-	
+
 
 	//draw the vertical lines
 	for (bx=0;bx<=blockm_header.cols;++bx)
@@ -1495,7 +1495,7 @@ static void DrawMapGrid(void)
 			b.x=blockm_header.xo+128*bx;
 			b.y=blockm_header.yo+blockm_header.rows*128;
 			DrawMapXLine(a,b,197);
-	}	
+	}
 
 	//draw the horizontal lines
 	for (by=0;by<=blockm_header.rows;++by)
@@ -1505,7 +1505,7 @@ static void DrawMapGrid(void)
 			b.x=blockm_header.xo+blockm_header.cols*128;
 			b.y=blockm_header.yo+128*by;
 			DrawMapXLine(a,b,197);
-	}	
+	}
 
 
 
@@ -1520,25 +1520,25 @@ static void DrawMapGrid(void)
 static void MapHandleThings(void)
 {
 	LONG t;
-	
-	
-	
+
+
+
 	if (gMapInfo.fDrawAll)
-	{	
+	{
 		for (t=0;t<MaxThingLoaded;++t)
 		{
 			if (mythings[t].valid)
-					if (THING_IN_BNDBOX(t)) 
+					if (THING_IN_BNDBOX(t))
 						if (mythings[t].type > LAST_GAME_AVATAR)
 							DrawMapThing(t,MAP_NOT_ANGLED);
 		}
 		return;
 	}
-	
+
 	for (t=0;t<MaxThingLoaded;++t)
 	{
 		if(mythings[t].valid)
-			if (THING_IN_BNDBOX(t)) 
+			if (THING_IN_BNDBOX(t))
 				if (mythings[t].type > LAST_GAME_AVATAR)
 				{
 					if (IS_PLANT(t))
@@ -1549,11 +1549,11 @@ static void MapHandleThings(void)
 						DrawMapThing(t,MAP_NOT_ANGLED);
 					else if (IS_EVIL(t) && (mythings[t].dist>>8)<gMapInfo.Highlight.Evil)
 						DrawMapThing(t,MAP_NOT_ANGLED);
-				
+
 					//enemies are drawn by the gMapInfo.GameDrawFunc callback
 				}
 	}
-	
+
 }
 
 
@@ -1578,7 +1578,7 @@ static void MapHandleSecretSSect(void)
 	o=ssectors[ssect].o;
 	n=o+ssectors[ssect].n;
 
-	
+
 	for (i=o;i<n;++i)
 	{
 		if (gMapInfo.fColorCycleSSect)
@@ -1591,7 +1591,7 @@ static void MapHandleSecretSSect(void)
 
 			DrawMapXLine(a,b,frames%256);	//make the segs color-cycle
 		}
-		
+
 		linedefs[segs[i].lptr].flags &= (~NOT_ON_MAP_BIT);
 
 	}
@@ -1607,22 +1607,22 @@ void MapHandleZoom(LONG action)
 	{
 		if (OldReductionCount==GetMarginReductionCount())
 			return;
-		
+
 		MapHandleZoom(FULL_LEVEL_ZOOM);	//safe recursion
 
 	}
-		
+
 	else if (action==FULL_LEVEL_ZOOM)
 	{
 		LONG Wadx,Wady,Wadw,Wadh;
 		LONG r,l,t,b;
 		LONG NewZoomY,NewZoomX;
-		
+
 
 
 		get_margin_size(&r,&l,&t,&b);
 		CalcWadBounds(&Wadx,&Wady,&Wadw,&Wadh);
-		
+
 		NewZoomX=Wadw/(MAX_VIEW_WIDTH-r-l)+1;
 		NewZoomY=Wadh/(MAX_VIEW_HEIGHT-b-t)+1;
 		OldZoom=gMapInfo.ZoomFactor;
@@ -1630,17 +1630,17 @@ void MapHandleZoom(LONG action)
 
 		gMapInfo.WorldCenter.x=Wadw/2+Wadx;
 		gMapInfo.WorldCenter.y=Wadh/2+Wady;
-		
+
 	}
 	else
 	{
 		gMapInfo.ZoomFactor=OldZoom;
 	}
 
-	
-	OldReductionCount=GetMarginReductionCount();		
-	
-	
+
+	OldReductionCount=GetMarginReductionCount();
+
+
 }
 
 
@@ -1733,15 +1733,13 @@ void SetMapCenter(LONG x,LONG y)
    ======================================================================== */
 void CalcWadBounds(LONG *rx, LONG *ry,LONG *rw,LONG *rh)
 {
-	
+
 	//SHORT* TestBlock=NULL;
 	//LONG x=0,y=0,w=0,h=0;
-	
+
 	*rx=blockm_header.xo-MAP_WAD_BOUNDS_BUFFER;
 	*ry=blockm_header.yo-MAP_WAD_BOUNDS_BUFFER;
 	*rw=blockm_header.cols*128+MAP_WAD_BOUNDS_BUFFER;
 	*rh=blockm_header.rows*128+MAP_WAD_BOUNDS_BUFFER;
 }
 
-	
-	

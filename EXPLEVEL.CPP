@@ -150,7 +150,7 @@ BOOL SaveVs(const SHORT hPlayerStats, SAVETYPE savetype, SBYTE modifier)
 
     if (hPlayerStats == fERROR)		// you have no stats; you lose.
     	return FALSE;
-    	
+
     PTR_PLAYER_STATS pPS = (PTR_PLAYER_STATS) BLKPTR(hPlayerStats);
     SBYTE global_modifier = pPS->StatsMod.mfGetMod(STATSMOD::SAVES_MOD);
 
@@ -184,22 +184,22 @@ BOOL SaveVs(const SHORT hPlayerStats, SAVETYPE savetype, SBYTE modifier)
 
     if (save == 1)        // natural 20 always fails
     {
-        printf("Rolled a natural 1.  Good thing there's no fumbles.\n");
+        logInfo("Rolled a natural 1.  Good thing there's no fumbles.");
         result = FALSE;
     }
     else if (save == 20)  // natural 20 always succeeds
     {
-        printf("Rolled a natural 20.  Automatic Success\n");
+        logInfo("Rolled a natural 20.  Automatic Success");
         result = TRUE;
     }
     else
     {
         result = (save + modifier + global_modifier >= best_save);
 
-        printf("Rolled a %d, modified to %d\nThis was ",
+        logInfo("Rolled a %d, modified to %d\nThis was ",
             save, save+modifier+global_modifier);
-        if (!result) printf("not ");
-        printf("a successful save (needed %d)\n", best_save);
+        if (!result) logInfo("not ");
+        logInfo("a successful save (needed %d)", best_save);
     }
 
     return result;
@@ -249,34 +249,34 @@ BOOL ExpCheck(PLAYER_STATS * pPS)
 			  charclass = pCL->mfGetType(index);
 			  charlevel = pCL->Class[index].sbLevel;
 			  xp    = pCL->mfGetExpPts(index);
-	
+
 			  if (charlevel < 1 || charlevel > 19)  // can't gain levels here
 					continue;
-	
+
 			  xp_next = ALL_CLASS_EXPERIENCE_TABLE::
 					mfGetMinimumExperience(charclass, charlevel+1);
-	
+
 			  if (xp > xp_next)
 			  {
 					DICE oldHD, newHD, hdDif;
 					DICE const *d;
 					SBYTE result;
-	
+
 	/* gain some hitpoints */
 					d = PLAYER_CLASS_INFO::mfGetDice(charclass, charlevel);
 					oldHD.sbNumberOfDice = d->sbNumberOfDice;
 					oldHD.sbNumberOfSides = d->sbNumberOfSides;
 					oldHD.sbModifier = d->sbModifier;
-	
+
 					d = PLAYER_CLASS_INFO::mfGetDice(charclass, charlevel+1);
 					newHD.sbNumberOfDice = d->sbNumberOfDice;
 					newHD.sbNumberOfSides = d->sbNumberOfSides;
 					newHD.sbModifier = d->sbModifier;
-	
+
 					hdDif.sbNumberOfDice  = newHD.sbNumberOfDice - oldHD.sbNumberOfDice;
 					hdDif.sbNumberOfSides = newHD.sbNumberOfSides;
 					hdDif.sbModifier      = newHD.sbModifier - oldHD.sbModifier;
-				
+
 					result = RollDice(&hdDif);
 					if (hdDif.sbNumberOfDice > 0) /* Con bonus only for hit _dice_ */
 					{
@@ -287,20 +287,20 @@ BOOL ExpCheck(PLAYER_STATS * pPS)
 							result += CONSTITUTION::mfGetHitPtAdjustment(pPS->mfGetCon()) *
 										hdDif.sbNumberOfDice;
 					}
-				
+
 					result /= num_classes;  /* multiclass: divide, rounding down  */
 					if (result < 1)         /* ... but never less than 1 hp/level */
 						result = 1;
-				
+
 					pPS->FullHitPts += result;
 					pPS->HitPts += result;
-	
+
 	/* go up a level */
 					pCL->Class[index].sbLevel++;
-	
+
 					if (pPS->Thac0 > pCL->mfGetBestThac0())  // THAC0 improved
 						pPS->Thac0 = pCL->mfGetBestThac0();
-						
+
 					// fix the regents array entry too, sigh...
 					{
 						SHORT regentnum;
@@ -318,7 +318,7 @@ BOOL ExpCheck(PLAYER_STATS * pPS)
 								regents[regentnum].mfIncLevel2(1);
 						}
 					}
-	
+
 					has_gained_level = TRUE;
 				pPS->Inventory.AddPriestSpells(pPS->hThis);
 			}
@@ -337,10 +337,10 @@ void GainRealmExp(LONG RegentIndex, const LONG ExpAmount,
 	{
 		AMultiPlayer.GainExpMessage(RegentIndex, ExpAmount, CanGainLevelNow );
 	}
-#endif	
+#endif
 
 	DumbAutoLockPtr< PLAYER_STATS > const pPS(playerstats[RegentIndex]);
-		
+
 	GainExp(pPS, ExpAmount, CanGainLevelNow);
 }
 
@@ -384,7 +384,7 @@ void GainExp(PLAYER_STATS * pPS, const LONG ExpAmount,
             /* split experience amongst the individual classes */
             pCD->ExperiencePts += ExpAmount / num_classes;
             /*-------------------------------------------------*/
-            printf("Class %d: +%d experience, now %d\n", index,
+            logInfo("Class %d: +%d experience, now %d", index,
                 ExpAmount / num_classes, pCD->ExperiencePts);
 
             // Can't gain more than one level
@@ -392,9 +392,9 @@ void GainExp(PLAYER_STATS * pPS, const LONG ExpAmount,
                 (xp_for_yet_another_level > xp_for_next_level))
             {
                 pCD->ExperiencePts = xp_for_yet_another_level - 1;
-                printf("With this much experience, could gain more "
-                       "than one level!\n");
-                printf("Chopping XP to %d\n", pCD->ExperiencePts);
+                logInfo("With this much experience, could gain more "
+                       "than one level!");
+                logInfo("Chopping XP to %d", pCD->ExperiencePts);
             }
 
             if (CanGainLevelNow && pCD->ExperiencePts > xp_for_next_level)
@@ -402,5 +402,3 @@ void GainExp(PLAYER_STATS * pPS, const LONG ExpAmount,
         }
     }
 }
-
-

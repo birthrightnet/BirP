@@ -119,7 +119,7 @@ void InitMenuSys(PMENU UserMenus, LONG Count)
 /* ========================================================================
    Function    - ResetMenus
 	Description - clear out old data
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void ResetMenus(void)
 {
@@ -166,12 +166,12 @@ void ShowMenu(LONG Index)
 	LONG i;
 	LONG xOff = 0;
 	LONG yOff = 0;
-	
-	
+
+
 	// simple error test
 	if (!MaxMenu)
 		return;
-	
+
 	// SysHideCursor();
 
 	// add this guy's index to the list of active menu
@@ -181,7 +181,7 @@ void ShowMenu(LONG Index)
 		// SysShowCursor();
 		return;
 	}
-	
+
 	// play a zoom sound
 	if( !fRestrictAni && (Menus[Index].Buttons[0].Flags & D_ZOOM))
 		AddSndObj(SND_UI_MENU_ZOOM_IN, 0, VOLUME_NINETY);
@@ -193,7 +193,7 @@ void ShowMenu(LONG Index)
 		if (!(Menus[Index].Buttons[0].Flags & D_KEEP_CR))
 			AddGlobalKeys();
 		fMenuClosed = FALSE;
-	}	
+	}
 
 	// add regions for all the sub-buttons
 	// the first button of a menus describes the background
@@ -201,7 +201,7 @@ void ShowMenu(LONG Index)
 	// buttons.
 	xOff = Menus[Index].Buttons[0].X;
 	yOff = Menus[Index].Buttons[0].Y;
-	
+
 	for (i = 1; i < Menus[Index].MenuButtonCount; i++ )
 	{
 		if (Menus[Index].Buttons[i].pfFunction)
@@ -220,9 +220,9 @@ void ShowMenu(LONG Index)
 				);
 		}
 	}
-	
+
 	//SysShowCursor();
-	
+
 }
 /* ========================================================================
    Function    -  HideThisMenu
@@ -246,7 +246,7 @@ void HideSubMenuWithClick(LONG MenuCombo, LONG index)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -260,7 +260,7 @@ void HideSubMenuWithClick(LONG MenuCombo, LONG index)
 	RunMenus();
 	update_screen();
 	TickDelay(4);
-	
+
 	HideMenu(index);
 	RunMenus();
 	ResumeTimeLimit();		// restart the countdown in timed multiplayer games
@@ -274,23 +274,23 @@ void HideSubMenuWithClick(LONG MenuCombo, LONG index)
 
 void HideMenu(LONG Index)
 {
-	
+
 	// simple error test
 	if (!MaxMenu)
 		return;
-	
+
 	if (!IsMenuActive(Index))
 	{
-#ifdef DEBUG	
+#ifdef DEBUG
 		// if we wish to debug multiple closes, we *could* put a
 		// fatal_error() or something here, but we're just going
 		// to allow it.
 #endif
 		return;
 	}
-	
+
 	// SysHideCursor();
-		
+
 	// play a zoom sound
 	if(fRemove[Index] != TRUE)
 		if(!fRestrictAni)
@@ -303,7 +303,7 @@ void HideMenu(LONG Index)
 			// clean up the mess left behind
 			fUpdatePanels = TRUE;
 		}
-	
+
 	if(fRemove[Index] != FALSE)
  	{
 		RemoveActiveMenu(Index);
@@ -317,19 +317,19 @@ void HideMenu(LONG Index)
 	{
 		RemoveActiveMenu(Index);		  // set ActiveMenus[Index] to -1
 	}
-	
+
 	if (!(Menus[Index].Buttons[0].Flags & D_NO_PUSH))
 	{
 		sMenusUp--;
-		
+
 		// GWP HACK CODE TO KEEP FROM GOING NEGATIVE.
 		if (sMenusUp < 0)
 			sMenusUp = 0;
 		fMenuClosed = TRUE;
 		pop_regions();
 	}
-	
-	
+
+
 	//clear any keys pending that we didn't handle
 	clear_key_status(0);
 	// SysShowCursor();
@@ -353,12 +353,12 @@ LONG AddActiveMenu( LONG Index )
 	for (i=0;i<MAX_ACTIVE_MENUS;i++)
 	{
 		amenu = ActiveMenus[i];
-	
+
 		if (amenu == Index)
 		{
 			return fERROR;
 		}
-			
+
 		if (amenu == -1)
 		{
 
@@ -382,7 +382,7 @@ LONG AddActiveMenu( LONG Index )
 				fStart[i].x = zoomStart.x;
 				fStart[i].y = zoomStart.y;
 			}
-			
+
 			if (Menus[Index].Buttons[0].Flags & D_FREEZE)
 			{
 				fFreeze = TRUE;
@@ -399,10 +399,10 @@ LONG AddActiveMenu( LONG Index )
 //		else
 //			Menus[amenu].Buttons[0].Flags |= D_UPDATE;
 	}
-	
+
 	if (i == MAX_ACTIVE_MENUS)
 		return fERROR;
-		
+
 	return i;
 }
 
@@ -418,7 +418,7 @@ void RemoveActiveMenu( LONG Index )
 	LONG amenu;
 	LONG j;
 	LONG menuIndex;
-	
+
 	for (i=0;i<MAX_ACTIVE_MENUS;i++)
 	{
 		amenu = ActiveMenus[i];
@@ -448,9 +448,9 @@ void RemoveActiveMenu( LONG Index )
 					if( menuIndex == -1)
 						continue;
 				}
-				
+
 				if (((!(Menus[Index].Buttons[0].Flags & D_ZOOM) ||
-					(fRestrictAni && Menus[Index].Buttons[0].Flags & D_ZOOM))) 
+					(fRestrictAni && Menus[Index].Buttons[0].Flags & D_ZOOM)))
 					&&
 					(Menus[Index].Buttons[0].Flags & D_FREEZE) )
 				{
@@ -460,7 +460,7 @@ void RemoveActiveMenu( LONG Index )
 					fPause = fPauseState[i];
 				}
 			}
-			
+
 
 
 			break;
@@ -493,7 +493,7 @@ void RunMenus(void)
 void PaintMenus(void)
 {
 	LONG	AMenu;
-	
+
 	for (AMenu=0;AMenu < MAX_ACTIVE_MENUS;AMenu++)
 	{
 		// if this slot not used, skip
@@ -525,16 +525,16 @@ void PaintActiveMenu(LONG AMenu)
 		return;
 
 	SysHideCursor();
-	
+
 	for (i = 0; i < Menus[CurMenu].MenuButtonCount; i++ )
 	{
 		const LONG X = X_RES_ADJ(Menus[CurMenu].Buttons[i].X);
 		const LONG Y = Y_RES_ADJ(Menus[CurMenu].Buttons[i].Y);
 		const LONG W = X_RES_ADJ(Menus[CurMenu].Buttons[i].W);
 		const LONG H = Y_RES_ADJ(Menus[CurMenu].Buttons[i].H);
-	
+
 		run_timers();
-	
+
 		if(i== 0)
 		{
 			xOff = 0;
@@ -635,7 +635,7 @@ void PaintActiveMenu(LONG AMenu)
 							if (CurMenu != D_INFOBOX)
 							{
 								cntSaveBkgnd--;
-	printf("MENU.C - ZoomOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
+								logInfo("MENU.C - ZoomOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 								if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 								{
 									SysHideCursor();
@@ -680,7 +680,7 @@ void PaintActiveMenu(LONG AMenu)
 								else
 									backGround[AMenu].w = fStart[AMenu].x - X - xOff;
 							}
-							
+
 							if(Y+yOff > fStart[AMenu].y)
 							{
 								backGround[AMenu].st.y = fStart[AMenu].y;
@@ -706,7 +706,7 @@ void PaintActiveMenu(LONG AMenu)
 									SysShowCursor();
 								}
 								cntSaveBkgnd++;
-printf("MENU.C - Zoom - cntSaveBkgnd: %d\n",cntSaveBkgnd);
+								logInfo("MENU.C - Zoom - cntSaveBkgnd: %d",cntSaveBkgnd);
 							}
 
 							hDest[AMenu] = SaveBitmap(backGround[AMenu].st.x, backGround[AMenu].st.y, backGround[AMenu].w, backGround[AMenu].h);
@@ -756,11 +756,11 @@ printf("MENU.C - Zoom - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 								fUpdatePanels = TRUE;
 								SetRedrawMainMapLevel();
 
-								
+
 //								if (CurMenu != D_INFOBOX)
 //								{
 									cntSaveBkgnd--;
-printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
+logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 									if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 									{
 										SysHideCursor();
@@ -771,7 +771,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 										hSaveBkgnd = fERROR;
 									}
 //								}
-					
+
 								if (Menus[CurMenu].Buttons[0].Flags & D_FREEZE)
 								{
 									fFreeze = FALSE;
@@ -786,12 +786,12 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									fStart[AMenu].x = screen_buffer_width-1;
 								else if(fStart[AMenu].x < 0)
 									fStart[AMenu].x = 0;
-								
+
 								if(fStart[AMenu].y > screen_buffer_height)
 									fStart[AMenu].y = screen_buffer_height-1;
 								else if(fStart[AMenu].y < 0)
 									fStart[AMenu].y = 0;
-								
+
 								if(X+xOff > fStart[AMenu].x)
 								{
 									backGround[AMenu].st.x = fStart[AMenu].x;
@@ -805,7 +805,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									else
 										backGround[AMenu].w = fStart[AMenu].x - X - xOff;
 								}
-								
+
 								if(Y+yOff > fStart[AMenu].y)
 								{
 									backGround[AMenu].st.y = fStart[AMenu].y;
@@ -819,7 +819,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									else
 										backGround[AMenu].h = fStart[AMenu].y - Y - yOff;
 								}
-						
+
 								backGround[AMenu].w++;//have to do this because of the uncertainty in sin.
 								backGround[AMenu].h++;
 
@@ -839,7 +839,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 										}
 										cntSaveBkgnd++;
 //									}
-					
+
 								hDest[AMenu] = SaveBitmap(backGround[AMenu].st.x, backGround[AMenu].st.y, backGround[AMenu].w, backGround[AMenu].h);
 								ScrollOpenBitmap(X + xOff, Y + yOff, hBitm, 0, 0, W, H,
 													hDest[AMenu], fStart[AMenu],
@@ -891,11 +891,11 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 								fUpdatePanels = TRUE;
 								SetRedrawMainMapLevel();
 
-								
+
 //								if (CurMenu != D_INFOBOX)
 //								{
 									cntSaveBkgnd--;
-printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
+logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 									if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 									{
 										SysHideCursor();
@@ -906,7 +906,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 										hSaveBkgnd = fERROR;
 									}
 //								}
-					
+
 								if (Menus[CurMenu].Buttons[0].Flags & D_FREEZE)
 								{
 									fFreeze = FALSE;
@@ -921,12 +921,12 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									fStart[AMenu].x = screen_buffer_width-1;
 								else if(fStart[AMenu].x < 0)
 									fStart[AMenu].x = 0;
-								
+
 								if(fStart[AMenu].y > screen_buffer_height)
 									fStart[AMenu].y = screen_buffer_height-1;
 								else if(fStart[AMenu].y < 0)
 									fStart[AMenu].y = 0;
-								
+
 								if(X+xOff > fStart[AMenu].x)
 								{
 									backGround[AMenu].st.x = fStart[AMenu].x;
@@ -940,7 +940,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									else
 										backGround[AMenu].w = fStart[AMenu].x - X - xOff;
 								}
-								
+
 								if(Y+yOff > fStart[AMenu].y)
 								{
 									backGround[AMenu].st.y = fStart[AMenu].y;
@@ -954,7 +954,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 									else
 										backGround[AMenu].h = fStart[AMenu].y - Y - yOff;
 								}
-						
+
 								backGround[AMenu].w++;//have to do this because of the uncertainty in sin.
 								backGround[AMenu].h++;
 
@@ -974,7 +974,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 										}
 										cntSaveBkgnd++;
 //									}
-					
+
 								hDest[AMenu] = SaveBitmap(backGround[AMenu].st.x, backGround[AMenu].st.y, backGround[AMenu].w, backGround[AMenu].h);
 								SpinInBitmap(X + xOff, Y + yOff, hBitm, 0, 0, W, H,
 													hDest[AMenu], fStart[AMenu],
@@ -1002,13 +1002,13 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
   			// buttons.
   			xOff = X_RES_ADJ(Menus[CurMenu].Buttons[0].X);
   				yOff = Y_RES_ADJ(Menus[CurMenu].Buttons[0].Y);
-			
+
 		}
 
 		// if this button invisible, don't paint it (simple, eh?)
 		if(	Menus[CurMenu].Buttons[i].Flags & D_INVISIBLE )
 			break;
-			
+
 		if(	Menus[CurMenu].Buttons[i].Flags & D_HILIGHTED )
 		{
 			if(Menus[CurMenu].Buttons[i].pHilight != 0)
@@ -1046,7 +1046,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 				}
 				break;
 			}
-		
+
 		}
 
 		// deal with the labels
@@ -1075,12 +1075,12 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 				init_gfont(FONT_TITL_16PT);
 			else
 				init_gfont(FONT_SANS_12PT);
-			
+
 			if (Menus[CurMenu].Buttons[i].Flags & D_TEXT_LEFT)
 			{
 				LONG labelColor;
 				// const LONG tOff = Y_RES_ADJ(4);
-				
+
 				if(	Menus[CurMenu].Buttons[i].Flags & D_HILIGHTED )
 				{
 					labelColor = Menus[CurMenu].Buttons[i].HilightLabelColor;
@@ -1099,7 +1099,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 			else
 			{
 				LONG labelColor;
-				
+
 				if(	Menus[CurMenu].Buttons[i].Flags & D_HILIGHTED )
 				{
 					labelColor = Menus[CurMenu].Buttons[i].HilightLabelColor;
@@ -1117,9 +1117,9 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 			}
 		}
 
-		//GEH Menus[CurMenu].Buttons[i].Flags &= ~D_UPDATE;	
+		//GEH Menus[CurMenu].Buttons[i].Flags &= ~D_UPDATE;
 	}
-	
+
 	if( Menus[CurMenu].Buttons[0].pfFunction != NULL )
 	{
 		(*Menus[CurMenu].Buttons[0].pfFunction)(
@@ -1127,7 +1127,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 			Menus[CurMenu].Buttons[0].Arg
 			);
 	}
-	
+
 	/* if we are rendering, we need to paint ourselves */
 	if(fRender)
 	{
@@ -1139,7 +1139,7 @@ printf("MENU.C -	 SpinOut - cntSaveBkgnd: %d\n",cntSaveBkgnd);
 		// don't paint if invisible
 		if( Menus[ActiveMenus[AMenu]].Buttons[0].Flags & D_INVISIBLE)
 			goto End;
-				
+
 		// Restore the following line when done with tests:
 		// ScreenCopy(0, Menus[CurMenu].Buttons[0].X, Menus[CurMenu].Buttons[0].Y, Menus[CurMenu].Buttons[0].W, Menus[CurMenu].Buttons[0].H,SC_HIGH_RES);
 		x = Menus[CurMenu].Buttons[0].X, y = Menus[CurMenu].Buttons[0].Y, w = Menus[CurMenu].Buttons[0].W, h = Menus[CurMenu].Buttons[0].H;
@@ -1169,7 +1169,7 @@ End:
 LONG SetButtonValue ( LONG MenuIndex, LONG ButtonId, LONG Val )
 {
 	LONG i;
-	
+
 	if (ButtonId == -1)
 	{
 		for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
@@ -1187,10 +1187,10 @@ LONG SetButtonValue ( LONG MenuIndex, LONG ButtonId, LONG Val )
 		// check for error
 		if (i == Menus[MenuIndex].MenuButtonCount)
 			return fERROR;
-			
+
 		Menus[MenuIndex].Buttons[i].Arg = Val;
 	}
-	
+
 	return fNOERR;
 }
 
@@ -1202,7 +1202,7 @@ LONG SetButtonValue ( LONG MenuIndex, LONG ButtonId, LONG Val )
 LONG GetButtonValue ( LONG MenuIndex, LONG ButtonId )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1211,7 +1211,7 @@ LONG GetButtonValue ( LONG MenuIndex, LONG ButtonId )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-			
+
 	return Menus[MenuIndex].Buttons[i].Arg;
 }
 
@@ -1225,7 +1225,7 @@ LONG GetButtonValue ( LONG MenuIndex, LONG ButtonId )
 PFVLL GetButtonProc ( LONG MenuIndex, LONG ButtonId)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
 			break;
@@ -1233,7 +1233,7 @@ PFVLL GetButtonProc ( LONG MenuIndex, LONG ButtonId)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return NULL;
-		
+
 	return Menus[MenuIndex].Buttons[i].pfFunction;
 }
 
@@ -1253,7 +1253,7 @@ PFVLL GetButtonProc ( LONG MenuIndex, LONG ButtonId)
 LONG SetButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LONG Key )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1262,11 +1262,11 @@ LONG SetButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LONG 
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].pfFunction = pFunc;
 	Menus[MenuIndex].Buttons[i].Arg = Val;
 	Menus[MenuIndex].Buttons[i].Key = Key;
-	
+
 	return fNOERR;
 }
 
@@ -1280,7 +1280,7 @@ LONG ChangeButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LO
 	LONG i;
 	LONG xOff = 0;
 	LONG yOff = 0;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1289,10 +1289,10 @@ LONG ChangeButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LO
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	xOff = Menus[MenuIndex].Buttons[0].X;
 	yOff = Menus[MenuIndex].Buttons[0].Y;
-	
+
 	// Update the regions code first before we lose the old pfFunction.
 	change_function(Menus[MenuIndex].Buttons[i].pfFunction,
 	                Menus[MenuIndex].Buttons[i].Key,
@@ -1303,12 +1303,12 @@ LONG ChangeButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LO
 					BUILD_LONG(MenuIndex, Menus[MenuIndex].Buttons[i].Id),
 	                Val,
 	                CHANGE_ALL_REGIONS);
-	
+
 	Menus[MenuIndex].Buttons[i].pfFunction = pFunc;
 	Menus[MenuIndex].Buttons[i].Arg = Val;
 	Menus[MenuIndex].Buttons[i].Key = Key;
-	
-	
+
+
 	return fNOERR;
 }
 
@@ -1320,7 +1320,7 @@ LONG ChangeButtonProc ( LONG MenuIndex, LONG ButtonId, PFVLL pFunc, LONG Val, LO
 LONG SetButtonLabel ( LONG MenuIndex, LONG ButtonId, int iLabel, LONG Color )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1329,7 +1329,7 @@ LONG SetButtonLabel ( LONG MenuIndex, LONG ButtonId, int iLabel, LONG Color )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].iLabel = iLabel;
 	if (Color != NO_CHANGE)
 	{
@@ -1342,12 +1342,12 @@ LONG SetButtonLabel ( LONG MenuIndex, LONG ButtonId, int iLabel, LONG Color )
    Function    - SetButtonToolTip
    Description - Change the tool tip string manager index. use fERROR
    				 to remove an existing tooltip.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 LONG SetButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1356,9 +1356,9 @@ LONG SetButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].idToolTip = NewToolTip;
-	
+
 	return fNOERR;
 }
 
@@ -1366,14 +1366,14 @@ LONG SetButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
    Function    - ChangeButtonToolTip
    Description - Change the tool tip string manager index. use fERROR
    				 to remove an existing tooltip.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 LONG ChangeButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
 {
 	LONG i;
 	LONG xOff = 0;
 	LONG yOff = 0;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1382,12 +1382,12 @@ LONG ChangeButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].idToolTip = NewToolTip;
-	
+
 	xOff = Menus[MenuIndex].Buttons[0].X;
 	yOff = Menus[MenuIndex].Buttons[0].Y;
-	
+
 	// Now update the regions code.
 	change_tooltip(Menus[MenuIndex].Buttons[i].pfFunction,
 	              Menus[MenuIndex].Buttons[i].Key,
@@ -1406,7 +1406,7 @@ LONG ChangeButtonToolTip(LONG MenuIndex, LONG ButtonId, LONG NewToolTip)
 LONG SetButtonLabelColor ( LONG MenuIndex, LONG ButtonId, LONG Color )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1415,7 +1415,7 @@ LONG SetButtonLabelColor ( LONG MenuIndex, LONG ButtonId, LONG Color )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].LabelColor = Color;
 	return fNOERR;
 }
@@ -1430,7 +1430,7 @@ LONG SetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG X, LONG Y )
 	LONG i;
 	LONG width;
 	LONG height = 0;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1439,7 +1439,7 @@ LONG SetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG X, LONG Y )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	// if not a full floating dialog, clip to the screen
 	if(!(Menus[MenuIndex].Buttons[i].Flags & D_FLOATER))
 	{
@@ -1453,7 +1453,7 @@ LONG SetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG X, LONG Y )
 				return fERROR;  // GWP It may still blow up if ShowMenu is called.
 			}
 		}
-		
+
 		// height = Y_RES_ADJ(Menus[MenuIndex].Buttons[i].H);
 		if ((Y + height) > window_height)
 		{
@@ -1464,7 +1464,7 @@ LONG SetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG X, LONG Y )
 			}
 		}
 	}
-	
+
 	Menus[MenuIndex].Buttons[i].X = X;
 	Menus[MenuIndex].Buttons[i].Y = Y;
 	return fNOERR;
@@ -1478,7 +1478,7 @@ LONG SetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG X, LONG Y )
 LONG SetButtonSize ( LONG MenuIndex, LONG ButtonId, LONG W, LONG H )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1487,7 +1487,7 @@ LONG SetButtonSize ( LONG MenuIndex, LONG ButtonId, LONG W, LONG H )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].W = W;
 	Menus[MenuIndex].Buttons[i].H = H;
 	return fNOERR;
@@ -1510,9 +1510,9 @@ LONG SetButtonArt ( LONG MenuIndex, LONG ButtonId, CSTRPTR pArtPath)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].pArt = pArtPath;
-	
+
 	return fNOERR;
 }
 
@@ -1533,9 +1533,9 @@ LONG SetButtonHilightArt ( LONG MenuIndex, LONG ButtonId, CSTRPTR pArtPath)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	Menus[MenuIndex].Buttons[i].pHilight = pArtPath;
-	
+
 	return fNOERR;
 }
 
@@ -1547,7 +1547,7 @@ LONG SetButtonHilightArt ( LONG MenuIndex, LONG ButtonId, CSTRPTR pArtPath)
 LONG SetButtonHilight ( LONG MenuIndex, LONG ButtonId, BOOL Hilight )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1556,12 +1556,12 @@ LONG SetButtonHilight ( LONG MenuIndex, LONG ButtonId, BOOL Hilight )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	if(Hilight)
 		Menus[MenuIndex].Buttons[i].Flags |= D_HILIGHTED;
 	else
 		Menus[MenuIndex].Buttons[i].Flags &= ~D_HILIGHTED;
-		
+
 	return fNOERR;
 }
 
@@ -1573,7 +1573,7 @@ LONG SetButtonHilight ( LONG MenuIndex, LONG ButtonId, BOOL Hilight )
 BOOL IsButtonHilighted ( LONG MenuIndex, LONG ButtonId)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1582,7 +1582,7 @@ BOOL IsButtonHilighted ( LONG MenuIndex, LONG ButtonId)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return FALSE;
-		
+
 	return Menus[MenuIndex].Buttons[i].Flags &D_HILIGHTED;
 }
 
@@ -1624,7 +1624,7 @@ LONG CleanUpdate( LONG MenuIndex, LONG ButtonId)
 	Menus[MenuIndex].Buttons[i].Flags &= ~D_UPDATE;
 	return fNOERR;
 }
-	
+
 /* ========================================================================
    Function    - GetButtonPosition
    Description - return the screen location of a button
@@ -1633,7 +1633,7 @@ LONG CleanUpdate( LONG MenuIndex, LONG ButtonId)
 LONG GetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG *X, LONG *Y )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1642,7 +1642,7 @@ LONG GetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG *X, LONG *Y )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	if(ButtonId == 0)
 	{
 		*X = Menus[MenuIndex].Buttons[0].X;
@@ -1653,7 +1653,7 @@ LONG GetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG *X, LONG *Y )
 		*X = Menus[MenuIndex].Buttons[0].X + Menus[MenuIndex].Buttons[i].X;
 		*Y = Menus[MenuIndex].Buttons[0].Y + Menus[MenuIndex].Buttons[i].Y;
 	}
-	
+
 	return fNOERR;
 }
 
@@ -1665,7 +1665,7 @@ LONG GetButtonPosition ( LONG MenuIndex, LONG ButtonId, LONG *X, LONG *Y )
 LONG GetButtonSize ( LONG MenuIndex, LONG ButtonId, LONG *W, LONG *H )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1674,10 +1674,10 @@ LONG GetButtonSize ( LONG MenuIndex, LONG ButtonId, LONG *W, LONG *H )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	*W = Menus[MenuIndex].Buttons[i].W;
 	*H = Menus[MenuIndex].Buttons[i].H;
-	
+
 	return fNOERR;
 }
 
@@ -1689,7 +1689,7 @@ LONG GetButtonSize ( LONG MenuIndex, LONG ButtonId, LONG *W, LONG *H )
 LONG GetButtonFlags ( LONG MenuIndex, LONG ButtonId )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1698,7 +1698,7 @@ LONG GetButtonFlags ( LONG MenuIndex, LONG ButtonId )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	return Menus[MenuIndex].Buttons[i].Flags;
 }
 
@@ -1710,7 +1710,7 @@ LONG GetButtonFlags ( LONG MenuIndex, LONG ButtonId )
 LONG SetButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1719,10 +1719,10 @@ LONG SetButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	// set new flag bit
 	Menus[MenuIndex].Buttons[i].Flags |= Flag;
-	
+
 	return Menus[MenuIndex].Buttons[i].Flags;
 }
 
@@ -1734,7 +1734,7 @@ LONG SetButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 LONG ClearButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1743,10 +1743,10 @@ LONG ClearButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	// clear flag bit
 	Menus[MenuIndex].Buttons[i].Flags &= ~Flag;
-	
+
 	return Menus[MenuIndex].Buttons[i].Flags;
 }
 
@@ -1758,7 +1758,7 @@ LONG ClearButtonFlag ( LONG MenuIndex, LONG ButtonId, LONG Flag )
 LONG SetButtonType ( LONG MenuIndex, LONG ButtonId, LONG Type )
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1767,10 +1767,10 @@ LONG SetButtonType ( LONG MenuIndex, LONG ButtonId, LONG Type )
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	// set new flag bit
 	Menus[MenuIndex].Buttons[i].btType = Type;
-	
+
 	return Menus[MenuIndex].Buttons[i].btType;
 }
 
@@ -1782,7 +1782,7 @@ LONG SetButtonType ( LONG MenuIndex, LONG ButtonId, LONG Type )
 LONG GetButtonLabel(LONG MenuIndex, LONG ButtonId, CSTRPTR *pLabel)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1791,7 +1791,7 @@ LONG GetButtonLabel(LONG MenuIndex, LONG ButtonId, CSTRPTR *pLabel)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	if(Menus[MenuIndex].Buttons[i].iLabel == -1)
 		*pLabel = NULL;
 	else
@@ -1807,7 +1807,7 @@ LONG GetButtonLabel(LONG MenuIndex, LONG ButtonId, CSTRPTR *pLabel)
 LONG GetButtonLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1816,7 +1816,7 @@ LONG GetButtonLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	*pLabelColor = Menus[MenuIndex].Buttons[i].LabelColor;
 
 	return fNOERR;
@@ -1830,7 +1830,7 @@ LONG GetButtonLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 LONG GetButtonHLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1839,7 +1839,7 @@ LONG GetButtonHLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	*pLabelColor = Menus[MenuIndex].Buttons[i].HilightLabelColor;
 
 	return fNOERR;
@@ -1853,7 +1853,7 @@ LONG GetButtonHLabelColor(LONG MenuIndex, LONG ButtonId, LONG *pLabelColor)
 LONG GetButtonArt(LONG MenuIndex, LONG ButtonId, CSTRPTR *pArt)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1862,7 +1862,7 @@ LONG GetButtonArt(LONG MenuIndex, LONG ButtonId, CSTRPTR *pArt)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	*pArt = Menus[MenuIndex].Buttons[i].pArt;
 
 	return fNOERR;
@@ -1876,7 +1876,7 @@ LONG GetButtonArt(LONG MenuIndex, LONG ButtonId, CSTRPTR *pArt)
 LONG GetButtonArg(LONG MenuIndex, LONG ButtonId)
 {
 	LONG i;
-	
+
 	for (i = 0; i < Menus[MenuIndex].MenuButtonCount; i++)
 	{
 		if (Menus[MenuIndex].Buttons[i].Id == ButtonId)
@@ -1885,7 +1885,7 @@ LONG GetButtonArg(LONG MenuIndex, LONG ButtonId)
 	// check for error
 	if (i == Menus[MenuIndex].MenuButtonCount)
 		return fERROR;
-		
+
 	return Menus[MenuIndex].Buttons[i].Arg;
 }
 
@@ -1897,35 +1897,35 @@ LONG GetButtonArg(LONG MenuIndex, LONG ButtonId)
 BOOL IsMenuActive(LONG MenuId)
 {
 	LONG	AMenu;
-	
+
 	for (AMenu=0;AMenu < MAX_ACTIVE_MENUS;AMenu++)
 	{
 		// if this slot not used, skip
 		if( ActiveMenus[AMenu] == MenuId)
 			return TRUE;
 	}
-	
+
 	return FALSE;
 }
 
 /* ========================================================================
    Function    - DrawMenuSaveBitmap
    Description - draw the current save background at this menu coord
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void DrawMenuSaveBitmap(LONG MenuId)
 {
 	SHORT amenu;
 	SHORT i;
-	
+
 	// NOTE: this is a really bad way to zoom and backgrounds.
 	// We will surely be dumping this in BR2
-	
+
 	// find the active menu
 	for (i=0;i<MAX_ACTIVE_MENUS;i++)
 	{
 		amenu = ActiveMenus[MenuId];
-	
+
 		if (amenu == MenuId)
 		{
 			SHORT	X = Menus[MenuId].Buttons[0].X-1;
@@ -2008,7 +2008,7 @@ void InvToStats(LONG a,LONG b)
 	//we'll turn these back on later.
 	Menus[D_AVATAR_INVENTORY].Buttons[0].Flags &=~D_ZOOM;
 	Menus[D_AVATAR_ATTRIBUTES].Buttons[0].Flags &=~D_ZOOM;
-	
+
 	HideMenu(D_AVATAR_INVENTORY);
 	hInvBitm = GetResourceStd (Menus[D_AVATAR_INVENTORY].Buttons[0].pArt, TRUE);
 	hStaBitm = GetResourceStd (Menus[D_AVATAR_ATTRIBUTES].Buttons[0].pArt, TRUE);
@@ -2027,14 +2027,14 @@ void InvToStats(LONG a,LONG b)
 		while (i>256)
 		{
 			clear_screen();
-			
+
 			ScaleBitmapX(0,0,hStaBitm,0,0,1000,1000,i);
 			print_textf(320,0,WHITE,"^F11%li (%li,%li)",i,cursor_x,cursor_y);
 			update_screen();
 			i/=multiplier;
 		}
-			
-			
+
+
 	}
 	ShowMenu(D_AVATAR_ATTRIBUTES);
 
@@ -2043,6 +2043,3 @@ void InvToStats(LONG a,LONG b)
 
 
 }
-	
-	
-	

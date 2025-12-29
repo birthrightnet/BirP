@@ -65,7 +65,7 @@ extern BOOL IsRelicFound( SHORT PlacesIndex );
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
-	
+
 
 // GWP char *EXIT_POINT::fcpDefaultScene = "worldmap";
 char *EXIT_POINT::fcpDefaultScene = "castle";
@@ -79,7 +79,7 @@ char *EXIT_POINT::fcpDefaultScene = "castle";
 static LONG ComputePlayerStart()
 {
 	LONG Result;
-	
+
 	if (player.a < 32 || player.a > 224)
 	{
 		// If you are facing North, Therefore you are looking at the South entrance.
@@ -103,9 +103,9 @@ static LONG ComputePlayerStart()
 		// If you are facing West, Therefore you are looking at the East entrance.
 		Result = TYPE_PLAYERSTART2;
 	}
-	
+
 	return Result;
-	
+
 }
 
 
@@ -155,7 +155,7 @@ inline void SCENE::mfWritePalletName(FILE * fp)
 inline void SCENE::mfWriteMap(FILE *fp)
 {
 	const LONG count = fMapData.mfCountOfChanges();
-	
+
 	if (count > 0)
 	{
 		fprintf(fp, "[Map]\n%ld\n", count);
@@ -190,7 +190,7 @@ inline void SCENE::mfWritePanoramaData (FILE *fp)
 inline void SCENE::mfWriteCameraData(FILE *fp)
 {
 	const LONG count = fCameraData.mfCountOfChanges();
-	
+
 	if (count > 0)
 	{
 		fprintf(fp, "[Camera]\n%ld\n", count);
@@ -241,44 +241,44 @@ inline void SCENE::mfWriteMusicData (FILE *fp)
 void SCENE::mfInitializeData()
 {
 	fSceneAI.mfInitVals();
-	
+
 	for (LONG i=0; i < MAX_AVATARS; i++)
 	{
 		Avatars[i] = fERROR;
 	}
-	
+
 	InitSoundThings();
 
 	fMaxPlaces = 0;
 	fhPlaces = fERROR;
-	
+
 	fMaxSectors = 0;
 	fhSectors = fERROR;
-	
+
 	fMaxKeys = 0;
 	fhKeys = fERROR;
-	
+
 	fMaxExitPoints = 0;
 	fhExitPoints = fERROR;
-	
+
 	fMaxNotes = 0;
 	fhNotes = fERROR;
-	
+
 	fMaxDialogTriplines = 0;
 	fhDialogTriplines = fERROR;
-	
+
 	fVersion.mfInitVals();
-	
+
 	fMapData.mfInitVals();
-	
+
 	fCameraData.mfInitVals();
-	
+
 	fPanoramaData.mfInitVals();
-	
+
 	fSelfRunningDemoData.mfInitVals();
-	
+
 	fOpeningDialog = STR_NULL;
-	
+
 #if defined(SCENE_EDITOR)
 	// Needed for scene editing.
 	fcpWadName[0] = 0;
@@ -286,7 +286,7 @@ void SCENE::mfInitializeData()
 #endif
 
 	cpThisSceneName[0] = 0;
-	
+
 	// At the momement these are the same for all scenes.
 	SetMouseClicked(iOBJECT, SCENE::mfSceneButtonObject);
 #if defined(TEST_MOVEMENT)
@@ -315,32 +315,32 @@ void SCENE::mfLoadScene(char * cpSceneFile,
 	TurnOffAllSounds();
 	SuspendMusic();
 	fVersion.mfInitVals();
-	
+
 	fMaxPlaces = 0;
 	fhPlaces = fERROR;
-	
+
 	fMaxSectors = 0;
 	fhSectors = fERROR;
-	
+
 	fMapData.mfInitVals();
-	
+
 	fCameraData.mfInitVals();
-	
+
 	fSelfRunningDemoData.mfInitVals();
-	
+
 	fMaxDialogTriplines = 0;
 	fhDialogTriplines = fERROR;
-	
+
 	fOpeningDialog = STR_NULL;
-	
+
 	// Load the .scn file.
 	mfReadSceneFile(cpSceneFile, playerStartLocation);
 
 	if (!fVersion.mfIsSet())
 	{
-		printf("WARNING! Scene File version data missing! File %s\n", cpSceneFile);
+		logWarn("Scene File version data missing! File %s", cpSceneFile);
 	}
-	
+
 #if defined(_SELF_RUNNING_DEMO)
 	if (fSelfRunningDemoData.mfIsSet())
 	{
@@ -366,12 +366,12 @@ void SCENE::mfReadSceneFile(char *szName,
 	LONG fileResult;
 	BOOL WadSeen = FALSE;
 
-	printf("Loading scene %s\n", szName);
+	logInfo("Loading scene %s", szName);
 
 	strcat(cpSceneFileName, szName);
 	//GEH strcat(cpSceneFileName, ".scn");
 	strcat(cpSceneFileName, SCENEFILE_EXT);
-	
+
 	fp = FileOpen(cpSceneFileName,"r");
 
 	if (fp == NULL)
@@ -387,7 +387,7 @@ void SCENE::mfReadSceneFile(char *szName,
 	do
 	{
 		fileResult = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
-		
+
 		if (fileResult != EOF)
 		{
 			if (strcmp(cpBuffer, "[Version]") == 0)
@@ -486,14 +486,14 @@ void SCENE::mfReadSceneFile(char *szName,
 			{
 				fileResult = mfReadOpeningDialog(fp);
 			}
-			
+
 		}
-		
+
 	} while (fileResult != EOF);
 
 
 	FileClose(fp);
-	
+
 	if (!WadSeen)
 	{
 		fatal_error(
@@ -501,7 +501,7 @@ void SCENE::mfReadSceneFile(char *szName,
 			cpSceneFileName);
 	}
 
-	printf("Done loading scene\n");
+	logInfo("Done loading scene.");
 }
 
 /* ========================================================================
@@ -509,9 +509,9 @@ void SCENE::mfReadSceneFile(char *szName,
 	Description - read for the user data sections
 	Returns     - scene type
 	======================================================================== */
-SCENE::SCENE_TYPE mfReadUserSceneData( 
-	CHAR *cpScenePath, 
-	SCENE::SCENE_DATA *SceneData 
+SCENE::SCENE_TYPE mfReadUserSceneData(
+	CHAR *cpScenePath,
+	SCENE::SCENE_DATA *SceneData
 )
 {
 	FILE *fp;
@@ -531,7 +531,7 @@ SCENE::SCENE_TYPE mfReadUserSceneData(
 	do
 	{
 		fileResult = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
-		
+
 		if (fileResult != EOF)
 		{
 			if (strcmp(cpBuffer, "[Wad]") == 0)
@@ -555,33 +555,33 @@ SCENE::SCENE_TYPE mfReadUserSceneData(
 				fileResult = mfReadUserDifficulty(fp, SceneData);
 			}
 		}
-		
+
 	} while (fileResult != EOF);
 
 	FileClose(fp);
-	
-	printf("Done loading scene\n");
-	
+
+	logInfo("Done loading scene.");
+
 	return SceneType;
 }
 
 /* ========================================================================
    Function    - mfReadOpeningDialog
    Description - Read the Opening dialog data section of the scene file.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 LONG SCENE::mfReadOpeningDialog(FILE * fp)
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		 fOpeningDialog = (LONG) atol(cpBuffer);
 		 fOpeningDialog += STR_OPENING_DIALOG_BASE_NUMBER;
 	}
-	
+
 	return Result;
 }
 
@@ -594,12 +594,12 @@ LONG SCENE::mfReadExits(FILE *fp)
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		SHORT MaxExitPoints = (SHORT) atol(cpBuffer);
-		
+
 		if (MaxExitPoints > fMaxExitPoints)
 		{
 			if (fhExitPoints != fERROR)
@@ -609,7 +609,7 @@ LONG SCENE::mfReadExits(FILE *fp)
 			fMaxExitPoints = MaxExitPoints;
 			fhExitPoints = NewBlock(sizeof (EXIT_POINT) * fMaxExitPoints);
 		}
-		
+
 		if (fhExitPoints == fERROR)
 		{
 			Result = EOF; // Terminate the file read we're out of memory.
@@ -617,10 +617,10 @@ LONG SCENE::mfReadExits(FILE *fp)
 		else
 		{
 			LONG j;
-			
+
 			SetBlockAttr(fhExitPoints, LOCKED, LOCKED);
 			PTR_EXIT_POINTS pExits = (PTR_EXIT_POINTS) BLKPTR(fhExitPoints);
-			
+
 			for (j = 0; j < MaxExitPoints && Result != EOF; j++)
 			{
 				Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -629,7 +629,7 @@ LONG SCENE::mfReadExits(FILE *fp)
 					pExits[j].mfCreateExitPoint(cpBuffer);
 				}
 			}
-			
+
 			ClrLock(fhExitPoints);
 		}
 	}
@@ -645,7 +645,7 @@ LONG SCENE::mfReadDialogTripLines(FILE *fp)
 {
 	char cpBuffer[128];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
@@ -656,12 +656,12 @@ LONG SCENE::mfReadDialogTripLines(FILE *fp)
 			{
 				DumbHandleArray<DIALOG_TRIPLINES> pDialogTriplines(fhDialogTriplines);
 				LONG i;
-				
+
 				for(i = 0; i < fMaxDialogTriplines; i++)
 				{
 					pDialogTriplines[i].mfInitVals();
 				}
-				
+
 				for(i = 0; i < fMaxDialogTriplines && Result != EOF; i++)
 				{
 					Result = pDialogTriplines[i].mfReadData(fp);
@@ -685,7 +685,7 @@ LONG SCENE::mfReadQuestThingType(FILE *fp)
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
@@ -710,12 +710,12 @@ LONG SCENE::mfReadNotes(FILE *fp)
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		SHORT MaxNotes = (SHORT) atol(cpBuffer);
-		
+
 		if (MaxNotes > fMaxNotes)
 		{
 			if (fhNotes != fERROR)
@@ -725,7 +725,7 @@ LONG SCENE::mfReadNotes(FILE *fp)
 			fMaxNotes = MaxNotes;
 			fhNotes = NewBlock(sizeof (SCN_NOTE) * fMaxNotes);
 		}
-		
+
 		if (fhNotes == fERROR)
 		{
 			Result = EOF; // Terminate the file read we're out of memory.
@@ -733,10 +733,10 @@ LONG SCENE::mfReadNotes(FILE *fp)
 		else
 		{
 			LONG j;
-			
+
 			SetBlockAttr(fhNotes, LOCKED, LOCKED);
 			SCN_NOTE * const pNotes = (SCN_NOTE * const) BLKPTR(fhNotes);
-			
+
 			for (j = 0; j < MaxNotes && Result != EOF; j++)
 			{
 				Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -744,7 +744,7 @@ LONG SCENE::mfReadNotes(FILE *fp)
 				{
 					LONG	NoteNumber;
 					LONG	StringId;
-					
+
 					if (2 == sscanf(cpBuffer,"%ld %ld", &NoteNumber, &StringId))
 					{
 						pNotes[j].mfSetNoteData((SBYTE)NoteNumber, (GAME_STRING)StringId);
@@ -755,7 +755,7 @@ LONG SCENE::mfReadNotes(FILE *fp)
 					}
 				}
 			}
-			
+
 			ClrLock(fhNotes);
 		}
 	}
@@ -774,22 +774,22 @@ LONG SCENE::mfReadWad(FILE *fp,
                       LONG playerStartLocation)
 {
 	char cpBuffer[40] = { "wads\\" };
-	
+
 	const LONG Result = GetNextLine(fp, &cpBuffer[5], sizeof(cpBuffer) - 5);
 	if (Result != EOF)
 	{
 		load_new_wad(cpBuffer, playerStartLocation);
-		
+
 		// Connect up the AutoAI's (Avatars found in the wad.)
 		// This is done here before we add the scene Avatars.
 		mfAttachAutoAIsAndThingSnds();
-		
+
 #if defined(SCENE_EDITOR)
 		strncpy(fcpWadName, cpBuffer, sizeof(fcpWadName) - 1);
 		fcpWadName[sizeof(fcpWadName) - 1] = 0;
 #endif
 	}
-		
+
 	return Result;
 }
 
@@ -801,14 +801,14 @@ LONG SCENE::mfReadWad(FILE *fp,
 LONG SCENE::mfReadPallet(FILE *fp)
 {
 	char cpBuffer[128];
-	
+
 	const LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		strncpy(fcpPalName, cpBuffer, sizeof(fcpPalName) - 1);
 		fcpPalName[sizeof(fcpPalName) - 1] = 0;
 	}
-	
+
 	return Result;
 }
 
@@ -823,36 +823,36 @@ LONG SCENE::mfReadAvatars(FILE *fp)
 	LONG j;
 	char cpBuffer[128];
 	LONG count;
-	
-	
+
+
 	LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 		count = atol(cpBuffer);
-	
+
 	for (j = 0; j < count && Result != EOF; j++)
 	{
 		LONG tID, tX, tY, tZ, tA;
 		REALM::REALM_TYPE RealmType = SCENE_MGR::Aggressor;
 		CAvatar::AIFUNC AIIndex;
 		Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
-		
+
 		// Takes an optional realm type.
 		if (Result != EOF && sscanf(cpBuffer, "%ld %ld %ld %ld %ld %ld %ld",
 			&tID, &tX, &tY, &tZ, &tA, &AIIndex, &RealmType) >= 6)
 		{
-			printf("loading Avatar %d\n",tID);
+			logInfo("loading Avatar %d",tID);
 			LONG lMemoryAvail = ReportFreeMem(TRUE);
-			
-			printf("Free memory before load...%ld\n", lMemoryAvail);
+
+			logInfo("Free memory before load...%ld", lMemoryAvail);
 			while( i < MAX_AVATARS && Avatars[i] != fERROR)
 			{
 				i++;
 			}
-			
+
 			if (i < MAX_AVATARS)
 			{
 				Avatars[i] = CAvatar::NewAvatar();
-				
+
 				if (Avatars[i] != fERROR)
 				{
 					//GEH SetBlockAttr(Avatars[i], LOCKED, LOCKED);
@@ -864,39 +864,39 @@ LONG SCENE::mfReadAvatars(FILE *fp)
 						pPlayerStats->mfMemorizeAllInvSpells();
 						pAvatar->ThingType = pPlayerStats->mfGetType();
 						pAvatar->Id = tID;
-						
+
 					}
 					else
 					{
-						printf("WARNING! Unable to load Avatar %d\n", tID);
+						logWarn("Unable to load Avatar %d", tID);
 						// GWP We call this instead of DeleteAvatar for Debug purposes
 						DisposBlock(Avatars[i]);
 						Avatars[i] = fERROR;
 						i--;
 						continue;
 					}
-					
+
 					pAvatar->mfDefineCThing(pAvatar->mfType(), tX, tY, tZ, tA, 0, 0, 0);
 					pAvatar->SetAIFuncIndex(AIIndex);
 					pAvatar->mfInitVals();
 					pAvatar->Id = tID;
 					pAvatar->Realm.HomeRealm = RealmType;
-			
+
 					Result = pAvatar->mfReadRestOfSceneData(fp);
 					//GEH ClrLock(Avatars[i]);
-					printf("Memory used after load...%ld\n", (lMemoryAvail - ReportFreeMem(TRUE)));
+					logInfo("Memory used after load...%ld", (lMemoryAvail - ReportFreeMem(TRUE)));
 				}
 			}
 			else //i > MAX_AVATARS)
 			{
 				// Keep reading them from the scene file so we can read
 				// the other data sections.
-				printf("WARNING! Exceeded number of avatars!.");
+				logWarn("Exceeded number of avatars!.");
 			}
 		}
 		else
 		{
-			printf("WARNING! Bad Avatar data in the scene file. %s\n", cpBuffer);
+			logWarn("Bad Avatar data in the scene file. %s", cpBuffer);
 		}
 	}
 	return Result;
@@ -911,15 +911,15 @@ LONG SCENE::mfReadPlaces(FILE *fp)
 {
 	char cpBuffer[80];
 	LONG j;
-	
-	
+
+
 	LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		fMaxPlaces = (SHORT) atol(cpBuffer);
-			
+
 		fhPlaces = NewBlock(sizeof (PLACE) * fMaxPlaces);
-		
+
 		if (fhPlaces == fERROR)
 		{
 			Result = EOF; // Terminate the file read we're out of memory.
@@ -928,7 +928,7 @@ LONG SCENE::mfReadPlaces(FILE *fp)
 		{
 			SetBlockAttr(fhPlaces, LOCKED, LOCKED);
 			PTR_PLACES pPlaces = (PTR_PLACES) BLKPTR(fhPlaces);
-			
+
 			for (j = 0; j < fMaxPlaces && Result != EOF; j++)
 			{
 				Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -937,11 +937,11 @@ LONG SCENE::mfReadPlaces(FILE *fp)
 					pPlaces[j].mfCreatePlace(cpBuffer);
 				}
 			}
-			
+
 			ClrLock(fhPlaces);
 		}
 	}
-	
+
 	return Result;
 }
 
@@ -953,15 +953,15 @@ LONG SCENE::mfReadPlaces(FILE *fp)
 LONG SCENE::mfReadSectors(FILE *fp)
 {
 	char cpBuffer[80];
-	
-	
+
+
 	LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		fMaxSectors = (SHORT) atol(cpBuffer);
-		
+
 		fhSectors = NewBlock(sizeof (SCN_SECTOR) * fMaxSectors);
-		
+
 		if (fhSectors == fERROR)
 		{
 			Result = EOF; // Terminate the file read we're out of memory.
@@ -969,10 +969,10 @@ LONG SCENE::mfReadSectors(FILE *fp)
 		else
 		{
 			LONG j;
-			
+
 			SetBlockAttr(fhSectors, LOCKED, LOCKED);
 			PTR_SCN_SECTORS pSectors = (PTR_SCN_SECTORS) BLKPTR(fhSectors);
-			
+
 			for (j = 0; j < fMaxSectors && Result != EOF; j++)
 			{
 				Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -981,12 +981,12 @@ LONG SCENE::mfReadSectors(FILE *fp)
 					pSectors[j].mfCreateSector(cpBuffer);
 				}
 			}
-			
+
 			ClrLock(fhSectors);
 		}
-		
+
 	}
-		
+
 	return Result;
 }
 /* ========================================================================
@@ -1046,16 +1046,16 @@ LONG SCENE::mfReadBattleExceptions(FILE *fp)
 	LONG count;
 	LONG Result;
 	SHORT r,c,t;
-	
+
 	// clear old exceptions out
 	memset(BtlExceptions, 0, sizeof(SHORT) * GRID_MAX_ROWS * GRID_MAX_COLS);
-	
+
 	// Get the number of exceptions.
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		count = atol(cpBuffer);
-	
+
 		for (j = 0; j < count && Result != EOF; j++)
 		{
 			Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -1080,13 +1080,13 @@ LONG SCENE::mfReadBattleExceptions(FILE *fp)
 LONG SCENE::mfReadKeys(FILE *fp)
 {
 	char cpBuffer[80];
-	
+
 	LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		SHORT MaxKeys = (SHORT) atol(cpBuffer);
 		LONG j = 0;
-		
+
 		if (MaxKeys > fMaxKeys)
 		{
 			HDL_KEYS hNewKeys = NewBlock(sizeof (HDL_KEY) * MaxKeys);
@@ -1096,7 +1096,7 @@ LONG SCENE::mfReadKeys(FILE *fp)
 				if (fhKeys != fERROR)
 				{
 					PTR_KEYS pOldKeys = (PTR_KEYS) BLKPTR(fhKeys);
-					
+
 					// Copy in the old memory handles for reuse.
 					for (j = 0; j < fMaxKeys; j++)
 					{
@@ -1104,7 +1104,7 @@ LONG SCENE::mfReadKeys(FILE *fp)
 					}
 					DisposBlock(fhKeys);
 				}
-				
+
 				// Initialize the rest.
 				for (; j < MaxKeys; j++)
 				{
@@ -1118,14 +1118,14 @@ LONG SCENE::mfReadKeys(FILE *fp)
 				// We couldn't get more memory, so use what we had.
 				MaxKeys = fMaxKeys;
 			}
-			
+
 		}
-		
+
 		if (fhKeys != fERROR)
 		{
 			SetBlockAttr(fhKeys, LOCKED, LOCKED);
 			PTR_KEYS pKeys = (PTR_KEYS) BLKPTR(fhKeys);
-			
+
 			for (j = 0; j < MaxKeys && Result != EOF; j++)
 			{
 				Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
@@ -1140,14 +1140,14 @@ LONG SCENE::mfReadKeys(FILE *fp)
 							break;
 						}
 					}
-					
+
 					SetBlockAttr(pKeys[j], LOCKED, LOCKED);
 					PTR_KEY pKey = (PTR_KEY) BLKPTR(pKeys[j]);
 					pKey->mfCreateKey(cpBuffer, pKeys[j]);
 					ClrLock(pKeys[j]);
 				}
 			}
-			
+
 			ClrLock(fhKeys);
 		}
 	}
@@ -1164,7 +1164,7 @@ void SCENE::mfDeletePlaces()
 	{
 		SetBlockAttr(fhPlaces, LOCKED, LOCKED);
 		PTR_PLACES pPlaces = (PTR_PLACES) BLKPTR(fhPlaces);
-		
+
 		for (LONG i = 0; i < fMaxPlaces; i++)
 		{
 			if (pPlaces[i].ThingIndex != fERROR)
@@ -1218,7 +1218,7 @@ void SCENE::mfReleaseExits()
 	{
 		SetBlockAttr(fhExitPoints, LOCKED, LOCKED);
 		PTR_EXIT_POINTS pExits = (PTR_EXIT_POINTS) BLKPTR(fhExitPoints);
-		
+
 		for (LONG i = 0; i < fMaxExitPoints; i++)
 		{
 			pExits[i].mfInitVals();
@@ -1234,12 +1234,12 @@ void SCENE::mfReleaseExits()
 GAME_STRING const SCENE::mfGetNote(LONG const NoteId) const
 {
 	GAME_STRING Result = STR_NULL;
-	
+
 	if (fMaxNotes > 0 && fhNotes != fERROR)
 	{
 		SCN_NOTE const * const pNotes  = (SCN_NOTE const * const) BLKPTR(fhNotes);
 		LONG i;
-		
+
 		for (i = 0; i < fMaxNotes; i++)
 		{
 			if (pNotes[i].mfGetNoteNumber() == NoteId)
@@ -1249,7 +1249,7 @@ GAME_STRING const SCENE::mfGetNote(LONG const NoteId) const
 			}
 		}
 	}
-	
+
 	return Result;
 }
 
@@ -1278,7 +1278,7 @@ void SCENE::mfReleaseNotes()
 	{
 		SetBlockAttr(fhNotes, LOCKED, LOCKED);
 		SCN_NOTE * const pNotes = (SCN_NOTE * const) BLKPTR(fhNotes);
-		
+
 		for (LONG i = 0; i < fMaxNotes; i++)
 		{
 			pNotes[i].mfInitVals();
@@ -1297,21 +1297,21 @@ void SCENE::mfDeleteKeys()
 	{
 		SetBlockAttr(fhKeys, LOCKED, LOCKED);
 		PTR_KEYS pKeys = (PTR_KEYS) BLKPTR(fhKeys);
-		
+
 		for (LONG i = 0; i < fMaxKeys; i++)
 		{
 			if (pKeys[i] != fERROR)
 			{
 				PTR_KEY pKey = (PTR_KEY) BLKPTR(pKeys[i]);
-				
+
 				KEYSTRUCT ThisKeyStruct;
-				
+
 				// Reset the previous key;
 				if (pKey->mfGetKeyId() != NO_KEY)
 				{
 					replace_key(pKey->mfGetKeyId(), pKey->mfGetPrevFunc(), pKey->mfGetPrevVal(), &ThisKeyStruct);
 				}
-				
+
 				DisposBlock(pKeys[i]);
 				pKeys[i] = fERROR;
 			}
@@ -1334,15 +1334,15 @@ void SCENE::mfReleaseKeys()
 	{
 		SetBlockAttr(fhKeys, LOCKED, LOCKED);
 		PTR_KEYS pKeys = (PTR_KEYS) BLKPTR(fhKeys);
-		
+
 		for (LONG i = 0; i < fMaxKeys; i++)
 		{
 			if (pKeys[i] != fERROR)
 			{
 				PTR_KEY pKey = (PTR_KEY) BLKPTR(pKeys[i]);
-				
+
 				KEYSTRUCT ThisKeyStruct;
-				
+
 				// Reset the previous key;
 				if (pKey->mfGetKeyId() != NO_KEY)
 				{
@@ -1383,7 +1383,7 @@ void SCENE::mfDeleteAvatar(SHORT hAvatar)
 {
 	LONG i;
 	PTR_SCENE pScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
 	for (i=0; i<MAX_AVATARS; i++)
 	{
 		if (pScene->Avatars[i] == hAvatar)
@@ -1404,7 +1404,7 @@ void SCENE::mfReleaseAvatars()
 {
 	LONG	i;
 	CAvatar *pAvatar;
-	
+
 	for(i = 0; i < MAX_AVATARS; i++ )
 	{
 		if( Avatars[i] != fERROR)
@@ -1446,17 +1446,17 @@ void SCENE::mfSceneButtonObject(
 	LONG objClicked,
 	LONG ) //typeClicked
 {
-	
+
 	mouse_click = 0;
 	if (SCENE_MGR::hCurrentScene != fERROR)
 	{
 		LONG i;
 		BOOL bClickHandled = FALSE;
 		BOOL bObjFound = FALSE;
-		
+
 		SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 		PTR_SCENE pScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-		
+
 		for (i = 0; i < MAX_AVATARS; i++)
 		{
 			if (pScene->Avatars[i] != fERROR)
@@ -1468,7 +1468,7 @@ void SCENE::mfSceneButtonObject(
 					// If the avatar dosen't have a button fn that's ok. It
 					// may be dead.
 					bClickHandled = TRUE;
-					
+
 					if (butClicked == 2 && pAvatar->RightButtonFn)
 					{
 						pAvatar->RightButtonFn(pAvatar);
@@ -1478,15 +1478,15 @@ void SCENE::mfSceneButtonObject(
 					{
 						pAvatar->LeftButtonFn(pAvatar);
 					}
-					
+
 				}
 			}
 		}
-		
+
 		if (bObjFound == FALSE && pScene->fhPlaces != fERROR)
 		{
 			PTR_PLACES pPlaces = (PTR_PLACES) BLKPTR(pScene->fhPlaces);
-			
+
 			for (i = 0; i < pScene->fMaxPlaces; i++)
 			{
 				if (pPlaces[i].ThingIndex != fERROR)
@@ -1495,21 +1495,21 @@ void SCENE::mfSceneButtonObject(
 					{
 						bObjFound = TRUE;
 						bClickHandled = TRUE;
-						
+
 						SCENE_MGR::mfRequestNewScene(pPlaces[i].mfGetSceneName(), ComputePlayerStart(), TRUE);
 						break;
 					}
 				}
 			}
 		}
-		
+
 #if defined(DEMO_ONLY_CODE)
 		// Even if we find found it to be an Avatar if we couldn't do any dialog
 		// do some default action.
 		if (bClickHandled == FALSE && butClicked == 1)
 		{
 			const LONG type = mythings[objClicked].type;
-			
+
 			// GWP Since it wasn't a place and it isn't an avatar, it must be
 			//     a wad makers thing. put up a generic info dialog.
 			//GWP DEMO Code!
@@ -1523,10 +1523,10 @@ void SCENE::mfSceneButtonObject(
 			    )
 			{
 				LONG i;
-				
+
 				for (i=0; i<MAX_AVATARS && pScene->Avatars[i] != fERROR; i++)
 				{}
-				
+
 				if (i >= MAX_AVATARS)
 				{
 					i = fERROR; 			// We have no more slots!
@@ -1538,42 +1538,42 @@ void SCENE::mfSceneButtonObject(
 					{
 						//GEH SetBlockAttr(hAvatar, LOCKED, LOCKED);
 						CAvatar *pAvatar = (CAvatar *) BLKPTR(hAvatar);
-						
+
 						pAvatar->attrib.RuntimeCreated = TRUE;	// Don't save!
-						
+
 						// Fix up the CThing Data.
 						pAvatar->ThingIndex = objClicked;
 						pAvatar->mfSetType((THINGTYPE) type);
 						pAvatar->RightButtonFn = 0;
 						pAvatar->LeftButtonFn = 0;
 						pAvatar->RightButtonFn = 0;
-						
+
 						pAvatar->SetAIFuncIndex(CAvatar::AI_FUNC_STAND_STILL);
-						
+
 						pAvatar->Status = CAvatar::AI_INIT;
 						pAvatar->CurSequence = INITSEQ;
-						
+
 						if (pAvatar->mfAngle() < 0)
 						{
 							pAvatar->FaceTo(PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y));
 						}
-						
+
 						// Now call the buttonhandler.
 						pAvatar->LeftButtonFn(pAvatar);
 						//GEH ClrLock(hAvatar);
-						
+
 						pScene->Avatars[i] = hAvatar;
 					}
 				}
-				
+
 			}
-			
+
 		}
 		else
 		if (bClickHandled == FALSE && butClicked == 2)
 		{
 			const LONG type = mythings[objClicked].type;
-			
+
 			// GWP Since it wasn't a place and it isn't an avatar, it must be
 			//     a wad makers thing. put up a generic info dialog.
 			//GWP DEMO Code!
@@ -1587,10 +1587,10 @@ void SCENE::mfSceneButtonObject(
 			    )
 			{
 				LONG i;
-				
+
 				for (i=0; i<MAX_AVATARS && pScene->Avatars[i] != fERROR; i++)
 				{}
-				
+
 				if (i >= MAX_AVATARS)
 				{
 					i = fERROR; 			// We have no more slots!
@@ -1602,39 +1602,39 @@ void SCENE::mfSceneButtonObject(
 					{
 						//GEH SetBlockAttr(hAvatar, LOCKED, LOCKED);
 						CAvatar *pAvatar = (CAvatar *) BLKPTR(hAvatar);
-						
+
 						pAvatar->attrib.RuntimeCreated = TRUE;	// Don't save!
-						
+
 						// Fix up the CThing Data.
 						pAvatar->ThingIndex = objClicked;
 						pAvatar->mfSetType((THINGTYPE) type);
 						pAvatar->LeftButtonFn = 0;
 						pAvatar->RightButtonFn = 0;
-						
+
 						pAvatar->SetAIFuncIndex(CAvatar::AI_FUNC_STAND_STILL);
-						
+
 						pAvatar->Status = CAvatar::AI_INIT;
 						pAvatar->CurSequence = INITSEQ;
-						
+
 						if (pAvatar->mfAngle() < 0)
 						{
 							pAvatar->FaceTo(PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y));
 						}
-						
+
 						// Now call the buttonhandler.
 						pAvatar->RightButtonFn(pAvatar);
 						//GEH ClrLock(hAvatar);
-						
+
 						pScene->Avatars[i] = hAvatar;
 					}
 				}
-				
+
 			}
-			
+
 		}
 #endif // DEMO_ONLY_CODE
 		//GEH ClrLock(SCENE_MGR::hCurrentScene);
-		
+
 	}
 }
 /* ========================================================================
@@ -1651,19 +1651,19 @@ void SCENE::mfSceneButtonFloor(
 {
 	LONG	sx, sy;
 	LONG	compa;
-	
+
 	// reset this global to say we have handled the mouse event.
 	mouse_click = 0;
-	
+
 	if (SCENE_MGR::hCurrentScene != fERROR)
 	{
 		PTR_SCENE pScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-		
+
 		if (pScene->fhSectors != fERROR)
 		{
 			LONG i;
 			PTR_SCN_SECTORS pSectors = (PTR_SCN_SECTORS) BLKPTR(pScene->fhSectors);
-			
+
 			for (i = 0; i < pScene->fMaxSectors; i++)
 			{
 				if (pSectors[i].mfGetId() != fERROR)
@@ -1680,17 +1680,17 @@ void SCENE::mfSceneButtonFloor(
 				}
 			}
 		}
-		
+
 		// test code
 		ConvertScreenToFloor(cursor_x, cursor_y, &sx, &sy);
 		compa = AngleFromPoint ( PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y), sx, sy, RESOLUTION_8 );
-	
+
 #if defined(TEST_MOVEMENT)
-		printf( "move from %ld, %ld %ld to %ld, %ld %ld\n",
+		logInfo( "move from %ld, %ld %ld to %ld, %ld %ld",
 			PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y), player.a,
 			sx, sy, compa );
 #endif
-			
+
 #if defined(TEST_MOVEMENT)
 		SetPlayerTarget( sx, sy, player.h, compa, 0);
 #endif
@@ -1706,12 +1706,12 @@ void SCENE::mfSceneButtonFloor(
 BOOL const SCENE::mfGetExitScene( LONG &Id, char * *const cpNewSceneName)
 {
 	BOOL bFound = FALSE;
-	
+
 	if (fhExitPoints != fERROR)
 	{
 		LONG i;
 		PTR_EXIT_POINTS pExits = (PTR_EXIT_POINTS) BLKPTR(fhExitPoints);
-		
+
 		for (i = 0; i < fMaxExitPoints; i++)
 		{
 			if (pExits[i].mfGetId() == Id)
@@ -1721,7 +1721,7 @@ BOOL const SCENE::mfGetExitScene( LONG &Id, char * *const cpNewSceneName)
 			}
 		}
 	}
-	
+
 	if (!bFound)
 	{
 #if defined (_DEBUG)
@@ -1729,7 +1729,7 @@ BOOL const SCENE::mfGetExitScene( LONG &Id, char * *const cpNewSceneName)
 #endif
 		*cpNewSceneName = 0;
 	}
-	
+
 	return bFound;
 }
 
@@ -1744,7 +1744,7 @@ void SCENE::mfWriteAvatars(FILE *fp)
 	LONG i;
 	LONG count =0;
 	// First count'm
-	
+
 	for(i=0; i<MAX_AVATARS; i++)
 	{
 		if (Avatars[i] != fERROR)
@@ -1756,12 +1756,12 @@ void SCENE::mfWriteAvatars(FILE *fp)
 			}
 		}
 	}
-	
+
 	if (count > 0)
 	{
 		fprintf(fp,"[Avatars]\n");
 		fprintf(fp,"%ld\n", count);
-		
+
 		for(i=0; i<MAX_AVATARS; i++)
 		{
 			if (Avatars[i] != fERROR)
@@ -1790,7 +1790,7 @@ void SCENE::mfWriteExitPoints(FILE *fp)
 		LONG i;
 		LONG count = 0;
 		PTR_EXIT_POINTS pExits = (PTR_EXIT_POINTS) BLKPTR(fhExitPoints);
-		
+
 		for (i = 0; i < fMaxExitPoints; i++)
 		{
 			if (pExits[i].mfGetId() != fERROR)
@@ -1802,7 +1802,7 @@ void SCENE::mfWriteExitPoints(FILE *fp)
 		{
 			fprintf(fp, "[Exit]\n");
 			fprintf(fp, "%ld\n", count);
-			
+
 			for (i = 0; i < fMaxExitPoints; i++)
 			{
 				if (pExits[i].mfGetId() != fERROR)
@@ -1811,7 +1811,7 @@ void SCENE::mfWriteExitPoints(FILE *fp)
 				}
 			}
 		}
-	
+
 	}
 }
 #endif // SCENE_EDITOR
@@ -1827,21 +1827,21 @@ void SCENE::mfWriteSectors(FILE *fp)
 	if (fMaxSectors > 0 && fhSectors != fERROR)
 	{
 		LONG i;
-		
+
 		fprintf(fp, "[Sectors]\n");
 		fprintf(fp, "%ld", fMaxSectors);
-		
+
 		PTR_SCN_SECTORS pSectors = (PTR_SCN_SECTORS) BLKPTR(fhSectors);
-		
+
 		for (i = 0; i < fMaxSectors; i++)
 		{
 			if (pSectors[i].mfGetId() != fERROR)
 			{
 				pSectors[i].mfWriteSectorData(fp);
 			}
-			
+
 		}
-	
+
 	}
 }
 #endif // SCENE_EDITOR
@@ -1857,12 +1857,12 @@ void SCENE::mfWritePlaces(FILE *fp)
 	if (fMaxPlaces > 0 && fhPlaces != fERROR)
 	{
 		LONG i;
-		
+
 		fprintf(fp, "[Places]\n");
 		fprintf(fp, "%ld", fMaxPlaces);
-		
+
 		PTR_PLACES pPlaces = (PTR_PLACES) BLKPTR(fhPlaces);
-		
+
 		for (i = 0; i < fMaxPlaces; i++)
 		{
 			if (pPlaces[i].ThingIndex != fERROR)
@@ -1887,7 +1887,7 @@ void SCENE::mfWriteKeys(FILE *fp)
 		LONG i;
 		SHORT count = 0;
 		PTR_KEYS pKeys = (PTR_KEYS) BLKPTR(fhKeys);
-		
+
 		// Count the number in use.
 		for (i = 0; i < fMaxKeys; i++)
 		{
@@ -1900,12 +1900,12 @@ void SCENE::mfWriteKeys(FILE *fp)
 				}
 			}
 		}
-		
+
 		if (count > 0)
 		{
 			fprintf(fp, "[Keys]\n");
 			fprintf(fp, "%ld\n", count);
-			
+
 			for (i = 0; i < fMaxKeys; i++)
 			{
 				if (pKeys[i] != fERROR)
@@ -1932,20 +1932,20 @@ BOOL SCENE::mfWriteSceneFile()
 {
 	BOOL bResult = FALSE;
 	char cpSceneFileName[20] = {"scenes\\"};
-	
+
 	strcat(cpSceneFileName, mfGetSceneName());
 	strcat(cpSceneFileName, ".scn");
-	
+
 	// If this file already exsists, move it to a backup file.
 	if (0 == access(cpSceneFileName, F_OK))
 	{
 		LONG i;
 		char cpSceneFileNameBackup[20];
-		
+
 		for (i = 0; i < 99; i++)
 		{
 			sprintf(cpSceneFileNameBackup, "scenes\\%s.b%.2ld", mfGetSceneName(), i);
-			
+
 			if (0 != access(cpSceneFileNameBackup, F_OK))
 			{
 				rename(cpSceneFileName, cpSceneFileNameBackup);
@@ -1953,7 +1953,7 @@ BOOL SCENE::mfWriteSceneFile()
 			}
 		}
 	}
-	
+
 	FILE *fp = FileOpen(cpSceneFileName, "w");
 	if (fp)
 	{
@@ -1971,7 +1971,7 @@ BOOL SCENE::mfWriteSceneFile()
 		mfWriteCameraData(fp);
 		mfWriteSelfRunningDemoData(fp);
 		mfWriteAvatars(fp);
-		
+
 		FileClose(fp);
 		bResult = TRUE;
 	}
@@ -1988,11 +1988,11 @@ BOOL SCENE::mfWriteSceneFile()
 void SCENE::mfDrawMapStuff ( void )
 {
 	LONG i;
-	
+
 	if (SCENE_MGR::hCurrentScene != fERROR)
 	{
 		PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
  		for(i = 0; i < MAX_AVATARS; i++ )
  		{
  			if(pCurrentScene->Avatars[i] != fERROR )
@@ -2004,11 +2004,11 @@ void SCENE::mfDrawMapStuff ( void )
  		}
 
 
-#if 0		
+#if 0
 		if (pCurrentScene->fMaxPlaces > 0 && pCurrentScene->fhPlaces != fERROR)
 		{
 			PTR_PLACES pPlaces = (PTR_PLACES) BLKPTR(pCurrentScene->fhPlaces);
-			
+
 			for (i = 0; i < pCurrentScene->fMaxPlaces; i++)
 			{
 				if (pPlaces[i].ThingIndex != fERROR)
@@ -2034,10 +2034,10 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 {
 	// You know, somedays I think all this avatar stuff doesn't belong
 	// in the scene.cpp file. And then I add more....
-	
+
 	LONG i = 0;
 	LONG ThingIndex;
-	
+
 	// Go thru the wad internal data looking for Avatar art.
 	for (ThingIndex = 0;
 	     ThingIndex < MAX_THINGS &&
@@ -2045,7 +2045,7 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 	     ThingIndex++)
 	{
     	const THINGTYPE ttype = (THINGTYPE) mythings[ThingIndex].OriginalType;
-    	
+
     	if (GAME_TTYPE::mfIsGameType(ttype))
     	{
 	    	// GWP Testing for AutoAIPossible maybe all that is required here.
@@ -2057,36 +2057,36 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 				//       last open spot we found.
 				for (; Avatars[i] != fERROR && i < MAX_AVATARS;i++)
 				{};
-				
+
 				if (i >= MAX_AVATARS)
 				{
-					printf("WARNING! Out of Avatars slots while loading AutoAI's!");
+					logWarn("Out of Avatars slots while loading AutoAI's!");
 					return;	// Stop looking thru the mythings array.
 				}
-				
+
 				Avatars[i] = CAvatar::NewAvatar();
 				if (Avatars[i] != fERROR)
 				{
 					//GEH SetBlockAttr(Avatars[i], LOCKED, LOCKED);
 					CAvatar *pAvatar = (CAvatar *) BLKPTR(Avatars[i]);
-					
+
 					if (fERROR != (pAvatar->hPlayerStats = LoadStats(ttype, Avatars[i])))
 					{
 						PLAYER_STATS *pPlayerStats;
 						pPlayerStats = (PLAYER_STATS*)BLKPTR(pAvatar->hPlayerStats);
 						pPlayerStats->mfMemorizeAllInvSpells();
 						pAvatar->ThingType = pPlayerStats->mfGetType();
-					}	
+					}
 					else
 					{
-						printf("WARNING! Unable to load Avatar %d\n", ttype);
+						logWarn("Unable to load Avatar %d", ttype);
 						pAvatar->DeleteAvatar(pAvatar->hThis);
 						Avatars[i] = fERROR;
 						i--;
 						continue;
 					}
 					pAvatar->attrib.RuntimeCreated = TRUE;	// Don't save!
-					
+
 					// Fix up the CThing Data.
 					pAvatar->mfAttachCThing(ThingIndex,
 											pAvatar->ThingType,
@@ -2094,13 +2094,13 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 											0);
 											// GWP CAvatar::mfFakeLeftButton,
 											// GWP CAvatar::mfFakeRightButton);
-					
+
 					// GNOLLS were accidently made too big, so scale'm down here.
 					const LONG ScaleAdjust = (pAvatar->ThingType == GNOLL_1 ||
 					                          pAvatar->ThingType == GNOLL_IRREGULAR) ?
 					                          80 - (random(10) - 5) : 100 - (random(20) - 10);
 					pAvatar->mfChangeScale(ScaleAdjust);
-					
+
 					switch (pAvatar->ThingType)
 					{
 					case GIANT_SPIDER:
@@ -2139,15 +2139,15 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 						pAvatar->SetAIFuncIndex(CAvatar::AI_FUNC_PING_PONG);
 						break;
 					}
-					
+
 					pAvatar->mfInitVals();
-					
+
 					// If the Angle data is bad, just set a reasonable value.
 					if (pAvatar->mfAngle() < 0 || pAvatar->mfAngle() > 255)
 					{
 						pAvatar->FaceTo(PLAYER_INT_VAL(player.x), PLAYER_INT_VAL(player.y));
 					}
-					
+
 					// Otherwise the monsters will attack the other inhabinates of the scene.
 					if (GAME_TTYPE::mfIsMonster(ttype))
 					{
@@ -2167,7 +2167,7 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 					// GWP At some future time get the "Scene Senario Realm value"
 					// GWP and set the non monsters to that Realm.
 					// GWP they now default to REALM::NO_COUNTRY
-					
+
 					//GEH ClrLock(Avatars[i]);
 				}
 			}
@@ -2176,7 +2176,7 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 			if(GAME_TTYPE::mfIsLoopingSound(ttype ) )
 			{
 				AddThingToSoundArray(GAME_TTYPE::mfGetSoundType(ttype), ThingIndex);
-			
+
 			}
 #endif
 		}
@@ -2192,12 +2192,12 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 GAME_STRING const SCENE::mfGetDialog(LONG const TripLineNumber  ) const
 {
 	GAME_STRING Result = STR_NULL;
-	
+
 	if (fMaxDialogTriplines > 0)
 	{
 		LONG i;
 		DumbHandleArray<DIALOG_TRIPLINES> const pDialogTriplines(fhDialogTriplines);
-		
+
 		for (i= 0; i< fMaxDialogTriplines; i++)
 		{
 			if (pDialogTriplines[i].mfMatchTripLineNumber(TripLineNumber) &&
@@ -2209,7 +2209,7 @@ GAME_STRING const SCENE::mfGetDialog(LONG const TripLineNumber  ) const
 			}
 		}
 	}
-	
+
 	return Result;
 }
 
@@ -2240,13 +2240,13 @@ void SCENE::mfDeleteDialogs()
 LONG mfReadUserWad(FILE *fp, SCENE::SCENE_DATA *SceneData )
 {
 	char cpBuffer[40];
-	
+
 	const LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		strncpy(SceneData->szWadName, cpBuffer, sizeof(SceneData->szWadName));
 	}
-	
+
 	return Result;
 }
 
@@ -2259,7 +2259,7 @@ LONG mfReadUserType(FILE *fp, SCENE::SCENE_DATA *SceneData )
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
@@ -2278,13 +2278,13 @@ LONG mfReadUserType(FILE *fp, SCENE::SCENE_DATA *SceneData )
 LONG mfReadUserDescription(FILE *fp, SCENE::SCENE_DATA *SceneData )
 {
 	char cpBuffer[128];
-	
+
 	const LONG Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
 		strncpy(SceneData->szWadName, cpBuffer, sizeof(SceneData->szWadName));
 	}
-	
+
 	return Result;
 }
 
@@ -2297,7 +2297,7 @@ LONG mfReadUserDifficulty(FILE *fp, SCENE::SCENE_DATA *SceneData )
 {
 	char cpBuffer[80];
 	LONG Result;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (Result != EOF)
 	{
@@ -2305,7 +2305,7 @@ LONG mfReadUserDifficulty(FILE *fp, SCENE::SCENE_DATA *SceneData )
 		sscanf(cpBuffer, "%ld", &SceneDiff);
 		SceneData->sSceneDiff = (SHORT)SceneDiff;
 	}
-	
+
 	return Result;
 }
 

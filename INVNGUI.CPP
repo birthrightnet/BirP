@@ -63,7 +63,7 @@ static InventoryGUI StaticInventoryGUI::GUI;
 
 #ifndef _WINDOWS
 void InvokeDebugger(LONG,LONG);
-#endif 
+#endif
 
 BOOL  fPreparingSpells  = FALSE;
 static BOOL  fPickingRecipient = FALSE;
@@ -79,8 +79,8 @@ extern BOOL fBattlePrep;
 
 /* ========================================================================
    Function    - mfAddToSpellBoxes
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 
 void InventoryGUI::mfAddToSpellBoxes(LONG,LONG b)
@@ -101,7 +101,7 @@ void InventoryGUI::mfAddToSpellBoxes(LONG,LONG b)
    Function    - mfClearSpellBox
    Description - Fn attached to the spell box to both remove and place
                  an item in the spellbox
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void InventoryGUI::mfClearSpellBox(LONG,LONG b)
@@ -116,23 +116,23 @@ void InventoryGUI::mfClearSpellBox(LONG,LONG b)
 	{
 	    return;
 	}
-	
+
 	DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
-	
-	
+
+
 	if (HighlightedLine != -1)
 	{
 		InventoryItor itor(AvatarInventory);
 		LONG i;
 		LONG EmptyIndex;
-		
+
 		BOOL showEmpty = (fDomainTurn || fPreparingSpells || CurrCategory != IC_SPELL);
 		if (showEmpty)
 			itor.mfAdvance(CurrCategory);
 		else
 			itor.mfAdvanceNonEmpty(CurrCategory);
-		
+
 		for (i = 0; i < HighlightedLine; ++i)
 		{
 			if (itor == AvatarInventory.end())
@@ -140,25 +140,25 @@ void InventoryGUI::mfClearSpellBox(LONG,LONG b)
 				return;
 			}
 
-			if (showEmpty)	
+			if (showEmpty)
 				itor.mfAdvanceToNext(CurrCategory);
-			else	
+			else
 				itor.mfAdvanceToNextNonEmpty(CurrCategory);
 		}
 		if (itor == AvatarInventory.end())
 		{
 			return;
 		}
-		
+
 		// or something that isn't "boxable"
 		if (EquipTypes[(*itor)->mfType()]!=NoEquip)
 		{
 			return;
 		}
-		
+
 		// you can't spellbox something you haven't got
 		// But you may if you are on the way to an adventure.
-		if ((*itor)->mfHowMany() < 1 
+		if ((*itor)->mfHowMany() < 1
 		    && !ItemTypes[(*itor)->mfType()].mfRequires(CHARGES))
 		{
 			return;
@@ -173,7 +173,7 @@ void InventoryGUI::mfClearSpellBox(LONG,LONG b)
 				return;
 			}
 		}
-		
+
 		// clear self if necessary
 		if (AvatarInventory.SpellBoxes[b] == itor.mfGetCurrentInvIndex())
 		{
@@ -183,14 +183,14 @@ void InventoryGUI::mfClearSpellBox(LONG,LONG b)
 			AvatarInventory.SpellBoxes[b] = fERROR;
 			return;
 		}
-		
+
 		// only one spellbox per "thing"
 		for (EmptyIndex=0;EmptyIndex<MAX_SPELL_BOXES;++EmptyIndex)
 		{
 			if (AvatarInventory.SpellBoxes[EmptyIndex] == itor.mfGetCurrentInvIndex())
 				return;
 		}
-		
+
 		LONG Arg=BUILD_LONG((*itor)->mfType(),AvatarStatsHdl);
 		LONG Result=ItemTypes[(*itor)->mfType()].mfEffect(Arg,EQUIP);
 
@@ -238,7 +238,7 @@ void InventoryGUI::mfUseSpellBox(LONG,LONG b)
 //		GAME_STRING Name=GAME_TTYPE::mfGetSTRMgrId(ItemTypes[ObjectList::AllItems[AvatarInventory.SpellBoxes[b]].mfType()].mfGameType());
 //		InfoBox::Show(Name);
 //		return;
-//	}	
+//	}
 
 	AvatarInventory.mfActivateSpellBox(b);
 }
@@ -255,10 +255,10 @@ void InventoryGUI::mfScroll(LONG a,LONG d)
 	        RecipStart = 0;
 	    return;
 	}
-	
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPlayerStats(AvatarStatsHdl);
 	ObjectList & const AvatarInventory=pPlayerStats->mfGetInventory();
-	
+
  	if (fDomainTurn || fPreparingSpells || CurrCategory != IC_SPELL)
  	{
  		if (((InvenIndex)(DispStart+d))<AvatarInventory.mfLength(CurrCategory)-5)
@@ -304,13 +304,13 @@ void InventoryGUI::mfPaintDudeNameText(LONG MenuId) const
 
    // [d4-09-97 JPC] modified the following because PLAYER_NAME
 	// class no longer exists.
-	Label=pss->mfGetName();					
+	Label=pss->mfGetName();
 
 	GetButtonPosition(MenuId,INV_BUT_DUDENAME,&NameX,&NameY);
 	GetButtonSize(MenuId,INV_BUT_DUDENAME,&NameW,&NameH);
 
 	sprintf(NameBuf,"^F03%s",Label);
-	
+
 	print_text_centered(NameX+NameW/2-1,NameY+NameH/2-3,NameBuf,173);
 }
 
@@ -319,16 +319,16 @@ void InventoryGUI::mfPaintCategoryButtonText(LONG MenuId) const
 {
 	LONG ButX,ButY,ButW,ButH;
 	char* Label;
-	
+
 	if (fPickingRecipient)
 	{
 	    return;
 	}
-	
+
 	for (LONG i=0;i<=INV_BUT_BLOODABLT-INV_BUT_MUNDANE;++i)
 	{
 		LONG LabelColor;
-		
+
 		GetButtonPosition(MenuId,INV_BUT_MUNDANE+i,&ButX,&ButY);
 		GetButtonSize(MenuId,INV_BUT_MUNDANE+i,&ButW,&ButH);
 
@@ -341,14 +341,14 @@ void InventoryGUI::mfPaintCategoryButtonText(LONG MenuId) const
 			print_text_centered(ButX+ButW/2,ButY+ButH/2,STRMGR_GetStr(STR_AVA_INV_ITEMS+i),LabelColor);
 	}
 }
-		
+
 void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
 {
 	LONG ButX,ButY,ButW,ButH;
 	const char* Label;
 	LONG GetMe;
 	LONG button;
-	
+
     if (fPickingRecipient)
     {
         return;
@@ -358,39 +358,39 @@ void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
     {
 		GetButtonPosition(MenuId, button, &ButX, &ButY);
 		GetButtonSize    (MenuId, button, &ButW, &ButH);
-		
+
 	    BOOL greyout = ( CurrCategory == IC_REALM_SPELL
 	    	|| (CurrCategory == IC_BLOODAB && button != INV_BUT_USE) );
 
 		if (HighlightedLine==-1)
 			greyout=TRUE;
-	
+
 		if (fBattleCombat)
 			greyout=TRUE;
-	
+
 	    switch(button)
 	    {
 	    case INV_BUT_USE:
-	        	
+
 	        GetMe = STR_AVA_INV_USE;
 	        if (CurrCategory==IC_SPELL || CurrCategory == IC_REALM_SPELL)
 	            GetMe = STR_AVA_INV_CAST;
-	
+
 	        if (fPreparingSpells)
 	        	greyout = TRUE;
-	        	
+
 	        break;
-				
+
 	    case INV_BUT_DROP:
 	        GetMe = STR_AVA_INV_DROP;
 	        if (CurrCategory == IC_SPELL)
 	        	GetMe = STR_AVA_INV_FORGET;
-	
+
 	        if (fPreparingSpells != (CurrCategory == IC_SPELL))  // XOR
 	        	greyout = TRUE;
-	
+
 	        break;
-	
+
 	    case INV_BUT_GIVE:
 			GetMe = STR_AVA_INV_GIVE;
 	        if (CurrCategory == IC_SPELL)
@@ -414,11 +414,11 @@ void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
 					|| (*itor)->mfWorn())
 					greyout = TRUE;
 			}
-	
+
 	        break;
 	    }
-	    	
-	    if (greyout)	
+
+	    if (greyout)
 		    print_text_centered(ButX+ButW/2,ButY+ButH/2,STRMGR_GetStr(GetMe),GREY);
 	    else if (HlMgr.Highlighted(button))
 		    print_text_centered(ButX+ButW/2-1,ButY+ButH/2-1,STRMGR_GetStr(GetMe),31);
@@ -426,7 +426,7 @@ void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
 		    print_text_centered(ButX+ButW/2,ButY+ButH/2,STRMGR_GetStr(GetMe),221);
 	}
 }
-	
+
 /* ========================================================================
    Function    - InventoryGUI::mfPaintSpellBoxes
    Description - Paints the spell boxes
@@ -435,7 +435,7 @@ void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
 void InventoryGUI::mfPaintSpellBoxes(ObjectList const & const Ol,LONG MenuId) const
 {
 	LONG i=0;
-	
+
 	LONG SpellBoxX;
 	LONG SpellBoxY;
 	LONG SpellBoxW;
@@ -500,33 +500,33 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 	LONG NumY=0;
 	LONG NumW=0;
 	LONG NumH=0;
-	
+
 	char NameBuf[80];
 	char NumBuf[20];
 	LONG Line, i;
 	SHORT hIcon;
-	
+
 	BOOL showEmpty = (fDomainTurn || fPreparingSpells || CurrCategory != IC_SPELL);
 	InventoryItor itor(Ol);
 	ADVENTURER_TEAM_ITOR AdvItor;
-	
+
 	// find first item of current category
-	
+
 	if (!fPickingRecipient)
 	{
 		if (showEmpty)
 			itor.mfAdvance(CurrCategory);
 		else
 			itor.mfAdvanceNonEmpty(CurrCategory);
-		
+
 		for (i = 0; i < DispStart; ++i)
 		{
 			if (itor == Ol.end())
 				return;
-	
-			if (showEmpty)	
+
+			if (showEmpty)
 				itor.mfAdvanceToNext(CurrCategory);
-			else	
+			else
 				itor.mfAdvanceToNextNonEmpty(CurrCategory);
 		}
 		if (itor == Ol.end())
@@ -556,23 +556,23 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 			}
 			if (numRecipients < RecipStart)
 				return;
-				
+
 			AdvItor = ADVENTURER::begin();
 			for (i=0; i < RecipStart; ++i)
 				AdvItor++;
 		}
 	}
 
-	
-	
+
+
 	// paint the list boxes
-		
+
 	for (Line = 0; Line < Lines; ++Line)
 	{
 		GetButtonPosition(MenuId,INV_BUT_LISTBOX,&ListX,&ListY);
-		GetButtonPosition(MenuId,INV_BUT_LBNAME1+Line,&TextX,&TextY);	
+		GetButtonPosition(MenuId,INV_BUT_LBNAME1+Line,&TextX,&TextY);
 		GetButtonPosition(MenuId,INV_BUT_LBNUMBER1+Line,&NumX,&NumY);
-		GetButtonSize(MenuId,INV_BUT_LBNAME1+Line,&TextW,&TextH);	
+		GetButtonSize(MenuId,INV_BUT_LBNAME1+Line,&TextW,&TextH);
 		GetButtonSize(MenuId,INV_BUT_LBNUMBER1+Line,&NumW,&NumH);
 
 		LONG CurrTextX;
@@ -580,16 +580,16 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 		LONG TextMarginX=4;  //margins!
 		LONG TextMarginY=4;
 
-	
-	
+
+
 		if (!fPickingRecipient)
 		{
 			if (itor == Ol.end())
 				return;
-				
-		
+
+
 			sprintf(NumBuf,"^F03%li",(*itor)->mfHowMany());
-			
+
 			if (fPreparingSpells && CurrCategory == IC_SPELL)
 			{
 				SPELL_INFO::TYPE spellindex = (SPELL_INFO::TYPE) ItemTypes[(*itor)->mfType()].mfGetExtendedData();
@@ -638,10 +638,10 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 				{
 					Charges=ItemChargeHandler::mfCharges((*itor)->mfType());
 				}
-				
+
 				if (Charges>0)
 					sprintf(ChargesStr," (%i)",Charges);
-				
+
 				if ((*itor)->mfWorn())
 					strcpy(WornStr,"\* ");
 
@@ -650,13 +650,13 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 				{
 					sprintf(NameBuf,"^F%02i%s%s%s",font--,WornStr,GAME_TTYPE::mfGetDescription(ItemTypes[(*itor)->mfType()].mfGameType()),ChargesStr);
 				} while (gtext_width(NameBuf)>TextW && font!=0);
-			}			
+			}
 
 			LONG NameHeight=gtext_height(NameBuf);
 			LONG NameY=TextY+TextH/2-NameHeight/2;
 			LONG Color=175;
 
-	
+
 			// draw the text and number
 			if (HighlightedLine==DispStart+Line)
 				Color=31;
@@ -666,22 +666,22 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
   			if (CurrCategory!=IC_BLOODAB && CurrCategory!=IC_REALM_SPELL)
   				print_text_centered(NumX+NumW/2+1,NumY+NumH/2+1,NumBuf,Color);
 
-	
+
 			//draw the icon
-			
+
 			if (CurrCategory!=IC_SPELL || !fPreparingSpells)
 			{
 				LONG IconX,IconY,IconW,IconH;
 				SHORT hIcon=fERROR;
-					
+
 				GetButtonPosition(MenuId,INV_BUT_LBICON1+Line,&IconX,&IconY);
 				GetButtonSize(MenuId,INV_BUT_LBICON1+Line,&IconW,&IconH);
-	
+
 				if (HighlightedLine == DispStart+Line)
 					hIcon=ItemTypes[(*itor)->mfType()].mfGetIconOn();
 				else
 					hIcon=ItemTypes[(*itor)->mfType()].mfGetIconOff();
-			
+
 				DrawBitmap((SHORT)IconX+3,(SHORT)IconY+2,hIcon,0,0,(SHORT)IconW,(SHORT)IconH);
 				SetPurge(hIcon);
 			}
@@ -697,23 +697,23 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 
 				SHORT hPlusBoxIcon;
 				SHORT hMinusBoxIcon;
-			
+
 				if (GetButtonFlags(MenuId,INV_BUT_LBPLUS1+Line)&D_HILIGHTED)
 					hPlusBoxIcon=GetResourceStd("UI\\INVNICON\\I_ADSUBB.PCX",FALSE);
 				else
 					hPlusBoxIcon=GetResourceStd("UI\\INVNICON\\I_ADSUBA.PCX",FALSE);
-				
+
 				if (GetButtonFlags(MenuId,INV_BUT_LBMINUS1+Line)&D_HILIGHTED)
 					hMinusBoxIcon=GetResourceStd("UI\\INVNICON\\I_ADSUBB.PCX",FALSE);
 				else
 					hMinusBoxIcon=GetResourceStd("UI\\INVNICON\\I_ADSUBA.PCX",FALSE);
-			
+
 				if (hPlusBoxIcon > 0)
 				{
 					DrawBitmap((SHORT)PlusX+2,(SHORT)PlusY+2,hPlusBoxIcon,0,0,(SHORT)PlusW,(SHORT)PlusH);
 					SetPurge(hPlusBoxIcon);
 				}
-			
+
 				if (hMinusBoxIcon > 0)
 				{
 					DrawBitmap((SHORT)MinusX+2,(SHORT)MinusY+2,hMinusBoxIcon,0,0,(SHORT)MinusW,(SHORT)MinusH);
@@ -723,37 +723,37 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 				print_text_centered(PlusX+PlusW/2+1,PlusY+PlusH/2+1,"^F03+",175);
 				print_text_centered(MinusX+MinusW/2+1,MinusY+MinusH/2+1,"^F03-",175);
 			}
-			if (showEmpty)	
+			if (showEmpty)
 				itor.mfAdvanceToNext(CurrCategory);
-			else	
+			else
 				itor.mfAdvanceToNextNonEmpty(CurrCategory);
 		}
 		else		// "give" code
 		{
 			if (RecipStart+Line >= numRecipients)
 			    return;
-			
+
 		    if (fPreparingSpells || fDomainTurn)
 			{
 				SHORT who = Adventures[RecipStart+Line];
 				if (who == -1)
 					return;
-	
+
 				if (RecipStart+Line == HighlightedRecipient)
 					hRecipientStats = playerstats[who];
-				
+
 				// [d4-09-97 JPC] Modified the following to use the access
 				// function instead of direct access to the .name member,
 				// which is going away.
 				strcpy(NameBuf, regents[who].mfGetname());
-				
+
 //				for (SHORT k=0; k<CHARACTER_COUNT; ++k)
 //				{
 //					if(regents[k].unit == who)
 //					{
 //						if (RecipStart+Line == HighlightedRecipient)
 //							hRecipientStats = playerstats[k];
-//						
+//
 //						strcpy(NameBuf, regents[k].name);
 //						break;
 //					}
@@ -763,10 +763,10 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 	    	{
 				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
 				AdvItor++;	/* advance to next */
-		
+
 		    	if (RecipStart+Line == HighlightedRecipient)
 		    		hRecipientStats = pAvatar->hPlayerStats;
-			
+
 				SHORT who = pAvatar->hPlayerStats;
 				for(SHORT k=0; k<CHARACTER_COUNT; ++k)
 				{
@@ -779,7 +779,7 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 	    	}
 	    	if (HighlightedRecipient == -1)
 	    	    hRecipientStats = fERROR;
-	
+
 	    	if (HighlightedRecipient == RecipStart+Line)
 			    gprint_text(TextX+TextMarginX,TextY+TextMarginY,NameBuf,31);
 	    	else
@@ -803,36 +803,36 @@ void InventoryGUI::mfPaintMiscInfoBox(ObjectList & const Ol,LONG MenuId) const
 	LONG MiscTextBoxY;
 	LONG MiscTextBoxW;
 	LONG MiscTextBoxH;
-	
-	
+
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPS(AvatarStatsHdl);
-	
+
 	if (fPickingRecipient)
 	{
 		GetButtonPosition(MenuId,INV_BUT_INFO,&MiscTextBoxX,&MiscTextBoxY);
-		
+
 		// GEH 10/97 sprintf(NameBuf,"^W230^F03%s", "Select character to receive item.");
 		sprintf(NameBuf,"^W230^F03%s", STRMGR_GetStr(STR_INV_GIVE_ITEM) );
 		gprint_text(MiscTextBoxX+TextMarginX,MiscTextBoxY+TextMarginY,NameBuf,31);
-	
+
 
 		return;
 	}
 
 	GetButtonPosition(MenuId,INV_BUT_INFO,&MiscTextBoxX,&MiscTextBoxY);
 	GetButtonSize(MenuId,INV_BUT_INFO,&MiscTextBoxW,&MiscTextBoxH);
-	
+
 	if (HighlightedLine!=-1)
 	{
 		InventoryItor itor(Ol);
 		LONG i;
-		
+
 		BOOL showEmpty = (fDomainTurn || fPreparingSpells || CurrCategory != IC_SPELL);
 		if (showEmpty)
 			itor.mfAdvance(CurrCategory);
 		else
 			itor.mfAdvanceNonEmpty(CurrCategory);
-		
+
 		for (i = 0; i < HighlightedLine; ++i)
 		{
 			if (itor == Ol.end())
@@ -840,16 +840,16 @@ void InventoryGUI::mfPaintMiscInfoBox(ObjectList & const Ol,LONG MenuId) const
 				return;
 			}
 
-			if (showEmpty)	
+			if (showEmpty)
 				itor.mfAdvanceToNext(CurrCategory);
-			else	
+			else
 				itor.mfAdvanceToNextNonEmpty(CurrCategory);
 		}
 		if (itor == Ol.end())
 		{
 			return;
 		}
-		
+
 		//auto-font-reduce until it fits!
 		LONG font=3;
 		do
@@ -857,13 +857,13 @@ void InventoryGUI::mfPaintMiscInfoBox(ObjectList & const Ol,LONG MenuId) const
 			sprintf(NameBuf,"^W230^F%02i%s",font--,STRMGR_GetStr(ItemTypes[(*itor)->mfType()].mfInfo()));
 		} while (gtext_height(NameBuf)>(MiscTextBoxH-TextMarginY) && font!=0);
 
-		
+
 		gprint_text(MiscTextBoxX+TextMarginX,MiscTextBoxY+TextMarginY,NameBuf,31);
 	}
 	else if (fPreparingSpells && CurrCategory == IC_SPELL)
 	{
     	NameBuf[0] = '\0';		// truncate buffer
-    	
+
     	if (pPS->mfCanMemorize(SPELL_INFO::PRIEST, (SPELL_INFO::LEVEL)1) > 0)
     	{
 	    	strcat(NameBuf, STRMGR_GetStr(STR_AVA_INV_MEM_PR));
@@ -872,19 +872,19 @@ void InventoryGUI::mfPaintMiscInfoBox(ObjectList & const Ol,LONG MenuId) const
 	    		char buf[10];
 	    		if (pPS->mfCanMemorize(SPELL_INFO::PRIEST, (SPELL_INFO::LEVEL) level) < 1)
 	    			break;
-	    		
-	    		if (level != 1)	
+
+	    		if (level != 1)
 	    			strcat(NameBuf, "/");
-	    			
+
 	    		SHORT remaining =
 	    			pPS->mfCanMemorize(SPELL_INFO::PRIEST, (SPELL_INFO::LEVEL) level) -
 	    			pPS->mfMemorized(SPELL_INFO::PRIEST, (SPELL_INFO::LEVEL) level);
-	    			
+
 	    		if (remaining < 0)
-	    			remaining = 0;	
-	    			
+	    			remaining = 0;
+
 	    		sprintf(buf, "%d", remaining);
-	    		strcat(NameBuf, buf);	
+	    		strcat(NameBuf, buf);
 	    	}
 	    	strcat(NameBuf, "\n");
 	    }
@@ -896,27 +896,27 @@ void InventoryGUI::mfPaintMiscInfoBox(ObjectList & const Ol,LONG MenuId) const
 	    		char buf[10];
 	    		if (pPS->mfCanMemorize(SPELL_INFO::WIZARD, (SPELL_INFO::LEVEL) level) < 1)
 	    			break;
-	    		
-	    		if (level != 1)	
+
+	    		if (level != 1)
 	    			strcat(NameBuf, "/");
-	    			
+
 	    		SHORT remaining =
 	    			pPS->mfCanMemorize(SPELL_INFO::WIZARD, (SPELL_INFO::LEVEL) level) -
 	    			pPS->mfMemorized(SPELL_INFO::WIZARD, (SPELL_INFO::LEVEL) level);
-	    			
+
 	    		if (remaining < 0)
-	    			remaining = 0;	
-	    			
+	    			remaining = 0;
+
 	    		sprintf(buf, "%d", remaining);
-	    		strcat(NameBuf, buf);	
+	    		strcat(NameBuf, buf);
 	    	}
 	    	strcat(NameBuf, "\n");
 	    }
 		gprint_text(MiscTextBoxX+TextMarginX,MiscTextBoxY+TextMarginY,NameBuf,31);
 	}
-			
+
 }
-	
+
 
 /* ========================================================================
    Function    - InventoryGUI::mfPaint
@@ -928,7 +928,7 @@ void InventoryGUI::mfPaint(LONG MenuCombo,LONG)
 
 	DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(AvatarStatsHdl);
 	ObjectList & const AvatarInventory=pPlayerStats->mfGetInventory();
-	
+
 	LONG MenuId,ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	init_gfont(FONT_SANS_8PT);
@@ -936,7 +936,7 @@ void InventoryGUI::mfPaint(LONG MenuCombo,LONG)
 
 
 
-	
+
 	if (fPickingRecipient)
 	{
 	    GetButtonLabelColor(MenuId, INV_BUT_TITLE, &OrigColor);
@@ -958,7 +958,7 @@ void InventoryGUI::mfPaint(LONG MenuCombo,LONG)
 	    GetButtonLabelColor(MenuId, INV_BUT_STATUS, &OrigColor);
 	    SetButtonLabel(MenuId, INV_BUT_STATUS, STR_AVA_INV_STATUS, OrigColor);
 	}
-	
+
 	mfPaintListBoxLine(6, AvatarInventory, MenuId);
 	mfPaintMiscInfoBox(AvatarInventory,MenuId);
 	mfPaintSpellBoxes(AvatarInventory,MenuId);
@@ -967,7 +967,7 @@ void InventoryGUI::mfPaint(LONG MenuCombo,LONG)
 	mfPaintDudeNameText(MenuId);
 
 	HlMgr.Service();						// service button highlights
-	
+
 	if (DrawRedBoxes)
 		OutlineAllRegions();
 }
@@ -979,7 +979,7 @@ void InventoryGUI::mfPaint(LONG MenuCombo,LONG)
    Returns     - void
    ======================================================================== */
 void InventoryGUI::mfInit(SHORT a)
-{	
+{
 	//printf("setting avastatshdl to %li\n",a);
 	AvatarStatsHdl=a;
 	HighlightedLine=-1;
@@ -994,22 +994,22 @@ void InventoryGUI::mfAddToAvailSpells(LONG MC ,LONG d)
 {
 	if (fPickingRecipient)
 	    return;
-	
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPS(AvatarStatsHdl);
 	ObjectList& Inv=pPS->mfGetInventory();
-	
+
 	if (CurrCategory==IC_SPELL && fPreparingSpells)
-	{	
+	{
 		HlMgr.HighlightButton(MC,1);
 		InventoryItor itor(Inv);
-		
+
 		itor.mfAdvanceTo(DispStart+d,CurrCategory);
-		
+
 		if (itor == Inv.end())
 		{
 			return;
 		}
-			
+
 		ITEMTYPE const spell_itemtype = (*itor)->mfType();
 		if (pPS->mfCanIMemorizeThisSpell(spell_itemtype) == TRUE)
 		{
@@ -1038,13 +1038,13 @@ void InventoryGUI::mfAddToAvailSpells(LONG MC ,LONG d)
 
 
 void InventoryGUI::mfTakeFromAvailSpells(LONG MC,LONG d)
-{	
+{
 	if (fPickingRecipient)
 	    return;
 
 	DumbAutoLockPtr<PLAYER_STATS > const pPlayerStats(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
-	
+
 	if (CurrCategory==IC_SPELL && fPreparingSpells)
 	{
 
@@ -1058,9 +1058,9 @@ void InventoryGUI::mfTakeFromAvailSpells(LONG MC,LONG d)
 		    (*itor)->mfHowMany() > 0)
 		{
 			(*itor)->mfLoseOne();
-			
+
 			// remove me from spellboxes if empty
-			
+
 			if ((*itor)->mfHowMany() <= 0)
 			{
 			    SHORT i;
@@ -1081,7 +1081,7 @@ void InventoryGUI::mfPurge(LONG,LONG)
 {
 	DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
-	
+
 	AvatarInventory.mfDeinit();
 }
 
@@ -1095,9 +1095,9 @@ void InventoryGUI::mfUseHighlightedObject(LONG a,LONG)
 
 	if (fPickingRecipient || fPreparingSpells)
 	    return;
-	
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPlayerStats(AvatarStatsHdl);
-	
+
 	if (pPlayerStats->mfGetCurHitPoints() <= 0) // dead men can't activate
 	{
 		// Don't clear the lock here if handle was locked before we
@@ -1105,13 +1105,13 @@ void InventoryGUI::mfUseHighlightedObject(LONG a,LONG)
 		// in debugger.)
 		return;
 	}
-	
+
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
 	if (HighlightedLine==-1)
 	{
 		return;
 	}
-		
+
 	if (CurrCategory == IC_REALM_SPELL)
 	{
 		return;
@@ -1119,16 +1119,16 @@ void InventoryGUI::mfUseHighlightedObject(LONG a,LONG)
 
 	//printf("highlighted use button %li\n",a&0xFFFF);
 	HlMgr.HighlightButton(a&0xFFFF,1);
-	
+
 	// GWP AvatarInventory.mfAdvanceTo((SHORT)HighlightedLine,CurrCategory);
-	
+
 	InventoryItor itor(AvatarInventory);
-	
+
 	if (CurrCategory != IC_SPELL)
 		itor.mfAdvanceTo((SHORT)HighlightedLine,CurrCategory);
 	else
 		itor.mfAdvanceToNonEmpty((SHORT)HighlightedLine,CurrCategory);
-		
+
 	if (itor == AvatarInventory.end())
 	{
 		return;
@@ -1137,20 +1137,20 @@ void InventoryGUI::mfUseHighlightedObject(LONG a,LONG)
 	HlMgr.Clear();
 	HideSubMenu(a,D_AVATAR_INVENTORY);
 	RunMenus();
-	
+
 	// GWP AvatarInventory.mfActivateCurrent();
 	itor.mfActivateCurrent();
 }
 
-static LONG CtxtHlpCats[]=	
-{	
+static LONG CtxtHlpCats[]=
+{
 	H_Items_Button,
 	H_Magic_Items_Button,
 	H_Spells_Button,
 	H_Realm_Spells,
 	H_Blood_Abilities_Button,
 };
-									
+
 
 void InventoryGUI::mfChangeCurrCat(LONG MenuCombo,LONG c)
 {
@@ -1159,26 +1159,26 @@ void InventoryGUI::mfChangeCurrCat(LONG MenuCombo,LONG c)
 	{
 		if (c==IC_SPELL && fPreparingSpells)
 			SystemHelp(STR_INVN_BUTN_SPELLS_BUTTON,STR_INVN_HELP_SPELLS_BUTTON_PREP,H_Spells_Button,NULL,0);
-						
+
 		SystemHelp(STR_INVN_BUTN_ITEMS_BUTTON+c,STR_INVN_HELP_ITEMS_BUTTON+c,CtxtHlpCats[c],NULL,0);
 		return;
 	}
 
 	if (fPickingRecipient)
 		return;
-	
+
 	LONG MenuId,ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	for (LONG i = INV_BUT_MUNDANE; i <= INV_BUT_BLOODABLT; ++i)
 		HlMgr.SubdueButton(i);
 
-	
+
 	LONG newArg=BUILD_LONG(MenuId, INV_BUT_MUNDANE+c);
-	
+
 
 	HlMgr.HighlightButton(newArg,-1);
-	
+
 	CurrCategory=(ItemCategory)c;
 	DispStart=0;
 	HighlightedLine=-1;
@@ -1201,19 +1201,19 @@ static void StaticInventoryGUI::mfDropItem(LONG a,LONG)
 		return;
 
 	SHORT AvatarStatsHdl=GUI.GetStatsHdl();
-	
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPlayerStats(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
-	
+
 	InventoryItor itor(AvatarInventory);
 	itor.mfAdvanceTo(GUI.HighlightedLine,GUI.CurrCategory);
-	
+
 	if (itor == AvatarInventory.end())
 	{
 		return;
 	}
-	
-	
+
+
 	if (fPreparingSpells && GUI.CurrCategory == IC_SPELL)
 	{
 		GUI.HlMgr.HighlightButton(a,1);
@@ -1236,22 +1236,22 @@ static void StaticInventoryGUI::mfDropItem(LONG a,LONG)
 		}
 		return;
 	}
-	
+
 	if (GUI.CurrCategory == IC_BLOODAB || GUI.CurrCategory == IC_SPELL ||
 		GUI.CurrCategory == IC_REALM_SPELL)		// can't drop these things
 	{
 		return;
 	}
-	
+
 	GUI.HlMgr.HighlightButton(a,1);
-	
+
 	if (!fDomainTurn)
 	{
 		CAvatar const * const pAv=(CAvatar const * const)BLKPTR(CAvatar::mfGetPlayerAvatarHandle());
-		
+
 		// GWP Insert bump and rotation code here!
 		itor.mfDropItem(pAv->mfX(),pAv->mfY());
-	}	
+	}
 	else
 	{
 		/* we're not going to allow dropping outside of adventuring */
@@ -1259,7 +1259,7 @@ static void StaticInventoryGUI::mfDropItem(LONG a,LONG)
 	}
 
 }
-	
+
 
 static void StaticInventoryGUI::mfUseHighlightedObject(LONG a,LONG b)
 {
@@ -1276,20 +1276,20 @@ static void StaticInventoryGUI::mfGiveItem(LONG a,LONG)
 
 
 	SHORT AvatarStatsHdl=GUI.GetStatsHdl();
-	
+
 	DumbAutoLockPtr<PLAYER_STATS > const pPS(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPS->mfGetInventory();
-	
+
 	if (GUI.HighlightedLine == -1 || fPickingRecipient)
 	{
 		return;
 	}
-	
+
 	if (fDomainTurn && GUI.CurrCategory == IC_SPELL && !fPreparingSpells)	/* in realm turn, not prepping */
 	{
 		return;
 	}
-	
+
 	if (fDomainTurn && GUI.CurrCategory != IC_SPELL && master_game_type == GAME_ADVENTURE)
 	{
 		return;
@@ -1299,7 +1299,7 @@ static void StaticInventoryGUI::mfGiveItem(LONG a,LONG)
 
 	InventoryItor itor(AvatarInventory);
 	itor.mfAdvanceTo(GUI.HighlightedLine,GUI.CurrCategory);
-	
+
 	if (itor == AvatarInventory.end())
 	{
 		return;
@@ -1331,7 +1331,7 @@ static void StaticInventoryGUI::mfGiveItem(LONG a,LONG)
 	{
 		if ((*itor) == NULL || (*itor)->mfWorn())	// can't give items being worn
 			return;
-			
+
 		// pick the person to give to
 		itemGiven = (*itor)->mfType();
 		givenFrom = AvatarStatsHdl;
@@ -1340,13 +1340,13 @@ static void StaticInventoryGUI::mfGiveItem(LONG a,LONG)
 		fPickingRecipient = TRUE;
 		GUI.RecipStart = 0;
 		GUI.HighlightedRecipient = -1;
-		
+
 		if (!fPreparingSpells)	// perhaps no list yet -- build it
 		{
 			localActiveRegent = realm[HomeRealm].mfGetRegent();
 			BuildAdventureList();
 		}
-			
+
 	}
 }
 
@@ -1358,7 +1358,7 @@ static void StaticInventoryGUI::mfGoStatus(LONG a,LONG Combo)
 	{
 		return;
 	}
-	
+
 	StatusFromInventory(a, Combo);
 }
 
@@ -1369,12 +1369,12 @@ static void StaticInventoryGUI::mfDone(LONG a,LONG Combo)
 	{
 		if (hRecipientStats == fERROR)
 			hRecipientStats = givenFrom;
-			
+
 		if (hRecipientStats != fERROR && itemGiven != ITEM_NO_THING)
 		{
 			DumbAutoLockPtr<PLAYER_STATS > pRS(hRecipientStats);
 			AddItemStatus ais=pRS->mfGetInventory().mfAddItem(itemGiven);
-			
+
 			if (!(ais&ADD_OK))
 			{
 				// Failed to go, put it back.
@@ -1392,7 +1392,7 @@ static void StaticInventoryGUI::mfDone(LONG a,LONG Combo)
 			}
 		}
 		GUI.HighlightedLine = -1;
-		
+
 		// Now reset the vars back to no information.
 		fPickingRecipient = FALSE;
 		numCharges = 0;
@@ -1414,7 +1414,7 @@ static void StaticInventoryGUI::mfDone(LONG a,LONG Combo)
 		RunMenus();
 		update_screen();
 		TickDelay(4);
-		
+
 		fPreparingSpells = FALSE;
 		HideSubMenu(a, D_AVATAR_INVENTORY);
 		RunMenus();
@@ -1429,10 +1429,10 @@ static void StaticInventoryGUI::mfDone(LONG a,LONG Combo)
 
 static void StaticInventoryGUI::mfDisplay(LONG a,LONG Combo)
 {
-	
+
 	SHORT FromStatus,ShowThisHandle;
 	SPLIT_LONG(Combo,FromStatus,ShowThisHandle);
-	
+
 	if (ShowThisHandle!=fERROR)
   	{
 		GUI.mfInit(ShowThisHandle);
@@ -1440,21 +1440,21 @@ static void StaticInventoryGUI::mfDisplay(LONG a,LONG Combo)
 
 
 		LONG Arg=BUILD_LONG(D_AVATAR_INVENTORY,INV_BUT_MUNDANE+GUI.CurrCategory);
-	
+
 		DumbAutoLockPtr<PLAYER_STATS> pPS(ShowThisHandle);
 		if ((fBattleCombat || fPreparingSpells) &&
 			pPS->mfIsMagicUser())
 		{
 			GUI.mfChangeCurrCat(Arg,IC_SPELL);
 		}
-		
+
 		if (GUI.CurrCategory<IC_MUNDANE || GUI.CurrCategory>IC_BLOODAB)
 			GUI.mfChangeCurrCat(Arg,IC_MAGITEM);
-		
+
 		GUI.mfDisplay(a,FromStatus);
 	}
 	else
-		printf("couldn't show invntory because handle was fERROR\n");
+		logWarn("couldn't show invntory because handle was fERROR");
 }
 
 /* ========================================================================
@@ -1467,10 +1467,8 @@ static void StaticInventoryGUI::mfAddItem(LONG,LONG Itype)
 	SHORT AvatarStatsHdl=GUI.GetStatsHdl();
 	DumbAutoLockPtr<PLAYER_STATS > const pPlayerStats(AvatarStatsHdl);
 	ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
-	
-	printf("adding %s to player's inventory\n",GAME_TTYPE::mfGetDescription(ItemTypes[Itype].mfGameType()));
-	
+
+	logInfo("adding %s to player's inventory",GAME_TTYPE::mfGetDescription(ItemTypes[Itype].mfGameType()));
+
 	AvatarInventory.mfAddItem((ITEMTYPE)Itype);
 }
-
-

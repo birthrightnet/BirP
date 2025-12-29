@@ -4,7 +4,7 @@
    ========================================================================
    Filename: UNITS.cpp  -
    Author:   Alan Clark
-   
+
    ======================================================================= */
 #ifdef _WINDOWS
 #include <windows.h>
@@ -39,7 +39,7 @@
 /* ------------------------------------------------ */
 extern BOOL	fDomainTurn;
 
-extern "C" { 
+extern "C" {
 extern SHORT	sMenusUp;
 extern BOOL fQuitting;
 }
@@ -53,7 +53,7 @@ extern "C" void RandomLogPrefix ( char * szString );
 DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /*      DUMMY UNIT               */
 /*   0 */	{NO_PROVINCE,		REALM::NO_COUNTRY,	0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
-/*   1 */	{GHORIED,			REALM::ROESONE,		0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,2,		fERROR},/*      ARMY OF ROSEONE          */ 
+/*   1 */	{GHORIED,			REALM::ROESONE,		0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,2,		fERROR},/*      ARMY OF ROSEONE          */
 /*   2 */	{NO_PROVINCE,		REALM::ROESONE,		0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,3,		fERROR},
 /*   3 */	{NO_PROVINCE,		REALM::ROESONE,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,4,		fERROR},
 /*   4 */	{NO_PROVINCE,		REALM::ROESONE,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
@@ -62,22 +62,22 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /*   7 */	{BELLAM,				REALM::ROESONE,		0,	A_PIK_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,8,		fERROR},
 /*   8 */	{NO_PROVINCE,		REALM::ROESONE,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /*   9 */	{CAERCAS,			REALM::ROESONE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
-/*  10 */	{CALRIE,				REALM::AERENWE,		0,	A_EIN_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,-1,	fERROR},/*      ARMY OF AERENWE          */ 
+/*  10 */	{CALRIE,				REALM::AERENWE,		0,	A_EIN_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,-1,	fERROR},/*      ARMY OF AERENWE          */
 /*  11 */	{DHOENEL,			REALM::AERENWE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
-/*  12 */	{TIER,				REALM::DIEMED,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,13,	fERROR},/*      ARMY OF DIEMED          */  
+/*  12 */	{TIER,				REALM::DIEMED,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,13,	fERROR},/*      ARMY OF DIEMED          */
 /*  13 */	{NO_PROVINCE,		REALM::DIEMED,			0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  14 */	{CILIENE,			REALM::DIEMED,			0,	A_CAV_UNIT_ICON, 0,1,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,15,	fERROR},
 /*  15 */	{NO_PROVINCE,		REALM::DIEMED,			0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  16 */	{MOERE,				REALM::DIEMED,			0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,17,	fERROR},
 /*  17 */	{NO_PROVINCE,		REALM::DIEMED,			0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
-/*  18 */	{ILIEN,				REALM::ILIEN,			0,	A_PIK_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,19,	fERROR},/*      ARMY OF ILIEN          */   
+/*  18 */	{ILIEN,				REALM::ILIEN,			0,	A_PIK_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,19,	fERROR},/*      ARMY OF ILIEN          */
 /*  19 */	{NO_PROVINCE,		REALM::ILIEN,			0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,-1,	fERROR},
-/*  20 */	{CAERWIL,			REALM::MEDOERE,		0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,21,	fERROR},/*      ARMY OF MEDOERE          */ 
+/*  20 */	{CAERWIL,			REALM::MEDOERE,		0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,21,	fERROR},/*      ARMY OF MEDOERE          */
 /*  21 */	{NO_PROVINCE,		REALM::MEDOERE,		0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,22,	fERROR},
 /*  22 */	{NO_PROVINCE,		REALM::MEDOERE,		0,	A_IRR_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
 /*  23 */	{BRAEME,				REALM::MEDOERE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,24,	fERROR},
 /*  24 */	{NO_PROVINCE,		REALM::MEDOERE,		0,	A_IRR_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
-/*  25 */	{SPIDERFELL,		REALM::SPIDERFELL,	0,	C_SPD_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 35,26,	fERROR},/*      ARMY OF THE SPIDER          */ 
+/*  25 */	{SPIDERFELL,		REALM::SPIDERFELL,	0,	C_SPD_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 35,26,	fERROR},/*      ARMY OF THE SPIDER          */
 /*  26 */	{NO_PROVINCE,		REALM::SPIDERFELL,	0,	C_SPD_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 35,27,	fERROR},
 /*  27 */	{NO_PROVINCE,		REALM::SPIDERFELL,	0,	C_SPD_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 35,28,	fERROR},
 /*  28 */	{NO_PROVINCE,		REALM::SPIDERFELL,	0,	C_SPD_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 35,29,	fERROR},
@@ -104,23 +104,23 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /*  49 */	{SEASEDGE,			REALM::BOERUINE,		0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,50,	fERROR},
 /*  50 */	{NO_PROVINCE,		REALM::BOERUINE,		0,	A_EIN_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,51,	fERROR},
 /*  51 */	{NO_PROVINCE,		REALM::BOERUINE,		0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,-1,	fERROR},
-/*  52 */	{FREESTEAD,			REALM::TALINIE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,53,	fERROR},/*      ARMY OF TALINIE          */ 
+/*  52 */	{FREESTEAD,			REALM::TALINIE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,53,	fERROR},/*      ARMY OF TALINIE          */
 /*  53 */	{NO_PROVINCE,		REALM::TALINIE,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /*  54 */	{WINTERS_DEEP,		REALM::TALINIE,		0,	A_SCT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 57,55,	fERROR},
 /*  55 */	{NO_PROVINCE,		REALM::TALINIE,		0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  56 */	{SEAPORT,			REALM::TALINIE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  57 */	{ICE_HAVEN,			REALM::TALINIE,		0,	M_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
-/*  58 */	{BINDIER,			REALM::BROSENGAE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},/*      ARMY OF BROSENGAE          */  
+/*  58 */	{BINDIER,			REALM::BROSENGAE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},/*      ARMY OF BROSENGAE          */
 /*  59 */	{COERE,				REALM::BROSENGAE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  60 */	{MARILEN,			REALM::BROSENGAE,		0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
 /*  61 */	{RHUOBHE,			REALM::RHUOBHE,		0,	E_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,62,	fERROR},/*      ARMY OF RHUOBHE THE MANSLAYER          */
 /*  62 */	{NO_PROVINCE,		REALM::RHUOBHE,		0,	E_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 44,63,	fERROR},
 /*  63 */	{NO_PROVINCE,		REALM::RHUOBHE,		0,	E_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 42,64,	fERROR},
 /*  64 */	{NO_PROVINCE,		REALM::RHUOBHE,		0,	E_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 42,-1,	fERROR},
-/*  65 */	{PORTAGE,			REALM::TAEGHAS,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},/*      ARMY OF TAEGHAS          */ 
+/*  65 */	{PORTAGE,			REALM::TAEGHAS,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},/*      ARMY OF TAEGHAS          */
 /*  66 */	{WILDERS_GORGE,	REALM::TAEGHAS,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /*  67 */	{BROSIEN,			REALM::TAEGHAS,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
-/*  68 */	{CAULNOR,			REALM::AVANIL,			0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},/*      ARMY OF AVANIL          */  
+/*  68 */	{CAULNOR,			REALM::AVANIL,			0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},/*      ARMY OF AVANIL          */
 /*  69 */	{DURIENE,			REALM::AVANIL,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /*  70 */	{BHREIN,				REALM::AVANIL,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /*  71 */	{TALIERN,			REALM::AVANIL,			0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,-1,	fERROR},
@@ -144,7 +144,7 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /*  89 */	{NO_PROVINCE,		REALM::AVANIL,			0,	A_EIN_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,90,	fERROR},
 /*  90 */	{NO_PROVINCE,		REALM::AVANIL,			0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,91,	fERROR},
 /*  91 */	{NO_PROVINCE,		REALM::AVANIL,			0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,-1,	fERROR},
-/*  92 */	{TIRESTE,			REALM::GHOERE,			0,	A_EIN_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,93,	fERROR},/*      ARMY OF GHOERE          */  
+/*  92 */	{TIRESTE,			REALM::GHOERE,			0,	A_EIN_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 22,93,	fERROR},/*      ARMY OF GHOERE          */
 /*  93 */	{NO_PROVINCE,		REALM::GHOERE,			0,	A_CAV_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,94,	fERROR},
 /*  94 */	{NO_PROVINCE,		REALM::GHOERE,			0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,95,	fERROR},
 /*  95 */	{NO_PROVINCE,		REALM::GHOERE,			0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,-1,	fERROR},
@@ -162,7 +162,7 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /* 107 */	{ACHIESE,			REALM::GHOERE,			0,	M_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /* 108 */	{THORALINAR,		REALM::GHOERE,			0,	M_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /* 109 */	{CONALLIER,			REALM::GHOERE,			0,	M_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
-/* 110 */	{TORIENS_WATCH,	REALM::MHORIED,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,111,	fERROR},/*      ARMY OF MHORIED          */ 
+/* 110 */	{TORIENS_WATCH,	REALM::MHORIED,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,111,	fERROR},/*      ARMY OF MHORIED          */
 /* 111 */	{NO_PROVINCE,		REALM::MHORIED,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /* 112 */	{WINOENE,			REALM::MHORIED,		0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,113,	fERROR},
 /* 113 */	{NO_PROVINCE,		REALM::MHORIED,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
@@ -177,7 +177,7 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /* 122 */	{BALTERUINE,		REALM::MHORIED,		0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /* 123 */	{MARLOERS_GAP,		REALM::MHORIED,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /* 124 */	{CWLLDON,			REALM::MHORIED,		0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
-/* 125 */	{GHONALLISON,		REALM::TUORNEN,		0,	A_PIK_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,126,	fERROR},/*      ARMY OF TUORNEN          */ 
+/* 125 */	{GHONALLISON,		REALM::TUORNEN,		0,	A_PIK_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,126,	fERROR},/*      ARMY OF TUORNEN          */
 /* 126 */	{NO_PROVINCE,		REALM::TUORNEN,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /* 127 */	{HAESRIEN,			REALM::TUORNEN,		0,	A_KNT_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 25,128,	fERROR},
 /* 128 */	{NO_PROVINCE,		REALM::TUORNEN,		0,	A_PIK_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 28,129,	fERROR},
@@ -197,7 +197,7 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /* 142 */	{ANSIEN,				REALM::ELINIE,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /* 143 */	{SENDOURAS,			REALM::ELINIE,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
 /* 144 */	{OSOERIENE,			REALM::ELINIE,			0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,-1,	fERROR},
-/* 145 */	{ENDIER,				REALM::ENDIER,			0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,146,	fERROR},/*      ARMY OF ENDIER          */  
+/* 145 */	{ENDIER,				REALM::ENDIER,			0,	A_INF_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,146,	fERROR},/*      ARMY OF ENDIER          */
 /* 146 */	{NO_PROVINCE,		REALM::ENDIER,			0,	A_INF_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 23,147,	fERROR},
 /* 147 */	{NO_PROVINCE,		REALM::ENDIER,			0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
 /* 148 */	{NOLIEN,				REALM::DHOESONE,		0,	E_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,149,	fERROR},/*      ARMY OF DHOESONE          */
@@ -276,7 +276,7 @@ DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /* 221 */	{BOGSEND,			REALM::COERANYS,		0,	A_BOW_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},/*      ARMY OF COERANYS          */
 /* 222 */	{RUORVEN,			REALM::COERANYS,		0,	A_CAV_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 21,223,	fERROR},
 /* 223 */	{NO_PROVINCE,		REALM::COERANYS,		0,	A_BOW_UNIT_ICON, 0,0,1,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 20,-1,	fERROR},
-/* 224 */	{MORIEL,				REALM::OSOERDE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},/*      ARMY OF OSOERDE          */ 
+/* 224 */	{MORIEL,				REALM::OSOERDE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},/*      ARMY OF OSOERDE          */
 /* 225 */	{MOERGEN,			REALM::OSOERDE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
 /* 226 */	{GULFPORT,			REALM::OSOERDE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
 /* 227 */	{GHALLIERE,			REALM::OSOERDE,		0,	A_IRR_UNIT_ICON, 0,0,0,0,0,0,0,1,0, NO_PROVINCE,0,0,0,0, 24,-1,	fERROR},
@@ -2077,13 +2077,13 @@ DEFINE_VECTOR_CLASS(UNIT_TYPE, units);
    Description - make a pass throught the units array and check that all
                  the links are correct and that each unit has valid data.
                  last minute effort to fix many possible bugs
-                 GEH 12/3/96 
-   Returns     - 
+                 GEH 12/3/96
+   Returns     -
    ======================================================================== */
 void ValidateUnitsArray(void)
 {
 	SHORT	sCount;
-	
+
 	for(sCount = 1;				// first possible valid unit
 		sCount < MAX_UNITS;		// last valid unit
 		++sCount 				// check each unit for being a list head
@@ -2104,7 +2104,7 @@ void ValidateUnitsArray(void)
 
 /* ========================================================================
    Function    - ValidateUnitList
-   Description - Validate a unit and all the units below it in 
+   Description - Validate a unit and all the units below it in
                  the linked list.  Call this with the head of a list.
    Returns     - TRUE This list OK, FALSE Errors found
    ======================================================================== */
@@ -2113,7 +2113,7 @@ BOOL ValidateUnitList(SHORT UnitIndex)
 	SHORT	NextUnit;
 	SHORT	UnitCount = 0;
 	BOOL	fRetVal = TRUE;
-	
+
 	// scan the list for bad units
 	for(NextUnit = units[UnitIndex].NextUnit;
 		NextUnit != -1;
@@ -2123,65 +2123,65 @@ BOOL ValidateUnitList(SHORT UnitIndex)
 		// check for a list that is too long
 		if(++UnitCount > gUnitStackSize)
 		{
-			printf("Units Array List ERROR! List greater then %d units[%d]!", 
+			logError("Units Array List ERROR! List greater then %d units[%d]!",
 				gUnitStackSize,
 				UnitIndex );
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-		
+
 		// check for infinite loops
 		if (NextUnit == UnitIndex)
 		{
-			printf("Units Array List ERROR! INFINITE LOOP units[%d]!", 
+			logError("Units Array List ERROR! INFINITE LOOP units[%d]!",
 				NextUnit, UnitIndex );
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-		
+
 		// check for off the end of list
 		if (NextUnit > MAX_UNITS)
 		{
-			printf("Units Array List ERROR! units[%d] > MAX_UNITS in list headed by units[%d]!", 
+			logError("Units Array List ERROR! units[%d] > MAX_UNITS in list headed by units[%d]!",
 				NextUnit, UnitIndex );
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-		
+
 		// check for invalid link to unit 0
 		if (NextUnit == 0)
 		{
-			printf("Units Array List ERROR! NextUnit == 0 in list headed by units[%d]!", 
+			logError("Units Array List ERROR! NextUnit == 0 in list headed by units[%d]!",
 				UnitIndex );
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-		
+
 		// check for invalid unit
 		if (!ValidateUnit(NextUnit))
 		{
-			printf("Units Array List ERROR! units[%d] is invalid member of a list headed by units[%d]!", 
+			logError("Units Array List ERROR! units[%d] is invalid member of a list headed by units[%d]!",
 				NextUnit, UnitIndex );
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
 	}
-	
+
 End:
 	return fRetVal;
 }
@@ -2194,65 +2194,65 @@ End:
 BOOL ValidateUnit(SHORT UnitIndex)
 {
 	BOOL	fRetVal = TRUE;
-	
+
 	// Realm should be less then REALM_COUNT
 	if (units[UnitIndex].Realm >= REALM::REALM_COUNT)
 	{
-		printf("Units Array ERROR! units[%d].Realm (%d) >= REALM_COUNT", 
+		logError("Units Array ERROR! units[%d].Realm (%d) >= REALM_COUNT",
 			UnitIndex, units[UnitIndex].Realm);
 		fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 		goto End;
-	}		
-		
+	}
+
 	// a valid unit has a value greater then NO_COUNTRY
 	if (units[UnitIndex].Realm != REALM::NO_COUNTRY)
 	{
 		// a valid unit has a province value less then PROVINCE_COUNT
 		if (units[UnitIndex].Realm >= PROVINCE_COUNT)
 		{
-			printf("Units Array ERROR! units[%d].province (%d) >= PROVINCE_COUNT", 
+			logError("Units Array ERROR! units[%d].province (%d) >= PROVINCE_COUNT",
 				UnitIndex, units[UnitIndex].province);
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-	
+
 		// a valid unit has a province not equal to zero
 		if (units[UnitIndex].Realm == 0)
 		{
-			printf("Units Array ERROR! units[%d].province (%d) == 0", 
+			logError("Units Array ERROR! units[%d].province (%d) == 0",
 				UnitIndex, units[UnitIndex].province);
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-	
+
 		// a valid unit has a icon value less then or equal RHUOBHE_UNIT_ICON
 		if (units[UnitIndex].Icon > RHUOBHE_UNIT_ICON)
 		{
-			printf("Units Array ERROR! units[%d].Icon (%d) > RHUOBHE_UNIT_ICON", 
+			logError("Units Array ERROR! units[%d].Icon (%d) > RHUOBHE_UNIT_ICON",
 				UnitIndex, units[UnitIndex].province);
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
 		}
-	
+
 		// a valid unit has a icon value not equal to zero
 		if (units[UnitIndex].Icon == 0)
 		{
-			printf("Units Array ERROR! units[%d].Icon (%d) == 0", 
+			logError("Units Array ERROR! units[%d].Icon (%d) == 0",
 				UnitIndex, units[UnitIndex].province);
 			fRetVal = FALSE;
-#ifdef _DEBUG			
+#ifdef _DEBUG
 			fatal_error("Units array error!");
 #endif
 			goto End;
@@ -2260,7 +2260,7 @@ BOOL ValidateUnit(SHORT UnitIndex)
 	}
 End:
 	return fRetVal;
-}   
+}
 
 /* ========================================================================
    Function    - CheckUnitStack
@@ -2299,12 +2299,12 @@ BOOL CheckUnitStack (LONG iUnit, BOOL fSend )
 				SetGameData(MP_UNITS, MPUNITS_JOINED, i, FALSE, FALSE );
 				SetGameData(MP_UNITS, MPUNITS_NOTSPOTTED, i, units[iUnit].NotSpotted, FALSE );
 				SetGameData(MP_UNITS, MPUNITS_PROVINCE, i, units[iUnit].province, FALSE );
-				
+
 				#ifdef _WINDOWS
 				if (fSend && IsMultiPlayer())
 					AMultiPlayer.UnitMessage(i, (UBYTE *)&units[i], "SPLIT TOO BIG STACK");
 				#endif
-				
+
 				CheckLeader(i,fSend );
 				Result = FALSE;
 				break;
@@ -2322,7 +2322,7 @@ BOOL CheckUnitStack (LONG iUnit, BOOL fSend )
 /* ========================================================================
    Function    - JoinUnits_sub
    Description - Helper fn for joining units together
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 LONG JoinUnits_sub (LONG iUnit, LONG iUnit2, BOOL fSend )
@@ -2352,7 +2352,7 @@ LONG JoinUnits_sub (LONG iUnit, LONG iUnit2, BOOL fSend )
 	if (fSend && IsMultiPlayer())
 		AMultiPlayer.UnitMessage(iUnit, (UBYTE *)&units[iUnit], "JOIN UNITS SUB");
 	#endif
-				
+
 	iJoinDialog_to = 0;
 	fCheckUnitArrival = FALSE;
 
@@ -2379,7 +2379,7 @@ void JoinUnits (LONG iUnit, LONG iUnit2)
 /* ========================================================================
 	Function	- RegentDeathTest
 	Description - did *your* regent just die?
-	Returns		- 
+	Returns		-
 	======================================================================== */
 BOOL RegentDeathTest (void)
 {
@@ -2390,7 +2390,7 @@ BOOL RegentDeathTest (void)
 		if (fDomainTurn && RegentKilled != TRUE)	// so we don't paint twice.
 		{
 			DefeatScreen(PaintRegentLose, ProvinceLooseProc);
-		
+
 			// stay here until we clear the message box
 			if (sMenusUp > 0)
 			{
@@ -2402,7 +2402,7 @@ BOOL RegentDeathTest (void)
 			}
 		}
 		RegentKilled = TRUE;
-		
+
 		return TRUE;
 	}
 
@@ -2467,7 +2467,7 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 	// if he is, set his .unit = -1.  That signifies that he
 	// is dead.
 	// if this unit is the regent and name the next lieutenant to be the regent
-	// of this realm. If there is no lieutenant left, set realm[i].regent = 0 
+	// of this realm. If there is no lieutenant left, set realm[i].regent = 0
 	if (units[iUnit].Icon >= FIRST_CHARACTER_TYPE)
 	{
 		for (i=1; i<CHARACTER_COUNT; ++i)			// scan for regent
@@ -2478,7 +2478,7 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 
 				//	moved to PaintDiplomacy, tribute became payroll 7/16/97 ABC
 				//// Were was tribute being paid to an unlanded lieutenent?
-				//if (Original_realm_ >= REALM::N_IMPORTS_EXPORTS 
+				//if (Original_realm_ >= REALM::N_IMPORTS_EXPORTS
 				//    && Original_realm_ <= REALM::RUARCH_ROCKHAMMER)
 				//{
 				//	// No more tribute to dead guys.
@@ -2487,17 +2487,17 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 				//	{
 				//		// Tribute[rlm][Original_realm_] = 0;
 				//		// Tribute[Original_realm_][rlm] = 0;
-				//		
+				//
 				//		SetGameData(MP_TRIBUTE, rlm, Original_realm_, 0, fSend);
 				//		SetGameData(MP_TRIBUTE, Original_realm_, rlm, 0, fSend);
 				//	}
 				//}
 
 				// reset the regent of the realm if needed
-				
+
 				// His current realm comes from units array, so don't remove him just yet.
 				REALM::REALM_TYPE const ThisRegentsRealm = regents[i].mfGetRealm();
-				
+
 				// he is now dead in this game
 				regents[i].mfSetunit(-1);
 				SetGameData(MP_REGENT, MPREG_UNIT, i, -1, fSend );
@@ -2506,12 +2506,12 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 				{
 					//realm[ThisRegentsRealm].regency = 0;				// zero regency when regent dies
 					SetGameData(MP_REALM, MPRLM_REGENCY, ThisRegentsRealm, 0, fSend );
-					
+
 					// Moved to outside this loop.
 					// did *your* regent just die?
 					//if (RegentDeathTest())
 					//	break;
-					
+
 					// HACK HACK HACK HACK HACK HACK HACK
 					//
 					//
@@ -2527,12 +2527,12 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 					{
 						LONG iThisUnit;
 						LONG iNextUnit;
-						
+
 						for (iThisUnit = iUnit; iThisUnit > 0; iThisUnit = iNextUnit)
 						{
-							// Save the nextUnit 
+							// Save the nextUnit
 							iNextUnit = units[iThisUnit].NextUnit;
-							
+
 							// mark unit as deleted
 							SetGameData(MP_UNITS, MPUNITS_PROVINCE, iThisUnit, NO_PROVINCE, FALSE );
 							SetGameData(MP_UNITS, MPUNITS_REALM,    iThisUnit, REALM::NO_COUNTRY, FALSE );
@@ -2552,10 +2552,10 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 					// HACK HACK HACK HACK HACK HACK HACK
 
 					RegentDeathTest();
-					
+
 					for (k=1; k<CHARACTER_COUNT; ++k)
 					{
-						if (k != i 
+						if (k != i
 							&& regents[k].mfGetRealm() == ThisRegentsRealm
 							&& regents[k].mfGetunit() > 0)	// Not dead.
 						{
@@ -2563,16 +2563,16 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 							SetGameData(MP_REALM, MPRLM_REGENT, ThisRegentsRealm, k, fSend );
 							if (ThisRegentsRealm == HomeRealm)
 								ActiveRegent = k;
-							
+
 							// Promote the lieutenent to regent.
 							if (regents[k].mfGeticon() >= LET_LORDM1_UNIT_ICON
 							    && regents[k].mfGeticon() <= LET_GLADY1_UNIT_ICON)
 							{
-								MAP_ICON const NewIcon = (MAP_ICON)(REG_LORDM1_UNIT_ICON + 
+								MAP_ICON const NewIcon = (MAP_ICON)(REG_LORDM1_UNIT_ICON +
 																	(LET_LORDM1_UNIT_ICON - regents[k].mfGeticon()));
 								SetGameData(MP_REGENT, MPREG_ICON, k, NewIcon, fSend);
 							}
-							// GWPn = REG_M_FTR_UNIT_ICON; 
+							// GWPn = REG_M_FTR_UNIT_ICON;
 							// GWPfor (m=LET_LORDM1_UNIT_ICON; m<=LET_GLADY1_UNIT_ICON; ++m)
 							// GWP{
 							// GWP	if (regents[k].mfGeticon() == m)
@@ -2645,19 +2645,19 @@ LONG CheckLeader (LONG iOrgUnitLeader, BOOL fSend )
 		i = units[i].NextUnit;
 	}
 
-	// if the suggested new unit leader is not already the leader, 
+	// if the suggested new unit leader is not already the leader,
 	// make it the leader
 	if (NewUnitLeader != iOrgUnitLeader && PrevNewUnitLeader < MAX_UNITS)
 	{
 		// Remove the NewUnitLeader link.
 		SetGameData(MP_UNITS, MPUNITS_NEXTUNIT, PrevNewUnitLeader, units[NewUnitLeader].NextUnit, fSend );
-		
+
 		// Make the NewUnitLeader the head of the list.
 		SetGameData(MP_UNITS, MPUNITS_NEXTUNIT,   NewUnitLeader, iOrgUnitLeader, FALSE );
-		
+
 		// The Old leader is now a follower.
 		SetGameData(MP_UNITS, MPUNITS_JOINED, iOrgUnitLeader, TRUE, fSend );
-		
+
 		// Update the NewUnitLeader data. As head of the list, it needs the correct info.
 		SetGameData(MP_UNITS, MPUNITS_JOINED,      NewUnitLeader, FALSE, FALSE );
 		SetGameData(MP_UNITS, MPUNITS_NOTSPOTTED,  NewUnitLeader, units[iOrgUnitLeader].NotSpotted, FALSE );
@@ -2671,16 +2671,16 @@ LONG CheckLeader (LONG iOrgUnitLeader, BOOL fSend )
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH1,   NewUnitLeader, units[iOrgUnitLeader].DestPath1, FALSE);
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH2,   NewUnitLeader, units[iOrgUnitLeader].DestPath2, FALSE);
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH3,   NewUnitLeader, units[iOrgUnitLeader].DestPath3, FALSE);
-		
+
 		// clear out province to neutral value
 		SetGameData(MP_UNITS, MPUNITS_PROVINCE, iOrgUnitLeader, NO_PROVINCE, fSend );
-		
+
 		#ifdef _WINDOWS
 		if (fSend && IsMultiPlayer())
 			AMultiPlayer.UnitMessage(NewUnitLeader, (UBYTE *)&units[NewUnitLeader], "CHECK LEADER");
 		#endif
 	}
-	
+
 	return NewUnitLeader;
 }
 
@@ -2705,7 +2705,7 @@ LONG CalcUnitValues (LONG iUnit)
 	else
 	// trailer trash
 	if ( units[iUnit].Icon < C_WYV_UNIT_ICON )
-		lResult = UnitMusterCost[units[iUnit].Icon]; 
+		lResult = UnitMusterCost[units[iUnit].Icon];
 
 	return lResult;
 }
@@ -2736,7 +2736,7 @@ void MoveSubUnitUpList (LONG iUnit, LONG iStartUnit)
 	if (iPrev == -1)
 	{
 		SetGameData(MP_UNITS, MPUNITS_JOINED, i, TRUE, TRUE );
-		
+
 		SetGameData(MP_UNITS, MPUNITS_JOINED,      iNext, FALSE, FALSE );
 		SetGameData(MP_UNITS, MPUNITS_NOTSPOTTED,  iNext, units[i].NotSpotted, FALSE );
 		SetGameData(MP_UNITS, MPUNITS_PROVINCE,    iNext, units[i].province, FALSE );
@@ -2747,12 +2747,12 @@ void MoveSubUnitUpList (LONG iUnit, LONG iStartUnit)
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH1,   iNext, units[i].DestPath1, FALSE);
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH2,   iNext, units[i].DestPath2, FALSE);
 		SetGameData(MP_UNITS, MPUNITS_DESTPATH3,   iNext, units[i].DestPath3, FALSE);
-		
+
 		#ifdef _WINDOWS
 		if (IsMultiPlayer())
 			AMultiPlayer.UnitMessage(iNext, (UBYTE *)&units[iNext], "UP LIST");
 		#endif
-		
+
 		iSelectedUnit = iNext;
 	}
 	else
@@ -2825,7 +2825,7 @@ LONG CreateUnitNJ (PROVINCE prov, MAP_ICON icon, LONG id, REALM::REALM_TYPE real
 	if (fSend && IsMultiPlayer())
 		AMultiPlayer.UnitMessage(j, (UBYTE *)&units[j], "CREATE UNIT");
 	#endif
-	
+
 // DONT TRANSMIT TO OTHER PLAYERS - DONT TRANSMIT TO OTHER PLAYERS
 // ONLY CHANGE LOCAL - ONLY CHANGE LOCAL - ONLY CHANGE LOCAL ARRAYS
 	// check for spotting units
@@ -2835,13 +2835,13 @@ LONG CreateUnitNJ (PROVINCE prov, MAP_ICON icon, LONG id, REALM::REALM_TYPE real
 		PROVINCE	thisProv = prov;
 		PROVINCE	nextProv;
 		LONG		k;
-		
+
 		if(CanISeeAnyoneInThisProv(HomeRealm, thisProv))
 		{
 			MarkUnitsSpotted(nextProv);
 			units[j].NotSpotted = FALSE;
 		}
-		
+
 		for(k=0;k<7;k++)
 		{
 			nextProv = (PROVINCE)province[thisProv].Border[k].Province;
@@ -2891,8 +2891,8 @@ LONG CreateUnitNJ (PROVINCE prov, MAP_ICON icon, LONG id, REALM::REALM_TYPE real
 
 /* ========================================================================
    Function    - RequestUnitsIndex
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void RequestUnitsIndex (LONG *index, BOOL fSend)
 {
@@ -3054,19 +3054,19 @@ void TransportUnit(LONG iUnit, PROVINCE prov, BOOL fSend)
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH1,   	iUnit, 0, FALSE);
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH2,   	iUnit, 0, FALSE);
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH3,   	iUnit, 0, FALSE);
-	
+
 	// Search for others in this provice and spot them if appropriate.
 	if (units[iUnit].Icon == A_SCT_UNIT_ICON)
 	{
 		PROVINCE	thisProv = prov;
 		PROVINCE	nextProv;
 		LONG		k;
-		
+
 		if(CanISeeAnyoneInThisProv(HomeRealm, thisProv))
 		{
 			MarkUnitsSpotted(nextProv);
 		}
-		
+
 		for(k=0;k<7;k++)
 		{
 			nextProv = (PROVINCE)province[thisProv].Border[k].Province;
@@ -3081,15 +3081,15 @@ void TransportUnit(LONG iUnit, PROVINCE prov, BOOL fSend)
 	{
 		MarkUnitsSpotted(prov);
 	}
-			
-	
+
+
 	if(!JoinUnitToOthersInProvince(iUnit, prov, fSend))
 	{
 		// Couldn't join up so iUnit is its own stack.
 		SetGameData(MP_UNITS, MPUNITS_JOINED, iUnit, 0, FALSE );
 		SetGameData(MP_UNITS, MPUNITS_NEXTUNIT, iUnit, -1, FALSE );
 	}
-	
+
 	// Now send the full iUnit changes.
 	#ifdef _WINDOWS
 	if (fSend && IsMultiPlayer())
@@ -3147,13 +3147,13 @@ LONG MakeUnitSingleStack(LONG iUnit, BOOL fSend)
 			SetGameData(MP_UNITS, MPUNITS_DESTPATH1,   k, units[iUnit].DestPath1, FALSE);
 			SetGameData(MP_UNITS, MPUNITS_DESTPATH2,   k, units[iUnit].DestPath2, FALSE);
 			SetGameData(MP_UNITS, MPUNITS_DESTPATH3,   k, units[iUnit].DestPath3, FALSE);
-			
+
 			// Now send the full unit changes.
 			#ifdef _WINDOWS
 			if (fSend && IsMultiPlayer())
 				AMultiPlayer.UnitMessage(k, (UBYTE *)&units[k], "MAKE STACK");
 			#endif
-			
+
 			k = CheckLeader(k, fSend);
 		}
 	}
@@ -3167,13 +3167,13 @@ LONG MakeUnitSingleStack(LONG iUnit, BOOL fSend)
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH1,   	iUnit, 0, FALSE);
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH2,   	iUnit, 0, FALSE);
 	SetGameData(MP_UNITS, MPUNITS_DESTPATH3,   	iUnit, 0, FALSE);
-	
+
 	// Now send the full unit changes.
 	#ifdef _WINDOWS
 	if (fSend && IsMultiPlayer())
 		AMultiPlayer.UnitMessage(iUnit, (UBYTE *)&units[iUnit], "MAKE STACK2");
 	#endif
-	
+
 	return k;
 }
 /* ========================================================================
@@ -3186,19 +3186,19 @@ BOOL JoinUnitToOthersInProvince(LONG iUnit, PROVINCE prov, BOOL fSend)
 {
 	LONG k;
 	BOOL Result = FALSE;
-	
+
 	for(k = 1; k<MAX_UNITS; ++k)
 	{
 		 // find the leader in the province who has the same Realm
-		if(k != iUnit 
-		   && units[k].province == prov 
-		   && units[k].Joined == 0 
+		if(k != iUnit
+		   && units[k].province == prov
+		   && units[k].Joined == 0
 		   && units[k].Realm == units[iUnit].Realm
 		   && units[k].DestProvince == NO_PROVINCE)		// Not moving
 		{
 			LONG i;
 			LONG count = 1;
-			
+
 			for(i = k; units[i].NextUnit > 0; i = units[i].NextUnit)
 			{
 				++count;
@@ -3246,7 +3246,7 @@ BOOL JoinUnitToOthersInProvince(LONG iUnit, PROVINCE prov, BOOL fSend)
 			SetGameData(MP_UNITS, MPUNITS_PROVINCE, iUnit, prov, fSend);
 		}
 	}
-	
+
 	if (Result == TRUE)	// We joined a stack.
 	{
 		if (units[k].NotSpotted == FALSE)
@@ -3276,11 +3276,11 @@ BOOL JoinUnitToOthersInProvince(LONG iUnit, PROVINCE prov, BOOL fSend)
 LONG GetUnitLeader(LONG iUnit)
 {
 	LONG TheLeader = iUnit;
-	
+
 	if (units[iUnit].Joined == TRUE )
 	{
 		LONG Found = FALSE;
-		
+
 		// Search within the units for the leaders of the stacks
 		for (LONG k = 1; k < MAX_UNITS && !Found; ++k)
 		{
@@ -3303,26 +3303,26 @@ LONG GetUnitLeader(LONG iUnit)
 		}
 	}
 	// Else We're the leader of our stack, therefore the province data is good.
-	
+
 	return TheLeader;
 }
 
 /* ========================================================================
    Function    - CountUnitStack
    Description - Count the number of units in this stack.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 LONG CountUnitStack(LONG iUnit)
 {
 	LONG i;
 	LONG NumberOfUnits = 0;
-	
+
 	for (i = iUnit; i > 0; i = units[i].NextUnit)
 	{
 		++NumberOfUnits;
 	}
-	
+
 	return NumberOfUnits;
 }
 
@@ -3330,7 +3330,7 @@ LONG CountUnitStack(LONG iUnit)
    Function    - CanISeeAnyoneInThisProv
    Description - Look and see if any unit in this province is mine or
                  my vassal's.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 BOOL CanISeeAnyoneInThisProv(REALM::REALM_TYPE Realm, PROVINCE prov)
 {
@@ -3342,7 +3342,7 @@ BOOL CanISeeAnyoneInThisProv(REALM::REALM_TYPE Realm, PROVINCE prov)
 		    && units[i].province == prov
 		    && (units[i].Realm == Realm
 		        || ISVASSAL(units[i].Realm,Realm) 	// Vassals will alert me to these troops.
-		        || ISVASSAL(Realm, units[i].Realm))	
+		        || ISVASSAL(Realm, units[i].Realm))
 		    )
 		    {
 				// I or my vassals have troops in this province.
@@ -3355,13 +3355,13 @@ BOOL CanISeeAnyoneInThisProv(REALM::REALM_TYPE Realm, PROVINCE prov)
 		// No one of my or my vassal's troops are in this province.
 		Result = FALSE;
 	}
-	
+
 	return Result;
 }
 /* ========================================================================
    Function    - MarkUnitsSpotted
    Description - Mark all the units in this province as spotted.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void MarkUnitsSpotted(PROVINCE prov)
 {
@@ -3369,7 +3369,7 @@ void MarkUnitsSpotted(PROVINCE prov)
 // DONT TRANSMIT TO OTHER PLAYERS - DONT TRANSMIT TO OTHER PLAYERS
 	for (LONG l=1; l<MAX_UNITS; ++l)		// scan for units here
 	{
-		if (units[l].Joined == FALSE 
+		if (units[l].Joined == FALSE
 		    && units[l].province==prov )
 		{
 			units[l].NotSpotted = FALSE;
@@ -3386,6 +3386,3 @@ void MarkUnitsSpotted(PROVINCE prov)
 
 /* ======================================================================== */
 
-
-
-

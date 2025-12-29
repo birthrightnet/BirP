@@ -135,7 +135,7 @@ long get_texture (char *in, ULONG * o_status)
 		*o_status = GT_NO_TEXTURE;       // [d6-06-96 JPC]
 		return(0);
 	}
-	
+
 	/* copy string into local variable */
 	for(i=0;i<8;++i, ++in)
 	{
@@ -148,9 +148,9 @@ long get_texture (char *in, ULONG * o_status)
 			n[i] = toupper(*in);
 		}
 	}
-	
+
 	n[8]=0;
-	
+
 	// GWP Moved to inside copy loop. strupr(n);
 
 	/* scan for duplicate texture */
@@ -168,8 +168,8 @@ long get_texture (char *in, ULONG * o_status)
 #if defined (_EDIT)
 	// Keep track of how many textures we tried to load,
 	// even if we can't load them all.
-	++gcTextures;							
-#endif	
+	++gcTextures;
+#endif
 
 	if(last_texture>MAX_TEXTURES)
 	{
@@ -191,18 +191,18 @@ long get_texture (char *in, ULONG * o_status)
 	if (strstr(n,"SKY"))							/* handle sky textures */
 	{
 		textures[t].type = SKY_TEX;
-		
+
 		// in case nobody bothers to fill them in properly in the interim
 		textures[t].t = fERROR;
 		textures[t].w = 0xDC;
 		textures[t].h = 0xDC;
 		textures[t].scale = UNITARY_SCALE;
 		textures[t].frameHandle = fERROR;
-		
+
 		*o_status = GT_SKY_TEXTURE;
 		return(t);
 	}
-	
+
 
 #if WRC_CAMERA_TEST
 	if (!strncmp(n,"CAMERA",6))
@@ -233,7 +233,7 @@ long get_texture (char *in, ULONG * o_status)
 		if(strncmp(n,"MTNHL",5) == 0)	// mountain walls
 			strcpy(n,"BATLNULL");
 	}
-	
+
 	// replace banners and extras with generic wall
 	if(fLowResTextures)
 	{
@@ -297,7 +297,7 @@ long get_texture (char *in, ULONG * o_status)
 		else
 		if( (strcmp(n,"F_WOD012") == 0) )
 			strcpy(n,"F_WOD011") ;
-		
+
 		// CASTLE02 replacements
 		else
 		if( (strcmp(n,"BRIKE102") == 0) ||
@@ -345,7 +345,7 @@ long get_texture (char *in, ULONG * o_status)
 		else
 		if( (strcmp(n,"BRIKD104") == 0) )
 			strcpy(n,"BRIKD102") ;
-		
+
 		// UNDER01 replacement
 		else
 		if( (strcmp(n,"DUNGC102") == 0) )
@@ -384,7 +384,7 @@ long get_texture (char *in, ULONG * o_status)
 		if( (strcmp(n,"F_BZRC02") == 0) ||
 			(strcmp(n,"F_BZRC03") == 0) )
 			strcpy(n,"F_BZRC01") ;
-	
+
 		// FOREST01 replacements
 		else
 		if( (strcmp(n,"BARK102") == 0) ||
@@ -405,18 +405,18 @@ long get_texture (char *in, ULONG * o_status)
 		if( (strcmp(n,"BIZRC103") == 0) )
 			strcpy(n,"BIZRC102") ;
 	}
-	
+
 	sprintf(tn,"%s%s.pcx",TEXTURE_PATH,n);
 	// [d3-19-97 JPC] Now that we are using resource files,
 	// we can't check whether the actual file exists.
 	// if(Exists(tn))
 	{
-		printf("Loading texture %s\n", tn);
+		logInfo("Loading texture %s", tn);
 		textures[t].t = tex = GetResourceRot(tn);
 		if (tex != fERROR)
 		{
 			BITMPTR	bptr;
-			
+
 			SetClass2(tex);
 			textures[t].frameHandle = fERROR; // not animated
 			bptr = (BITMPTR) BLKPTR(tex);
@@ -468,11 +468,11 @@ LoadGenericTexture:
 		fatal_error("Unable to load texture %s in get_texture\n",tn);
 	SetClass2(tex);
 	textures[t].frameHandle = fERROR; // not animated
-	
+
 	// GWP Brackets to scope the bitmptr.
 	{
 		BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-		
+
 		textures[t].w = bptr->w;
 		textures[t].h = bptr->h;
 		textures[t].scale = bptr->scale;
@@ -519,7 +519,7 @@ void load_sky_textures (void)
 		for (i=0; i<cSKY_TEXTURES; ++i)
 		{
 			phSkyFileNames = (SHORT *) BLKPTR(hSky_filenames);
-			
+
 			if (i == 10)
 			{
 				// Sky filler: grass on top 48, sky on bottom 208.
@@ -540,7 +540,7 @@ void load_sky_textures (void)
 			else if (phSkyFileNames[i] != fERROR)
 			{
 			    SHORT hSkyTextureName;
-			
+
 			    if(fLowResTextures == TRUE)
 			    {
 				    hSkyTextureName = phSkyFileNames[0];
@@ -549,7 +549,7 @@ void load_sky_textures (void)
 			    {
 				    hSkyTextureName = phSkyFileNames[i];
 			    }
-				
+
 				cpFileName = (char *) BLKPTR(hSkyTextureName);
 				if (strlen (cpFileName) > 0)
 				{
@@ -564,21 +564,21 @@ void load_sky_textures (void)
 
 			sprintf(tn,"%s%s.pcx",TEXTURE_PATH, cpFileName);
 
-			printf("Loaded sky texture %s\n", tn);
+			logInfo("Loaded sky texture %s", tn);
 
 			// Don't rotate the sky ceilings.
 				sky_textures[i].t = tex = GetResourceStd(tn, FALSE);
 			//	sky_textures[i].t = tex = GetResourceRot(tn);
-			
+
 			if (tex == fERROR)
 				fatal_error("Unable to load texture %s in load_sky_textures (1)\n",tn);
 			SetClass2(tex);
 			sky_textures[i].iFrame = fERROR;
-			
+
 			// GWP Braces to scope the bitmptr.
 			{
 				BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-				
+
 				sky_textures[i].w = bptr->h;
 				sky_textures[i].h = bptr->w;
 			}
@@ -601,7 +601,7 @@ void load_sky_textures (void)
 			// Don't rotate the sky ceilings.
 				sky_textures[i].t = tex = GetResourceStd(tn,FALSE);
 			//	sky_textures[i].t = tex = GetResourceRot(tn);
-			
+
 			if (tex == fERROR)
 				fatal_error("Unable to load texture %s in load_sky_textures (2)\n",tn);
 			SetClass2(tex);
@@ -609,13 +609,13 @@ void load_sky_textures (void)
 			// GWP Braces to scope the bitmptr.
 			{
 				BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-				
+
 				sky_textures[i].w = bptr->h;
 				sky_textures[i].h = bptr->w;
 			}
 		}
 	}
-	
+
 }
 
 /* ========================================================================
@@ -656,8 +656,8 @@ long get_floor_texture(char *in)
 #if defined (_EDIT)
 	// Keep track of how many textures we tried to load,
 	// even if we can't load them all.
-	++gcTextures;							
-#endif	
+	++gcTextures;
+#endif
 
 	if(last_texture>=MAX_TEXTURES)
 	{
@@ -719,16 +719,16 @@ long get_floor_texture(char *in)
 					SetClass2(textures[t].frameHandle);
 					SetModifyResource(tex);
 					textures[t].iFrame = 0;
-					
+
 					// GWP Braces to scope the bitmptr
 					{
 						BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-						
+
 						textures[t].w = bptr->w;
 						textures[t].h = bptr->h;
 						textures[t].scale = bptr->scale;
 					}
-					
+
 					return t;
 				}
 				else
@@ -750,13 +750,13 @@ long get_floor_texture(char *in)
 				// GWP Braces to scope the bitmptr
 				{
 					BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-					
+
 					textures[t].w = bptr->w;
 					textures[t].h = bptr->h;
 				}
 				textures[t].frameHandle = fERROR; // not animated
 				// Look for homogenous floor textures. (Can be drawn without scaling.)
-				
+
 				   // Battlefield textures.
 				   // If you get close to these textures it looks awful!
 				if (strstr(n,"F_PLN01A") ||
@@ -764,7 +764,7 @@ long get_floor_texture(char *in)
 				    strstr(n,"F_PLN03A") ||
 				    strstr(n,"F_PLN04A") ||
 				    strstr(n,"F_PLN05A") ||
-				    strstr(n,"F_MTN01A") ||	
+				    strstr(n,"F_MTN01A") ||
 				    strstr(n,"F_MTN02A") ||
 				    strstr(n,"F_MTN03A") ||
 				    strstr(n,"F_MTN04A") ||
@@ -772,7 +772,7 @@ long get_floor_texture(char *in)
 				    strstr(n,"F_FRS01B") ||
 				    strstr(n,"F_FRS02A") ||
 				    strstr(n,"F_FRS03A")
-				
+
 				    ||
 				    // Adventure textures.
 				    strstr(n,"F_CARP01") ||
@@ -807,11 +807,11 @@ LoadGenericTexture:
 	// GWP Braces to scope the bitmptr
 	{
 		BITMPTR bptr = (BITMPTR) BLKPTR(tex);
-		
+
 		textures[t].w = bptr->w;
 		textures[t].h = bptr->h;
 	}
-	printf("Loaded floor texture %s\n", tn);
+	logInfo("Loaded floor texture %s", tn);
 	return(t);
 }
 
@@ -823,7 +823,7 @@ LoadGenericTexture:
 void purge_all_textures (void)
 {
 	/* actual purge handled by PurgeClass(CLASS2) */
-	
+
 	// Purge all the ones we know about, and let the CLASS2 catch any lost
 	// ones. Because here, we know what the resource id is.
 	LONG i;
@@ -838,7 +838,7 @@ void purge_all_textures (void)
 		textures[i].t = fERROR;
 		textures[i].frameHandle = fERROR;
 	}
-	
+
 	for (i = 0; i < cSKY_TEXTURES; ++i)
 	{
 		if (sky_textures[i].t > 0)
@@ -1002,7 +1002,7 @@ void xscale_col_ttop(long sx,long dx,long dy,long dye,
 	// and % is slower.)
 	wrapMask = (wTexture << 16) - 1;		/* make texture wrap mask */
 	tsy &= wrapMask;							/* texture wraps at wrapMask */
-	
+
 	if (light != DARKEST)
 	{
 		if (light == 0)
@@ -1067,7 +1067,7 @@ void scrape(LONG x,			// column to draw in
 			return;
 	}
 #endif
-	
+
 	++yEnd;
 	get_margin_size(&margin_right,&margin_left,&margin_top,&margin_bottom);
 
@@ -1094,7 +1094,7 @@ void scrape(LONG x,			// column to draw in
 		x *= 2;
 		tptr_inc *= 2;
 	}
-	
+
 	x += camera.a * 15;
 	if (!fHighRes)
 	{
@@ -1167,7 +1167,7 @@ void scrape(LONG x,			// column to draw in
 	//tptr = &tptr[x*wid];
 	//tptr = &tptr[x];
 	tsy = (yStart*wid) + x;
-	
+
 #if !defined(_WINDOWS)
 	if (fAIMoving)
 	{
@@ -1327,11 +1327,11 @@ void hscrape(LONG x,LONG y,LONG xe)
 				*sptr = tptr[tsx];
 	#if WRC_CAMERA_TEST
 				sptr += sptr_inc;
-	#else	
+	#else
 				++sptr;
 	#endif
 				tsx += tsx_inc;
-		
+
 				if (tsx >= t_end)
 				{
 					//tsx -= t_size;
@@ -1343,15 +1343,15 @@ void hscrape(LONG x,LONG y,LONG xe)
 		else
 		{
 			LONG texturepixLeft = wid - x;
-			
+
 			do {
 				LONG pixelsLeft = 1 + (sptr_end - sptr);
-				
+
 				if (texturepixLeft < pixelsLeft)
 				{
 					memcpy(sptr, &tptr[tsx], texturepixLeft);
 					sptr += texturepixLeft;
-					
+
 					//tsx -= t_size;
 					tsx = (y>>12)*wid;
 				 	texturepixLeft = wid;
@@ -1373,11 +1373,11 @@ void hscrape(LONG x,LONG y,LONG xe)
 				*sptr = tptr[tsx];
 	#if WRC_CAMERA_TEST
 				sptr += sptr_inc;
-	#else	
+	#else
 				++sptr;
 	#endif
 				tsx += tsx_inc;
-		
+
 				if (tsx >= t_end)
 				{
 					//tsx -= t_size;
@@ -1394,15 +1394,15 @@ void hscrape(LONG x,LONG y,LONG xe)
 		else
 		{
 			LONG texturepixLeft = wid - x;
-			
+
 			do {
 				LONG pixelsLeft = 1 + (sptr_end - sptr);
-				
+
 				if (texturepixLeft < pixelsLeft)
 				{
 					memcpy(sptr, &tptr[tsx], texturepixLeft);
 					sptr += texturepixLeft;
-					
+
 					//tsx -= t_size;
 					tsx = (y>>12)*wid;
 					if (++panel > 9)
@@ -1429,7 +1429,7 @@ void WriteErrFile(char *n)
 	FILE *f;
 
 	// echo to screen
-	printf("Texture not found:%s - Generic texture assigned\n",n);
+	logWarn("Texture not found:%s - Generic texture assigned",n);
 
 	// write to file
 	f=fopen("errfile.err","a+");
@@ -1543,7 +1543,7 @@ SHORT LoadAnimatedTextureStub (																// )
 	if (iBlk != fERROR)
 	{
 		BITMPTR		pBlk;
-		
+
 		pBlk = (BITMPTR)(BLKPTR(iBlk));
 		pBlk->w = w;
 		pBlk->h = h;
@@ -1558,5 +1558,3 @@ SHORT LoadAnimatedTextureStub (																// )
 
 // ---------------------------------------------------------------------------
 
-
-

@@ -104,7 +104,7 @@ LONG		SCENE_MGR::MachineIds = 10000;	// current availible avatar id
 
 extern BOOL fQuietItems;
 
-	
+
 /* ========================================================================
    Function    - GetNewId
    Description -
@@ -162,7 +162,7 @@ void SCENE_MGR::mfSetScenePause(BOOL const bState)
 		// Pause the scene so that the music keeps playing but the camera movement
 		// stops and the avatars freeze in place.
 		// (Flames & fires too)
-		
+
 		if (fScenePaused)
 		{
 			pCurrentScene->mfSetSceneState(SCENE_AI::PAUSED);
@@ -175,11 +175,11 @@ void SCENE_MGR::mfSetScenePause(BOOL const bState)
 					//GEH SetBlockAttr(pCurrentScene->Avatars[i], LOCKED, LOCKED);
 					CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
 					pAvatar->DoAI(CAvatar::AI_BEGIN_PAUSE);
-					
+
 					// Just incase he died.
 					//GEH if (pCurrentScene->Avatars[i] != fERROR)
 						//GEH ClrLock(pCurrentScene->Avatars[i]);
-					
+
 				}
 			}
 		}
@@ -195,15 +195,15 @@ void SCENE_MGR::mfSetScenePause(BOOL const bState)
 					//GEH SetBlockAttr(pCurrentScene->Avatars[i], LOCKED, LOCKED);
 					CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
 					pAvatar->DoAI(CAvatar::AI_END_PAUSE);
-					
+
 					// Just incase he died.
 					//GEH if (pCurrentScene->Avatars[i] != fERROR)
 						//GEH ClrLock(pCurrentScene->Avatars[i]);
-					
+
 				}
 			}
 		}
-		
+
 		//GEh ClrLock(hCurrentScene);
 	}
 }
@@ -221,7 +221,7 @@ LONG const SCENE_MGR::mfLoadScene(
 	BOOL		bFirstTime = FALSE;
 	CHAR		SceneName[FILENAME_LEN + 1];
 	CHAR		btl_char;
-	
+
 	SuspendMusic();
 	// Check for first time thru this.
 	if (hCurrentScene == -1)
@@ -234,7 +234,7 @@ LONG const SCENE_MGR::mfLoadScene(
 		else
 		{
 			//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
-			
+
 			bFirstTime = TRUE;
 			pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 			pCurrentScene->mfInitializeData();
@@ -243,22 +243,22 @@ LONG const SCENE_MGR::mfLoadScene(
 	else
 	{
 		//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
-		
+
 		pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 		pCurrentScene->mfSetSceneState(SCENE_AI::RELEASE);
 		pCurrentScene->mfCallSceneAI();
 	}
-	
+
 	// Reset any exit level conditions.
 	fExitLevel = 0;
-	
+
 	// make a local copy of new scene name incase we wish to modify it
 	strncpy(SceneName, cpNewSceneName, FILENAME_LEN);
 	SceneName[FILENAME_LEN] = 0;
-	
+
 	// set default scene type
 	pCurrentScene->mfSetSceneType( SCENE_MGR::SceneType );
-	
+
 	/* -----------------------------------------------------------------
 	   Put any scene loading logic in the following section
 	   ----------------------------------------------------------------- */
@@ -269,13 +269,13 @@ LONG const SCENE_MGR::mfLoadScene(
 	if ((strncmp(SceneName, "batl", 4) == 0))
 	{
 		SCENE_MGR::Victor = 0;
-		
+
 		if(SCENE_MGR::HomeIndex == -1)
 			goto Error;
-			
+
 		if(SCENE_MGR::AwayIndex == -1)
 			goto Error;
-			
+
 		// clear the exceptions table.  Must do this here because
 		// if there isn't a [Exceptions] entry in the file, it
 		// won't clear the list
@@ -366,7 +366,7 @@ LONG const SCENE_MGR::mfLoadScene(
 		// over-ride scene type
 		pCurrentScene->mfSetSceneType( SCENE_AI::BATTLE_SCENE );
 	}
-	
+
 	/* -----------------------------------------------------------------
 	   End loading logic section
 	   ----------------------------------------------------------------- */
@@ -384,13 +384,13 @@ LONG const SCENE_MGR::mfLoadScene(
 		ShowMenu(D_LOADING_SCENE);
 		RunMenus();
 	}
-	
+
 	// [d11-15-96 JPC]
 	// Setup the scene ai function.  If this is the WAD loaded, then
 	// wait for a keypress before going on.  If this is a WAD-to-WAD
 	// teleport, go directly to the init state.
 	pCurrentScene->mfSetSceneState(SCENE_AI::INIT);
-	
+
 	if (fShowProgressBar)
 	{
 		SetLoadingProgress(10);
@@ -400,14 +400,14 @@ LONG const SCENE_MGR::mfLoadScene(
 	fRender = TRUE;
 	fFreeze = FALSE;
 	fPause = FALSE;
-	
+
 	// Reset this after running the release scene AI, so we can tell whether this
 	// is a scene to scene teleport or a not when we release the scene ai.
 	SCENE_MGR::fNewSceneRequested = FALSE;
-	
+
 	// load the new scene
 	pCurrentScene->mfLoadScene(SceneName, playerStartLocation);
-	
+
 #ifdef _WINDOWS
 	LookMessages();
 #endif
@@ -418,26 +418,26 @@ LONG const SCENE_MGR::mfLoadScene(
 		if(!LoadSceneAvatars( pCurrentScene, SCENE_MGR::HomeIndex))
 			goto Error;
 	}
-	
+
 	if(SCENE_MGR::AwayIndex != -1)
 	{
 		if(!LoadSceneAvatars( pCurrentScene, SCENE_MGR::AwayIndex))
 			goto Error;
 	}
-	
+
 	if (fShowProgressBar)
 	{
 		SetLoadingProgress(95);
 		RunMenus();
 	}
-	
+
 #ifdef _WINDOWS
 	LookMessages();
 #endif
 
 	// Toss all pending key strokes
 	clear_key_status(0);
-	
+
 	// Initialize the camera to the player's location.
 	SetCameraPosition(
 		&camera,
@@ -447,19 +447,19 @@ LONG const SCENE_MGR::mfLoadScene(
 		player.a,
 		player.p
 		);
-	
+
 	if (fShowProgressBar)
 	{
 		SetLoadingProgress(100);
 		RunMenus();
 	}
-	
+
 	// Execute the init state
 	pCurrentScene->mfCallSceneAI ();
 
 	// always clear this for the next guy.  If he doesn't specify, dont show
 	fShowProgressBar = FALSE;
-	
+
 	/* -----------------------------------------------------------------
 	   drop the "loading" menu
 	   ----------------------------------------------------------------- */
@@ -512,7 +512,7 @@ LONG const SCENE_MGR::mfLoadScene(
 	ResumeSuspendedMusic();
 	//GEH ClrLock(SCENE_MGR::hCurrentScene);
 	return fNOERR;
-	
+
 Error:
 	return fERROR;
 }
@@ -527,18 +527,18 @@ static BOOL LoadSceneAvatars( SCENE * const pScene, SHORT UnitIndex )
 	SHORT					i=0;
 	const REALM::REALM_TYPE	Realm = (REALM::REALM_TYPE) units[UnitIndex].Realm;
 	// CHAR					buffer[24];
-	
+
 	do
 	{
 		while( i < MAX_AVATARS && pScene->Avatars[i] != fERROR)
 		{
 			i++;
 		}
-		
+
 		if (i < MAX_AVATARS)
 		{
 			pScene->Avatars[i] = CAvatar::NewAvatar();
-			
+
 			if (pScene->Avatars[i] != fERROR)
 			{
 				//GEH SetBlockAttr(pScene->Avatars[i], LOCKED, LOCKED);
@@ -553,7 +553,7 @@ static BOOL LoadSceneAvatars( SCENE * const pScene, SHORT UnitIndex )
 				}
 				else
 				{
-					printf("WARNING! Unable to load Avatar %d\n", (LONG)units[UnitIndex].id);
+					logWarn("Unable to load Avatar %d", (LONG)units[UnitIndex].id);
 					// We call this instead of DeleteAvatar because it isn't in the
 					// things table yet.
 					DisposBlock(pScene->Avatars[i]);
@@ -561,7 +561,7 @@ static BOOL LoadSceneAvatars( SCENE * const pScene, SHORT UnitIndex )
 					i--;
 					goto Error;
 				}
-				
+
 				// GEH all avatars loaded with this routine are generic
 				pAvatar->mfDefineCThing(pAvatar->mfType(), 0, 0, 0, 0, 0, 0,0);
 				pAvatar->attrib.SceneInstance = TRUE;
@@ -572,7 +572,7 @@ static BOOL LoadSceneAvatars( SCENE * const pScene, SHORT UnitIndex )
 					pAvatar->Id = GetNewId();
 				pAvatar->Realm.HomeRealm = Realm;
 				pAvatar->mfSetOriginalRemapColor(Realm);
-				
+
 				units[UnitIndex].iHandle = pScene->Avatars[i];
 				//GEH ClrLock(pScene->Avatars[i]);
 			}
@@ -581,17 +581,17 @@ static BOOL LoadSceneAvatars( SCENE * const pScene, SHORT UnitIndex )
 		{
 			// Keep reading them from the scene file so we can read
 			// the other data sections.
-			printf("WARNING! Exceeded number of avatars!.");
+			logWarn("Exceeded number of avatars!.");
 			goto Error;
 		}
-		
+
 		UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 	} while(UnitIndex != -1);
-	
+
 	return TRUE;
-	
+
 Error:
-	return FALSE;	
+	return FALSE;
 }
 /* ========================================================================
    Function    - mfReleaseSceneToMap
@@ -610,27 +610,27 @@ void SCENE_MGR::mfReleaseSceneToMap(LONG,LONG)
 	{
 		//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 		PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-		
+
 		// GWP You must deactivate before releasing the avatar memory.
-		fQuietItems=TRUE;	
+		fQuietItems=TRUE;
 		ItemEffects::DeactivateAllItems();
 		fQuietItems=FALSE;
-			
+
 		HideSubMenu(0,D_AVATAR_INVENTORY);
 		HideSubMenu(0,D_AVATAR_ATTRIBUTES);
-		
+
 		pCurrentScene->mfSetSceneState(SCENE_AI::RELEASE);
 		pCurrentScene->mfCallSceneAI();
 		pCurrentScene->mfDeleteScene();
-		
+
 		ClrLock(hCurrentScene);
-		
+
 		DisposBlock(hCurrentScene);
 		hCurrentScene = fERROR;
 
 		PurgeLevel();
 	}
-	
+
 	// The map must run in high res mode.
 	set_hires(0,0);
 	KillSoundsNoFade();
@@ -657,25 +657,25 @@ void SCENE_MGR::mfDoAI()
 		{
 			if(fERROR == SCENE_MGR::mfLoadScene(SCENE_MGR::fcpNewSceneName, SCENE_MGR::fNewScenePlayerStart))
 				SCENE_MGR::mfReleaseSceneToMap(0,0);
-			
+
 			// Reset this after loading the scene, so we can tell whether this
 			// is a scene to scene teleport or a not when we release the scene ai.
 			SCENE_MGR::fNewSceneRequested = FALSE;
 		}
-	
+
 		// In case the wad was loaded directly
 		if (SCENE_MGR::hCurrentScene != fERROR)
 		{
 			//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 			PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
 			if (fExitLevel != 0)
 			{
 			    // Note: Request is called instead of LoadScene so that we get a copy
 			    //       of the new scene name. Because it will be tossed when the old
 			    //       scene is purged.
 			    char * cpNewSceneName;
-			
+
 			    if (pCurrentScene->mfGetExitScene(fExitLevel, &cpNewSceneName))
 			    {
 				    SCENE_MGR::mfRequestNewScene(cpNewSceneName, fExitLevel, FALSE);
@@ -683,19 +683,19 @@ void SCENE_MGR::mfDoAI()
 					fExitLevel = 0;
 				    goto StartSceneAI;
 			    }
-			
+
 			    // Couldn't leave. Sorry.
 			    fExitLevel = 0;
 				pCurrentScene->mfCallSceneAI();
-				
+
 				//GEH ClrLock(SCENE_MGR::hCurrentScene);
-			
+
 			}
 			else
 			{
 				SCENE_AI::STATE SceneState;
 				SCENE_AI::SCENE_TYPE SceneType;
-			
+
 				pCurrentScene->mfCallSceneAI();
 				pCurrentScene->mfGetSceneAIState(&SceneState,
 								                 &SceneType);
@@ -705,7 +705,7 @@ void SCENE_MGR::mfDoAI()
 				{
 					goto StartSceneAI;
 				}
-				
+
 				//GEH ClrLock(SCENE_MGR::hCurrentScene);
 			}
 		}
@@ -722,7 +722,7 @@ void SCENE_MGR::mfDoAI()
 			}
 		}
 	}
-	
+
 }
 /* ========================================================================
    Function    - mfRequestNewScene
@@ -763,7 +763,7 @@ void SCENE_MGR::mfRequestNewScene(char * cpSceneFile,
 			}
 		}
 	}
-	
+
 	SCENE_MGR::fNewSceneRequested = TRUE;
 	SCENE_MGR::fNewScenePlayerStart = playerStartLocation;
 	strcpy(SCENE_MGR::fcpNewSceneName, cpSceneFile);
@@ -772,5 +772,3 @@ void SCENE_MGR::mfRequestNewScene(char * cpSceneFile,
 }
 /*	======================================================================== */
 
-
-

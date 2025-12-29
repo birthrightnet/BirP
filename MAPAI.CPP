@@ -239,7 +239,7 @@ void logreroll( SHORT LineNum )
 }
 
 /* ========================================================================
-   Function    - 
+   Function    -
    Description - do AI for all NPC realms
    Returns     -
    ======================================================================== */
@@ -393,10 +393,10 @@ void DoNPCAdmin (void)
 				payroll = payregency = 0;
 				if (rlm != REALM::MONSTERS				// monsters don't have payroll
 					&& rlm != REALM::SPIDERFELL		// awnsheigh don't have payroll
-					&& rlm != REALM::RHUOBHE			// 
-					&& rlm != REALM::MARKAZOR			// 
-					&& rlm != REALM::MURKILAD			// 
-					&& rlm != REALM::GORGONSCROWN)	// 
+					&& rlm != REALM::RHUOBHE			//
+					&& rlm != REALM::MARKAZOR			//
+					&& rlm != REALM::MURKILAD			//
+					&& rlm != REALM::GORGONSCROWN)	//
 				{
 					for (i=1; i<MAX_UNITS; ++i)
 					{
@@ -604,9 +604,9 @@ void DoNPCAdmin (void)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
-   Returns     - 
+   Function    -
+   Description -
+   Returns     -
    ======================================================================== */
 LONG SpendNPCRegency (LONG realm_, LONG rp, BOOL fSend)
 {
@@ -638,7 +638,7 @@ LONG SpendNPCRegency (LONG realm_, LONG rp, BOOL fSend)
 	FLOGCOMMENT
 	{
 		char temp[100];
-		sprintf ( temp, "   SpendNPCRegency - %d %s spent:%d now:%d", 
+		sprintf ( temp, "   SpendNPCRegency - %d %s spent:%d now:%d",
 			7,
 			realm[realm_].mfGetName(),
 			rp,
@@ -654,8 +654,8 @@ LONG SpendNPCRegency (LONG realm_, LONG rp, BOOL fSend)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static LONG	RegencePoint;
@@ -678,7 +678,7 @@ void DoneNPCAction (LONG, LONG)
 	FLOGCOMMENT
 	{
 		char temp[100];
-		sprintf ( temp, "   DoneNPCAction - %d %s   Reg spent:%d   Reg now:%d", 
+		sprintf ( temp, "   DoneNPCAction - %d %s   Reg spent:%d   Reg now:%d",
 			8,
 			realm[HomeRealm].mfGetName(),
 			RegencePoint,
@@ -701,8 +701,8 @@ void DoneNPCAction (LONG, LONG)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void RollNPCAction (LONG, LONG)
@@ -717,7 +717,7 @@ static void RollNPCAction (LONG, LONG)
 
 /* ========================================================================
    Function    - PaintNPCAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void PaintNPCAction (LONG MenuCombo, LONG)
@@ -766,7 +766,7 @@ void PaintNPCAction (LONG MenuCombo, LONG)
 	{
 		case ACTION_CONTEST_LAW:
 			m = 0;
-			break; 
+			break;
 		case ACTION_CONTEST_GLD:
 			m = 1;
 			break;
@@ -814,7 +814,7 @@ void PaintNPCAction (LONG MenuCombo, LONG)
 		response[curResponse].lResult = 4;
 	}
 
-	//---- Now we can print the data 
+	//---- Now we can print the data
 	if ( response[curResponse].lResult == 3 )
 	{
 		fAllowRollButton = FALSE;
@@ -859,9 +859,9 @@ void PaintNPCAction (LONG MenuCombo, LONG)
 
 
 /* ========================================================================
-   Function    - 
-   Description - 
-   Returns     - 
+   Function    -
+   Description -
+   Returns     -
    ======================================================================== */
 BOOL RollNPCSuccess (LONG action, BOOL * fSync, BOOL * fSend )
 {
@@ -963,7 +963,7 @@ DoItAgain:
 						    ||(game_difficulty==DIF_HARD && random(100) < 85)))
 						additionalRP = SpendNPCRegency(CurrentRealm, success-1, TRUE);
 					break;
-				
+
 				case ACTION_ESPIONAGE_ASSASSIN:
 					success = UnitMusterCost[units[TargetUnit].Icon]+1;
 			}
@@ -1064,7 +1064,7 @@ DoItAgain:
 
 /* ========================================================================
    Function    - IsBorder
-   Description - 
+   Description -
    Returns     - returns TRUE if prov borders realm
    ======================================================================== */
 #define ADJACENT			1
@@ -1118,7 +1118,7 @@ LONG UnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm)
 	{
 		// scan through units for leaders
 		if (units[i].Realm != REALM::NO_COUNTRY
-			&& units[i].Joined==0 
+			&& units[i].Joined==0
 			&& (units[i].Realm==_realm || _realm == REALM::ANY_REALM)
 			&& UnitFinalProvince(i)==prov)
 		{
@@ -1167,7 +1167,7 @@ LONG UnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm)
 /* ========================================================================
    Function    - UnitsHereNotUs
    Description - Are there any units in this province not allied with us.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 static BOOL UnitsHereNotUs (REALM::REALM_TYPE OurRealm, PROVINCE prov)
 {
@@ -1178,7 +1178,7 @@ static BOOL UnitsHereNotUs (REALM::REALM_TYPE OurRealm, PROVINCE prov)
 	{
 		// scan through units for leaders
 		if (units[i].Realm != REALM::NO_COUNTRY
-				&& units[i].Joined==0 
+				&& units[i].Joined==0
 				&& !AREALLIED(units[i].Realm, OurRealm)
 				&& UnitFinalProvince(i)==prov )
 			return TRUE;
@@ -1188,8 +1188,8 @@ static BOOL UnitsHereNotUs (REALM::REALM_TYPE OurRealm, PROVINCE prov)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void Clear_fProv (void)
@@ -1200,8 +1200,8 @@ void Clear_fProv (void)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 LONG ProvDist (LONG cur_prov, LONG dest_prov, LONG cProvDist, BOOL fTerrainDontCare)
@@ -1241,8 +1241,8 @@ LONG ProvDist (LONG cur_prov, LONG dest_prov, LONG cProvDist, BOOL fTerrainDontC
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static BOOL FindProvWithSrcTmp( REALM::REALM_TYPE ourRealm, PROVINCE prov, BOOL flag, LONG rqLevel)
@@ -1255,7 +1255,7 @@ static BOOL FindProvWithSrcTmp( REALM::REALM_TYPE ourRealm, PROVINCE prov, BOOL 
 	while (c != 0 && t>=0 && t<MAX_PLACES)
 	{
 		if (((flag && places[t].Icon == SOURCE1_ICON&& places[t].Level >= rqLevel)
-		   ||(!flag && places[t].Icon == TEMPLE1_ICON && places[t].Level >= rqLevel)) 
+		   ||(!flag && places[t].Icon == TEMPLE1_ICON && places[t].Level >= rqLevel))
 		  && places[t].Realm == ourRealm)
 			break;
 		c = places[t].NextPlace;
@@ -1263,11 +1263,11 @@ static BOOL FindProvWithSrcTmp( REALM::REALM_TYPE ourRealm, PROVINCE prov, BOOL 
 	}
 	if (c!=0)
 	 	return TRUE;
-	else 
+	else
 		return FALSE;
 }
 /* ========================================================================
-   Function    - 
+   Function    -
    Description -  sub function to support FindProv for NPC Diplomacy
    Returns     -
    ======================================================================== */
@@ -1320,7 +1320,7 @@ LONG FindProvForDIP (PROVINCE prov, BOOL realm_flag, LONG base)
 			else
 				t -= 20;
 		}
-   
+
    }
 
    return t;
@@ -1328,7 +1328,7 @@ LONG FindProvForDIP (PROVINCE prov, BOOL realm_flag, LONG base)
 }
 
 /* ========================================================================
-   Function    - 
+   Function    -
    Description -  sub function to support FindProv for NPC Diplomacy
    Returns     -
    ======================================================================== */
@@ -1359,7 +1359,7 @@ BOOL OfferProvince()
 
 }
 /* ========================================================================
-   Function    - 
+   Function    -
    Description -  sub function to support FindProv for NPC Diplomacy
    Returns     -
    ======================================================================== */
@@ -1374,7 +1374,7 @@ LONG FindProvForDemand (PROVINCE prov, LONG base)
 		|| prov == ANY_PROVINCE
 		|| prov == SPIDERFELL
 		|| prov == RHUOBHE
-		|| prov == CITY_OF_ANUIRE 
+		|| prov == CITY_OF_ANUIRE
 		|| prov == LOST_REALM
 		|| prov == NO_PROVINCE2 )
 	{
@@ -1430,7 +1430,7 @@ LONG FindProvForDemand (PROVINCE prov, LONG base)
 }
 
 /* ========================================================================
-   Function    - 
+   Function    -
    Description -  sub function to support FindProv for NPC Diplomacy
    Returns     -
    ======================================================================== */
@@ -1440,7 +1440,7 @@ PROVINCE DemandProvince()
 	LONG maxReaction=0;
 	LONG pr=0;
 	LONG base=100;
-	
+
 	for (i=1; i<PROVINCE_COUNT; ++i)
 	{
 		t = FindProvForDemand((PROVINCE)i, base);
@@ -1451,57 +1451,57 @@ PROVINCE DemandProvince()
 			pr = i;
 		}
 	}
-	
+
 	return (PROVINCE)pr;
 }
 
 /* ========================================================================
    Function    - FindSrcToConnectLeyLineTo
    Description - Search for a low source to connect to.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 #if 0
 static BOOL FindSrcToConnectLeyLineTo(
-	REALM::REALM_TYPE ourRealm, 
+	REALM::REALM_TYPE ourRealm,
 	PROVINCE *inProv,
 	USHORT *inPlace)
 {
 	BOOL Result = FALSE;
 	LONG i;
-	
+
 	LONG srcInEnemyTroopLevel = -1;
 	PROVINCE srcInEnemyProv = NO_PROVINCE;
 	LONG srcInEnemyPlace;
-	
+
 	LONG lowSrcInRealmLevel = -1;
 	PROVINCE lowSrcInRealmProv;
 	LONG lowSrcInRealmPlace;
-	
+
 	LONG srcInAllyLevel = -1;
 	PROVINCE srcInAllyProv = NO_PROVINCE;
 	LONG srcInAllyPlace;
-	
+
 	for(i=1; i<PROVINCE_COUNT; ++i)
 	{
 		LONG j;
 		LONG k;
-		
+
 		CheckAndFixPlaces((PROVINCE)i);
-	 	j = k = province[i].FirstPlace; 
+	 	j = k = province[i].FirstPlace;
 	 	while (k != 0 )
 	 	{
-	 	   	if(places[j].Icon == SOURCE1_ICON 
+	 	   	if(places[j].Icon == SOURCE1_ICON
 					&& places[j].Realm == ourRealm
 			   )
 			{
 				// look for a source with leyline going out but nothing coming in as a TargetPlace
-				if (places[j].iRoute1 || places[j].iRoute2 || places[j].iRoute3)  // Source has a leyline going out                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+				if (places[j].iRoute1 || places[j].iRoute2 || places[j].iRoute3)  // Source has a leyline going out
 				{
 					LONG m;
-					
+
 					for(m = 0; m< MAX_PLACES; ++m)
 					{
-						if( places[m].Icon == SOURCE1_ICON 
+						if( places[m].Icon == SOURCE1_ICON
 								&& (places[m].iRoute1 == j || places[m].iRoute2 == j || places[m].iRoute3 == j))
 						{
 							break;
@@ -1523,8 +1523,8 @@ static BOOL FindSrcToConnectLeyLineTo(
 	 	}
 		if(k!=0)
 			break;
-	} 
-	
+	}
+
 	if (srcInEnemyProv != NO_PROVINCE)
 	{
 		*inProv = srcInEnemyProv;
@@ -1543,14 +1543,14 @@ static BOOL FindSrcToConnectLeyLineTo(
 		*inPlace = srcInAllyPlace;
 		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 #endif
 /* ========================================================================
    Function    - FindProvToFortify
    Description - Fortify borders with enemies first, basic borders next.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 static BOOL FindProvToFortify(REALM::REALM_TYPE ourRealm, PROVINCE *fortifyProv)
 {
@@ -1558,7 +1558,7 @@ static BOOL FindProvToFortify(REALM::REALM_TYPE ourRealm, PROVINCE *fortifyProv)
 	LONG i;
 	PROVINCE provOnBorderOfEnemy = NO_PROVINCE;
 	PROVINCE provOnBorder = NO_PROVINCE;
-	
+
 	for (i = 0; i < PROVINCE_COUNT; ++i)
 	{
 		if (province[i].Realm == ourRealm
@@ -1570,7 +1570,7 @@ static BOOL FindProvToFortify(REALM::REALM_TYPE ourRealm, PROVINCE *fortifyProv)
 			for (j = 0; j < 7; ++j)
 			{
 				PROVINCE BorderProv = (PROVINCE) province[i].Border[j].Province;
-				if (BorderProv != NO_PROVINCE 
+				if (BorderProv != NO_PROVINCE
 					&& province[BorderProv].Realm != ourRealm)
 				{
 					if (ISATWAR(province[BorderProv].Realm, ourRealm))
@@ -1586,7 +1586,7 @@ static BOOL FindProvToFortify(REALM::REALM_TYPE ourRealm, PROVINCE *fortifyProv)
 			}
 		}
 	}
-	
+
 StopLooking:
 	if (provOnBorderOfEnemy != NO_PROVINCE)
 	{
@@ -1598,13 +1598,13 @@ StopLooking:
 		*fortifyProv = provOnBorder;
 		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL FindProv (SHORT action)
@@ -1626,18 +1626,18 @@ BOOL FindProv (SHORT action)
 				break;
 			case ACTION_AGITATE_FOE:
 				if( timeCount == 0 )
-					f = (FindHolding(TargetRealm, CurrentRealm, (PROVINCE)i, ANY_MAP_ICON, TRUE) 
+					f = (FindHolding(TargetRealm, CurrentRealm, (PROVINCE)i, ANY_MAP_ICON, TRUE)
 									&& province[i].Loyalty == 1);
 				else
 					f = (FindHolding(TargetRealm, CurrentRealm, (PROVINCE)i, ANY_MAP_ICON, TRUE)
-									&& province[i].Loyalty == 2); 
+									&& province[i].Loyalty == 2);
 				break;
 			case ACTION_AGITATE_OWN:
 				if( timeCount == 0 )
 					f = (province[i].Realm == CurrentRealm && province[i].Loyalty == 0);
-				else 
+				else
 					f = (province[i].Realm == CurrentRealm && province[i].Loyalty == 1);
-				
+
 				break;
 
 			//-----------------------------------------------
@@ -1681,7 +1681,7 @@ BOOL FindProv (SHORT action)
 			case ACTION_MOVE_UNOCCUP_FOE:
 			case ACTION_MOVE_UNOCCUP_OWN:
 				if ( (province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM)
-						&& i != UnitProvince 
+						&& i != UnitProvince
 						&& (!province[i].Warded || (province[i].Warded && province[i].DispelLvl == CurrentRealm))
 					)
 				{
@@ -1761,7 +1761,7 @@ BOOL FindProv (SHORT action)
 				t = action - ACTION_MUSTER_INF + 1;
 #if MUSTERINFO
 if (province[i].LevyMustered >= province[i].CivLevel)
-	printf("MUSTER FAILED - CivLevel limit in %s\n",province[i].name);
+	logInfo("MUSTER FAILED - CivLevel limit in %s",province[i].name);
 #endif
 
 				#ifdef _WINDOWS
@@ -1772,7 +1772,7 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 					{
 						char temp[100];
 						sprintf ( temp, "   FindProv, Muster - prov:%ld  %d<%d  %d  %d>=%d",
-							i, 
+							i,
 							province[i].LevyMustered, province[i].CivLevel,
 							UnitsHere((PROVINCE)i,CurrentRealm),
 							province[i].CivLevel, LevelUnitReqt[t] );
@@ -1804,32 +1804,32 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 				f = (province[i].Realm == CurrentRealm
 						&& !province[i].Blessed
 						&& !province[i].Dispel
-						&& random(3)==0 
+						&& random(3)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 0, 1));
 
 				break;
 			case ACTION_RSPELL_BLIGHT:
-				f = ((province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM) 
-					 	&& !province[i].Blighted 
+				f = ((province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM)
+					 	&& !province[i].Blighted
 						&& !province[i].Dispel
-						&& random(2)==0 
+						&& random(2)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 0, 3));
 
 			case ACTION_RSPELL_DEMAGOGUE:
-				f = ((province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM) 
-					    && province[i].Loyalty 
+				f = ((province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM)
+					    && province[i].Loyalty
 						&& !province[i].Dispel
-						&& random(2)==0 
+						&& random(2)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 1, 3));
-						
+
 				break;
 			case ACTION_RSPELL_WARDING:
 				f = ((!province[i].Warded || !AREALLIED((REALM::REALM_TYPE) province[i].DispelLvl, CurrentRealm))
 						&& (province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM)
 						&& !province[i].Dispel
-						&& random(4)==0 
+						&& random(4)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 1, 5));
-					
+
 				break;
 
 			case ACTION_RSPELL_RAZE:
@@ -1837,7 +1837,7 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 						&& !province[i].Dispel
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 1, 5)
 						&& FindHolding(REALM::ANY_REALM,TargetRealm,(PROVINCE)i,CASTLE1_ICON, TRUE));
-		
+
 				break;
 			case ACTION_RSPELL_STRONGHOLD:
 				if (!province[i].Dispel
@@ -1857,30 +1857,30 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 						f = TRUE;
 				}
 				break;
-			
+
 			case ACTION_RSPELL_SUMMONING:
 			case ACTION_RSPELL_LEGIONOFTHEDEAD:
 				f = (!province[i].Dispel
 						&& random(2)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 1, 3));
-					
+
 				break;
 
 			case ACTION_RSPELL_BLESSARMY:
 				f = (!province[i].Dispel
-						&& random(2)==0 
+						&& random(2)==0
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 0, 3));
 				break;
-					
+
 			case ACTION_RSPELL_DEATHPLAGUE:
 				f = (!province[i].Dispel
-						&& random(2)==0 
+						&& random(2)==0
 						&& province[i].CivLevel
 						&& (province[i].Realm == TargetRealm || TargetRealm == REALM::ANY_REALM)
 						&& FindProvWithSrcTmp(CurrentRealm, (PROVINCE)i, 1, 5));
-					
+
 				break;
-		
+
 
 			case ACTION_RULE_PROV:
 				if (province[i].Realm == CurrentRealm
@@ -1928,16 +1928,16 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 /* ========================================================================
    Function    - CountUnitsInProv
    Description - Count the number of units in a provice of this realm.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 static LONG CountUnitsInProv(PROVINCE thisProv, REALM::REALM_TYPE ourRealm)
 {
 	LONG Result = 0;
 	LONG i;
-	
+
 	for (i = 1; i < MAX_UNITS; ++i)
 	{
-		if (units[i].Realm == ourRealm 
+		if (units[i].Realm == ourRealm
 			&& units[i].Joined == 0
 			&& thisProv == UnitFinalProvince(i)
 		   )
@@ -1945,14 +1945,14 @@ static LONG CountUnitsInProv(PROVINCE thisProv, REALM::REALM_TYPE ourRealm)
 			Result += CountUnitStack(i);
 		}
 	}
-	
+
 	return Result;
 }
 
 /* ========================================================================
    Function    - FindProvinceToInvest
    Description - Investature with some minor smarts.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static BOOL FindProvinceToInvest(REALM::REALM_TYPE ourRealm, PROVINCE *investProv)
@@ -1963,7 +1963,7 @@ static BOOL FindProvinceToInvest(REALM::REALM_TYPE ourRealm, PROVINCE *investPro
 	PROVINCE anyProvOfOurEnemy = NO_PROVINCE;
 	PROVINCE BorderProvOfOurEnemy = NO_PROVINCE;
 	PROVINCE BorderProv = NO_PROVINCE;
-	
+
 	for (i=1; i<PROVINCE_COUNT; ++i)
 	{
 		if (province[i].OccupRealm == ourRealm)		// we occupy the prov
@@ -2004,7 +2004,7 @@ static BOOL FindProvinceToInvest(REALM::REALM_TYPE ourRealm, PROVINCE *investPro
 			}
 		}
 	}
-	
+
 StopLooking:
 	if (BorderProvOfOurEnemy != NO_PROVINCE)
 	{
@@ -2021,7 +2021,7 @@ StopLooking:
 		*investProv = anyProv;
 		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 /* ========================================================================
@@ -2041,25 +2041,25 @@ static BOOL FindProvToReinforce(REALM::REALM_TYPE ourRealm, LONG ExcludeThisUnit
 	LONG unitInFoeCount = 99;
 	PROVINCE unitDefendingProv = NO_PROVINCE;
 	LONG unitDefendingCount = 99;
-	
+
 	for (i=1; i<MAX_UNITS; ++i)
 	{
 		// scan through units for leaders
-		if (units[i].Joined == 0 
+		if (units[i].Joined == 0
 		    && i != ExcludeThisUnit)
 		{
 			if (units[i].Realm == ourRealm )
 			{
 				LONG const Count = CountUnitStack(i);
-			
+
 				PROVINCE const UnitProv = UnitFinalProvince(i);
 				REALM::REALM_TYPE const ProvRealm = (REALM::REALM_TYPE) province[UnitProv].Realm;
-				
+
 				if (ISATWAR(ProvRealm, ourRealm))
 				{
 					LONG const FoeCount = CountUnitsInProv(UnitProv, ProvRealm);
 					LONG const UsCount = CountUnitsInProv(UnitProv, ourRealm);
-					
+
 					if (FoeCount >= UsCount)
 					{
 						// We are under attack and out numbered, in enemy territory
@@ -2093,16 +2093,16 @@ static BOOL FindProvToReinforce(REALM::REALM_TYPE ourRealm, LONG ExcludeThisUnit
 			{
 				PROVINCE const UnitProv = UnitFinalProvince(i);
 				REALM::REALM_TYPE const ProvRealm = (REALM::REALM_TYPE) province[UnitProv].Realm;
-				
+
 				if (ISATWAR(units[i].Realm, ourRealm)
 				    && ProvRealm == ourRealm)
 				{
 					// Enemies are moving into our realm.
 					LONG const FoeCount = CountUnitStack(i);
-					
+
 					// Count the defenders.
 					LONG const UsCount = CountUnitsInProv(UnitProv, ourRealm);
-					
+
 					if (FoeCount > UsCount
 					    && unitDefendingCount > UsCount)
 					{
@@ -2113,7 +2113,7 @@ static BOOL FindProvToReinforce(REALM::REALM_TYPE ourRealm, LONG ExcludeThisUnit
 			}
 		}
 	}
-	
+
 	if (unitDefendingProv != NO_PROVINCE)
 	{
 		*PlaceToGo = unitDefendingProv;
@@ -2139,7 +2139,7 @@ static BOOL FindProvToReinforce(REALM::REALM_TYPE ourRealm, LONG ExcludeThisUnit
 /* ========================================================================
    Function    - FindUnitToAssinate
    Description - Search for a "best" choice to shoot.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static BOOL FindUnitToAssinate(REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE theirRealm)
@@ -2150,22 +2150,22 @@ static BOOL FindUnitToAssinate(REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE the
 	LONG unitInAlly = 0;
 	LONG unitOnBorder = 0;
 	LONG anyOldUnit = 0;
-	
+
 	for (i=1; i<MAX_UNITS; ++i)
 	{
 		// scan through units for leaders
-		if (units[i].Realm == theirRealm 
+		if (units[i].Realm == theirRealm
 			&& units[i].Joined == 0
 			)								// Ignore spotted flag as NPC's never spot units.
 		{
 			PROVINCE const UnitProv = UnitFinalProvince(i);
-			
+
 			// Get the troops in our realm first.
 			if (province[UnitProv].Realm == ourRealm)
 			{
 				LONG iUnit;
 				LONG u = 0;
-				
+
 				for (iUnit = i; iUnit > 0 && !u; iUnit = units[iUnit].NextUnit)
 				{
 				  	u = (random(3)==0
@@ -2183,7 +2183,7 @@ static BOOL FindUnitToAssinate(REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE the
 			{
 				LONG iUnit;
 				LONG u = 0;
-				
+
 				for (iUnit = i; iUnit > 0 && !u; iUnit = units[iUnit].NextUnit)
 				{
 				  	u = (random(3)==0
@@ -2200,7 +2200,7 @@ static BOOL FindUnitToAssinate(REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE the
 			{
 				LONG iUnit;
 				LONG u = 0;
-				
+
 				for (iUnit = i; iUnit > 0 && !u; iUnit = units[iUnit].NextUnit)
 				{
 				  	u = (random(3)==0
@@ -2215,7 +2215,7 @@ static BOOL FindUnitToAssinate(REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE the
 			{
 				LONG iUnit;
 				LONG u = 0;
-				
+
 				for (iUnit = i; iUnit > 0 && !u; iUnit = units[iUnit].NextUnit)
 				{
 				  	u = (random(3)==0
@@ -2253,13 +2253,13 @@ LeaveFn:
 		TargetProvince = UnitFinalProvince(TargetUnit);
 		Result = TRUE;
 	}
-	
-	
+
+
 	return Result;
 }
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
@@ -2310,7 +2310,7 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
 					FLOGCOMMENT
 					{
 						char temp[100];
-						sprintf ( temp, "   FindUnit MOVE_FILL Prov:%ld Realm:%ld cGroups:%ld", 
+						sprintf ( temp, "   FindUnit MOVE_FILL Prov:%ld Realm:%ld cGroups:%ld",
 							UnitProv, CurrentRealm, cGroups );
 						if ( fLogComment )
 							RandomLogComment ( temp );
@@ -2319,7 +2319,7 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
 					}
 					#endif
 					#endif
-					
+
 					if (cGroups > j)			// find max groups
 					{
 						j = cGroups;
@@ -2346,7 +2346,7 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
 						up = UnitProv;
 					}
 					break;
-				 
+
 	 		case ACTION_RSPELL_BLESSARMY:
 					if (UnitProv == TargetProvince)
 					{
@@ -2361,10 +2361,10 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
 					{
 						for (iUnit = i; iUnit > 0 && !u; iUnit = units[iUnit].NextUnit)
 						{
-						  	u = (units[iUnit].Icon != GORGON_UNIT_ICON 
-								 	&& units[iUnit].Icon != RHUOBHE_UNIT_ICON 
+						  	u = (units[iUnit].Icon != GORGON_UNIT_ICON
+								 	&& units[iUnit].Icon != RHUOBHE_UNIT_ICON
 									&& random(4)==0
-									&& iUnit != regents[realm[realm_].mfGetRegent()].mfGetunit()) 
+									&& iUnit != regents[realm[realm_].mfGetRegent()].mfGetunit())
 									?iUnit:0;
 							if (u)
 								up = TargetProvince = UnitProv;
@@ -2423,8 +2423,8 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
    Returns     -
    ======================================================================== */
 static BOOL FindNotHolding (
-	REALM::REALM_TYPE ourRealm, 
-	REALM::REALM_TYPE inRealm, 
+	REALM::REALM_TYPE ourRealm,
+	REALM::REALM_TYPE inRealm,
 	LONG icon,
 	PROVINCE *inProv)
 {
@@ -2489,7 +2489,7 @@ static BOOL FindNotHolding (
    Function    - DoIHaveHolding
    Description - Does almost the same as FindHolding but doesn't skip level
                  zero castles, and stops at the first one found.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static BOOL DoIHavePlace (PROVINCE prov, REALM::REALM_TYPE placerealm, MAP_ICON icon)
@@ -2498,7 +2498,7 @@ static BOOL DoIHavePlace (PROVINCE prov, REALM::REALM_TYPE placerealm, MAP_ICON 
 	LONG j;
 	LONG k;
 	LONG cnt = 0;
-	
+
 	CheckAndFixPlaces(prov);
 	j = k = province[prov].FirstPlace;
 	//GEH
@@ -2520,7 +2520,7 @@ static BOOL DoIHavePlace (PROVINCE prov, REALM::REALM_TYPE placerealm, MAP_ICON 
 	}
 
 	FoundOne = FALSE;
-	
+
 	#ifdef _WINDOWS
 	LOGCOMMENTSLEEP
 	FLOGCOMMENT
@@ -2533,13 +2533,13 @@ static BOOL DoIHavePlace (PROVINCE prov, REALM::REALM_TYPE placerealm, MAP_ICON 
 			Sleep(0);
 	}
 	#endif
-	
+
 foundone:
 	return FoundOne;
 }
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static BOOL FindHolding (REALM::REALM_TYPE provrealm, REALM::REALM_TYPE placerealm, PROVINCE prov, MAP_ICON icon, LONG fMax)
@@ -2624,8 +2624,8 @@ static BOOL FindHolding (REALM::REALM_TYPE provrealm, REALM::REALM_TYPE placerea
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL CheckHoldLevels (PROVINCE prov, LONG icon)
@@ -2678,7 +2678,7 @@ static BOOL FindLawToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 	LONG maxLawLevel = -1;
 	PROVINCE maxLawLevelProv = NO_PROVINCE;
 	LONG maxLawPlace = -1;
-	
+
 	for (i = 0; i < PROVINCE_COUNT; ++i)
 	{
 		if (province[i].Realm == ourRealm)
@@ -2686,16 +2686,16 @@ static BOOL FindLawToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 			LONG j;
 			LONG k;
 			LONG cnt = 0;
-			
+
 			j = k = province[i].FirstPlace;
 			while( k != 0 && cnt++ < PROVINCE_COUNT && j >=0 && j < MAX_PLACES)
 			{
-				if (places[j].Icon == LAW1_ICON 
-					&& places[j].Realm == ourRealm 
+				if (places[j].Icon == LAW1_ICON
+					&& places[j].Realm == ourRealm
 					)
 				{
 					LONG const PlaceLevel = places[j].Level;
-					
+
 					// Only consider law holdings we should rule up.
 					if ( (province[i].CivLevel/2) > PlaceLevel)
 					{
@@ -2713,7 +2713,7 @@ static BOOL FindLawToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 			}
 		}
 	}
-	
+
 	// Rule up Law holding to reduce rebellions.
 	// In our own provinces only
 	if (maxLawLevelProv != NO_PROVINCE)
@@ -2722,7 +2722,7 @@ static BOOL FindLawToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 		*inPlace = maxLawPlace;
 		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 
@@ -2738,34 +2738,34 @@ static BOOL FindGuildToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT
 	LONG maxGuildLevel = -1;
 	PROVINCE maxGuildLevelProv = NO_PROVINCE;
 	LONG maxGuildPlace = -1;
-	
+
 	LONG maxGuildWithTradeRtLevel = -1;
 	PROVINCE maxGuildWithTradeRtLevelProv = NO_PROVINCE;
 	LONG maxGuildWithTradeRtPlace = -1;
-	
+
 	LONG maxGuildWithTradeRtLevelInAlly = -1;
 	PROVINCE maxGuildWithTradeRtLevelProvInAlly = NO_PROVINCE;
 	LONG maxGuildWithTradeRtPlaceInAlly = -1;
-	
+
 	LONG maxGuildLevelInAlly = -1;
 	PROVINCE maxGuildLevelProvInAlly = NO_PROVINCE;
 	LONG maxGuildPlaceInAlly = -1;
-	
+
 	for (i = 0; i < PROVINCE_COUNT; ++i)
 	{
 		LONG j;
 		LONG k;
 		LONG cnt = 0;
-		
+
 		j = k = province[i].FirstPlace;
 		while( k != 0 && cnt++ < PROVINCE_COUNT && j >=0 && j < MAX_PLACES)
 		{
-			if (places[j].Icon == GUILD1_ICON 
-				&& places[j].Realm == ourRealm 
+			if (places[j].Icon == GUILD1_ICON
+				&& places[j].Realm == ourRealm
 				)
 			{
 				LONG const PlaceLevel = places[j].Level;
-				
+
 				// Only consider guilds we can rule up.
 				if ( province[i].CivLevel > PlaceLevel)
 				{
@@ -2818,7 +2818,7 @@ static BOOL FindGuildToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT
 			j = province[i].FirstPlace + k;
 		}
 	}
-	
+
 	// Rule up guilds without trade routes first, to maximize profits.
 	// In our own provinces first, our allies next.
 	if (maxGuildLevelProv != NO_PROVINCE)
@@ -2843,9 +2843,9 @@ static BOOL FindGuildToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT
 	{
 		*inProv = maxGuildWithTradeRtLevelProvInAlly;
 		*inPlace = maxGuildWithTradeRtPlaceInAlly;
-		Result = TRUE;					   
+		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 
@@ -2859,34 +2859,34 @@ static BOOL FindTempleToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHOR
 {
 	LONG Result = FALSE;
 	LONG i;
-	
+
 	LONG maxTempleLevel = -1;
 	PROVINCE maxTempleLevelProv = NO_PROVINCE;
 	LONG maxTemplePlace = -1;
-	
+
 	LONG maxTempleLevelInEnemy = -1;
 	PROVINCE maxTempleLevelProvInEnemy = NO_PROVINCE;
 	LONG maxTemplePlaceInEnemy;
-	
+
 	LONG maxTempleLevelInAlly = -1;
 	PROVINCE maxTempleLevelProvInAlly = NO_PROVINCE;
 	LONG maxTemplePlaceInAlly = -1;
-	
+
 	for (i = 0; i < PROVINCE_COUNT; ++i)
 	{
 		LONG j;
 		LONG k;
 		LONG cnt = 0;
-		
+
 		j = k = province[i].FirstPlace;
 		while( k != 0 && cnt++ < PROVINCE_COUNT && j >=0 && j < MAX_PLACES)
 		{
-			if (places[j].Icon == TEMPLE1_ICON 
-				&& places[j].Realm == ourRealm 
+			if (places[j].Icon == TEMPLE1_ICON
+				&& places[j].Realm == ourRealm
 				)
 			{
 				LONG const PlaceLevel = places[j].Level;
-				
+
 				// Only consider Temples we can rule up.
 				if (province[i].CivLevel > PlaceLevel
 					&& PlaceLevel < 3)					// No need to rule above level 3
@@ -2925,7 +2925,7 @@ static BOOL FindTempleToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHOR
 			j = province[i].FirstPlace + k;
 		}
 	}
-	
+
 	if (maxTempleLevelProvInEnemy != NO_PROVINCE)
 	{
 		*inProv = maxTempleLevelProvInEnemy;
@@ -2944,7 +2944,7 @@ static BOOL FindTempleToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHOR
 		*inPlace = maxTemplePlaceInAlly;
 		Result = TRUE;
 	}
-	
+
 	return Result;
 }
 /* ========================================================================
@@ -2958,20 +2958,20 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 {
 	LONG Result = FALSE;
 	LONG i;
-	
+
 	LONG maxSrcLevel = -1;
 	PROVINCE maxSrcLevelProv = NO_PROVINCE;
 	LONG maxSrcPlace = -1;
-	
+
 	LONG maxSrcLevelInEnemy = -1;
 	PROVINCE maxSrcLevelProvInEnemy = NO_PROVINCE;
 	LONG maxSrcPlaceInEnemy = -1;
-	
+
 	PROVINCE levelZeroSrcProv = NO_PROVINCE;
 	LONG levelZeroSrcPlace = -1;
-	
+
 	BOOL WeHaveAHighLevelSrc = FALSE;
-	
+
 	for (i = 0; i < PROVINCE_COUNT; ++i)
 	{
 		if (province[i].Realm == ourRealm ||
@@ -2981,12 +2981,12 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 			LONG j;
 			LONG k;
 			LONG cnt = 0;
-			
+
 			j = k = province[i].FirstPlace;
 			while( k != 0 && cnt++ < PROVINCE_COUNT && j >=0 && j < MAX_PLACES)
 			{
-				if (places[j].Icon == SOURCE1_ICON 
-					&& places[j].Realm == ourRealm 
+				if (places[j].Icon == SOURCE1_ICON
+					&& places[j].Realm == ourRealm
 					)
 				{
 					LONG const PlaceLevel = places[j].Level;
@@ -2999,7 +2999,7 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 						levelZeroSrcProv = (PROVINCE) i;
 						levelZeroSrcPlace = j;
 					}
-					
+
 					if (PlaceLevel > maxSrcLevel
 						&& PlaceLevel < 8				// No need to rule higher than level 7.
 						&& province[i].MagLevel > PlaceLevel)
@@ -3021,22 +3021,22 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 			LONG j;
 			LONG k;
 			LONG cnt = 0;
-			
+
 			j = k = province[i].FirstPlace;
 			while( k != 0 && cnt++ < PROVINCE_COUNT && j >=0 && j < MAX_PLACES)
 			{
-				if (places[j].Icon == SOURCE1_ICON 
-					&& places[j].Realm == ourRealm 
+				if (places[j].Icon == SOURCE1_ICON
+					&& places[j].Realm == ourRealm
 					)
 				{
 					LONG const PlaceLevel = places[j].Level;
-					
+
 					if (PlaceLevel == 0 && levelZeroSrcProv == NO_PROVINCE)
 					{
 						levelZeroSrcProv = (PROVINCE) i;
 						levelZeroSrcPlace = j;
 					}
-					
+
 					if (PlaceLevel > maxSrcLevelInEnemy
 						&& PlaceLevel < 8				// No need to rule higher than level 7.
 						&& province[i].MagLevel > PlaceLevel)
@@ -3052,7 +3052,7 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 			}
 		}
 	}
-	
+
 	if (!WeHaveAHighLevelSrc && maxSrcLevelProv != NO_PROVINCE)
 	{
 		*inProv = maxSrcLevelProv;
@@ -3070,8 +3070,8 @@ static BOOL FindSrcToRule(REALM::REALM_TYPE ourRealm, PROVINCE *inProv, USHORT *
 		*inProv = levelZeroSrcProv;
 		*inPlace = levelZeroSrcPlace;
 	}
-	
-	
+
+
 	return Result;
 }
 /* ========================================================================
@@ -3090,7 +3090,7 @@ static BOOL FindDiffTerrain (PATHTYPE via, PROVINCE StartingProv, PROVINCE *foun
 	{
 		for (i=1; i<PROVINCE_COUNT; ++i)
 		{
-			if (province[i].Realm == realm_ 
+			if (province[i].Realm == realm_
 				&& province[i].Terrain != terrain)
 			{
 				d = ProvDist(StartingProv, i, 0, FALSE);
@@ -3179,8 +3179,8 @@ static BOOL FindDiffTerrain (PATHTYPE via, PROVINCE StartingProv, PROVINCE *foun
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     - TRUE or FALSE if we can pay.
    ======================================================================== */
 BOOL CanAfford (LONG costGBNow, LONG costRegNow, LONG costGBPerTurn, REALM::REALM_TYPE realm_)
@@ -3239,8 +3239,8 @@ BOOL CanAfford (LONG costGBNow, LONG costRegNow, LONG costGBPerTurn, REALM::REAL
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void PayForIt (REALM::REALM_TYPE ThisRealm, LONG payGB, LONG payRegency, LONG AllocateSurplus)
@@ -3262,7 +3262,7 @@ static void PayForIt (REALM::REALM_TYPE ThisRealm, LONG payGB, LONG payRegency, 
 	FLOGCOMMENT
 	{
 		char temp[100];
-		sprintf ( temp, "   PayForIt %d - %s  GB spent:%d  GB now (x10):%d   Reg spent:%d  Reg now:%d", 
+		sprintf ( temp, "   PayForIt %d - %s  GB spent:%d  GB now (x10):%d   Reg spent:%d  Reg now:%d",
 					20,
 					realm[ThisRealm].mfGetName(),
 					payGB,
@@ -3283,8 +3283,8 @@ static void PayForIt (REALM::REALM_TYPE ThisRealm, LONG payGB, LONG payRegency, 
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     - TRUE or FALSE if one is found.
    ======================================================================== */
 BOOL ForeignUnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm)
@@ -3420,10 +3420,10 @@ BOOL npc_move_ (PROVINCE cur_prov)
 			FLOGCOMMENT
 			{
 				char temp[100];
-				sprintf ( temp, "   npc_move %d - Failed, could not afford  border:%d cnt:%d treas:%d", 
+				sprintf ( temp, "   npc_move %d - Failed, could not afford  border:%d cnt:%d treas:%d",
 					21,
-					border_cost, 
-					cnt, 
+					border_cost,
+					cnt,
 					realm[CurrentRealm].mfGetTreasury());
 				if ( fLogComment )
 					RandomLogComment ( temp );
@@ -3527,15 +3527,15 @@ BOOL npc_move (PROVINCE cur_prov)
 		if (fSend)
 			sprintf ( temp, "npc_move %d - Player %s Move - TargetUnit:%d cur_prov:%s TargetProvince:%s",
 				23,
-				realm[CurrentRealm].mfGetName(), 
-				TargetUnit, 
-				province[cur_prov].name, 
+				realm[CurrentRealm].mfGetName(),
+				TargetUnit,
+				province[cur_prov].name,
 				province[TargetProvince].name);
 		else
 			sprintf ( temp, "   npc_move %d - TargetUnit:%d cur_prov:%s TargetProvince:%s",
 				23,
-				TargetUnit, 
-				province[cur_prov].name, 
+				TargetUnit,
+				province[cur_prov].name,
 				province[TargetProvince].name);
 		if ( fLogComment )
 			RandomLogComment ( temp );
@@ -3661,8 +3661,8 @@ BOOL RecursiveRoadBuilder (PROVINCE cur_prov)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL npc_traderoute (LONG place)
@@ -3675,7 +3675,7 @@ BOOL npc_traderoute (LONG place)
 		return FALSE;
 		#endif
 	}
-	
+
 	if (places[place].iRoute1==0)
 	{
 		places[place].iRoute1 = TargetProvince;
@@ -3712,8 +3712,8 @@ BOOL npc_traderoute (LONG place)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - fSend - broadcast or not 
+   Function    -
+   Description - fSend - broadcast or not
    Returns     -
    ======================================================================== */
 void SetHelped (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend )
@@ -3743,8 +3743,8 @@ void SetHelped (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend )
 }
 
 /* ========================================================================
-   Function    - 
-   Description - fSend - broadcast or not 
+   Function    -
+   Description - fSend - broadcast or not
    Returns     -
    ======================================================================== */
 void SetScrewed (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend )
@@ -3801,7 +3801,7 @@ static BOOL TestInvaded (REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE testRealm
 		{
 			if (province[UnitFinalProvince(i)].Realm == ourRealm)
 			{
-				printf("TEST INVADED - %s has invaded %s in prov %s\n",realm[testRealm].mfGetName(),realm[ourRealm].mfGetName(),province[UnitFinalProvince(i)].name);
+				logInfo("TEST INVADED - %s has invaded %s in prov %s",realm[testRealm].mfGetName(),realm[ourRealm].mfGetName(),province[UnitFinalProvince(i)].name);
 				TestTargetRealm = testRealm;
 				return TRUE;
 			}
@@ -3830,7 +3830,7 @@ static BOOL TestOccupied (REALM::REALM_TYPE thisRealm)
 {
 	LONG	i;
 	for (i=1; i<PROVINCE_COUNT; ++i)
-		if (province[i].Realm != thisRealm 
+		if (province[i].Realm != thisRealm
 		    && province[i].OccupRealm == thisRealm)
 		{
 			TestTargetRealm = (REALM::REALM_TYPE)province[i].Realm;
@@ -3900,14 +3900,14 @@ static BOOL TestAllyAtwar (REALM::REALM_TYPE thisRealm, REALM::REALM_TYPE testRe
 			if (ISATWAR(testRealm,i))
 			{
 				TestTargetRealm = (REALM::REALM_TYPE)i;
-	
+
 //////////////////////////////////
 //			if (CurrentRealm != REALM::GORGONSCROWN)
 //			{
 //				++counter;
 //			}
 /////////////////////////////////
-	
+
 				return TRUE;
 			}
 	}
@@ -4028,7 +4028,7 @@ REALM::REALM_TYPE TestTriggers (USHORT Triggers)
 		char temp[100];
 		char temp1[50];
 		int temp2 = 0;
-		
+
 		if (Triggers & TEST_INVADED)		temp2+= sprintf(&temp1[temp2], "INV" );
 		if (Triggers & TEST_SCREWED)		temp2+= sprintf(&temp1[temp2], "SCR" );
 		if (Triggers & TEST_ADJACENT)		temp2+= sprintf(&temp1[temp2], "ADJ" );
@@ -4045,16 +4045,16 @@ REALM::REALM_TYPE TestTriggers (USHORT Triggers)
 		if (Triggers & TEST_BROKE)			temp2+= sprintf(&temp1[temp2], "BRK" );
 		if (Triggers & TEST_REBELLION)	temp2+= sprintf(&temp1[temp2], "REB" );
 		if (Triggers & TEST_OCCUPIED)		temp2+= sprintf(&temp1[temp2], "OCC" );
-		
+
 		if (TestTargetRealm)
-			sprintf ( temp, "TRIGGERED  %d TR:%s TTR:%s (%d)", 
+			sprintf ( temp, "TRIGGERED  %d TR:%s TTR:%s (%d)",
 				25,
 				temp1, realm[TestTargetRealm].mfGetName(), TestTargetRealm );
 		else
-			sprintf ( temp, "TRIGGERED  %d TR:%s I:%s (%d)", 
+			sprintf ( temp, "TRIGGERED  %d TR:%s I:%s (%d)",
 				25,
 				temp1, realm[i].mfGetName(), i );
-		
+
 		if ( fLogComment )
 			RandomLogComment ( temp );
 		else
@@ -4080,7 +4080,7 @@ NOT_TRGD:
 		char temp[100];
 		char temp1[50];
 		int temp2 = 0;
-		
+
 		if (Triggers & TEST_INVADED)		temp2+= sprintf(&temp1[temp2], (t1)?"INV":"inv" );
 		if (Triggers & TEST_SCREWED)		temp2+= sprintf(&temp1[temp2], (t2)?"SCR":"scr" );
 		if (Triggers & TEST_ADJACENT)		temp2+= sprintf(&temp1[temp2], (t4)?"ADJ":"adj" );
@@ -4097,13 +4097,13 @@ NOT_TRGD:
 		if (Triggers & TEST_BROKE)			temp2+= sprintf(&temp1[temp2], (t14)?"BRK":"brk" );
 		if (Triggers & TEST_REBELLION)	temp2+= sprintf(&temp1[temp2], (t15)?"REB":"reb" );
 		if (Triggers & TEST_OCCUPIED)		temp2+= sprintf(&temp1[temp2], (t16)?"OCC":"occ" );
-		
+
 		if (TestTargetRealm)
-			sprintf ( temp, "NOT TRGD   %d TR:%s TTR:%s (%d)", 
+			sprintf ( temp, "NOT TRGD   %d TR:%s TTR:%s (%d)",
 				26,
 				temp1, realm[TestTargetRealm].mfGetName(), TestTargetRealm );
 		else
-			sprintf ( temp, "NOT TRGD   %d TR:%s I:%s (%d)", 
+			sprintf ( temp, "NOT TRGD   %d TR:%s I:%s (%d)",
 				26,
 				temp1, realm[i].mfGetName(), i );
 		if ( fLogComment )
@@ -4127,7 +4127,7 @@ NOT_TRGD:
 
 /* ========================================================================
    Function    - FindRealm
-   Description - Used only by diplomacy. Set TargetRealm 
+   Description - Used only by diplomacy. Set TargetRealm
    Returns     - TRUE if TargetRealm is valid
    ======================================================================== */
 BOOL FindRealm ()
@@ -4201,7 +4201,7 @@ BOOL FindRealm ()
 
 /* ========================================================================
    Function    - FindFoe
-   Description - set TargetRealm 
+   Description - set TargetRealm
    Returns     - TRUE if TargetRealm is valid
    ======================================================================== */
 BOOL FindFoe (REALM::REALM_TYPE realm_, LONG action )
@@ -4279,8 +4279,8 @@ CSTRPTR szTriggerTest (USHORT tests)
 #endif
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 LONG OfferHolding (void)
@@ -4328,8 +4328,8 @@ LONG OfferHolding (void)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 LONG DemandHolding (REALM::REALM_TYPE realm_, SHORT oldDemand)
@@ -4440,8 +4440,8 @@ LONG DemandHolding (REALM::REALM_TYPE realm_, SHORT oldDemand)
 
 #define MAX_ACTIONS_PER_MODE	100
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL DoNPCAction (void)
@@ -4471,7 +4471,7 @@ BOOL DoNPCAction (void)
 	//static BOOL		fPrintDebugData = TRUE;
 
 	// ========================================================================
-	// 
+	//
 	// ========================================================================
 
 	if (!fActionsOver)
@@ -4705,18 +4705,18 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 				ScreenCopy( 0, 422, 409, 216, 21, SC_DEFAULT_RES);
 
 				tmp = CheckUnitArrival(i, FALSE);	// force stationary units to battle
-		
+
 				if (tmp & fSCENEBATTLE)		// go to Scene level battle
 				{
 					iCurrentRealmIndex = LAND_REALM_COUNT - 1;		// make it loop again
 					ClearRemapTable();
 					#ifdef _WINDOWS
 					// -- The action isn't really restarted, we just restart the
-					// -- action as a way to get a sync 4 to occur to sync up the 
+					// -- action as a way to get a sync 4 to occur to sync up the
 					// -- multi player code
 					fActionsOver = FALSE;						// force a sync 4
 					#endif
-					
+
 					return TRUE;
 				}
 
@@ -4725,7 +4725,7 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 				{
 					iCurrentRealmIndex = LAND_REALM_COUNT - 1;		// make it loop again
 					fRedrawAll = TRUE;
-					
+
 					#ifdef _WINDOWS
 					if (tmp & fNPCBATTLE)
 					{
@@ -4733,18 +4733,18 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 						CheckSync( iMPS_SYNC4, TRUE, TRUE );
 					}
 					#endif
-					
+
 					return FALSE;
 				}
 			}
 
 		}
 
-		//---- Battle/troop movement is now over 
+		//---- Battle/troop movement is now over
 		fActionsOver = 0;
 
 		#ifdef _WINDOWS
-		StartSync( iMPS_SYNC2 );	//---- Sync after battles/troop movement 
+		StartSync( iMPS_SYNC2 );	//---- Sync after battles/troop movement
 		CheckSync( iMPS_SYNC2, TRUE, TRUE );
 		//fPrintDebugData = TRUE;		//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 		#endif
@@ -4812,7 +4812,7 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 	}
 	#endif
 
-	//----- Seed the number generator 
+	//----- Seed the number generator
 	#ifdef _WINDOWS
 	AMultiPlayer.NextSeed(__FILE__,__LINE__);
 	#endif
@@ -4865,16 +4865,16 @@ NewMode:
 				npc_ai[rlm].CurrentMode = npc_ai[rlm].Modes[i];
 				for (i=0; i< MAX_ACTIONS_PER_MODE;++i)			// Need to reset for being call via a goto
 					ActionTried[i] = FALSE;
-			
+
 
 				#ifdef _WINDOWS
 	       	LOGCOMMENTSLEEP
 				FLOGCOMMENT
 				{
 					char temp[100];
-					sprintf ( temp, "DoNPCAction %d - ModeChange: %s changing to %s", 
+					sprintf ( temp, "DoNPCAction %d - ModeChange: %s changing to %s",
 						35,
-						realm[rlm].mfGetName(), 
+						realm[rlm].mfGetName(),
 						szAIMode[npc_ai[rlm].CurrentMode]);
 					if ( fLogComment )
 						RandomLogComment ( temp );
@@ -4895,7 +4895,7 @@ NewMode:
 	TriggeredTargetRealm = REALM::NO_COUNTRY;
 	if (modeFromTrigger == FALSE)	// so we don't repeat the test if we've failed.
 	{
-		for (i=0; 
+		for (i=0;
 			 i<8 && TriggeredTargetRealm == REALM::NO_COUNTRY;
 			 ++i)
 		{
@@ -4905,9 +4905,9 @@ NewMode:
 				//printf("TRIGGER - %s trigger %d (%s) set off by %s, mode now %s\n",
 				//realm[rlm].mfGetName(),i,szTriggerTest(npc_ai[rlm].Triggers[i].Tests),
 				//realm[TriggeredTargetRealm].mfGetName(),szAIMode[npc_ai[rlm].Triggers[i].Action]);
-	
+
 				LONG ModeChance = random(100);
-				if (ModeChance < npc_ai[rlm].Triggers[i].Chance 
+				if (ModeChance < npc_ai[rlm].Triggers[i].Chance
 				    || i == 7)	// Last triggered mode possible.
 				{
 					npc_ai[rlm].CurrentMode = npc_ai[rlm].Triggers[i].Action;
@@ -4917,7 +4917,7 @@ NewMode:
 				{
 					TriggeredTargetRealm = REALM::NO_COUNTRY;
 				}
-	
+
 				#ifdef _WINDOWS
 		     	LOGCOMMENTSLEEP
 				FLOGCOMMENT
@@ -4938,7 +4938,7 @@ NewMode:
 						Sleep(0);
 				}
 				#endif
-	
+
 			}
 		}
 	}
@@ -4975,7 +4975,7 @@ Another:
 
 	// Because this thing is so confusing let us write out what we are
 	// doing. This way we can figure out why this thing is out of sync
-	// during a multiplayer game. 
+	// during a multiplayer game.
 
 	#ifdef _WINDOWS
 	LOGCOMMENTSLEEP
@@ -4985,22 +4985,22 @@ Another:
 		char temp2[100];
 		char temp3[100];
 		char temp4[100];
-		if (TriggeredTargetRealm != REALM::NO_COUNTRY 
+		if (TriggeredTargetRealm != REALM::NO_COUNTRY
 			&& TriggeredTargetRealm!=rlm
 			&& TriggeredTargetRealm < LAND_REALM_COUNT)
 		{
 			strcpy(temp2,realm[rlm].mfGetName());
 			strcpy(temp3,szAIAction[action].mfGetStr() );
 			strcpy(temp4,realm[TriggeredTargetRealm].mfGetName());
-			
-			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s (maybe on %s)", 
+
+			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s (maybe on %s)",
 				37, temp2, action, temp3, temp4);
 		}
 		else
 		{
 			strcpy(temp2, realm[rlm].mfGetName());
 			strcpy(temp3, szAIAction[action].mfGetStr());
-			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s", 
+			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s",
 				37, temp2, action, temp3);
 		}
 		if ( fLogComment )
@@ -5031,13 +5031,13 @@ Another:
 			if (TriggeredTargetRealm != REALM::NO_COUNTRY && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			// have a foe in TargetRealm
-			// if there isn't a province whose loyalty is poor, 
+			// if there isn't a province whose loyalty is poor,
 			// find one whose loyalty is average.
 			// timeCount == 0, the first run, timeCount == 1, the second run
-			for( timeCount = 0; timeCount < 2; ++timeCount )					  
+			for( timeCount = 0; timeCount < 2; ++timeCount )
 				if (FindProv(action)) break;
 			if(timeCount == 2) {logreroll(__LINE__); goto ReRoll_;}
 			TargetPlace=0;
@@ -5140,7 +5140,7 @@ Another:
 			{
 				TargetRealm = (REALM::REALM_TYPE) places[TargetPlace].Realm;
 				goto FOUND_ONE;
-			}					
+			}
 			{logreroll(__LINE__); goto ReRoll_;}				// can't do the action so try another
 
 FOUND_ONE:
@@ -5179,8 +5179,8 @@ CreateHldng:
 //			if (TriggeredTargetRealm)
 //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 			if (cntHolds > (MAX_PLACES-60)) {logreroll(__LINE__); goto ReRoll_;}
-			
-			
+
+
 			if (game_difficulty == DIF_EASY)
 			{
 				if (!FindNotHolding(rlm, rlm, icon, &TargetProvince)) {logreroll(__LINE__); goto ReRoll_;}
@@ -5189,10 +5189,10 @@ CreateHldng:
 			{
 				BOOL FoundOneToBuild = FALSE;
 				LONG k;
-				
+
 				for (k = REALM::FIRST_REALM; k < LAND_REALM_COUNT && !FoundOneToBuild; ++k)
 				{
-					if (rlm != k 
+					if (rlm != k
 						&& ISATWAR((REALM::REALM_TYPE) k, rlm))
 					{
 						if (FindNotHolding(rlm, (REALM::REALM_TYPE)k, icon, &TargetProvince)) {logreroll(__LINE__); goto ReRoll_;}
@@ -5227,7 +5227,7 @@ CreateHldng:
 			//			||	(game_difficulty == DIF_HARD && date < 2)
 			//	)	)	)
 			//	{logreroll(__LINE__); goto ReRoll_;}
-			
+
 			ActionExpType = RLM_EXP_DECLARE_WAR;
 			ActionExpModifier = 0;
 			#ifdef _WINDOWS
@@ -5235,7 +5235,7 @@ CreateHldng:
 			FLOGCOMMENT
 			{
 				char temp[200];
-				sprintf ( temp, "Declare War - action_turn:%d  fPlayerNeverDelaredWar:%ld game_difficulty:%ld", 
+				sprintf ( temp, "Declare War - action_turn:%d  fPlayerNeverDelaredWar:%ld game_difficulty:%ld",
 					action_turn[HomeRealm], fPlayerNeverDeclaredWar, game_difficulty );
 				if ( fLogComment )
 					RandomLogComment ( temp );
@@ -5260,7 +5260,7 @@ CreateHldng:
 			if (fPlayerNeverDeclaredWar && (game_difficulty == DIF_EASY && date < 4)) {logreroll(__LINE__); goto ReRoll_;}
 			if (fPlayerNeverDeclaredWar && (game_difficulty == DIF_MEDIUM && date < 3)) {logreroll(__LINE__); goto ReRoll_;}
 			if (fPlayerNeverDeclaredWar && (game_difficulty == DIF_HARD && date < 2)) {logreroll(__LINE__); goto ReRoll_;}
-			
+
 			if (FindFoe(rlm,action)) {logreroll(__LINE__); goto ReRoll_;}	// if already at war don't do again
 
 			// triggered action
@@ -5327,7 +5327,7 @@ CreateHldng:
 				&& TargetRealm < LAND_REALM_COUNT)		// GWP PATCH CODE.
 			{
 				npc_ai[rlm].CurrentAction = action;
-				
+
 				WarDeclared(rlm, TargetRealm, FALSE);
 #if 0
 				RealmStatus[rlm][TargetRealm] = (TestAdjacent(rlm,TargetRealm))?STATUS_AT_WAR_ADJ:STATUS_AT_WAR;
@@ -5335,10 +5335,10 @@ CreateHldng:
 				RealmReaction[rlm][TargetRealm] = (k>0)?k:0;
 				k = RealmReaction[TargetRealm][rlm] - (5 + random(10) + (Tribute[rlm][TargetRealm] * 5));
 				RealmReaction[TargetRealm][rlm] = (k>0)?k:0;
-				
+
 				// if 0'd, or we'd use SetGameData()
 				Tribute[rlm][TargetRealm] = 0; Tribute[TargetRealm][rlm] = 0;
-				
+
 				npc_ai[rlm].OldAtWar = TargetRealm;
 				if(TargetRealm == HomeRealm)
 					AddReport(IMMEDIATE_NPC_DECLARE_WAR, CurrentRealm, 0, 0);
@@ -5348,7 +5348,7 @@ CreateHldng:
 						AddReport(IMMEDIATE_NPC_DECLARE_WAR_ALLY, CurrentRealm, 3, TargetRealm);
 					else if(AREFULLALLIES(TargetRealm, HomeRealm))
 						AddReport(IMMEDIATE_NPC_DECLARE_WAR_ALLY, CurrentRealm, 2, TargetRealm);
-					else 
+					else
 						AddReport(IMMEDIATE_NPC_DECLARE_WAR_ALLY, CurrentRealm, 1, TargetRealm);
 				}
 //printf("DECLARE WAR - %s on %s\n",realm[rlm].name,realm[TargetRealm].name);
@@ -5647,7 +5647,7 @@ CreateHldng:
 			TargetProvince = NO_PROVINCE;
 			TargetRealm = REALM::NO_COUNTRY;
 			StartPlace = 0;
-			
+
 			if(!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
 			TargetRealm = (REALM::REALM_TYPE)province[TargetProvince].Realm;
 
@@ -5656,7 +5656,7 @@ CreateHldng:
 
 			if(50 > (RealmReaction[TargetRealm][CurrentRealm]-70+35+15))
 				 reaction = 120-50-RealmReaction[TargetRealm][CurrentRealm];
-			else 
+			else
 				reaction = 1;
 			if(!CanAfford (reaction/3, 1, 0, rlm)) {logreroll(__LINE__); goto ReRoll_;}
 			if(!random(3)) {logreroll(__LINE__); goto ReRoll_;}
@@ -5692,7 +5692,7 @@ CreateHldng:
 				realm[TargetRealm].mfAddTreasury(gold* 10);
 			}
 
-			else if ( TargetRealm == HomeRealm )   //---- Target is us 
+			else if ( TargetRealm == HomeRealm )   //---- Target is us
 			{
 
 				#ifdef _WINDOWS
@@ -5733,7 +5733,7 @@ CreateHldng:
 			{
 				fSync = TRUE;
 			}
-			
+
 			break;
 
 
@@ -5747,11 +5747,11 @@ CreateHldng:
 			if(CurrentRealm == REALM::MONSTERS) {logreroll(__LINE__); goto ReRoll_;}
 			TargetPlace = 0;
 			StartPlace = 0;
-			
+
 			CurrentRegent = (REGENT_ENUM) realm[CurrentRealm].mfGetRegent();
-			
+
 			if(!OfferHolding()) {logreroll(__LINE__); goto ReRoll_;}
-			
+
 			if(!DemandHolding(REALM::NO_COUNTRY, 0)) {logreroll(__LINE__); goto ReRoll_;}
 
 			TargetRealm = (REALM::REALM_TYPE)places[StartPlace].Realm;
@@ -5765,7 +5765,7 @@ CreateHldng:
 
 			npc_ai[rlm].CurrentAction = action;
 
-			if (!realm[TargetRealm].mfIsPlayerCtrl())	
+			if (!realm[TargetRealm].mfIsPlayerCtrl())
 			{
 
 				// set tribute
@@ -5778,15 +5778,15 @@ CreateHldng:
 				// places[StartPlace].Realm = CurrentRealm;
 				//SetGameData(MP_PLACES, MPPLACE_REALM, StartPlace, CurrentRealm, FALSE );
 				CheckHolding(StartPlace, CurrentRealm, FALSE);
-				
+
 				// take care the offered TargetPlace
 				//SetGameData(MP_PLACES, MPPLACE_REALM, TargetPlace, TargetRealm, FALSE );
 				CheckHolding(TargetPlace, TargetRealm, FALSE);
-			}	 	
+			}
 			else if ( TargetRealm == HomeRealm )   // home realm is target
 			{
 
-#ifdef _WINDOWS  
+#ifdef _WINDOWS
 
 				if ( IsMultiPlayer() )
 				{
@@ -5844,7 +5844,7 @@ CreateHldng:
 			if ( TargetRealm == HomeRealm )  // home realm is target
 			{
 
-#ifdef _WINDOWS  
+#ifdef _WINDOWS
 
 				if ( IsMultiPlayer() )
 				{
@@ -5962,16 +5962,16 @@ CreateHldng:
 			for(i=1; i<PROVINCE_COUNT; ++i)
 			{
 				CheckAndFixPlaces((PROVINCE)i);
-			 	j = k = province[i].FirstPlace; 
+			 	j = k = province[i].FirstPlace;
 			 	while (k != 0 )
 			 	{
 					// look for a source with leyline going out but nothing coming in as a TargetPlace
-			 	   	if(places[j].Icon == SOURCE1_ICON 
+			 	   	if(places[j].Icon == SOURCE1_ICON
 							&& places[j].Realm == CurrentRealm
-						 	&& (places[j].iRoute1 || places[j].iRoute2 || places[j].iRoute3))  // Source has a leyline going out                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+						 	&& (places[j].iRoute1 || places[j].iRoute2 || places[j].iRoute3))  // Source has a leyline going out
 					{
 						for(m = 0; m< MAX_PLACES; ++m)
-							if( places[m].Icon == SOURCE1_ICON 
+							if( places[m].Icon == SOURCE1_ICON
 									&& (places[m].iRoute1 == j || places[m].iRoute2 == j || places[m].iRoute3 == j))
 								break;
 						if(m == MAX_PLACES)
@@ -5986,21 +5986,21 @@ CreateHldng:
 			 	}
 				if(k!=0)
 					break;
-			} 
+			}
 		   	// look for a source without any leyline connect to as a StartPlace
 		   	// if there is a targetProvince, look for the closet one, otherwise just pick one
 			for(i=1; i<PROVINCE_COUNT; ++i)
 			{
 				CheckAndFixPlaces((PROVINCE)i);
-			 	j = k = province[i].FirstPlace; 
+			 	j = k = province[i].FirstPlace;
 			 	while (k != 0 )
 			 	{
-					if(places[j].Icon == SOURCE1_ICON 
+					if(places[j].Icon == SOURCE1_ICON
 								&& places[j].Realm == CurrentRealm
-						 		&& !places[j].iRoute1&& !places[j].iRoute2 && !places[j].iRoute3)  // Source has a leyline going out                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+						 		&& !places[j].iRoute1&& !places[j].iRoute2 && !places[j].iRoute3)  // Source has a leyline going out
 					{
 						for(m = 0; m< MAX_PLACES; ++m)
-							if( places[m].Icon == SOURCE1_ICON 
+							if( places[m].Icon == SOURCE1_ICON
 									&& (places[m].iRoute1 == j || places[m].iRoute2 == j || places[m].iRoute3 == j))
 								break;
 						if(m == MAX_PLACES)
@@ -6027,13 +6027,13 @@ CreateHldng:
 			}
 			minDist = 99;
 			// Found a single node to start with, but didn't find any source with only leyline going out
-			// look for a closet source 
+			// look for a closet source
 			if(TargetPlace == 0 && StartPlace != 0)
 			{
 				for(i=1; i<PROVINCE_COUNT; ++i)
 				{
 					CheckAndFixPlaces((PROVINCE)i);
-				 	j = k = province[i].FirstPlace; 
+				 	j = k = province[i].FirstPlace;
 				 	while (k != 0 )
 				 	{
 						if(places[j].Icon == SOURCE1_ICON
@@ -6175,7 +6175,7 @@ actmovelbl:
 #if 0
 			// moved this functionality to gamemap.cpp
 			// when troops actually cross borders
-			
+
 			if (TargetRealm != REALM::ANY_REALM)
 			{
 				if (TargetRealm == HomeRealm)
@@ -6193,7 +6193,7 @@ actmovelbl:
 							break;
 						}
 					}
-					
+
 					if (atwar)
 					{
 						// do nothing
@@ -6242,7 +6242,7 @@ actmovelbl:
 			npc_ai[rlm].CurrentAction = action;
 			goto Another;				// action was free so do another
 
-		
+
 		case ACTION_MUSTER_INF:
 		case ACTION_MUSTER_EIN:
 		case ACTION_MUSTER_BOW:
@@ -6289,11 +6289,11 @@ actmovelbl:
 				#endif
 
 #if MUSTERINFO
-				printf("MUSTER FAILED - MaxUnits limit, cntUnits:%d\n",cntUnits_());
+				logInfo("MUSTER FAILED - MaxUnits limit, cntUnits:%d",cntUnits_());
 #endif
 				{logreroll(__LINE__); goto ReRoll_;}
 			}
-			
+
 			LONG SaveForRainyDay = 10 + random(20);
 			for (LONG ijkm = 0; ijkm < LAND_REALM_COUNT; ++ijkm)
 			{
@@ -6322,7 +6322,7 @@ actmovelbl:
 				#endif
 
 #if MUSTERINFO
-				printf("MUSTER FAILED - Can't afford, realm:%s\n",realm[rlm].mfGetName());
+				logInfo("MUSTER FAILED - Can't afford, realm:%s",realm[rlm].mfGetName());
 #endif
 				{logreroll(__LINE__); goto ReRoll_;}
 			}
@@ -6386,7 +6386,7 @@ actmovelbl:
 			#endif
 
 #if MUSTERINFO
-			printf("MUSTER FAILED - Can't create unit, cntUnits:%d\n",cntUnits_());
+			logInfo("MUSTER FAILED - Can't create unit, cntUnits:%d",cntUnits_());
 #endif
 			{logreroll(__LINE__); goto ReRoll_;}					// action failed so reroll
 
@@ -6427,7 +6427,7 @@ actmovelbl:
 			else if (!FindFoe(rlm,action)) {logreroll(__LINE__); goto ReRoll_;}		// find a foe of ours
 			// have a foe in TargetRealm
 			if (!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
-			
+
 			if(!CanAfford (2, 1, 0, rlm)) {logreroll(__LINE__); goto ReRoll_;}
 			npc_ai[rlm].CurrentAction = action;
 			PayForIt(rlm, 2, 1, 0);
@@ -6459,7 +6459,7 @@ actmovelbl:
 			if (TriggeredTargetRealm && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			// have a foe in TargetRealm
 			if (!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
@@ -6494,7 +6494,7 @@ actmovelbl:
 			if (TriggeredTargetRealm && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			// have a foe in TargetRealm
 			if (!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
@@ -6521,18 +6521,18 @@ actmovelbl:
 				}
 			}
 			break;
-				
+
 		case ACTION_RSPELL_RAZE:
 			ActionExpType = RLM_EXP_REALM_SPELL;
 			ActionExpModifier = RlmSpellLevel(ITEM_SPELL_RAZE);
 			if (TriggeredTargetRealm && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			// find the castle StartPlace in a province with source in it
 			if (!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
-			
+
 			if(!CanAfford (2, 10, 0, rlm)) {logreroll(__LINE__); goto ReRoll_;}
 			npc_ai[rlm].CurrentAction = action;
 			PayForIt(rlm, 2, 10, 0);
@@ -6567,7 +6567,7 @@ actmovelbl:
 			PayForIt(rlm, 10, 8, 0);
 
 			CreateHolding(5, 0, 0, TargetProvince, CurrentRealm, FALSE );
-			
+
 			CheckAndFixPlaces(TargetProvince);
 			i = j = province[TargetProvince].FirstPlace;
 			while (j != 0 && i>=0 && i<MAX_PLACES)
@@ -6582,7 +6582,7 @@ actmovelbl:
 				i = province[TargetProvince].FirstPlace + j;
 			}
  			if(province[TargetProvince].Realm == HomeRealm)
- 		   		AddReport(IMMEDIATE_NPC_STRONGHOLD, CurrentRealm, TargetProvince, 0);	
+ 		   		AddReport(IMMEDIATE_NPC_STRONGHOLD, CurrentRealm, TargetProvince, 0);
 			SetScrewed((REALM::REALM_TYPE)province[TargetProvince].Realm, CurrentRealm, FALSE );
 
 			CurrentRegent = (REGENT_ENUM) realm[CurrentRealm].mfGetRegent();
@@ -6640,7 +6640,7 @@ actmovelbl:
 				}
 			}
 			break;
-			
+
 		case ACTION_RSPELL_BLESSARMY:
 			ActionExpType = RLM_EXP_REALM_SPELL;
 			ActionExpModifier = RlmSpellLevel(ITEM_SPELL_BLESS_ARMY);
@@ -6673,7 +6673,7 @@ actmovelbl:
 			if (TriggeredTargetRealm != REALM::NO_COUNTRY && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			if (!FindProv(action)) {logreroll(__LINE__); goto ReRoll_;}
 			if(!CanAfford (2, 1, 0, rlm)) {logreroll(__LINE__); goto ReRoll_;}
@@ -6681,7 +6681,7 @@ actmovelbl:
 			PayForIt(rlm, 2, 1, 0);
 			SetGameData(MP_PROVINCE, MPPROV_CIVLEVEL, TargetProvince, (province[TargetProvince].CivLevel-1), FALSE );
  			if(province[TargetProvince].Realm == HomeRealm)
- 				AddReport(IMMEDIATE_NPC_DEATH_PLAGUE, CurrentRealm, TargetProvince, province[TargetProvince].CivLevel);	
+ 				AddReport(IMMEDIATE_NPC_DEATH_PLAGUE, CurrentRealm, TargetProvince, province[TargetProvince].CivLevel);
 			SetScrewed((REALM::REALM_TYPE)province[TargetProvince].Realm, CurrentRealm, FALSE );
 			CurrentRegent = (REGENT_ENUM) realm[CurrentRealm].mfGetRegent();
 			if (CurrentRegent != NO_REGENT)
@@ -6728,7 +6728,7 @@ actmovelbl:
 
 	 			if(province[TargetProvince].Realm == HomeRealm)
 	 				AddReport(IMMEDIATE_NPC_LEGION_OF_DEAD, CurrentRealm, TargetProvince, 0);
-				
+
 				if (!AREALLIED((REALM::REALM_TYPE)province[TargetProvince].Realm, CurrentRealm))
 				{
 					SetScrewed((REALM::REALM_TYPE)province[TargetProvince].Realm, CurrentRealm, FALSE );
@@ -6761,7 +6761,7 @@ actmovelbl:
 			if (TriggeredTargetRealm != REALM::NO_COUNTRY && TriggeredTargetRealm!=rlm
 					&& TriggeredTargetRealm < LAND_REALM_COUNT)
 				TargetRealm = TriggeredTargetRealm;
-			else if (!FindFoe(rlm,action)) 
+			else if (!FindFoe(rlm,action))
 				{logreroll(__LINE__); goto ReRoll_;}
 			if (!FindUnit(TargetRealm, action)) {logreroll(__LINE__); goto ReRoll_;}
 			if(!CanAfford (5, 10, 0, rlm)) {logreroll(__LINE__); goto ReRoll_;}
@@ -6769,7 +6769,7 @@ actmovelbl:
 			PayForIt(rlm, 5, 10, 0);
  			if(TargetRealm == HomeRealm)
  				AddReport(IMMEDIATE_NPC_MASS_DESTRUCTION, CurrentRealm, TargetProvince, 0);
-			
+
 			SetScrewed(TargetRealm, CurrentRealm, FALSE );
 			DeleteUnit(TargetUnit, FALSE);
 			CurrentRegent = (REGENT_ENUM) realm[CurrentRealm].mfGetRegent();
@@ -6925,13 +6925,13 @@ actmovelbl:
 			print_textf(320, 240, WHITE, STRMGR_GetStr(STR_MAPAI_UNSUPPORTED_ACTN_ERROR_FMT), realm[rlm].mfGetName(), action);
 			{logreroll(__LINE__); goto ReRoll_;}				// can't do the action so try another
 		}
-		
-		
+
+
 		CurrentRegent = (REGENT_ENUM) realm[CurrentRealm].mfGetRegent();
 		if (CurrentRegent != NO_REGENT && action != ACTION_PASS)
 		{
 			ActionExpPoints(CurrentRegent, ActionExpType, ActionExpModifier, FALSE);
-			
+
 			SHORT const hPlayerStats = LoadStats(regents[CurrentRegent].mfGetid(), fERROR);
 			if (hPlayerStats != fERROR)
 			{
@@ -7012,8 +7012,8 @@ void MapAIPlayerResponseWaitSync (void)
 /* ========================================================================
    Function    - BroadcastGoldAndRegency
 	//NOTE: This routine is example only and is NOT WORKING!
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 #ifdef _WINDOWS
 void BroadcastGoldAndRegency( void )
@@ -7021,39 +7021,37 @@ void BroadcastGoldAndRegency( void )
 	LONG	i;
 	SHORT	Gold[LAND_REALM_COUNT];
 	SHORT	Regency[LAND_REALM_COUNT];
-	
+
 	for ( i = 1; i < LAND_REALM_COUNT; i++ )
 	{
 		Gold[i] = realm[i].mfGetTreasury();
 		Regency[i] = realm[i].mfGetRegency();
 	}
-	
+
 	AMultiPlayer.AdminMessage((UBYTE *)Gold[0], (UBYTE *)Regency[0], "SEND ADMIN" );
 }
 #endif
 /* ========================================================================
    Function    - BroadcastAllienceTable
-	Description - broadcast an allience table 
-	Returns     - 
+	Description - broadcast an allience table
+	Returns     -
 	======================================================================== */
 #ifdef _WINDOWS
 void BroadcastAllienceTable ( void )
 {
 	LONG	i;
-	
+
 	// send one realms reaction and status
 	for ( i = 0; i < REALM::REALM_COUNT; i++)
 	{
 		AMultiPlayer.AlliedMessage(
-			i, 
-			(UBYTE *)&RealmReaction[i][0], 
-			(UBYTE *)&RealmStatus[i][0], 
+			i,
+			(UBYTE *)&RealmReaction[i][0],
+			(UBYTE *)&RealmStatus[i][0],
 			"SEND ALLIENCE" );
 	}
-	
+
 }
 #endif
 /* ======================================================================== */
 
-
-

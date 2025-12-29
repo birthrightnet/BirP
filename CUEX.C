@@ -45,7 +45,7 @@ BOOL gfTestGrayLight;
    ------------------------------------------------------------------------ */
 #define MAX_SCALE_RATE     (1<<7)
 #define RATE               1
-	
+
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
@@ -333,13 +333,13 @@ void CreateShadeTable (
 		r = (r+trans) * red;
 		r = (r > (double)1) ? (double)1 : r ;
 		r = (r < (double)0) ? (double)0 : r ;
-		
+
 		//------------------------------------------
 		g = (double)CurPal[c].bGreen * factor ;
 		g = (g+trans) * green;
 		g = (g > (double)1) ? (double)1 : g ;
 		g = (g < (double)0) ? (double)0 : g ;
-		
+
 		//------------------------------------------
 		b = (double)CurPal[c].bBlue * factor ;
 		b = (b+trans) * blue;
@@ -401,7 +401,7 @@ void init_shade_table(CHAR *Name)
 #ifdef _JPC
 			ErrorMessage (szTemp);
 #else
-			printf (szTemp);
+			logInfo(szTemp);
 #endif
 		}
 		FileClose(f);
@@ -425,7 +425,7 @@ void init_shade_table(CHAR *Name)
 				double g=(double)(CurPal[c].bGreen)*factor;
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
-				
+
 				rgb_to_hsl(r,g,b,&h,&s,&l);
 				l = l - (i * l) / (double)32;
 				hsl_to_rgb(h,s,l,&r,&g,&b);
@@ -455,7 +455,7 @@ void init_shade_table(CHAR *Name)
 				double g=(double)(CurPal[c].bGreen)*factor;
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
-				
+
 				// Do not change red; instead, reduce green and blue.
 				// Brightness is the same as for the standard tables.
 				g /= 4;
@@ -481,10 +481,10 @@ void init_shade_table(CHAR *Name)
 			{
 				int iBaseTable = i * 256;
 				int iTable = (i + REMAP_TABLE_OFFSET + 32 * iRemap) * 256;
-	
+
 				for (c = 0; c < 256; c++)		// copy the corresponding "base" table
 					shade_table[iTable + c] = shade_table[iBaseTable + c];
-				
+
 				for (c = 0; c < cREMAP_PALETTEENTRIES; c++)
 				{
 					j = (LONG)gRemapColors[iRemap][0] + c;
@@ -511,7 +511,7 @@ void init_shade_table(CHAR *Name)
 				double b=(double)(CurPal[c].bBlue)*factor;
 				double h, s, l;
 				double average;
-				
+
 				average = (r + g + b) / 3;
 				r = average;
 				g = average;
@@ -557,7 +557,7 @@ void init_shade_table(CHAR *Name)
 					double b=(double)(CurPal[c].bBlue)*factor;
 					double h, s, l;
 					double average;
-					
+
 					average = (r + g + b) / 3;
 					r = average;
 					g = average;
@@ -643,4 +643,3 @@ void SetArtPath ( CSTRPTR pArtPath )
 }
 
 /* ======================================================================= */
-

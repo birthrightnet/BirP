@@ -1,5 +1,5 @@
 //------------------------------------------------------------------------------------------
-//	@doc AUDLIB	
+//	@doc AUDLIB
 //
 // @module CUSTMSYS.CPP -- Customizable audio support function |
 //
@@ -22,7 +22,7 @@
 //#include <malloc.h>
 #include <string.h>
 #ifdef _WINDOWS
-#include <windows.h>  
+#include <windows.h>
 //#include <mmsystem.h>	 //if you want to use the code in GetElapsedTicks, bring these back in
 extern void mMBox(char *,char *);
 DWORD		AudioFeedMSec = 2000;
@@ -49,9 +49,9 @@ DWORD		DSoundMSec = 1000;
 void* GetAdr(int num)
 {
 	SHORT hWave;
-	
+
 	// char	pathName[MaxPath + 1];
-	// 
+	//
 	// sprintf(pathName,"%d.WAV",num);
 	// return open(pathName,O_BINARY|O_RDONLY);
 	char	pathName[_MAX_PATH];
@@ -77,11 +77,11 @@ void* GetAdr(int num)
 
 	else if(num < 50000)
 		sprintf(pathName,"%swave384\\%d.WAV",InstallPath, num);
-		
+
 	else if(num >= 50000)
 		sprintf(pathName,"waveloop\\%d.WAV",num);
 
-		
+
 	hWave = TestAndLoadFromResFile(pathName, FALSE);
 	if (hWave == fERROR)
 	{
@@ -117,11 +117,11 @@ void FreeAdr(int num)
 int Open(int num)
 {
 	// char	pathName[MaxPath + 1];
-	// 
+	//
 	// sprintf(pathName,"%d.WAV",num);
 	// return open(pathName,O_BINARY|O_RDONLY);
 	char	pathName[_MAX_PATH];
-		
+
 	if(num == 499)
 		sprintf(pathName,"%d.wav",num);
 
@@ -149,11 +149,11 @@ int Open(int num)
 
 	else if(num < 50000)
 		sprintf(pathName,"%swave384\\%d.WAV",InstallPath, num);
-		
+
 	else if(num >= 50000)
 		sprintf(pathName,"waveloop\\%d.WAV",num);
 
-		
+
 	return DiskOpen(pathName);
 }
 
@@ -210,7 +210,7 @@ int GetNumEntry(const char *str, int defVal)
 //-------------------------------------------------------------------------------
 // Input: none
 // Output: ticks (60th secs) since the application commenced
-// Note: This function needs to be changed onlyu if KernelAudioDuration() will be 
+// Note: This function needs to be changed onlyu if KernelAudioDuration() will be
 //       used to determine elapsed playback time
 //-------------------------------------------------------------------------------
 int GetElapsedTicks()
@@ -218,8 +218,8 @@ int GetElapsedTicks()
 // Return the application's elapsed time in 60th seconds
 	return 1;
 
-	
-// Note: I used the code below for Windows	
+
+// Note: I used the code below for Windows
 
 //	static int iStartTicks = 0;
 
@@ -245,20 +245,20 @@ char* GetAudioDriverName()
 
 //	strcpy(result,"DACNONE.drv");
 	fp=fopen("resource.cfg", "r");
-	
+
 	if(fp != NULL)
 	{
 		while(TRUE)
 		{
 			fileResult = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
-		
+
 			if(fileResult == EOF)
 				return "DACNONE.DRV";
 
 			if(strncmp(cpBuffer,"audioDrv", 8) == 0)
 				break;
 		}
-		
+
 		if(stricmp(cpBuffer, "audioDrv  = DACBLAST.DRV")== 0)
 		{
 			fclose(fp);
@@ -334,7 +334,7 @@ void MemID::Get(size_t size)
 	//type = type;
 	//resHandle = resHandle;
 	//flag = flag;
-	
+
 	//handle = malloc(len = size);
 	//const short hMemHandle = NewLockedBlock(size);
 	const short hMemHandle = NewBlock(size);
@@ -376,7 +376,7 @@ void MemID::Realloc(size_t size)
 
 void MemID::Free()
 {
-	// if (handle) 
+	// if (handle)
 	// {
 	// 	free(handle);
 	// 	handle = 0;
@@ -386,7 +386,7 @@ void MemID::Free()
 	{
 		SHORT Thishandle = (SHORT)handle;
 		handle = 0;
-		
+
 		if (IsResourceHandle(Thishandle))
 		{
 			ClrLock(Thishandle);
@@ -431,7 +431,7 @@ void* MemID::operator=(void* p)
 		if (IsResourceHandle((SHORT)p))
 		{
 			SHORT const iHandle = Query_iResBlock((SHORT)p);
-			
+
 			if (iHandle > 0)
 			{
 				len = GetDataBlkSize(iHandle);
@@ -567,7 +567,7 @@ MsgMgr::Fatal(char* fmt, ...) const
 #ifdef WINDOWS
 	mMBox (buf, "FATAL");
 #else
-	printf(buf);
+	logFatal(buf);
 #endif
 	exit(1);
 }

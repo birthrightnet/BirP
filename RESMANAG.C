@@ -145,7 +145,7 @@ char *	gszBasicResFiles[] = {
 	"FINALE.RES",							// Finale PCX's
 	""
 };
-	
+
 char  gszResFileNames[cMAXRESFILES][13];// resource file names
 BOOL  gfResFileInUse[cMAXRESFILES];     // flag whether any resource file is
                                         // using this slot
@@ -271,7 +271,7 @@ ULONG HashCRC(register CSTRPTR szIn)
 
 		// yes, I know this only uses the bottom byte.
 		accumXOR = accumXOR ^ c;
-		
+
 		accumCRC = (accumCRC << 6) + ((c - ' ') & 63);
 
 //		for (m=1<<21,k=0x1021<<5; m>(1<<15); m>>=1,k>>=1)
@@ -312,7 +312,7 @@ ULONG	ScanIFF (ULONG code, USHORT within)
 	ULONG		incode, temp;
 
 	if (fReport & fREPORT_RESMGR)
-		printf("Scanning for code (%lx) %c%c%c%c... ", code, (UBYTE)(code&0xFFL), (UBYTE)((code>>8)&0xFFL), (UBYTE)((code>>16)&0xFFL), (UBYTE)((code>>24)&0xFFL) );
+		logInfo("Scanning for code (%lx) %c%c%c%c... ", code, (UBYTE)(code&0xFFL), (UBYTE)((code>>8)&0xFFL), (UBYTE)((code>>16)&0xFFL), (UBYTE)((code>>24)&0xFFL) );
 
 	incode = 0;
 	while (incode != code)
@@ -333,7 +333,7 @@ ULONG	ScanIFF (ULONG code, USHORT within)
 		}
 	}
 	if (fReport & fREPORT_RESMGR)
-		printf("found the code\n");
+		logInfo("found the code");
 	read(file, &incode, 4);					/* read the length */
 	FixLong(incode);							/* change from 68000 to 80X86 format */
 	return incode;
@@ -356,7 +356,7 @@ SHORT	RegisterResExtention (
 //	LONG	iResource;
 
 	if (fReport & fREPORT_RESMGR)
-		printf("Entering RegisterResExtention\n");
+		logInfo("Entering RegisterResExtention");
 
 	/* use only upper case names */
 	strupr(sExtension);
@@ -375,7 +375,7 @@ SHORT	RegisterResExtention (
 		return fERROR;		/* no available slots */
 
 	if (fReport & fREPORT_RESMGR)
-		printf("Res extension registered: %s\n", sExtension);
+		logInfo("Res extension registered: %s", sExtension);
 
 	strcpy(ResExtentions[i].achExtension, sExtension);
 	ResExtentions[i].pfLoadProc = LoadProc;
@@ -498,7 +498,7 @@ SHORT OpenResFile_ (CSTRPTR szFileName)
 	char		szPathname[_MAX_PATH];
 
 	if (fReport & fREPORT_RESMGR)
-		printf("Entered OpenResFile - opening file %s\n", szFileName);
+		logInfo("Entered OpenResFile - opening file %s", szFileName);
 
 	// the wave file depends on language in use
 	if(0 == strncmp("wave", szFileName,4) )
@@ -564,14 +564,14 @@ SHORT OpenResFile_ (CSTRPTR szFileName)
 				{
 					int	 i;
 					char * szExt;
-				
+
 					szExt = strrchr (direntry.szName, '.');
 					if (szExt == NULL)
 						fatal_error ("Attempted to register %s with no extension",
 							direntry.szName);
 					else
 						szExt++;
-				
+
 					for (i = 0; i < cMAXEXTENTS; i++)
 					{
 						if (0 == stricmp(ResExtentions[i].achExtension, szExt))
@@ -593,7 +593,7 @@ SHORT OpenResFile_ (CSTRPTR szFileName)
 				{
 					FILE *fp;
 					int	fileColision;
-					// Some other resource with the same extension and hash 
+					// Some other resource with the same extension and hash
 					// already occupies this slot.
 					LONG iFileName;
 					char szOtherPathname[_MAX_PATH];
@@ -612,7 +612,7 @@ SHORT OpenResFile_ (CSTRPTR szFileName)
 						lseek (fileColision, gcbResOffset[iSlot], SEEK_SET);
 						read (fileColision, &resHeader, sizeof (RESOURCE_HEADER));
 						DiskClose (fileColision);
-	
+
 						fp = fopen(HASH_COLLSION_FILE, "a");
 						if (fp)
 						{
@@ -638,15 +638,15 @@ SHORT OpenResFile_ (CSTRPTR szFileName)
 				}
 			}
 #endif
-			
+
 			iSlot++;
 			if (iSlot >= iMaxResSlots)
 			{
 				iSlot = 0;
 			}
-			
+
 		} while ( iSlot != StartLocation );
-		
+
 #if defined (_DEBUG)
 		fatal_error("RESMANAG ERROR! - no more resource slots available\n");
 #endif
@@ -680,7 +680,7 @@ UseThisSlot:
 			{
 #if defined (_DEBUG)
 				fatal_error ("RESMANAG ERROR! Unregistered extension for resource %s in file %s\n", direntry.szName, szFileName);
-#endif		
+#endif
 				giResFileNames[iSlot] = 0;
 			}
 		}
@@ -803,13 +803,13 @@ static SHORT FindResourceSlot (
 	lNameHash = (*ResExtentions[iExtIndex].pfHashProc)(szResName);
 
 	/* find the reference to the resource */
-	
+
 	// GWP Use the hash as the starting location.
 	StartLocation = lNameHash % iMaxResSlots;
 	iSlot = StartLocation = ABS(StartLocation);		// Could be a negative number
 	Possiblei = StartLocation;
 	FoundPossiblei = FALSE;
-	
+
 	// Note: We stop looking thru the array at the first UNSET_RES_EXT
 	//		 because if the slot we hashed to is not available,
 	//     we chain to the first available slot after the one
@@ -867,7 +867,7 @@ static SHORT FindResourceSlot (
 				}
 #endif
             // It is in memory, so just set the resource handle and return TRUE.
-				*piSlot = iSlot;   	
+				*piSlot = iSlot;
 				return RM_IN_MEMORY;
 			}
 
@@ -884,11 +884,11 @@ static SHORT FindResourceSlot (
 			}
 			goto ExitFromFunction;
 		}
-		
+
 		iSlot++;
 		if (iSlot >= iMaxResSlots)
 			iSlot = 0;
-			
+
 	} while (iSlot != StartLocation);
 
 	// If we require the resource to be already in a .RES file then just exit.
@@ -896,7 +896,7 @@ static SHORT FindResourceSlot (
 	{
 		return RM_NOT_IN_MEMORY;
 	}
-	
+
 	// If we get here, the resource was not loaded.
 	// Did we find a hole in our search that we can use?
 	if (FoundPossiblei == TRUE)
@@ -904,22 +904,22 @@ static SHORT FindResourceSlot (
 		iSlot = Possiblei;
 		goto UseThisSlot;
 	}
-	
+
 	/* All Handles are in use. Check for slot that we can get rid of. */
-	
+
 	// GWP Added disposing of multi user, moldy and purgable resources.
 	// Look for the first purgable resource and toss it.
 	// Note: You should have more resource blks than resources. Otherwise
 	//		 when we purge the memory your resource handle is invalid and we
 	//		 can't update it.
-	
+
 	iSlot = StartLocation;
 	do
 	{
 		// Look for a not Multi user, moldy and purgable resource and dispose
 		// of it.
 		SHORT const TestBlk = iResBlock[iSlot];
-		
+
 		if (TestBlk > 0)
 		{
 			if (!IsBlockMultiUser(TestBlk))
@@ -932,7 +932,7 @@ static SHORT FindResourceSlot (
 						FoundPossiblei = TRUE;
 						Possiblei = iSlot;
 					}
-				
+
 					if (IsBlockMoldy(TestBlk))
 					{
 						(*ResExtentions[iExtIndex].pfDisposeProc)(iSlot, TestBlk);
@@ -942,13 +942,13 @@ static SHORT FindResourceSlot (
 				}
 			}
 		}
-		
+
 		iSlot++;
 		if (iSlot >= iMaxResSlots)
 			iSlot = 0;
-			
+
 	} while (iSlot != StartLocation);
-	
+
 	// If we got here, all the resources were used this pass, but
 	// Hey! the program has to run, so toss a purge'able block.
 	// Did we find a hole in our Moldy & Purge'able search that we can use?
@@ -958,16 +958,16 @@ static SHORT FindResourceSlot (
 		(*ResExtentions[iExtIndex].pfDisposeProc)(iSlot, iResBlock[iSlot]);
 		goto UseThisSlot;
 	}
-	
+
 	// Well I tried, and you have to increase the number of resource blks.
 	// Oh well.
-	
+
 #if defined(_DEBUG)
 	fatal_error("RESMANAG ERROR! GR - no more resource slots available\n");
 #endif
 	*piSlot = (SHORT)fERROR;
 	return fERROR;
-	
+
 
 UseThisSlot:
 	iMaxResSlotsUsed++;
@@ -1030,10 +1030,10 @@ SHORT _TestAndLoadFromResFile_ (CSTRPTR szResName, BOOL fLockRes)
 	else if (retval == RM_IN_MEMORY)
 	{
 		iBlk = iResBlock[iSlot];
-		
+
 		if (fLockRes)
 			SetBlockAttr (iBlk, LOCKED, LOCKED);
-		
+
 		return (iSlot | RESOURCE_ID_BIT);
 	}
 	else if (iResFileSlot != -1)
@@ -1045,7 +1045,7 @@ SHORT _TestAndLoadFromResFile_ (CSTRPTR szResName, BOOL fLockRes)
 			{
 				SetResource(iBlk);
 			}
-		
+
 			iResBlock[iSlot] = iBlk;		/* update the ResBlock array */
 			return (iSlot | RESOURCE_ID_BIT);
 		}
@@ -1075,7 +1075,7 @@ SHORT _GetResource_ (CSTRPTR szResName, BOOL fNoScale, BOOL fLockRes, BOOL fRota
 	SHORT  retval;
 
 	if (fReport & fREPORT_RESMGR)
-		printf("Entered GetResource\n");
+		logInfo("Entered GetResource");
 
 	run_timers();  // cdb 11/27
 
@@ -1156,7 +1156,7 @@ SHORT _GetResource_ (CSTRPTR szResName, BOOL fNoScale, BOOL fLockRes, BOOL fRota
 		return fERROR;
 #endif
 	}
-	
+
 	iResBlock[iSlot] = iBlk;		/* update the ResBlock array */
 
 	if (iBlk == fFILE_NOT_FOUND)	/* report back a generic error */
@@ -1186,7 +1186,7 @@ SHORT Query_iResBlock (SHORT i)
 // i is an index to a resource slot.
 
 	SHORT iBlk;
-	
+
 	if (!(i & RESOURCE_ID_BIT))
 	{
 	#if defined(MEMORY_CHK)
@@ -1195,10 +1195,10 @@ SHORT Query_iResBlock (SHORT i)
 		return fERROR;
 	#endif
 	}
-	
+
 	i &= RESOURCE_ID_MASK;
 
-	
+
 	if (i == fERROR ||
 		i > iMaxResSlots
 		)
@@ -1244,27 +1244,27 @@ SHORT Query_iResBlock (SHORT i)
 			fRotated = (gResFlags[i] & RM_ROTATED) == RM_ROTATED;
 			iBlk = (*ResExtentions[iExtIndex].pfLoadProc)("",
 				fNoScale, fLocked, fRotated, i);
-			
+
 			iResBlock[i] = iBlk;
 			if (iBlk > 0)				/* if not error condition */
 			{
 				SetResource(iBlk);
-				
+
 				if ((gResFlags[i] & RM_PURGABLE) == RM_PURGABLE)
 				{
 					(*ResExtentions[iExtIndex].pfSetPurgeProc)(i, iBlk);
 				}
-				
+
 				if ((gResFlags[i] & RM_CLASS2) == RM_CLASS2)
 				{
 					SetClass2(iBlk);
 				}
-				
+
 				if ((gResFlags[i] & RM_MULTI_USER) == RM_MULTI_USER)
 				{
 					SetMultiUser(iBlk);
 				}
-				
+
 				//GWP BAD CODE!
 				fNewRes = TRUE;
 	#if defined(CRC_CHK)
@@ -1290,7 +1290,7 @@ SHORT Query_iResBlock (SHORT i)
 
 /* =======================================================================
 	DisposeRes
-	
+
 	Pulls off the resource ID bit, gets the memory handle and calls the memory
 	dispose. Then zero's out the index in the resource table.
 
@@ -1342,7 +1342,7 @@ SHORT DisposRes (SHORT iResBlk, SHORT iMemBlk)
 SHORT ReleaseRes(SHORT iResBlk)
 {
 	SHORT iMemBlk;
-	
+
 	iResBlk &= RESOURCE_ID_MASK;
 
 	if (iResBlk < 0 || iResBlk > iMaxResSlots)
@@ -1355,9 +1355,9 @@ SHORT ReleaseRes(SHORT iResBlk)
 		return fERROR;
 	}
 #endif
-	
+
 	iMemBlk = iResBlock[iResBlk];
-	
+
 	iResBlock[iResBlk]		= 0;
 	lResNameCRC[iResBlk]    = 0;
 	iResExtIndex[iResBlk]   = UNSET_RES_EXT;
@@ -1377,9 +1377,9 @@ SHORT ReleaseRes(SHORT iResBlk)
 	}
 	iResChkSum[iResBlk]	= 0;
 #endif
-	
+
 	iMaxResSlotsInUse--;
-	
+
 	if (iMemBlk > 0)
 	{
 		ClrResource(iMemBlk);		// prevent recursion back to DisposRes
@@ -1488,7 +1488,7 @@ SHORT LoadCompressedDataFromResFile (
 		return (SHORT)fFILE_NOT_FOUND;
 
 #if defined (_CHATTER) && 0
-	printf ("  LoadCompressedDataFromResFile: file = %d\n", file);
+	logInfo("  LoadCompressedDataFromResFile: file = %d", file);
 #endif
 	// Load from resfile; result should be identical to the result
 	// of loading from PCX file.
@@ -1516,7 +1516,7 @@ SHORT LoadCompressedDataFromResFile (
 		{
 			iLzssDataOffset = pResHeader->cbCompressedData;
 		}
-		
+
 		if (fLockRes)
 		{
 			iTempBlk = NewLockedBlock ((LONG)(pResHeader->cbUncompressedData + iLzssDataOffset));
@@ -1526,7 +1526,7 @@ SHORT LoadCompressedDataFromResFile (
 			iTempBlk = NewBlock ((LONG)(pResHeader->cbUncompressedData + iLzssDataOffset));
 		}
 	}
-	
+
 	if (iTempBlk == fERROR)
 	{
 		DiskClose (file);
@@ -1561,13 +1561,13 @@ SHORT LoadCompressedDataFromResFile (
 	if (pResHeader->compressionCode == NO_COMPRESSION)
 	{
 #if defined (_CHATTER) && 0
-		printf ("  LoadCompressedDataFromResFile: no compression, iTempBlk = %d\n", iTempBlk);
+		logInfo("  LoadCompressedDataFromResFile: no compression, iTempBlk = %d", iTempBlk);
 #endif
 		if (!fLockRes)
 			ClrLock (iTempBlk);
 		return iTempBlk;						// all done, return
 	}
-	
+
 #if defined(MEMORY_CHK)
 	SetBlockName(pResHeader->szName, iTempBlk);
 #endif
@@ -1582,7 +1582,7 @@ SHORT LoadCompressedDataFromResFile (
 													// decompression if it goes too far
 	// GWP size2 = size1 + 128L;					// add an additional safety buffer
 													// for the memory block
-	
+
 	// GWP ClrLock(iTempBlk);	// Clear the lock to make memory allocation easier.
 	// GWP iSrcBlk = NewBlock (size2);
 	// GWP if (iSrcBlk == fERROR)
@@ -1595,7 +1595,7 @@ SHORT LoadCompressedDataFromResFile (
 	// GWP }
 	// GWP SetQuickLock (iTempBlk);	// Reset the lock for the decompression.
 	//pInBuffer = (PTR)BLKPTR(iTempBlk);
-	
+
 	// GWP SetBlockAttr (iSrcBlk, LOCKED, LOCKED);
 	// GWP pSrc = (PTR)BLKPTR(iSrcBlk);
 	pSrc = (PTR) BLKPTR(iTempBlk);
@@ -1618,14 +1618,14 @@ SHORT LoadCompressedDataFromResFile (
 		// catch it, the program blows up!)
 
 #if defined (_CHATTER) && 0
-		printf ("  decode, size1 = %d (%X), pSrc = %P, pMax = %P\n", size1, size1, pSrc, pMax);
+		logInfo("  decode, size1 = %d (%X), pSrc = %P, pMax = %P", size1, size1, pSrc, pMax);
 		pEnd =
 #endif
       _LZSSDecode_ (pInBuffer, pSrc, pMax);
 
 #if defined (_CHATTER) && 0
 		if (pEnd != pExpectedEnd)
-			printf ("  pEnd (%P) is not correct (%P) in LoadCompressedDataFromResFile\n",
+			logInfo("  pEnd (%P) is not correct (%P) in LoadCompressedDataFromResFile",
 				pEnd, pExpectedEnd);
 #endif
 
@@ -1645,7 +1645,7 @@ SHORT LoadCompressedDataFromResFile (
 	// We can now dispose of the raw data block.
 	// GWP DisposBlock (iTempBlk);
 #if defined (_CHATTER) && 0
-	printf ("  LoadCompressedDataFromResFile: returning iSrcBlk = %d\n", iSrcBlk);
+	logInfo("  LoadCompressedDataFromResFile: returning iSrcBlk = %d", iSrcBlk);
 #endif
 	if (!fLockRes)
 	{
@@ -1673,7 +1673,7 @@ static void QuarterScalePCX(
 	ULONG l = 0;
 	ULONG ll= 0;
 	USHORT j;
-	
+
 	for (j=0; j<h; j++,ll+= 4 * PCX->w)
 	{
 		USHORT k;
@@ -1690,7 +1690,7 @@ static void QuarterScalePCX(
 			// GWP 			*(pDest+ll+PCX->w+PCX->w+k+k+k+k+2)
 			// GWP 		]
 			// GWP 	];
-			
+
 			// GWP Use an intermediate value!
 			PTR const TempVar = pDest + ll + (4 * k);
 			*(pDest+l) =
@@ -1733,7 +1733,7 @@ static void HalfScalePCX(
 	ULONG ll = 0;
 	USHORT k;
 	USHORT j;
-	
+
 	for (j=0; j<h; j++,ll+=PCX->w+PCX->w)
 	{
 		for (k=0; k<w; k++,l++)
@@ -1749,7 +1749,7 @@ static void HalfScalePCX(
 			// GWP 		   *(pDest+ll+PCX->w+k+k+1)
 			// GWP 	   ]
 			// GWP 	];
-			
+
 			// GWP Use an intermediate value!
 			PTR const TempVar = pDest + ll + (k + k);
 			*(pDest+l) = antia_table[
@@ -1802,7 +1802,7 @@ static void DecodeRotatedPCX(
 			{
 				USHORT k = c & 0x3F;							/* run length */
 				c = *(pSS++);							/* run byte */
-				
+
 				w += k;	// GWP optimization.
 				while(k--)
 				{
@@ -1842,7 +1842,7 @@ static void DecodePCX(
 {
 	ULONG w = 0;
 	ULONG l;
-	
+
 	for (l=0; l < cbDecompressedSize; )
 	{
 		UBYTE c = *(pSS++);
@@ -1850,12 +1850,12 @@ static void DecodePCX(
 		{
 			USHORT const k = c & 0x3F;				 	/* run length */
 			c = *(pSS++);							/* run byte */
-			
+
 			w += k;	// GWP optimization.
 			l += k; // GWP optimization.
 			memset(pDD, c, k);	// GWP optimization.
 			pDD += k;	// GWP optimization.
-			
+
 			// GWP for (; k>0; k--)
 			// GWP {
 			// GWP 	*(pDD++) = c;
@@ -1974,7 +1974,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 
 
 #if defined (_CHATTER) && 0
-	printf ("Loading %s from resource file\n", szFileName);
+	logInfo("Loading %s from resource file", szFileName);
 #endif
 
 	iSrcBlk = LoadCompressedDataFromResFile (&resHeader, iResFileSlot, fLockRes);
@@ -2025,49 +2025,49 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 
 		if (iSrcBlk == fERROR || iSrcBlk == fFILE_NOT_FOUND)
 			return iSrcBlk;
-	
+
 		if (!fLockRes)
 			SetBlockAttr (iSrcBlk, LOCKED, LOCKED);
 		pSrc = (PTR)BLKPTR(iSrcBlk);
-	
+
 		// At this point, pSrc points to an image in memory of the PCX file.
 		// Get the PCX header.
 		memcpy (&PCX.code, pSrc, sizeof (PCXHDR));
 		PCX.w = PCX.w + (SHORT)1 - PCX.xo;			/* calc w and h */
 		PCX.h = PCX.h + (SHORT)1 - PCX.yo;
-	
+
 		if (PCX.w > 3000 || PCX.h > 0x1000)
 		{
 			fatal_error ("Resfile failed to decompress properly!\n");
 		}
-	
+
 		// GWP pSrc += 128L;								// skip to the PCX compressed data
-	
+
 		// Note that there are two compressions going on here.
 		// The resHeader.cbUncompressedData member is the size of the
 		// UNCOMPRESSED LZSS data, which is the size of the COMPRESSED
 		// PCX data.
 		cBytes = resHeader.cbUncompressedData - 128L;
-	
-	
+
+
 		/* cbDecompressed is the size of the decompressed graphic */
 		cbDecompressed = (ULONG)PCX.cbLine * (ULONG)PCX.h;
-	
+
 		/* cbFinal is the size of the final graphic */
 		cbFinal			= cbDecompressed + sizeof(BITMHDR);
-	
+
 		// We don't modify cbSafety here, because unlike LoadPCX, we don't
 		// have one big buffer, we have two buffers.
-	
+
 		/* cbLargest is the size of the buffer to allocate for all opperations */
 		cbLargest		= MAX(cbFinal, cBytes) + cbSafety;
-	
+
 		/* cbSrcOffset is where the file is loaded */
 		// Unlike LoadPCX, this points to a different buffer.
 		//cbSrcOffset		= 128L;					// size of PCX header + reserved space
-	
-	
-	
+
+
+
 		/* -------------------------------------------------------- */
 		/* Allocate space for data */
 		/* -------------------------------------------------------- */
@@ -2081,7 +2081,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 			iBlk = NewBlock (cbLargest);
 			SetQuickLock(iBlk);
 		}
-		
+
 		if (iBlk == fERROR)
 		{
 			DisposBlock (iSrcBlk);
@@ -2093,10 +2093,10 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 		pDest = ((PTR)BLKPTR(iBlk)) + cbDestOffset;
 		// GWP Using inBlock decompression.
 		// GWP pDest = ((PTR)BLKPTR(iSrcBlk)) + cbDestOffset;
-		
+
 		SetQuickLock(iSrcBlk);	// Lock it back down for the decoding.
 		pSrc = 128L + (PTR) BLKPTR(iSrcBlk);// skip to the PCX compressed data
-	
+
 		/* -------------------------------------------------------- */
 		/* Decompress the data from PCX-compressed format  */
 		/* -------------------------------------------------------- */
@@ -2105,13 +2105,13 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 		{
 			DecodeRotatedPCX(&PCX, pSrc, pDest);
 		}
-	
+
 		/* This run length decoding routine is unique to PCX */
 		else
 		{
 			DecodePCX(&PCX, pSrc, pDest, cbDecompressed);
 		}
-	
+
 		//GEH Obsolete
 		//GEH /* -------------------------------------------------------- */
 		//GEH /* Setup the palette */
@@ -2130,7 +2130,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 		//GEH 		CurPal[j].bBlue >>= 2;
 		//GEH 	}
 		//GEH }
-	
+
 		/* -------------------------------------------------------- */
 		/* The safety buffer can be removed after decompression and optional palette read */
 		// We can also release the source block at this point.
@@ -2161,7 +2161,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 	else
 		// GWP scale = (USHORT)detect_scale(iSrcBlk, PCX.w, PCX.h);
 		scale = (USHORT)detect_scale(iBlk, PCX.w, PCX.h);
-		
+
 	/* quarter size if ultra low on memory */
 	// [d4-15-97 JPC] Add test for scale % 4 because QuarterScalePCX
 	// will divide scale by 4 and scale must be an integer.  Note that
@@ -2195,7 +2195,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 		// GWP ClrLock(iSrcBlk);
 		ClrLock(iBlk);
 	}
-		
+
 	return iBlk;
 	// GWP return iSrcBlk;
 }
@@ -2226,7 +2226,7 @@ SHORT LoadPCX (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL fRotated, 
 // 			p = (PTR)(BLKPTR(testBlk));
 // 			DisposBlock (testBlk);
 // 		}
-//  	}	
+//  	}
 #endif
 	if (iResFileSlot >= 0)
 	{
@@ -2500,7 +2500,7 @@ BOOL InitResourceManager(USHORT MaxResRequested)
 #if fUSE_RES_FILES
 	/* offset into file for resource */
 	gcbResOffset = (ULONG *) malloc(sizeof(LONG) * MaxResRequested);
-	
+
 	/* index into apFileNames */
 	giResFileNames = (UBYTE *) malloc(sizeof(UBYTE) * MaxResRequested);
 
@@ -2523,7 +2523,7 @@ BOOL InitResourceManager(USHORT MaxResRequested)
 #if fUSE_RES_FILES
 	/* offset into file for resource */
 	gcbResOffset = (ULONG *) D32DosMemAlloc(sizeof(LONG) * MaxResRequested);
-	
+
 	/* index into apFileNames */
 	giResFileNames = (UBYTE *)   D32DosMemAlloc(sizeof(UBYTE) * MaxResRequested);
 	// giResFileCode 	= (UBYTE *)   D32DosMemAlloc(sizeof(UBYTE) * MaxResRequested);
@@ -2538,7 +2538,7 @@ BOOL InitResourceManager(USHORT MaxResRequested)
 
 #endif
 
-	
+
 	if (iResBlock == NULL ||
 	    lResNameCRC == NULL ||
 #if fUSE_RES_FILES
@@ -2553,13 +2553,13 @@ BOOL InitResourceManager(USHORT MaxResRequested)
 		iMaxResSlots = 0;
 		return FALSE;
 	}
-	
-	
+
+
 	iMaxResSlots = MaxResRequested;
 	iMaxResSlotsUsed = 0;
 	iMaxResSlotsInUse = 0;
-	
-	
+
+
 	// Init the arrays to known values.
 	memset(iResBlock, 				 0, (sizeof(SHORT) * MaxResRequested));
 	memset(lResNameCRC, 			 0, (sizeof(ULONG) * MaxResRequested));
@@ -2571,7 +2571,7 @@ BOOL InitResourceManager(USHORT MaxResRequested)
 	memset(gcbResOffset,			 0, (sizeof(ULONG) * MaxResRequested));
 	memset(giResFileNames,		 0, (sizeof(UBYTE) * MaxResRequested));
 #endif
-	
+
 	return TRUE;
 }
 
@@ -2627,7 +2627,7 @@ ULONG HashID(CSTRPTR szFileName)
 	ULONG	Result = 0;
 	CHAR	c;
 	CSTRPTR	sz = strrchr(szFileName, '\\');
-	
+
 	if (sz == NULL)
 	{
 		sz = szFileName;	// No path character (\)
@@ -2636,7 +2636,7 @@ ULONG HashID(CSTRPTR szFileName)
 	{
 		sz++;				// Next character after path char. (\)
 	}
-	
+
 	c = *sz;
 	while (!isdigit(c) )
 	{
@@ -2650,15 +2650,15 @@ ULONG HashID(CSTRPTR szFileName)
 		sz++;
 		c = *sz;
 	}
-	
+
 	while (isdigit(c) && c != '.')
 	{
 		Result = (10 * Result) + (c - '0');
-		
+
 		sz++;
 		c = *sz;
 	}
-	
+
 	return Result;
 }
 
@@ -2677,7 +2677,7 @@ typedef	union {
 			USHORT usLower;
 			} SplitWord;
 	}	CHECK_SUM_NUMBER;
-	
+
 USHORT CheckSum (SHORT iHandle)
 {
 	ULONG	*ps;
@@ -2690,7 +2690,7 @@ USHORT CheckSum (SHORT iHandle)
 	PTR		p;
 
 	cs.ulcs = 0;
-	
+
 	// Strip off the resource bit.
 	if (iHandle & RESOURCE_ID_BIT)
 	{
@@ -2703,18 +2703,18 @@ USHORT CheckSum (SHORT iHandle)
 	{
 		i = iHandle;
 	}
-	
+
 	ps = (ULONG *)apBlocks[i]; 	// Use the real pointer because GetBlockSize
 						   		// returns the full memory block size.
 	l = GetBlockSize(i);
-	
+
 	ls = l/sizeof(ULONG);
 	// Add four bytes at a time ignoring overflow.
 	for (j=0; j<ls; j++, ps++)
 		cs.ulcs += *ps;
-		
+
 	Result = cs.SplitWord.usUpper + cs.SplitWord.usLower;
-		
+
 	p = (PTR) apBlocks[i];
 	// Add in the last 3 bytes if necessary.
 	for (j = (l % sizeof(ULONG));
@@ -2723,7 +2723,7 @@ USHORT CheckSum (SHORT iHandle)
 	{
 		Result += p[l - j];
 	}
-	
+
 	return Result;
 }
 
@@ -2743,18 +2743,18 @@ SHORT LoadLump (
 {
 	SHORT hLump = fERROR;
 	SHORT pFileRead;
-	
+
 #if fUSE_RES_FILES
 	if (iResFileSlot >= 0)
 	{
 		RESOURCE_HEADER	resHeader;
-		
+
 		hLump = LoadCompressedDataFromResFile (&resHeader,iResFileSlot, fLockRes);
-		
+
 		return hLump;
 	}
 #endif
-	
+
 	pFileRead = DiskOpen(szFileName);
 	if (pFileRead != 0)
 	{
@@ -2767,7 +2767,7 @@ SHORT LoadLump (
 		{
 			hLump = NewBlock(size);
 		}
-		
+
 		if (hLump != fERROR)
 		{
 			PTR pLump = (PTR) BLKPTR(hLump);
@@ -2775,7 +2775,7 @@ SHORT LoadLump (
 		}
 		DiskClose(pFileRead);
 	}
-	
+
 	return hLump;
 }
 
@@ -2829,7 +2829,7 @@ LONG ResourceFileAccess (CSTRPTR pszFile)
 BOOL DisposeResExtension ( CHAR * szExtension )
 {
 	SHORT	i, ExtensionIndex;
-	
+
 	// first look for the extension in the table
 	for (i = 0; i < cMAXEXTENTS; i++)
 	{
@@ -2839,7 +2839,7 @@ BOOL DisposeResExtension ( CHAR * szExtension )
 			break;
 		}
 	}
-	
+
 	// didn't find this extension, return error (FALSE)
 	if ( i == cMAXEXTENTS )
 		return FALSE;
@@ -2858,10 +2858,8 @@ BOOL DisposeResExtension ( CHAR * szExtension )
 			}
 		}
 	}
-	
+
 	return TRUE;
 }
 
 // ===========================================================================
-
-

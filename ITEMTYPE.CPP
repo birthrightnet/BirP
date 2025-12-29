@@ -5,7 +5,7 @@
    Filename: ItemType.cpp -Has a Table of All gettable objects and effects
    Author: Wes Cumberland
    ======================================================================== */
-   
+
 #include "itemtype.hxx"
 #include "invntory.hxx"
 #include "playstat.hxx"
@@ -19,7 +19,7 @@
 
 #include "battle.hxx"
 #include "battleui.hxx"
-#include "strenum.h"   
+#include "strenum.h"
 #include "resurect.hxx"
 #include "itemeqp.hxx"
 #include "regen.hxx"
@@ -224,7 +224,7 @@ ItemType(IC_MAGITEM,0,	-1,	TOME_OF_THE_MAGE_LORDS,			ItemEffects::TomeAddRandomS
 
 
 
-//Spells                              
+//Spells
 //Ctor   Category   Atr ExtendedData                    		GameType                Effect								Arg                						Dur(in seconds) Icon  MiscInfo
 //------|----------|---|---------------------------------------|-----------------------|-----------------------------------|---------------------------------------|---------------|-------|-----------------------------|
 ItemType(IC_SPELL,	0,			SPELL_INFO::DETECT_MAGIC,		DETECT_MAGIC_1,			ItemEffects::MapHighlightMagic,		600, 									20|PER_LEVEL,	"SCRL06",STR_SPELL_DESC_DETECT_MAGIC),
@@ -237,7 +237,7 @@ ItemType(IC_SPELL,	TARGETWAVE,	SPELL_INFO::SHOCKING_GRASP,		SHOCKING_GRASP_1,		I
 ItemType(IC_SPELL,	0,			SPELL_INFO::BLINDNESS,			BLINDNESS_1,			ItemEffects::Blindness,				0, 										100,		 	"SCRL06",STR_SPELL_DESC_BLINDNESS),
 ItemType(IC_SPELL,	0,			SPELL_INFO::CONTINUAL_LIGHT,	CONTINUAL_LIGHT_1,		ItemEffects::SeeInDark,				0, 										24000,			"SCRL06",STR_SPELL_DESC_CONTINUAL_LIGHT),
 ItemType(IC_SPELL,	0,			SPELL_INFO::KNOCK,				KNOCK_1,				ItemEffects::Knock,					0, 										-1,				"SCRL06",STR_SPELL_DESC_KNOCK),
-ItemType(IC_SPELL,	0,			SPELL_INFO::LEVITATE,			LEVITATE_1,				ItemEffects::Levitate,				0, 										20|PER_LEVEL,	"SCRL06",STR_SPELL_DESC_LEVITATE),	
+ItemType(IC_SPELL,	0,			SPELL_INFO::LEVITATE,			LEVITATE_1,				ItemEffects::Levitate,				0, 										20|PER_LEVEL,	"SCRL06",STR_SPELL_DESC_LEVITATE),
 ItemType(IC_SPELL,	0,			SPELL_INFO::LOCATE_OBJECT,		LOCATE_OBJECT_1,		ItemEffects::LocateObject,			0, 										20|PER_LEVEL,	"SCRL06",STR_SPELL_DESC_LOCATE_OBJECT),
 ItemType(IC_SPELL,	TARGETWAVE,	SPELL_INFO::POISON_ARROW,		POISON_ARROW_1,			ItemEffects::HurlFireBall,			AT_MISSILE|USE_LEVEL|MAKE_DICE(1,4,0),	-1,				"SCRL06",STR_SPELL_DESC_POISON_ARROW),
 ItemType(IC_SPELL,	0,			SPELL_INFO::STRENGTH,			STRENGTH_1,				ItemEffects::TouchSpell,			0, 										100|PER_LEVEL,	"SCRL06",STR_SPELL_DESC_STRENGTH),
@@ -286,10 +286,10 @@ ItemType(IC_SPELL,	0,			SPELL_INFO::TRUE_SEEING,		TRUE_SEEING_1,			ItemEffects::
 ItemType(IC_SPELL,	0,			SPELL_INFO::HEAL,				HEAL_1,					ItemEffects::TouchSpell,			HEAL_FULLY, 							-1,				"SCRL07",STR_SPELL_DESC_HEAL),
 ItemType(IC_SPELL,	TARGETWAVE,	SPELL_INFO::FIRE_STORM,			FIRE_STORM_1,			ItemEffects::HurlFireBall,			AT_FIRE|USE_LEVEL|MAKE_DICE(1,8,0),		-1,				"SCRL07",STR_SPELL_DESC_FIRE_STORM),
 ItemType(IC_SPELL,	0,			SPELL_INFO::HOLY_WORD,			HOLY_WORD_1,			ItemEffects::HolyWordSpell,			MAKE_DICE(1,6,0),						-1,				"SCRL07",STR_SPELL_DESC_HOLY_WORD),
-ItemType(IC_SPELL,	0,			SPELL_INFO::RESURRECTION,		RESURRECTION_1,			ItemEffects::Resurrection,			0, 										-1,				"SCRL07",STR_SPELL_DESC_RESURRECTION),		
+ItemType(IC_SPELL,	0,			SPELL_INFO::RESURRECTION,		RESURRECTION_1,			ItemEffects::Resurrection,			0, 										-1,				"SCRL07",STR_SPELL_DESC_RESURRECTION),
 
 
-// Wizard Realm Spells																																									  
+// Wizard Realm Spells
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::ALCHEMY,				REALM_ALCHEMY_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_ALCHEMY),
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::DEATH_PLAGUE,			REALM_DEATH_PLAGUE_1,		ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_DEATH_PLAGUE),
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::DEMAGOGUE,			REALM_DEMAGOGUE_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_DEMAGOGUE),
@@ -302,7 +302,7 @@ ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::STRONGHOLD,			REALM_STRONGHOLD_1,
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::SUMMONING,			REALM_SUMMONING_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_SUMMONING),
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::TRANSPORT,			REALM_TRANSPORT_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_TRANSPORT),
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::WARDING,				REALM_WARDING_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"TOME06",STR_REALM_SPELL_DESC_WARDING),
-						  	
+
 // Priest Realm Spells
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::BLESS_LAND,			REALM_BLESS_LAND_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"SCRL08",STR_REALM_SPELL_DESC_BLESS_LAND),
 ItemType(IC_REALM_SPELL,  0,	REALM_SPELL_INFO::BLESS_ARMY,			REALM_BLESS_ARMY_1,			ItemEffects::RealmGeneric,	0,		    -1 ,"SCRL08",STR_REALM_SPELL_DESC_BLESS_ARMY),
@@ -427,7 +427,7 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 {
 	//Combo has the ItemType as it's upper word, and the avatar who's
 	//activating the item as the lower word
-	
+
 	//Arg is a "free" argument, it is passed in from the array (see above)
 	//it is passed in from the ItemTypes array
 
@@ -442,9 +442,9 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 	//etc...
 
 
-	SHORT Itemtype;  				//the index in ItemTypes of the Item 
+	SHORT Itemtype;  				//the index in ItemTypes of the Item
 									//being activated
-	SHORT hPlayerStats;   			//the stats of the avatar who's activating 
+	SHORT hPlayerStats;   			//the stats of the avatar who's activating
 									//the item
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats); //extract the data from the Combo
 
@@ -455,7 +455,7 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 	//       Generally copy them into the part of the code which needs them.
 	// PLAYER_STATS	*const pPlayerStats=(PLAYER_STATS*const )BLKPTR(hPlayerStats);
 	// CAvatar	* const pAvatar=(CAvatar* const )BLKPTR(pPlayerStats->hAvatar);
-	
+
 	if(fDomainTurn)
 	{
 		return NOT_SUPPORTED;
@@ -471,20 +471,20 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 			case ACTIVATE:
 				//put your code that represents what the Item does when used here
 				//if (bad)
-				//	return CANT_COMPLETE;	
-				
-				//this means that the action couldn't be completed. This is most 
-				//useful for EQUIP and PICKUP, if they return CANT_COMPLETE, then 
-				//the avatar is not allowed to put the object into his spellboxes 
+				//	return CANT_COMPLETE;
+
+				//this means that the action couldn't be completed. This is most
+				//useful for EQUIP and PICKUP, if they return CANT_COMPLETE, then
+				//the avatar is not allowed to put the object into his spellboxes
 				//or pick up the object (respectively).
 				//-------------
-				//The effect function must take care of adding and removing itself 
-				//from the ActiveItem list. when activated, add	the Item, and 
+				//The effect function must take care of adding and removing itself
+				//from the ActiveItem list. when activated, add	the Item, and
 				//remove it in the DEACTIVATE case.
 				//				  ThisFunc Arg1 ,Arg2,Duration(in frames)
 				//					vvvv   vvv	 vvv   vvvvvvvvvvvvvvvvvvvvvvvvvv
 				//mfAddActiveItem(Template,Combo,Arg,Item.mfDuration(hPlayerStats));
-				
+
 				//the two arguments should always be the same as the ones that
 				//were passed to you in this function (Template)
 				//the first (arg1) MUST be the itemtype/avatarHandle Combo
@@ -506,11 +506,11 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 				//this happens when the item is picked up, return CANT_COMPLETE
 				//to disable the avatar from picking this up
 				//example:
-				// if (Avatar.IsGoodAligned() && Item.CantbeHeldByGood())	
+				// if (Avatar.IsGoodAligned() && Item.CantbeHeldByGood())
 				//		return CANT_COMPLETE;
 				break;
 			case DROP:
-				//this is called when the item is dropped, it can be used to 
+				//this is called when the item is dropped, it can be used to
 				//"lock" an item to an avatar.
 				break;
 			case EQUIP:
@@ -530,7 +530,7 @@ LONG ItemEffects::Template(LONG Combo, LONG Arg, LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 
 
@@ -545,11 +545,11 @@ LONG ItemEffects::Regenerate(LONG Combo,LONG Arg,LONG Action)
 	ITEMTYPE		Itemtype;
 	SHORT			hAvatarStats;
 	LONG			Result = OK;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hAvatarStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	if(fBattleCombat)
 	{
 		Result = NOT_SUPPORTED;
@@ -569,13 +569,13 @@ LONG ItemEffects::Regenerate(LONG Combo,LONG Arg,LONG Action)
 			case EQUIP:
 				{
 				DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(hAvatarStats);
-				if (pPlayerStats->hAvatar == fERROR 
+				if (pPlayerStats->hAvatar == fERROR
 					|| pPlayerStats->mfGetCurHitPoints() <= 0)
 				{
 					Result = CANT_COMPLETE;
 				}
 				else
-				{	
+				{
 					Regenerator::mfRegister(hAvatarStats,Arg);
 				}
 				}
@@ -590,7 +590,7 @@ LONG ItemEffects::Regenerate(LONG Combo,LONG Arg,LONG Action)
 				break;
 		}
 	}
-	return Result; //everything went ok	
+	return Result; //everything went ok
 }
 
 
@@ -602,7 +602,7 @@ LONG ItemEffects::Rescuee(LONG,LONG,LONG action)
 	else if (action == PICKUP || action == DROP)
 		return OK;
 	else
-		return CANT_COMPLETE;	
+		return CANT_COMPLETE;
 }
 
 
@@ -611,13 +611,13 @@ LONG ItemEffects::TouchSpell(LONG Combo, LONG arg, LONG action)
 	SHORT Itemtype;
 	SHORT hPlayerStats;
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
-	
+
 	if(fDomainTurn)
 		return NOT_SUPPORTED;
-		
+
 	if(fBattleCombat)
 		return NOT_SUPPORTED;
-		
+
 	// adventure level
 	if (action == ACTIVATE)
 	{
@@ -629,7 +629,7 @@ LONG ItemEffects::TouchSpell(LONG Combo, LONG arg, LONG action)
 			case STAFF_OF_CURING:
 				if (!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::PRIEST))
 					return CANT_COMPLETE;
-			
+
 			default:
 				break;
 			}
@@ -658,12 +658,12 @@ LONG ItemEffects::Heal(LONG Combo,LONG arg,LONG action)
 
 	LONG HealType=arg&HEAL_MASK;
 	LONG amount_healed;
-		
+
 	DICE dice;
 	dice.sbNumberOfDice=DICE_NUMDICE(arg);
 	dice.sbNumberOfSides=DICE_NUMSIDES(arg);
 	dice.sbModifier=DICE_MODIFIER(arg);
-	
+
 
 	if(fDomainTurn)
 	{
@@ -672,7 +672,7 @@ LONG ItemEffects::Heal(LONG Combo,LONG arg,LONG action)
 	if(fBattleCombat)
 	{
 		return NOT_SUPPORTED;
-		
+
 	}
 	else	// adventure level
 	{
@@ -680,31 +680,31 @@ LONG ItemEffects::Heal(LONG Combo,LONG arg,LONG action)
 		{
 			case ACTIVATE:
 			{
-				
+
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
 				if (pPlayerStats->hAvatar == fERROR)
 					return DONT_DROP;
-					
+
 				CAvatar const * const	pAvatar = (CAvatar const * const) BLKPTR(pPlayerStats->hAvatar);
-			
+
 				if (pPlayerStats->mfGetCurHitPoints() <= 0)  // can't heal dead guys
 					return DONT_DROP;
 				if (pPlayerStats->mfGetCurHitPoints() >= pPlayerStats->mfGetMaxHitPoints())
 					return DONT_DROP;
-					
+
 				Item.mfMessage(STR_ACTIVATE_HEAL);
-				
+
 				switch(HealType)
 				{
 					case HEAL_PERCENT:
 						mfSound(SND_HEAL1,NULL,pAvatar->ThingIndex);
-						amount_healed = pPlayerStats->mfGetMaxHitPoints()*HEAL_DATA(arg)/100; 
-						// pPlayerStats->HitPts += pPlayerStats->FullHitPts*HEAL_DATA(arg)/100; 
+						amount_healed = pPlayerStats->mfGetMaxHitPoints()*HEAL_DATA(arg)/100;
+						// pPlayerStats->HitPts += pPlayerStats->FullHitPts*HEAL_DATA(arg)/100;
 						break;
 					case HEAL_ABSOLUT:
 						mfSound(SND_HEAL1,NULL,pAvatar->ThingIndex);
 						amount_healed = HEAL_DATA(arg);
-						// pPlayerStats->HitPts += HEAL_DATA(arg); 
+						// pPlayerStats->HitPts += HEAL_DATA(arg);
 						break;
 					case HEAL_RANDOM:
 						mfSound(SND_HEAL1,NULL,pAvatar->ThingIndex);
@@ -714,19 +714,19 @@ LONG ItemEffects::Heal(LONG Combo,LONG arg,LONG action)
 					case HEAL_FULLY:
 						mfSound(SND_HEAL2,NULL,pAvatar->ThingIndex);
 						amount_healed = pPlayerStats->mfGetMaxHitPoints() - pPlayerStats->mfGetCurHitPoints();
-						// pPlayerStats->HitPts = pPlayerStats->FullHitPts; 
+						// pPlayerStats->HitPts = pPlayerStats->FullHitPts;
 						break;
 					default:
 						fatal_error ("bad Healing type %li passed to ItemEffects::Heal\n",HealType>>24);
 				}
 				if (amount_healed < 0)
 					amount_healed = 0;
-				
+
 				if (pPlayerStats->mfGetCurHitPoints() < pPlayerStats->mfGetMaxHitPoints())
 				{
 					pPlayerStats->mfHeal(amount_healed);
 				}
-				
+
 				break;
 			}
 			default:
@@ -740,19 +740,19 @@ LONG ItemEffects::Heal(LONG Combo,LONG arg,LONG action)
 
 
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 
 LONG ItemEffects::AddToAttribute(LONG Combo,LONG Arg,LONG Action)
 {
 	STATSMOD::MOD_TYPE type;
 	LONG				mod;
-	
+
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
 	// works in all modes
@@ -760,17 +760,17 @@ LONG ItemEffects::AddToAttribute(LONG Combo,LONG Arg,LONG Action)
 	{
 		case ACTIVATE:
 			return CANT_COMPLETE;
-			
+
 		case DEACTIVATE:
 			break;
-			
+
 		case PICKUP:
 		{
 //			if (!mfAddActiveItem(ItemEffects::AddToAttribute,Combo,Arg,Item.mfDuration(hPlayerStats)))
 //				return CANT_COMPLETE;
-				
+
 			DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-			
+
 			if (Arg&AT_STR)
 			{
 				type = STATSMOD::STRENGTH_MOD;
@@ -827,11 +827,11 @@ LONG ItemEffects::AddToAttribute(LONG Combo,LONG Arg,LONG Action)
 			}
 		}
 			break;
-		
+
 		case DROP:
 		{
 			DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-			
+
 			if(Arg&AT_STR)
 			{
 				type = STATSMOD::STRENGTH_MOD;
@@ -889,7 +889,7 @@ LONG ItemEffects::AddToAttribute(LONG Combo,LONG Arg,LONG Action)
 //			mfRemoveActiveItem(ItemEffects::AddToAttribute,Combo,Arg);
 		}
 			break;
-			
+
 		case EQUIP:
 			break;
 		case UNEQUIP:
@@ -899,7 +899,7 @@ LONG ItemEffects::AddToAttribute(LONG Combo,LONG Arg,LONG Action)
 		default:
 			return NOT_SUPPORTED;
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 
 
@@ -910,11 +910,11 @@ LONG ItemEffects::ImproveWeapon(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	// if(fDomainTurn)
 	// {
 	//	return NOT_SUPPORTED;
@@ -932,9 +932,9 @@ LONG ItemEffects::ImproveWeapon(LONG Combo,LONG Arg,LONG Action)
 			{
 				if (!mfAddActiveItem(ItemEffects::ImproveWeapon,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-					
+
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-				
+
 				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::WEAPONHIT_MOD, Arg);
 				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::WEAPONDAMAGE_MOD, Arg);
 			}
@@ -942,7 +942,7 @@ LONG ItemEffects::ImproveWeapon(LONG Combo,LONG Arg,LONG Action)
 			case DEACTIVATE:
 			{
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-				
+
 				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::WEAPONHIT_MOD, -Arg);
 				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::WEAPONDAMAGE_MOD, -Arg);
 				mfRemoveActiveItem(ItemEffects::ImproveWeapon,Combo,Arg);
@@ -962,11 +962,11 @@ LONG ItemEffects::ImproveWeapon(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 
 LONG ItemEffects::SetAttrTo(LONG Combo,LONG Arg,LONG Action)
@@ -976,11 +976,11 @@ LONG ItemEffects::SetAttrTo(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	//if(fDomainTurn)
 	//{
 	//	return NOT_SUPPORTED;
@@ -1001,11 +1001,11 @@ LONG ItemEffects::SetAttrTo(LONG Combo,LONG Arg,LONG Action)
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::RANGER) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::PALADIN))
 					return CANT_COMPLETE;
-					
+
 				if (!mfAddActiveItem(ItemEffects::SetAttrTo,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-				
-				
+
+
 				if(Arg&AT_STR)
 				{
 					type = STATSMOD::STRENGTH_SET;
@@ -1048,13 +1048,13 @@ LONG ItemEffects::SetAttrTo(LONG Combo,LONG Arg,LONG Action)
 					mod = (SBYTE)(Arg&0x0000ffff);
 				}
 				pPlayerStats->StatsMod.mfSetStats(type, mod);
-				
+
 				}
 				break;
 			case DEACTIVATE:
 				{
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-				
+
 				if(Arg&AT_STR)
 				{
 					type = STATSMOD::STRENGTH_SET;
@@ -1117,10 +1117,10 @@ LONG ItemEffects::SetAttrTo(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 LONG ItemEffects::Invulnerable(LONG Combo,LONG Arg,LONG Action)
 {
@@ -1129,9 +1129,9 @@ LONG ItemEffects::Invulnerable(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
 	//if(fDomainTurn)
@@ -1154,33 +1154,33 @@ LONG ItemEffects::Invulnerable(LONG Combo,LONG Arg,LONG Action)
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::RANGER) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::PALADIN))
 					return CANT_COMPLETE;
-					
+
 				if (!mfAddActiveItem(ItemEffects::Invulnerable,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-					
+
 				if (pPlayerStats->hAvatar == fERROR)
 					return CANT_COMPLETE;
-					
+
 				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pPlayerStats->hAvatar);
 
 				Item.mfMessage(STR_ACTIVATE_INVULNERABLE);
 				mfSound(SND_GENERAL_MAGIC1,1,pAvatar->ThingIndex);
-				
+
 				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::DAMAGE_RESIST_MOD, +100);
 			}
 				break;
-				
+
 			case DEACTIVATE:
 			{
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-				
+
 				Item.mfMessage(STR_DEACTIVATE_INVULNERABLE);
-				
+
  				pPlayerStats->StatsMod.mfModifyStats(STATSMOD::DAMAGE_RESIST_MOD, -100);
 				mfRemoveActiveItem(ItemEffects::Invulnerable,Combo,Arg);
 			}
 				break;
-			
+
 			case PICKUP:
 				break;
 			case DROP:
@@ -1195,10 +1195,10 @@ LONG ItemEffects::Invulnerable(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 {
@@ -1207,16 +1207,16 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
-	
+
 	if(fDomainTurn)
 	{
 		// must allow pickup of item, at least...
-		
+
 		switch(Action)
 		{
 			case PICKUP:
@@ -1237,10 +1237,10 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 			{
 				if (!mfAddActiveItem(ItemEffects::ActResistance,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-					
+
 				mod = 1;
 				GAME_STRING str=STR_NULL;
-				
+
 				if (Arg&_RESIST_FIRE)
 				{
 					type = STATSMOD::FIRE_RESIST_MOD;
@@ -1255,22 +1255,22 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 				{
 					type = STATSMOD::EVIL_RESIST_MOD;
 					str=STR_ACTIVATE_RESIST_EVIL;
-					
+
 				}
 				else if (Arg&_RESIST_MAGIC)
 				{
 					type = STATSMOD::MAGIC_RESIST_MOD;
 					mod = (SBYTE)(Arg&0x0000FFFF);
 					str=STR_ACTIVATE_RESIST_MAGIC;
-					
+
 				}
 				else if (Arg&_RESIST_FEAR)
 				{
 					type = STATSMOD::FEAR_RESIST_MOD;
 					str=STR_ACTIVATE_RESIST_FEAR;
-					
+
 				}
-			
+
 				ADVENTURER_TEAM_ITOR AdvItor;
 				for (AdvItor = ADVENTURER::begin(); AdvItor != ADVENTURER::end();
 		    		AdvItor++)
@@ -1279,28 +1279,28 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 		    		SHORT hPS = pAvatar->hPlayerStats;
 		    		if (hPS == fERROR)
 		    		    continue;
-		    	    
+
 					DumbAutoLockPtr< PLAYER_STATS > const pPS(hPS);
 					pPS->StatsMod.mfModifyStats(type, mod);
 	     		}
-	     		
+
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-	    		
+
 	    		if (pPlayerStats->hAvatar == fERROR)
 	    			break;
-	    			
+
 				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pPlayerStats->hAvatar);
 
 				Item.mfMessage(str);
 				mfSound(SND_GENERAL_MAGIC1,1,pAvatar->ThingIndex);
 			}
 				break;
-				
+
 			case DEACTIVATE:
 			{
 				mod = 1;
 				GAME_STRING str=STR_NULL;
-				
+
 				if (Arg&_RESIST_FIRE)
 				{
 					type = STATSMOD::FIRE_RESIST_MOD;
@@ -1315,22 +1315,22 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 				{
 					type = STATSMOD::EVIL_RESIST_MOD;
 					str=STR_DEACTIVATE_RESIST_EVIL;
-					
+
 				}
 				else if (Arg&_RESIST_MAGIC)
 				{
 					type = STATSMOD::MAGIC_RESIST_MOD;
 					mod = (SBYTE)(Arg&0x0000FFFF);
 					str=STR_DEACTIVATE_RESIST_MAGIC;
-					
+
 				}
 				else if (Arg&_RESIST_FEAR)
 				{
 					type = STATSMOD::FEAR_RESIST_MOD;
 					str=STR_DEACTIVATE_RESIST_FEAR;
-					
+
 				}
-				
+
 				ADVENTURER_TEAM_ITOR AdvItor;
 				for (AdvItor = ADVENTURER::begin(); AdvItor != ADVENTURER::end();
 		    		AdvItor++)
@@ -1339,16 +1339,16 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 		    		SHORT hPS = pAvatar->hPlayerStats;
 		    		if (hPS == fERROR)
 		    		    continue;
-		    	    
+
 					DumbAutoLockPtr< PLAYER_STATS > const pPS(hPS);
 					pPS->StatsMod.mfModifyStats(type, -mod);
 	     		}
-	     		
+
 				Item.mfMessage(str);
 				mfRemoveActiveItem(ItemEffects::ActResistance,Combo,Arg);
 			}
 				break;
-				
+
 			case PICKUP:
 				break;
 			case DROP:
@@ -1363,10 +1363,10 @@ LONG ItemEffects::ActResistance(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 LONG ItemEffects::Resistance(LONG Combo,LONG Arg,LONG Action)
 {
@@ -1375,12 +1375,12 @@ LONG ItemEffects::Resistance(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
-	
+
 	//if(fDomainTurn)
 	//{
 	//	return NOT_SUPPORTED;
@@ -1396,21 +1396,21 @@ LONG ItemEffects::Resistance(LONG Combo,LONG Arg,LONG Action)
 		{
 			case ACTIVATE:
 				return DONT_DROP;
-				
+
 			case DEACTIVATE:
 				break;
 			case PICKUP:
 				break;
 			case DROP:
 				break;
-				
+
 			case EQUIP:
 			{
 				if (!mfAddActiveItem(ItemEffects::SetAttrTo,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-					
+
 				PLAYER_STATS	* const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
-				
+
 				mod = 1;
 				if(Arg&_RESIST_FIRE)
 				{
@@ -1443,7 +1443,7 @@ LONG ItemEffects::Resistance(LONG Combo,LONG Arg,LONG Action)
 			case UNEQUIP:
 			{
 				PLAYER_STATS	* const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
-	
+
 				mod = 1;
 				if(Arg&_RESIST_FIRE)
 				{
@@ -1480,10 +1480,10 @@ LONG ItemEffects::Resistance(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
 {
@@ -1493,9 +1493,9 @@ LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
 	SHORT			cur_ac;
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
 	// if(fDomainTurn)
@@ -1515,13 +1515,13 @@ LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
 			{
 				if (!mfAddActiveItem(ItemEffects::ImproveArmor,Combo,Arg,Item.mfDuration(hPlayerStats)))
 					return CANT_COMPLETE;
-				
+
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
 				if (pPlayerStats->hAvatar == fERROR)
 					return CANT_COMPLETE;
-					
+
 				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pPlayerStats->hAvatar);
-				
+
 				ac_mod = (SHORT)(Arg & 0x0000FFFF);
 				max_ac = (SHORT)((Arg & 0x000F0000)>>16);
 
@@ -1534,7 +1534,7 @@ LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
 			case DEACTIVATE:
 			{
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
-				
+
 				ac_mod = (SHORT)(Arg & 0x0000FFFF);
 				max_ac = (SHORT)((Arg & 0x000F0000)>>16);
 
@@ -1557,10 +1557,10 @@ LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 
 LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
@@ -1568,9 +1568,9 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
 	if(fDomainTurn)
@@ -1587,7 +1587,7 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-					
+
 				if(Arg & AT_MISSILE)
 					fBtlMagicType = BTLCAP_MAGIC_MISSILE;
 				else
@@ -1605,10 +1605,10 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 				else
 				if(Arg & AT_CRUMBLE)
 					fBtlMagicType = BTLCAP_MAGIC_DESOLVE;
-					
+
 				fBtlMagicResult = BTL_R;
-				
-				
+
+
 				if (ItemTypes[Itemtype].mfCategory() == IC_MAGITEM)
 				{
 					ItemChargeHandler::mfDropCharge(Itemtype,hPlayerStats);
@@ -1640,42 +1640,42 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 				{
 				PLAYER_STATS * const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
 				SHORT 		const hAvatar = pPlayerStats->hAvatar;
-				
+
 				if ((Arg & CLASS_RESTRICTED) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-					
+
 				if (hAvatar == fERROR)
 					return NOT_SUPPORTED;
-				
+
 				CAvatar	* const pAvatar=(CAvatar* const )BLKPTR(hAvatar);
-				
-				DICE	dice; 
+
+				DICE	dice;
 				SHORT	damage;
 				SBYTE	level;
-				
+
 				dice.sbNumberOfSides=DICE_NUMSIDES(Arg);
 				dice.sbModifier=DICE_MODIFIER(Arg);
-				
+
 				if (Arg & USE_LEVEL)
 				{
 				   LONG WizClass = pPlayerStats->mfGetSpellCastClass(SPELL_INFO::WIZARD);
 				   if (WizClass==CANT_CAST_SPELLS)
 					    return CANT_COMPLETE;
-				   
+
 				   level=pPlayerStats->mfGetLevel(WizClass);
 					if (level > 10)
 						level = 10;
 				}
 				else
 					level = DICE_NUMDICE(Arg);
-				
+
 				dice.sbNumberOfDice = level;
 				damage = RollDice(&dice);
-				
+
 				pAvatar->mfSetDamageDealt(damage);
-				
+
 				if(Arg & AT_MISSILE)
 					pAvatar->mfCreateFireBall( GetNewId(), MAGIC_MISSILE_1, damage);
 				else
@@ -1694,14 +1694,14 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 				if(Arg & AT_CRUMBLE)
 					pAvatar->mfCreateFireBall( GetNewId(), CRUMBLE_1, damage);
 				}
-				
+
 				if (ItemTypes[Itemtype].mfCategory() == IC_MAGITEM)
 				{
 					ItemChargeHandler::mfDropCharge(Itemtype,hPlayerStats);
 					return DONT_DROP;
 				}
 				break;
-				
+
 			case DEACTIVATE:
 				break;
 			case PICKUP:
@@ -1718,10 +1718,10 @@ LONG ItemEffects::HurlFireBall(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 
 LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
@@ -1729,12 +1729,12 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
 	PLAYER_STATS * const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	if(fDomainTurn)
 	{
 		return NOT_SUPPORTED;
@@ -1748,7 +1748,7 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-					
+
 				fBtlMagicType = BTLCAP_MAGIC_PLASMA;
 				fBtlMagicResult = BTL_R;
 
@@ -1758,7 +1758,7 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 					return DONT_DROP;
 				}
 				break;
-				
+
 			case DEACTIVATE:
 				break;
 			case PICKUP:
@@ -1782,24 +1782,24 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 			case ACTIVATE:
 				{
 				SHORT 		const hAvatar = pPlayerStats->hAvatar;
-				
+
 				if ((Arg & CLASS_RESTRICTED) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-					
+
 				if (hAvatar == fERROR)
 					return NOT_SUPPORTED;
-					
+
 				CAvatar	* const pAvatar=(CAvatar* const )BLKPTR(hAvatar);
-				
-				DICE	dice; 
+
+				DICE	dice;
 				SHORT	damage;
 				SBYTE	level = (SHORT) pPlayerStats->mfGetLevel(0);
-				
+
 				dice.sbNumberOfSides=DICE_NUMSIDES(Arg);
 				dice.sbModifier=DICE_MODIFIER(Arg);
-				
+
 				if (Arg & USE_LEVEL)
 				{
 					if (level > 10)
@@ -1807,12 +1807,12 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 				}
 				else
 					level = DICE_NUMDICE(Arg);
-				
+
 				dice.sbNumberOfDice = level;
 				damage = RollDice(&dice);
-				
+
 				pAvatar->mfSetDamageDealt(damage);
-				
+
 				pAvatar->mfCreateFireBall( GetNewId(), PLASMA_BALL_1, damage);
 				}
 				break;
@@ -1832,19 +1832,19 @@ LONG ItemEffects::FrostCone(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 LONG ItemEffects::IlluminateAreaRad(LONG Combo,LONG Arg,LONG Action)
 {
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
 
-	
+
 	if(fDomainTurn)
 	{
 		return NOT_SUPPORTED;
@@ -1864,15 +1864,15 @@ LONG ItemEffects::IlluminateAreaRad(LONG Combo,LONG Arg,LONG Action)
 				DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
 				if (pPlayerStats->hAvatar == fERROR)
 					return CANT_COMPLETE;
-					
+
 				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(pPlayerStats->hAvatar);
-				
+
 				Item.mfMessage(STR_ACTIVATE_LIGHT);
 				mfSound(SND_INFRAVISION1,1,pAvatar->ThingIndex);
 				gfTestMagicLightSwitch=TRUE;
 				break;
 			}
-			
+
 			case DEACTIVATE:
 			{
 				Item.mfMessage(STR_DEACTIVATE_LIGHT);
@@ -1880,7 +1880,7 @@ LONG ItemEffects::IlluminateAreaRad(LONG Combo,LONG Arg,LONG Action)
 				mfRemoveActiveItem(ItemEffects::IlluminateAreaRad,Combo,0);
 				break;
 			}
-			
+
 			case PICKUP:
 				break;
 			case DROP:
@@ -1895,12 +1895,12 @@ LONG ItemEffects::IlluminateAreaRad(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	
+
 	return OK;
 
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 
 LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
@@ -1908,11 +1908,11 @@ LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	if(fDomainTurn)
 	{
 		return NOT_SUPPORTED;
@@ -1927,7 +1927,7 @@ LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-				
+
 				fBtlMagicType = BTLCAP_MAGIC_LIGHTNING;
 				fBtlMagicResult = BTL_R;
 
@@ -1962,24 +1962,24 @@ LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
 			{
 				PLAYER_STATS * const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
 				SHORT 		const hAvatar = pPlayerStats->hAvatar;
-				
+
 				if ((Arg & CLASS_RESTRICTED) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-				
+
 				if (hAvatar == fERROR)
 					return NOT_SUPPORTED;
-					
+
 				CAvatar	* const pAvatar=(CAvatar* const )BLKPTR(hAvatar);
-				
-				DICE	dice; 
+
+				DICE	dice;
 				SHORT	damage;
 				SBYTE	level = (SHORT) pPlayerStats->mfGetLevel(0);
-				
+
 				dice.sbNumberOfSides=DICE_NUMSIDES(Arg);
 				dice.sbModifier=DICE_MODIFIER(Arg);
-				
+
 				if (Arg & USE_LEVEL)
 				{
 					if (level > 10)
@@ -1987,14 +1987,14 @@ LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
 				}
 				else
 					level = DICE_NUMDICE(Arg);
-				
+
 				dice.sbNumberOfDice = level;
 				damage = RollDice(&dice);
-				
+
 				pAvatar->mfSetDamageDealt(damage);
-				
+
 				pAvatar->mfCreateFireBall( GetNewId(), LIGHTNING_1, damage);
-		
+
 				if (ItemTypes[Itemtype].mfCategory() == IC_MAGITEM)
 				{
 					ItemChargeHandler::mfDropCharge(Itemtype,hPlayerStats);
@@ -2018,21 +2018,21 @@ LONG ItemEffects::ElectricalBolt(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 /* -----------------------------------------------------------------
-   
+
    ----------------------------------------------------------------- */
 LONG ItemEffects::ParalyzeAllInRad(LONG Combo,LONG Arg,LONG Action)
 {
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
-	
+
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
- 	
+
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 	if(fDomainTurn)
 	{
 		return NOT_SUPPORTED;
@@ -2049,20 +2049,20 @@ LONG ItemEffects::ParalyzeAllInRad(LONG Combo,LONG Arg,LONG Action)
 				{
 				PLAYER_STATS * const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
 				SHORT 		const hAvatar = pPlayerStats->hAvatar;
-				
+
 				if ((Arg & CLASS_RESTRICTED) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) &&
 					!pPlayerStats->mfIsType(PLAYER_CLASS_INFO::BARD))
 					return CANT_COMPLETE;
-				
+
 				if (hAvatar == fERROR)
 					return NOT_SUPPORTED;
-					
+
 				CAvatar	* const pAvatar=(CAvatar* const )BLKPTR(hAvatar);
-				
+
 				if (pAvatar->hEnemy == fERROR)
 					return CANT_COMPLETE;
-					
+
 				CAvatar * const pEnemyAvatar = (CAvatar * const)BLKPTR(pAvatar->hEnemy);
 				pEnemyAvatar->mfTurnToStone();
 
@@ -2072,7 +2072,7 @@ LONG ItemEffects::ParalyzeAllInRad(LONG Combo,LONG Arg,LONG Action)
 					return DONT_DROP;
 				}
 				break;
-				
+
 				}
 			case DEACTIVATE:
 				break;
@@ -2090,7 +2090,7 @@ LONG ItemEffects::ParalyzeAllInRad(LONG Combo,LONG Arg,LONG Action)
 				return NOT_SUPPORTED;
 		}
 	}
-	return OK; //everything went ok	
+	return OK; //everything went ok
 }
 
 
@@ -2099,16 +2099,16 @@ LONG ItemEffects::ParalyzeAllInRad(LONG Combo,LONG Arg,LONG Action)
 
 
 
-//effect duration maintenance functions! 
+//effect duration maintenance functions!
 
 BOOL ItemEffects::mfAddActiveItem(PFLLLL f,LONG a1,LONG a2,LONG dur,BOOL fAR)
 {
 	ITEMTYPE		Itemtype;
 	SHORT			hAvatarStats;
-	
+
  	SPLIT_COMBO(a1,Itemtype,hAvatarStats);
 	ItemType&		Item=ItemTypes[Itemtype];
-	
+
 
 	if (mfGetActiveItem(f,a1,a2))
 	{
@@ -2117,13 +2117,13 @@ BOOL ItemEffects::mfAddActiveItem(PFLLLL f,LONG a1,LONG a2,LONG dur,BOOL fAR)
 		mfMessageBox(Item.mfGetName(), buffer);
 		return FALSE;
 	}
-	
+
 	for (LONG i=0;i<MAX_ACTIVE_ITEMS;++i)
 	{
 		if (!ActiveItems[i].Valid)
 			break;
 	}
-	
+
 	if (i >= MAX_ACTIVE_ITEMS)
 	{
 #if defined (DEBUG)
@@ -2132,15 +2132,15 @@ BOOL ItemEffects::mfAddActiveItem(PFLLLL f,LONG a1,LONG a2,LONG dur,BOOL fAR)
 		return FALSE;	// Out of space.
 	}
 
-	printf("ActiveItem Index set as %li\n",i);
+	logInfo("ActiveItem Index set as %li",i);
 
 	ActiveItem& ai=ActiveItems[i];
 
 	if (dur!=INDEFINATE_DUR)
-		ai.TimeToStop=SCENE_MGR::gTick+(dur*18.2);  
+		ai.TimeToStop=SCENE_MGR::gTick+(dur*18.2);
 	else
 		ai.TimeToStop=0;
-	
+
 	ai.Func=f;
 	ai.Arg1=a1;
 	ai.Arg2=a2;
@@ -2159,7 +2159,7 @@ void ItemEffects::DeactivateAllItems()
 			(*ai.Func)(ai.Arg1,ai.Arg2,DEACTIVATE);
 	}
 }
-			
+
 
 ItemEffects::ActiveItem* ItemEffects::mfGetActiveItem(PFLLLL f,LONG a1,LONG a2)
 {
@@ -2167,27 +2167,27 @@ ItemEffects::ActiveItem* ItemEffects::mfGetActiveItem(PFLLLL f,LONG a1,LONG a2)
 	{
 		ActiveItem& ai=ActiveItems[i];
 		if (ai.Valid && ai.Func==f && ai.Arg1==a1 && ai.Arg2==a2)
-			return &ai;			 
+			return &ai;
 	}
 	return NULL;
-	
+
 }
-	
-	
-	
+
+
+
 
 //Service Durations takes a long because it's used as a task.
-void ItemEffects::ServiceDurations(LONG)  
+void ItemEffects::ServiceDurations(LONG)
 {
 	Regenerator::Service();
 
 	for(LONG i=0;i<MAX_ACTIVE_ITEMS;++i)
 	{
 		ActiveItem& ai=ActiveItems[i];
-		
+
 		if (ai.Valid && ai.Func != NULL && !fPause)
 		{
-			
+
 			if (ai.TimeToStop != INDEFINATE_DUR && ai.TimeToStop < SCENE_MGR::gTick)
 				(*ai.Func)(ai.Arg1,ai.Arg2,DEACTIVATE);
 
@@ -2212,7 +2212,7 @@ void ItemEffects::ServiceDurations(LONG)
    Function    - mfPauseDurations
    Description - While waiting for the player to move or make up their
    			     mind, hold on all the durations.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void ItemEffects::mfPauseDurations(LONG const DiffTime)
@@ -2220,10 +2220,10 @@ void ItemEffects::mfPauseDurations(LONG const DiffTime)
 	for(LONG i=0;i<MAX_ACTIVE_ITEMS;++i)
 	{
 		ActiveItem& ai=ActiveItems[i];
-		
-		if (ai.Valid 
-			&& ai.Func != NULL 
-			&& !fPause 
+
+		if (ai.Valid
+			&& ai.Func != NULL
+			&& !fPause
 			&& ai.TimeToStop != INDEFINATE_DUR)
 		{
 			ai.TimeToStop += DiffTime;
@@ -2246,7 +2246,7 @@ void ItemEffects::mfRemoveActiveItem(PFLLLL a,LONG b,LONG c)
 			ai.Arg2=-1;
 			return;
 		}
-			
+
 	}
 }
 
@@ -2280,9 +2280,9 @@ void ItemEffects::DeactivateAvatarsItems(SHORT hPlayerStats)
 			ai.Arg2=-1;
 		}
 	}
-}			
+}
 
-		
+
 
 
 SHORT ItemType::mfDuration(SHORT AvaStatsHdl) const
@@ -2300,18 +2300,18 @@ SHORT ItemType::mfDuration(SHORT AvaStatsHdl) const
 
 	else if (PriestClass!=CANT_CAST_SPELLS)
 		return (Duration & ~PER_LEVEL)*(pss->mfGetLevel(PriestClass));
-	
+
 	else
 		return Duration & ~PER_LEVEL; //assume first level
-	
-}	
+
+}
 
 SHORT TargetMenu::CharCount;
 SHORT TargetMenu::TargetType;
 LONG TargetMenu::TargetArgs;
 SHORT TargetMenu::StatsHdls[4]={fERROR, fERROR,fERROR,fERROR};
 void TargetMenu::Paint(LONG MenuCombo, LONG Arg)
-{	
+{
 	LONG MenuIdx;
 	LONG ButtonID;
 	SPLIT_LONG(MenuCombo,MenuIdx,ButtonID);
@@ -2323,15 +2323,15 @@ void TargetMenu::Paint(LONG MenuCombo, LONG Arg)
 	LONG NameH;
 
 	ADVENTURER_TEAM_ITOR AdvItor;
-	
+
 	LONG button, index;
 	for (index = 0; index < CharCount; ++index)
 	{
 		button = index + RESURRECT_BUT_NAME1;
-		
+
 		GetButtonPosition(MenuIdx,button,&NameX,&NameY);
 		GetButtonSize(MenuIdx,button,&NameW,&NameH);
-		
+
 		DumbAutoLockPtr< PLAYER_STATS > const pPS(StatsHdls[index]);
       // [d4-09-97 JPC] Changed the following because the PLAYER_NAME
       // class is going away.
@@ -2342,66 +2342,66 @@ void TargetMenu::Paint(LONG MenuCombo, LONG Arg)
 }
 
 void TargetMenu::Activate(LONG MenuCombo, LONG Arg)
-{	
+{
 	LONG MenuIdx;
 	LONG ButtonID;
 	SPLIT_LONG(MenuCombo,MenuIdx,ButtonID);
-	
+
 	SHORT hTargetStats = TargetMenu::StatsHdls[Arg];
 	if (hTargetStats==fERROR)
 		return;
 
 	HideSubMenu(0,D_RESURRECT_MENU);
 	RunMenus();
-	
+
 	// reset the menu for resurrection
 	for (LONG i=0; i < 4; ++i)
 	{
 	    LONG button = RESURRECT_BUT_NAME1 + i;
 	    SetButtonProc(MenuIdx, button, ResurrectionMenu::Resurrect, i, NO_KEY);
 	}
-	
+
 	DumbAutoLockPtr< PLAYER_STATS > const pTargetStats(hTargetStats);
 	if (pTargetStats->hAvatar == fERROR)
 		return;
-		
+
 	DumbAutoLockPtr< CAvatar > const pTargetAvatar(pTargetStats->hAvatar);
-	
+
 	LONG combo;
 	combo = BUILD_LONG(TargetType, hTargetStats);
-	
+
 	switch(TargetType)
 	{
 		case ITEM_SPELL_STRENGTH:
 			ItemEffects::Strength(combo, TargetArgs, ACTIVATE);
 			break;
-			
+
 		case ITEM_SPELL_CURE_LIGHT:
 		case ITEM_SPELL_CURE_SERIOUS:
 		case ITEM_SPELL_CURE_CRITICAL:
 		case ITEM_SPELL_HEAL:
 		case ITEM_STAFF_OF_CURING:
 			ItemEffects::Heal(combo, TargetArgs, ACTIVATE);
-			
+
 		default:
 			break;
 	}
-}	
+}
 
 void TargetMenu::Display(LONG combo, LONG targetargs)
 {
 	SHORT hCasterStats;
 	SHORT targettype;
-	
+
 	SPLIT_LONG(combo, targettype, hCasterStats);
-	
+
 	TargetType = targettype;
 	TargetArgs = targetargs;
-	
-	
+
+
 	LONG index = 0;
 	ADVENTURER_TEAM_ITOR AdvItor;
-	
+
 //	FILE *fp = fopen("blah", "w");
 	for (AdvItor = ADVENTURER::begin();
 		AdvItor != ADVENTURER::end();
@@ -2409,37 +2409,37 @@ void TargetMenu::Display(LONG combo, LONG targetargs)
 	{
 		if (*AdvItor == fERROR)
 			continue;
-		
+
 		CAvatar const *const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
-		
+
 		TargetMenu::StatsHdls[index] = pAvatar->hPlayerStats;
 //		fprintf(fp, "Setting stats handle %d to %d\n", index, StatsHdls[index]);
-		
+
 		DumbAutoLockPtr< PLAYER_STATS > const pPS(pAvatar->hPlayerStats);
-		
+
 		++index;
 	}
-	
+
 	CharCount = index;
-	
+
 	for (LONG i=0; i < 4; ++i)
 	{
 		LONG button = i + RESURRECT_BUT_NAME1;
-		
+
 		if (i < CharCount)
 		{
 //		    fprintf(fp, "Setting button %d to Activate %d, with hPS of %d.\n",
 //		    	button, i, StatsHdls[i]);
 		    SetButtonProc(D_RESURRECT_MENU, button, TargetMenu::Activate, i, NO_KEY);
 		}
-		else    
+		else
 		{
 //			fprintf(fp, "Button %d unused.\n");
 			SetButtonProc(D_RESURRECT_MENU, button, NULL, 0, NO_KEY);
 		}
 	}
 //	fclose(fp);
-	
+
 	SetButtonLabel(D_RESURRECT_MENU, RESURRECT_BUT_TITLE, STR_ITEM_UI_TARGET, BLACK);
 	SetButtonLabel(D_RESURRECT_MENU, RESURRECT_BUT_Q, STR_ITEM_UI_TARGET_QUESTION, BLACK);
 	SetButtonProc(D_RESURRECT_MENU, RESURRECT_BUT_ALL, TargetMenu::Paint, 0, NO_KEY);
@@ -2465,17 +2465,17 @@ ItemChargeHandler::ChargedItemChain::ChargedItemChain(LONG num,ITEMTYPE a,ITEMTY
 void ItemChargeHandler::mfDropCharge(ITEMTYPE ItemTypeIdx,SHORT hAvatarStats)
 {
 	LONG iFound,jFound;
-	
+
 	if(!mfFind(ItemTypeIdx,&iFound,&jFound))
 		return;
 
-	
+
 	DumbAutoLockPtr< PLAYER_STATS > const pStats(hAvatarStats);
 	InventoryItor itor(pStats->mfGetInventory());
 
 	if (!itor.mfFind(ItemTypeIdx))
 		return;
-	
+
 	if (ChargeDegradeTable[iFound][jFound+1])
 	{
 		itor.mfChangeTo(ChargeDegradeTable[iFound][jFound+1]);
@@ -2486,7 +2486,7 @@ void ItemChargeHandler::mfDropCharge(ITEMTYPE ItemTypeIdx,SHORT hAvatarStats)
 		LONG iSpellBoxFound;
 
 		if (pStats->Inventory.mfFindInSpellBoxes(ItemTypeIdx,&iSpellBoxFound))
-		{	
+		{
 			InventoryItor itor2(pStats->Inventory);
 			for (LONG jSearch=0;jSearch<MAX_CHARGES;++jSearch)
 			{
@@ -2502,19 +2502,19 @@ void ItemChargeHandler::mfDropCharge(ITEMTYPE ItemTypeIdx,SHORT hAvatarStats)
 
 			if (jSearch==MAX_CHARGES)
 				pStats->Inventory.mfClearSpellBox(iSpellBoxFound);
-				
+
 		}
-				
+
 		itor.mfDropItem();
-			
+
 	}
 }
-		
-	
+
+
 LONG ItemChargeHandler::mfCharges(ITEMTYPE ItemTypeIdx)
 {
 	LONG iFound,jFound;
-	
+
 	if(!mfFind(ItemTypeIdx,&iFound,&jFound))
 		return 0;
 
@@ -2530,7 +2530,7 @@ LONG ItemChargeHandler::mfCharges(ITEMTYPE ItemTypeIdx)
 BOOL ItemChargeHandler::mfFind(ITEMTYPE ItemTypeIdx,LONG* iFound,LONG* jFound)
 {
 	LONG i=0,j=0;
-	
+
 
 	for (i=0;i<NumChargedItems;++i)
 		for (j=0;ChargeDegradeTable[i][j]!=ITEM_NO_THING;++j)
@@ -2540,14 +2540,14 @@ BOOL ItemChargeHandler::mfFind(ITEMTYPE ItemTypeIdx,LONG* iFound,LONG* jFound)
 				*jFound=j;
 				return TRUE;
 			}
-	
+
 	*iFound= -1;
 	*jFound=-1;
 	return FALSE;
 
 }
-	
-	
-	
+
+
+
 
 

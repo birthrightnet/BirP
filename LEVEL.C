@@ -171,24 +171,24 @@ IWAD_ENTRY ent;
 	fit=FileOpen(pwad_name,"rb");
 	if(fit==NULL)
 		fatal_error("Can't open PWAD file \"%s\"",pwad_name);
-	
+
 	SetLoadingProgress(20);
 	RunMenus();
 	RunMenus();
-	
+
 	// GWP I open the same file once again for reading the data blocks and
 	//     lseeking around without disturbing the header block data.
 	DataReadFit=FileOpen(pwad_name,"rb");
-	
+
 	allocate_spans();
 	fread(&id,sizeof(long),1,fit);	/*id*/
 	fread(&num,sizeof(long),1,fit);	/*num items*/
 	fread(&h,sizeof(long),1,fit);	/*table offset*/
 	fseek(fit,h,SEEK_SET);
-	
+
 	SetLoadingProgress(35);
 	RunMenus();
-	
+
 	strcpy(lev,level_name);
 	strupr(lev);
 	while(strcmp(lev,ent.name)!=0)
@@ -245,7 +245,7 @@ IWAD_ENTRY ent;
 
 	SetLoadingProgress(90);
 	RunMenus();
-	
+
 #if WRC_CAMERA_TEST
 	DTCheckLinedefs();			//set up the Dynamic Textures
 	CrossRefCameras();
@@ -274,10 +274,10 @@ IWAD_ENTRY ent;
 			if ((textures[seg_to_texture_num(iSegment,FRONT,MIDDLE_TEXTURE)].type == TRANSP_TEX) ||
 				(textures[seg_to_texture_num(iSegment,BACK,MIDDLE_TEXTURE)].type == TRANSP_TEX))
 			{
-				segMirror[segMirror[iSegment]] = -1;	
-				segMirror[iSegment] = -1;	
+				segMirror[segMirror[iSegment]] = -1;
+				segMirror[iSegment] = -1;
 			}
-			
+
 		}
 	}
 #endif
@@ -373,7 +373,7 @@ LONG numRead;
 	{
 		tot_things = numRead;
 	}
-	
+
 	//fclose(fi);
 }
 
@@ -430,7 +430,7 @@ LONG numRead;
 	tot_sidedefs=ent->size/sizeof(SIDEDEF);
 	if (tot_sidedefs==0 || tot_sidedefs > 10000)
 		fatal_error("LEVEL ERROR - Total sidedefs=%ld in wad %s\n",tot_sidedefs,pwad_name);
-	
+
 	SidedefHandle = NewBlock(sizeof(SIDEDEF) * tot_sidedefs);
 	SetBlockAttr(SidedefHandle, LOCKED, LOCKED);
 	t = (SIDEDEF *) BLKPTR(SidedefHandle);
@@ -445,9 +445,9 @@ LONG numRead;
 	{
 		tot_sidedefs = numRead;
 	}
-	
+
 	sidedefs=(BR_SIDEDEF *)zalloc(sizeof(BR_SIDEDEF) * tot_sidedefs);
-	
+
 	for (i = 0; i < tot_sidedefs; ++i)
 	{
 		sidedefs[i].xoff = t[i].xoff;
@@ -462,7 +462,7 @@ LONG numRead;
 #endif
 		sidedefs[i].sec_ptr = t[i].sec_ptr;
 	}
-	
+
 	DisposBlock(SidedefHandle);
 	//fclose(fi);
 }
@@ -499,15 +499,15 @@ ULONG numRead;
 	// GWP 	// GWP t.y*=EXPAND_FACTOR;
 	// GWP 	vertexs[i++]=t;
 	// GWP 	}
-	
+
 	numRead = fread(&t[0],sizeof(VERTEX),tot_vertexs,fi);
 	if (numRead < tot_vertexs)
 	{
 		tot_vertexs = numRead;
 	}
-	
+
 	vertexs=(BR_VERTEX *)zalloc(tot_vertexs * sizeof(BR_VERTEX));
-	
+
 	for(i = 0; i < tot_vertexs; ++i)
 	{
 		vertexs[i].x=t[i].x;
@@ -574,12 +574,12 @@ static void load_segs(IWAD_ENTRY *ent, FILE * fi)
 		{
 			LONG const Seg_i_a = segs[i].a;
 			LONG const Seg_i_b = segs[i].b;
-			
+
 			for (j = i+1; j < tot_segs; ++j)
 			{
 				LONG const Seg_j_a = segs[j].a;
 				LONG const Seg_j_b = segs[j].b;
-				
+
 				if (((Seg_i_a == Seg_j_a) && (Seg_i_b == Seg_j_b))
 					||
 					((Seg_i_a == Seg_j_b) && (Seg_i_b == Seg_j_a)))
@@ -613,7 +613,7 @@ ULONG numRead;
 	tot_ssectors=ent->size/sizeof(SSECTOR);
 	if (tot_ssectors==0 || tot_ssectors > 10000)
 		fatal_error("LEVEL ERROR - Total ssectors=%ld in wad %s\n",tot_ssectors,pwad_name);
-		
+
 	SsectorHandle = NewBlock((1 + tot_ssectors) * sizeof(SSECTOR));
 	SetBlockAttr(SsectorHandle, LOCKED, LOCKED);
 	t = (SSECTOR *) BLKPTR(SsectorHandle);
@@ -628,16 +628,16 @@ ULONG numRead;
 	{
 		tot_ssectors = numRead;
 	}
-	
+
 	ssectors=(BR_SSECTOR *)zalloc(sizeof(BR_SSECTOR) * tot_ssectors);
-	
+
 	// Convert the data to our internal structure.
 	for (i = 0; i < tot_ssectors; ++i)
 	{
 		ssectors[i].n = t[i].n;
 		ssectors[i].o = t[i].o;
 	}
-	
+
 	DisposBlock(SsectorHandle);
 	//fclose(fi);
 }
@@ -662,7 +662,7 @@ LONG numRead;
 	if (tot_nodes==0 || tot_nodes > 10000)
 		fatal_error("LEVEL ERROR - Total nodes=%ld in wad %s\n",tot_nodes,pwad_name);
 	// GWP nodes=(NODE *)zalloc(ent.size+1);
-	
+
 	NodeHandle = NewBlock(sizeof(NODE) * tot_nodes);
 	SetBlockAttr(NodeHandle,LOCKED,LOCKED);
 	t = (NODE *)BLKPTR(NodeHandle);
@@ -675,15 +675,15 @@ LONG numRead;
 	// GWP 	// GWP t.y*=EXPAND_FACTOR;
 	// GWP 	nodes[i++]=t;
 	// GWP 	}
-	
+
 	numRead = fread(&t[0], sizeof(NODE), tot_nodes, fi);
 	if (numRead < tot_nodes)
 	{
 		tot_nodes = numRead;
 	}
-	
+
 	nodes=(BR_NODE *)zalloc((tot_nodes * sizeof(BR_NODE)) + 1);
-	
+
 	for (i = 0; i < tot_nodes; ++i)
 	{
 		nodes[i].x=t[i].x;
@@ -724,11 +724,11 @@ LONG numRead;
 	tot_sectors=ent->size/sizeof(SECTOR);
 	if (tot_sectors==0 || tot_sectors > 10000)
 		fatal_error("LEVEL ERROR - Total sectors=%ld in wad %s\n",tot_sectors,pwad_name);
-		
+
 	SectorHandle=NewBlock(ent->size+1);
 	SetBlockAttr(SectorHandle, LOCKED, LOCKED);
 	t = (SECTOR *) BLKPTR(SectorHandle);
-	
+
 	gSectorLight = (BYTE *)zalloc(tot_sectors); // [d10-08-96 JPC]
 	// GWP while(ftell(fi)<ent->offset+ent->size)
 	// GWP 	{
@@ -743,9 +743,9 @@ LONG numRead;
 	{
 		tot_sectors = numRead;
 	}
-	
+
 	sectors=(BR_SECTOR *)zalloc(sizeof(BR_SECTOR) * tot_sectors);
-	
+
 	//fclose(fi);
 	for (i = 0; i < tot_sectors; ++i)
 	{
@@ -757,7 +757,7 @@ LONG numRead;
 		sectors[i].special	= t[i].special;
 		sectors[i].tag		= t[i].tag;
 	}
-	
+
 	DisposBlock(SectorHandle);
 }
 
@@ -842,7 +842,7 @@ void load_new_wad(char *name, LONG PlayerStart)
 	// GWP remove_task(HandleFloors);
 	// GWP remove_task(HandleCeilings);
 	// GWP remove_task(TextureFrameHandler);
-	// GWP 
+	// GWP
 	// GWP // no longer used: remove_task(SectorFrameHandler);
 	// GWP init_doors ();								// [d11-14-96 JPC] removes all sounds
 	// GWP purge_all_things();
@@ -850,7 +850,7 @@ void load_new_wad(char *name, LONG PlayerStart)
 	// GWP SetPurgeClass(CLASS2);			/* purge all things and textures */
 	// GWP DisposClass(CLASS1);				/* remove all zallocED memory */
 
-	printf("Freemem before loading %s: %ld\n", name, ReportFreeMem(TRUE));
+	logInfo("Freemem before loading %s: %ld", name, ReportFreeMem(TRUE));
 	load_level(name,PlayerStart);
 }
 
@@ -862,7 +862,7 @@ void load_new_wad(char *name, LONG PlayerStart)
 void PurgeLevel (void)
 {
 	gfWadLoaded = FALSE;
-	
+
 	// [d8-08-96 JPC]
 	// We need to remove tasks immediately!
 	// Note that this is harmless if function is not a registered task.
@@ -876,14 +876,14 @@ void PurgeLevel (void)
 	SendMessage (ghwndEditWallDlg, WM_CLOSE, 0, 0);
 #endif
 
-	printf("Freemem at end of level: %ld\n", ReportFreeMem(TRUE));
+	logInfo("Freemem at end of level: %ld", ReportFreeMem(TRUE));
 	init_doors ();								// [d11-14-96 JPC] removes all sounds
 	purge_all_things();
 	purge_all_textures();
-	
+
 	SetPurgeClass(CLASS2);			/* purge all things and textures */
 	DisposClass(CLASS1);				/* remove all zallocED memory */
-	
+
 	// GWP Zero out the global vars.
 	things = 0;
 	linedefs = 0;
@@ -900,7 +900,7 @@ void PurgeLevel (void)
 	blockm_size = 0;
 	segMirror = 0;
 	segMirrorDrawn = 0;
-	
+
 	tot_things = 0;
 	tot_linedefs = 0;
 	tot_sidedefs = 0;
@@ -911,10 +911,10 @@ void PurgeLevel (void)
 	tot_sectors = 0;
 	tot_rejects = 0;
 	tot_blockms = 0;
-	
+
 	cbWad_Uses = 0;
-	
-	printf("Freemem after purge: %ld\n", ReportFreeMem(TRUE));
+
+	logInfo("Freemem after purge: %ld", ReportFreeMem(TRUE));
 }
 
 /* ========================================================================
@@ -957,7 +957,7 @@ void CreateResourceScript ()
 	fit = FileOpen(szWadName, "rb");
 	if (fit == NULL)
 		fatal_error("Can't open PWAD file \"%s\"", szWadName);
-	
+
 	fread(&id,sizeof(long),1,fit);	/*id*/
 	fread(&num,sizeof(long),1,fit);	/*num items*/
 	fread(&h,sizeof(long),1,fit);	/*table offset*/
@@ -978,13 +978,10 @@ void CreateResourceScript ()
 		filepos = ftell (fit);
 		// fseek (fit, filepos, SEEK_SET);
 		fread (&t, sizeof(THING), 1, fit);
-		printf ("Thing %d type = %d\n", i, t.type);	
+		logInfo("Thing %d type = %d", i, t.type);
 	}
 	FileClose (fit);
 }
 #endif
 
 // ===========================================================================
-
-
-

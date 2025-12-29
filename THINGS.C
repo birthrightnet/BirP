@@ -66,7 +66,7 @@ static char gszSourceFile[] = __FILE__;	// for ASSERT
 				#define ASSERT(arg) if(!(arg)) SS_Assert(gszSourceFile, __LINE__)
 		#else
 				#define ASSERT(arg) {if(!(arg))fatal_error("ASSERTION FAILED %s,%li\n",gszSourceFile, __LINE__);}
-		#endif	
+		#endif
 	#else
 		#define ASSERT(__ignore) ((void)0)
 	#endif
@@ -122,7 +122,7 @@ MINMEMCONVERT MinMemAdditionalTable[] = {
 	{T_GOBLIN_QUEEN    ,LORES_G_OFF},			// Troop Goblin Queen
 	{T_ZOMBIE          ,LORES_G_OFF},			// Troop Zombie
 };
-SHORT MinMemAdditionalTableMax = sizeof(MinMemAdditionalTable) / sizeof(MINMEMCONVERT);	
+SHORT MinMemAdditionalTableMax = sizeof(MinMemAdditionalTable) / sizeof(MINMEMCONVERT);
 
 /*	ננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננננ
 	Every 10000 thing_spans is another 280 K of RAM in the code! --Wes
@@ -244,7 +244,7 @@ extern LONG	wTexture;
 extern LONG	hTexture;
 
 extern CAMERA_DESCRIPTOR* LevelCameras;
-#if WRC_CAMERA_TEST	
+#if WRC_CAMERA_TEST
 extern BOOL	VideoCurrentlyRedirected;
 #endif
 
@@ -326,7 +326,7 @@ static char* GetThingName(LONG type)
 {
 	return (((TTYPE*)(TTypePtr+(type*G_TTypeSize)))->name);
 }
-	
+
 /* ========================================================================
 	Function     -GetLowResIndex
 	Description  -Return the thing low res index from game type table
@@ -359,64 +359,64 @@ void ChangeThingType(LONG ThingIndex, LONG NewType)
 	UBYTE const bControl = mythings[ThingIndex].bControl;
 	SHORT const iAnim = mythings[ThingIndex].iAnim;
 	SBYTE CurrentRotation = 0;
-	
+
 	// Don't do anything if there is no change.
 	if (mythings[ThingIndex].type == NewType)
 		return;
-		
+
 	if (iAnim != fERROR) 	// Is this a FLC or PCX?
 	{
 		char	cpBuffer[40];
 		UBYTE	ubCurrentFrame = 0;
 		BOOL iAnimLocked = IsLocked(iAnim);
 		ANIMPTR	pAnim;
-		
+
 		if (!iAnimLocked)
 			SetQuickLock(iAnim);
-		
+
 		pAnim = (ANIMPTR)BLKPTR(iAnim);
-		
+
 		CurrentRotation = pAnim->rotation;
 		ubCurrentFrame = pAnim->frame;
-		
+
 		// Release all the old animations.
 		MarkAllAnimPurgable(iAnim);
-		
+
 		// Switch to the new animation frames.
 		sprintf(cpBuffer, "%s.IDA", GetThingName(NewType));
 		pAnim->hiData = GetResourceStd(cpBuffer, FALSE);
-		
+
 		load_obj_graphic(ThingIndex, NewType, iSequence, CurrentRotation, bControl, bControl);
-		
+
 		// Refresh pointer.
 		//pAnim = (ANIMPTR) BLKPTR(iAnim);
-		
+
 		if (pAnim->type == TYPE_FLIC &&			// PCX's don't have frames.
 		    pAnim->hiData > 0)
 		{
 			I_DATA_BLK *phiData;
 			SHORT iHead;
 			BOOL hiDataLocked = IsLocked(pAnim->hiData);
-			
+
 			if (!hiDataLocked)
 				SetQuickLock(pAnim->hiData);
-				
+
 			phiData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
-			
+
 			iHead = phiData->iData[(iSequence * NUMROTATIONS) + CurrentRotation];
-			
+
 			// Make sure that load_flc_sequence() succeeded.
 			if (iHead > 0)
 			{
 				UBYTE i;
 				FLICHEADPTR pHead;
 				BOOL iHeadLocked = IsLocked(iHead);
-				
+
 				if (!iHeadLocked)
 					SetQuickLock(iHead);
-				
+
 				pHead = (FLICHEADPTR) BLKPTR(iHead);
-				
+
 				// Advance to the current frame.
 				for (i = pAnim->frame;
 				     i < ubCurrentFrame && i < pHead->frames;
@@ -425,11 +425,11 @@ void ChangeThingType(LONG ThingIndex, LONG NewType)
 					++pAnim->frame;
 					decode_frame(pAnim, pHead);
 				}
-				
+
 				if (!iHeadLocked)
 					ClrLock(iHead);
 			}
-			
+
 			if (!hiDataLocked)
 				ClrLock(pAnim->hiData);
 		}
@@ -444,7 +444,7 @@ void ChangeThingType(LONG ThingIndex, LONG NewType)
 		mythings[ThingIndex].iBitm = fERROR;
 		load_obj_graphic(ThingIndex, NewType, iSequence, CurrentRotation, bControl, bControl);
 	}
-	
+
 }
 /* ========================================================================
    Function    - GetMinMemConvert
@@ -458,11 +458,11 @@ ULONG GetMinMemConvert(ULONG type)
 	SHORT i;
 	ULONG orig_type = type;
 	ULONG lowres_type;
-	
+
 	lowres_type = GetLowResIndex(type);
 	if(lowres_type != NOLOW)
 		return lowres_type;
-	
+
 	if(fBattleCombat)
 	{
 		for(i=0;i<MinMemAdditionalTableMax;++i)
@@ -471,7 +471,7 @@ ULONG GetMinMemConvert(ULONG type)
 				return MinMemAdditionalTable[i].new;
 		}
 	}
-	
+
 	// not found, use original type
 	return orig_type;
 }
@@ -492,7 +492,7 @@ void fill_sequence_handles (SHORT iAnim, LONG seq)
 
 	if (!iAnimLocked)
 		SetQuickLock(iAnim);
-		
+
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
 	if (pAnim->hiData < 0)
 	{
@@ -500,13 +500,13 @@ void fill_sequence_handles (SHORT iAnim, LONG seq)
 			ClrLock(iAnim);
 		return;
 	}
-		
+
 	hiDataLocked = IsLocked(pAnim->hiData);
 	if (!hiDataLocked)
 		SetQuickLock(pAnim->hiData);
-		
+
 	piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
-	
+
 	// Find the first good rotation.
 	for (rot=0; rot<NUMROTATIONS; ++rot)
 	{
@@ -521,16 +521,16 @@ void fill_sequence_handles (SHORT iAnim, LONG seq)
 	for (rot=1; rot<NUMROTATIONS; ++rot)
 	{
 		SHORT iseqrot = iseq+rot;
-		
+
 		if (piData->iData[iseqrot] < 0)
 		{
 			piData->iData[iseqrot] = piData->iData[iseqrot-1];
 		}
 	}
-	
+
 	if (!hiDataLocked)
 		ClrLock(pAnim->hiData);
-		
+
 	if (!iAnimLocked)
 		ClrLock(iAnim);
 }
@@ -547,44 +547,44 @@ static SHORT load_PCX_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotat
 	ANIMPTR		pAnim = 0;
 	ULONG		iseq;
 	BOOL		iAnimLocked;
-		
+
 	if (iAnim == fERROR)
 		return iAnim;
-		
+
 	CHECK_THING_INDEX(t,"load_PCX_sequence");
-	
+
 	/* ------------------------------------------ */
 	/* Attempt to load as a set of PCXs */
 	/* ------------------------------------------ */
 	// GWP Instead just load one rotation. Let the draw load the rest if/when needed.
 	// GWP Also don't fill in the handles, thus forcing a reload when drawn.
-	
+
 	iseq = seq * NUMROTATIONS;
-	
+
 	sprintf(n,"%s", GetThingName(ttype));
-	
+
 	sprintf(fn,"%sPCX\\%s%c%c.pcx",THING_PATH,n,cAction[seq],cRotation[Rotation]);
 	iAnim = OpenAnim(iAnim, iseq + Rotation, fn, TYPE_PCX);
-		
+
 	iAnimLocked = IsLocked(iAnim);
 	if (!iAnimLocked)
 		SetQuickLock(iAnim);
-		
+
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
-	
+
 	if (pAnim->hiData > 0)
 	{
 		I_DATA_BLK	*piData;
 		BOOL		hiDataLocked = IsLocked(pAnim->hiData);
-		
+
 		if (!hiDataLocked)
 			SetQuickLock(pAnim->hiData);
-			
+
 		piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 		if (piData->iData[Rotation] == fERROR)
 		{
 			ULONG		rot;
-			
+
 			// We couldn't get the requested rotation, so load'em all.
 			for (rot=0; rot<NUMROTATIONS; ++rot)
 			{
@@ -593,14 +593,14 @@ static SHORT load_PCX_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotat
 			}
 			fill_sequence_handles(iAnim, seq);		/* handle non-existant rot */
 		}
-		
+
 		if (!hiDataLocked)
 			ClrLock(pAnim->hiData);
 	}
-	
+
 	if (!iAnimLocked)
 		ClrLock(iAnim);
-		
+
 	return iAnim;
 }
 /* =======================================================================
@@ -615,10 +615,10 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 	char		fn[40];
 	ANIMPTR		pAnim = 0;
 	I_DATA_BLK	*piData;
-		
+
 	if (iAnim == fERROR)
 		return iAnim;
-		
+
 	CHECK_THING_INDEX(t,"load_FLC_sequence");
 
 	if (seq > MAX_ANIMATIONSEQ )
@@ -629,7 +629,7 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 		return iAnim;
 #endif
 	}
-	
+
 	//if (iAnim == (SHORT)fERROR)
 	//	return;
 
@@ -640,14 +640,14 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 	{
 		ULONG GetSeq;
 		ULONG iGetSeq;
-		
+
 		GetSeq = RestrictAniSeq(seq);
-	
+
 		iGetSeq = GetSeq * NUMROTATIONS;
 		iseq = seq * NUMROTATIONS;
-		
+
 		sprintf(n,"%s", GetThingName(ttype));
-		
+
 		// if not Expire or Dead, only use rotations 0,5,and 9
 		// if EXPIRE or Dead only use rotation 0
 		if (((GetSeq == ANIMATION5SEQ || GetSeq == ANIMATION12SEQ) && (Rotation == 0))
@@ -656,15 +656,15 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 			)
 		{
 			BOOL iAnimLocked;
-			
+
 			// First try to get only the rotation requested.
 			sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[GetSeq],cRotation[Rotation]);
 			OpenAnim(iAnim, iGetSeq+Rotation, fn, TYPE_FLIC);
-			
+
 			iAnimLocked = IsLocked(iAnim);
 			if (!iAnimLocked)
 				SetQuickLock(iAnim);
-				
+
 			pAnim = (ANIMPTR) BLKPTR(iAnim);	// Refresh the pointer.
 			if (pAnim->hiData > 0)
 			{
@@ -677,14 +677,14 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 			}
 			if (!iAnimLocked)
 				ClrLock(iAnim);
-				
+
 			return iAnim;
 		}
- 		
+
  		// This rotation doesn't exist, we must try for all of them  then fill in.
- 		
+
 		rot = 0; // rotation 0
-		
+
 		sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[GetSeq],cRotation[rot]);
 		OpenAnim(iAnim, iGetSeq+rot, fn, TYPE_FLIC);
 		if (GetSeq != seq)
@@ -704,12 +704,12 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 				return iAnim;
 			}
 		}
-		
+
 		if (GetSeq == ANIMATION5SEQ)
 			rot = 1;	// rotation 3
 		else
 			rot = 2;	// rotation 5
-					
+
 		sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[GetSeq],cRotation[rot]);
 		OpenAnim(iAnim, iGetSeq+rot, fn, TYPE_FLIC);
 		if (GetSeq != seq)
@@ -722,13 +722,13 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 				piData->iData[iseq + rot] = piData->iData[iGetSeq + rot];
 			}
 		}
-		
+
 		if (GetSeq != ANIMATION5SEQ)
 			rot = 4;	// rotation 9
-					
+
 		sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[GetSeq],cRotation[rot]);
 		OpenAnim(iAnim, iGetSeq+rot, fn, TYPE_FLIC);
-		
+
 		if (GetSeq != seq)
 		{
 			pAnim = (ANIMPTR) BLKPTR(iAnim);	// Refresh the pointer.
@@ -739,7 +739,7 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 				piData->iData[iseq + rot] = piData->iData[iGetSeq + rot];
 			}
 		}
-		
+
 		fill_sequence_handles(iAnim, GetSeq);		/* handle non-existant rot */
 	}
 	else
@@ -753,13 +753,13 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 			return iAnim;
 #endif
 		}
-	
+
 		sprintf(n,"%s", GetThingName(ttype));
-		
+
 		// First try to get only the rotation requested.
 		sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[seq],cRotation[Rotation]);
 		OpenAnim(iAnim, iseq+Rotation, fn, TYPE_FLIC);
-		
+
 		pAnim = (ANIMPTR) BLKPTR(iAnim);	// Refresh the pointer.
 		if (pAnim->hiData > 0)
 		{
@@ -772,18 +772,18 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
 		}
 		else
 			return iAnim;	// Sorry pAnim is missing the hiData.
-		
+
  		// This rotation doesn't exist, we must try for all of them  then fill in.
  		for (rot=0; rot<NUMROTATIONS; ++rot)
 		{
 			sprintf(fn,"%s%s\\%s%c%c.flc",THING_PATH,n,n,cAction[seq],cRotation[rot]);
 			OpenAnim(iAnim, iseq+rot, fn, TYPE_FLIC);
 		}
-		
+
 	}
 
 	fill_sequence_handles(iAnim, seq);		/* handle non-existant rot */
-	
+
 	return iAnim;
 }
 
@@ -791,7 +791,7 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
    Function    - load_obj_graphic
    Description - loads a graphic for an object
    Returns     - the index of the new graphic in the obj_graphic table
-   ======================================================================== */	
+   ======================================================================== */
 static void load_obj_graphic(LONG i,
 					  ULONG ttype,
 					  ULONG AnimationSeq,
@@ -803,20 +803,20 @@ static void load_obj_graphic(LONG i,
 	char		n[40];
 	char		fn[128];
 	char		pn[128];
-	
+
 	mythings[i].type = ttype;
 
 	/* check for valid TType array */
 	if (TTypePtr == NULL)
 	{
-		printf("WARNING - TTypes array not registered in load_obj_graphic\n");
+		logWarn("TTypes array not registered in load_obj_graphic");
 		goto LoadGenthing;
 	}
 
 	/* check for type out of range */
 	if (ttype > G_NumberOfTTypes)
 	{
-		printf("ERROR - THINGS.C: thing type number greater than %ld: %ld\n",ttype, G_NumberOfTTypes);
+		logError("THINGS.C: thing type number greater than %ld: %ld",ttype, G_NumberOfTTypes);
 		goto LoadGenthing;
 	}
 
@@ -826,14 +826,14 @@ static void load_obj_graphic(LONG i,
 	if(fLowResAni == TRUE)
 	{
 		SHORT count;
-		
+
 		count = GetLowResIndex(ttype);
-		
+
 		if(count!=-1)
 			count = GetMinMemConvert(count);
 		else
 			count = GetMinMemConvert(ttype);
-			
+
 		if(count!=-1)
 		{
 			LONG ArtType = GetArtType(count);
@@ -843,7 +843,7 @@ static void load_obj_graphic(LONG i,
 				goto Art_Is_BITMAP;
 			if (ArtType == PCX_ART)
 				goto Art_Is_PCX;
-				
+
 			sprintf(n,"%s", GetThingName(count));
 		}
 		else
@@ -855,7 +855,7 @@ static void load_obj_graphic(LONG i,
 				goto Art_Is_BITMAP;
 			if (ArtType == PCX_ART)
 				goto Art_Is_PCX;
-				
+
 			sprintf(n,"%s", GetThingName(ttype));
 		}
 	}
@@ -868,11 +868,11 @@ static void load_obj_graphic(LONG i,
 			goto Art_Is_BITMAP;
 		if (ArtType == PCX_ART)
 			goto Art_Is_PCX;
-				
+
 		sprintf(n,"%s", GetThingName(ttype));
 	}
 
-	printf("Type:%03ld - %s\n",ttype,n);
+	logInfo("Type:%03ld - %s",ttype,n);
 
 	sprintf(fn,"%s%s\\%sS0.flc",THING_PATH,n,n);
 	sprintf(pn,"%sPCX\\%sS0.pcx",THING_PATH,n);
@@ -894,16 +894,16 @@ Art_Is_FLC:
 		{
 			MarkOldAnimPurgable(iAnim, mythings[i].iSequence);
 		}
-		
+
 		load_FLC_sequence(iAnim, mythings[i].type, AnimationSeq, rotation);
 		SetAnimSequence(iAnim, (AnimationSeq * NUMROTATIONS) + rotation);
-		
+
 		// Mark'm purgable in case we don't draw them, we can flush them out.
 		MarkOldAnimPurgable(iAnim, AnimationSeq);
-		
+
 		mythings[i].iSequence = AnimationSeq;
 		mythings[i].bControl  = bFLCControl;
-		
+
 		pAnim = (ANIMPTR) BLKPTR(iAnim);
 		// pAnim->iBuff could have changed in SetAnimSequence.
 		mythings[i].iBitm = pAnim->iBuff;
@@ -922,7 +922,7 @@ Art_Is_FLC:
 	else if (Exists(pn))
 	{
 		ANIMPTR pAnim = 0;
-		
+
 Art_Is_PCX:
 		iAnim = mythings[i].iAnim;
 		if (iAnim == fERROR)
@@ -933,19 +933,19 @@ Art_Is_PCX:
 		{
 			MarkOldAnimPurgable(iAnim, mythings[i].iSequence);
 		}
-		
+
 		load_PCX_sequence(iAnim, mythings[i].type, AnimationSeq, rotation);
 		SetPCXSequence(iAnim, (AnimationSeq * NUMROTATIONS) + rotation);
-		
+
 		// Mark'm purgable in case we don't draw them, we can flush them out.
 		MarkOldAnimPurgable(iAnim, AnimationSeq);
-		
+
 		mythings[i].iSequence = AnimationSeq;
 		mythings[i].bControl  = bPCXControl;
-		
+
 		pAnim = (ANIMPTR) BLKPTR(iAnim);
 		mythings[i].iBitm = pAnim->iBuff;
-		
+
 		if (mythings[i].iBitm != fERROR)
 		{
 			BITMPTR pBitm = (BITMPTR) BLKPTR(mythings[i].iBitm);
@@ -968,17 +968,17 @@ Art_Is_BITMAP:
 #if defined (_JPC)
 			TRACE("ERROR - THINGS.C: Loading GENTHING, could not find: %s (%ld)\n",pn, ttype);
 #endif
-			printf("WARNING - %s (%ld) not found in load_obj_graphic, loading GENTHING\n",pn,ttype);
+			logWarn("%s (%ld) not found in load_obj_graphic, loading GENTHING",pn,ttype);
 
 LoadGenthing:
 			{
 			ULONG Gentype;
 			SHORT count;
-			
+
 			// GEH substitute valid item
 			//GEH type = gMagicItems.pMagicItems[random(gMagicItems.NumberOfMagicItems)];
 			Gentype = BALM_OF_HEALING;
-			
+
 			/* get base filename from registered TType array */
 			count = GetLowResIndex(Gentype);
 			if(fMedResAni == TRUE && count!=-1)
@@ -999,15 +999,15 @@ LoadGenthing:
 			return;
 #endif
 		}
-		
-		
+
+
 		if (mythings[i].iBitm != fERROR)
 		{
 			BITMPTR pBitm = (BITMPTR) BLKPTR(mythings[i].iBitm);
 			// Note: We use the bitmap width because the art is rotated 90Deg.
 			mythings[i].heiScaled = (pBitm->w*UNITARY_SCALE)/pBitm->scale;
 			mythings[i].widScaled = (pBitm->h*UNITARY_SCALE)/pBitm->scale;
-			
+
 			SetPurge(mythings[i].iBitm);
 		}
 	}
@@ -1038,15 +1038,15 @@ LONG create_thing (ULONG type, LONG x, LONG y,LONG z)
 	for (i=0; i<MAX_THINGS; ++i)
 		if (!mythings[i].valid)
 			break;
-	
+
 	if( i > MaxThingLoaded )
 	{
 		MaxThingLoaded = i;
 	}
-	
+
 	if(i>=MAX_THINGS)
 	{
-		printf("ERROR - Requested too many things, exceeded MAX_THINGS (%d)\n",MAX_THINGS);
+		logError("Requested too many things, exceeded MAX_THINGS (%d)",MAX_THINGS);
 		for (i=0; i<300; ++i)
 			debug_cTypes[i] = 0;
 		for (i=0; i<MAX_THINGS; ++i)
@@ -1059,7 +1059,7 @@ LONG create_thing (ULONG type, LONG x, LONG y,LONG z)
 		for (i=0; i<300; ++i)
 			if (debug_cTypes[i])
 				printf("#%ld - %s: %d", i, GetThingName(type), debug_cTypes[i]);
-#if defined(_DEBUG)		
+#if defined(_DEBUG)
 		fatal_error("ERROR - Requested too many things, exceeded MAX_THINGS (%d)\n",MAX_THINGS);
 #else
 		return fERROR;
@@ -1069,9 +1069,9 @@ LONG create_thing (ULONG type, LONG x, LONG y,LONG z)
 	if(fLowResAni == TRUE)
 	{
 		SHORT count;
-		
+
 		count = GetLowResIndex(type);
-		
+
 		if(count!=-1)
 			type = GetMinMemConvert(count);
 		else
@@ -1082,7 +1082,7 @@ LONG create_thing (ULONG type, LONG x, LONG y,LONG z)
 		// Always start with the lowest resolution possible. We'll
 		// Res it up if needed.
 		SHORT lowResIndex = GetLowResIndex(type);
-		
+
 		if (lowResIndex != -1)
 		{
 			SHORT UltraLowRes = GetLowResIndex(lowResIndex);
@@ -1171,7 +1171,7 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 		MaxThingSpans = MAX_LOWRES_THING_SPANS;
 	else
 		MaxThingSpans = MAX_HIRES_THING_SPANS;
-		
+
 	mythings=(MYTHING *)zalloc(MAX_THINGS*sizeof(MYTHING) );
 	thing_spans = (THING_SPAN *)zalloc(MaxThingSpans * sizeof(THING_SPAN));
 	ssector_things = (LONG *) zalloc(MAX_SSECTORS * sizeof(LONG));
@@ -1184,7 +1184,7 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 
 	if(!mythings)
 		fatal_error("Out of memory in init_things");
-			
+
 	for(i=0;i<MAX_SSECTORS;++i)
 	{
 		ssector_things[i] = -1;	//nothing here.
@@ -1205,10 +1205,10 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 		// this section could take a bit of time so we will
 		// call the timer critical routine
 		// GWP Too often to be called here. run_timers();
-		
+
 		if(things[i].type == 343)
 			continue;
-			
+
 #ifdef _JPC
 		if (i == giDebugThing)
 			++gDebug;
@@ -1310,7 +1310,7 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 				ta=((0xffff/360)*things[i].angle)/256;
 				ta=(ta-63)&0xff;
 				init_player(things[i].x,things[i].y,(65535-ta)&0xFF);
-			
+
 				// save the player start data for internet
 				inetStartX = things[i].x;
 				inetStartY = things[i].y;
@@ -1345,13 +1345,13 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 			// The game needs to set this variable to some object
 			things[i].type = BALM_OF_HEALING;
 		}
-		
+
 		UseType = things[i].type;
 		// if you are in a low memory condition, just load the low memory art.
 		// if(fMedResAni == TRUE)
 		{
 			LONG const LowResType = GetLowResIndex(UseType);
-			
+
 			if (fLowResAni == TRUE)
 			{
 				if (LowResType != -1)
@@ -1383,7 +1383,7 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 		                       &CeilingHeight,
 		                       &Special,
 		                       &Tag);
-		
+
 		// JPC: Trick the things into thinking the floor height
 		// is lower than it really is if the sector is a water sector.
 		if (sectors[sect].special == SSP_WATER ||
@@ -1413,7 +1413,7 @@ void init_things (LONG * pPlayerStart)  // which player start to begin on
 		// [d7-30-96 JPC] Per TCW GWP--above calculation is wrong.
 		mythings[t].angle = (320 - ((LONG)(((float)(64*things[i].angle))/90))) & 0xFF;
 		mythings[t].AIbits = things[i].options;
-	
+
 		// Do the following in add_thing:
 		// mythings[t].sect = (SHORT)sect;
 		add_thing(t, ss);
@@ -1495,17 +1495,17 @@ static void MoveSetThing (LONG ThingIndex,LONG nx,LONG ny)
 		LONG CeilingHeight;
 		LONG Special;
 		LONG Tag;
-		
+
 		// New subsector, need to get information.
 		if(new_ss<0 || new_ss>=MAX_SSECTORS)
 		{
-			printf("move_thing_to: Bad ssector (%d) for mything[%d]\n",new_ss, ThingIndex);
+			logInfo("move_thing_to: Bad ssector (%d) for mything[%d]",new_ss, ThingIndex);
 			return;
 		}
-		
+
 		remove_thing(ThingIndex);
 		add_thing(ThingIndex, new_ss);
-		
+
 		ssector_to_sector_info(mythings[ThingIndex].x,
 									  mythings[ThingIndex].y,
 									  new_ss,
@@ -1559,7 +1559,7 @@ static void MoveSetThing (LONG ThingIndex,LONG nx,LONG ny)
 
 		if (!fGraphInitialized)
 			return;
-	
+
 		x = mythings[ThingIndex].x;
 		y = mythings[ThingIndex].y;
 		iSector = point_to_sector (x, y);
@@ -1634,7 +1634,7 @@ void move_thing (LONG ThingIndex, LONG dx, LONG dy)
 		LONG CeilingHeight;
 		LONG Special;
 		LONG Tag;
-		
+
 		if (orig_ss == new_ss)
 		{
 			sect = mythings[ThingIndex].sect;
@@ -1646,13 +1646,13 @@ void move_thing (LONG ThingIndex, LONG dx, LONG dy)
 		{
 			if(new_ss<0 || new_ss>=MAX_SSECTORS)
 			{
-				printf("move_thing: Bad ssector (%d) for mything[%d]\n",new_ss, ThingIndex);
+				logInfo("move_thing: Bad ssector (%d) for mything[%d]",new_ss, ThingIndex);
 				return;
 			}
-			
+
 			remove_thing(ThingIndex);
 			add_thing(ThingIndex, new_ss);
-			
+
 			ssector_to_sector_info(mythings[ThingIndex].x,
 										  mythings[ThingIndex].y,
 										  new_ss,
@@ -1750,7 +1750,7 @@ void move_thing_to (LONG ThingIndex,LONG nx,LONG ny)
 		LONG CeilingHeight;
 		LONG Special;
 		LONG Tag;
-		
+
 		if (orig_ss == new_ss)
 		{
 			// We should only get here if the sector is a water sector.
@@ -1767,13 +1767,13 @@ void move_thing_to (LONG ThingIndex,LONG nx,LONG ny)
 			// New subsector, need to get information.
 			if(new_ss<0 || new_ss>=MAX_SSECTORS)
 			{
-				printf("move_thing_to: Bad ssector (%d) for mything[%d]\n",new_ss, ThingIndex);
+				logInfo("move_thing_to: Bad ssector (%d) for mything[%d]",new_ss, ThingIndex);
 				return;
 			}
-			
+
 			remove_thing(ThingIndex);
 			add_thing(ThingIndex, new_ss);
-			
+
 			ssector_to_sector_info(mythings[ThingIndex].x,
 										  mythings[ThingIndex].y,
 										  new_ss,
@@ -1840,7 +1840,7 @@ void move_thing_to (LONG ThingIndex,LONG nx,LONG ny)
 
 		if (!fGraphInitialized)
 			return;
-	
+
 		x = mythings[ThingIndex].x;
 		y = mythings[ThingIndex].y;
 		iSector = point_to_sector (x, y);
@@ -1859,13 +1859,13 @@ void move_thing_to (LONG ThingIndex,LONG nx,LONG ny)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 void LoopSequenceContinuously (LONG t, ULONG sequence)
 {
 	CHECK_THING_INDEX(t,"StartSequenceLoop");
 
-	if (mythings[t].valid && 
+	if (mythings[t].valid &&
 	    mythings[t].iSequence != (UBYTE) sequence &&
 	    mythings[t].iAnim != fERROR)
 	{
@@ -1878,13 +1878,13 @@ void LoopSequenceContinuously (LONG t, ULONG sequence)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 void LoopSequenceOnce (LONG t, ULONG sequence)
 {
 	CHECK_THING_INDEX(t,"StartSequenceOnce");
 
-	if (mythings[t].valid && 
+	if (mythings[t].valid &&
 	    mythings[t].iSequence != (UBYTE) sequence &&
 	    mythings[t].iAnim != fERROR)
 	{
@@ -1897,13 +1897,13 @@ void LoopSequenceOnce (LONG t, ULONG sequence)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 void PlaySequenceOnce (LONG t, ULONG sequence)
 {
 	CHECK_THING_INDEX(t,"StartSequenceOnce");
 
-	if (mythings[t].valid && 
+	if (mythings[t].valid &&
 	    mythings[t].iSequence != (UBYTE) sequence &&
 	    mythings[t].iAnim != fERROR)
 	{
@@ -1916,13 +1916,13 @@ void PlaySequenceOnce (LONG t, ULONG sequence)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 BOOL TestSequenceDone (LONG t)
 {
 	CHECK_THING_INDEX(t,"TestSequenceDone");
 	BOOL Result = TRUE;
-	
+
 	if (mythings[t].bControl & REWIND_FLAG)
 	{
 		Result = ((mythings[t].bControl & (FRAME_MASK+START_FLAG)) == IDLE_FRAME);
@@ -1948,7 +1948,7 @@ BOOL TestSequenceDone (LONG t)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 LONG SequenceFrameNumber (LONG t)
 {
@@ -2000,7 +2000,7 @@ void remove_thing (LONG t)
 	if((ULONG)ft==t ) // I am the first thing in a list
 	{
 		if( mythings[t].next_thing==-1) //this is first and last thing so...
-		{							
+		{
 			ssector_things[ss]=-1;
 		}
 		else
@@ -2028,7 +2028,7 @@ void remove_thing (LONG t)
 #if defined(DEBUG)
 				fatal_error("ERROR! things.c mythings array is toast.\n");
 #endif
-				printf("WARNING: mythings array is inconsistent.\n");
+				logWarn("mythings array is inconsistent.");
 				return;
 			}
 		}
@@ -2065,7 +2065,7 @@ void add_thing (LONG t, LONG ss)
 	LONG CeilingHeight;
 	LONG Special;
 	LONG Tag;
-		
+
 
 	CHECK_THING_INDEX(t,"add_thing");
 #if defined (_DEBUG)
@@ -2094,9 +2094,9 @@ void add_thing (LONG t, LONG ss)
 		}
 		mythings[ct].next_thing = t;
 	}
-	
+
 	mythings[t].next_thing = -1;
-	
+
 	mythings[t].ssect = ss;
 	mythings[t].valid = TRUE;
 
@@ -2171,7 +2171,7 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 //#else
 		return;
 //#endif
-		
+
 #if !defined(_WINDOWS)
 	if (fAIMoving)
 	{
@@ -2179,13 +2179,13 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 			return;
 	}
 #endif
-	
+
 	++dye;
 	//if (sx >= hei)
 	if (sx < 0 || sx >= bptr->h)
 		return;
 
-#if WRC_CAMERA_TEST	
+#if WRC_CAMERA_TEST
 	if (VideoCurrentlyRedirected) 	//must rotate 90deg if rendering to buf
 	{
 		sptr = (PTR)screen+((dx*screen_buffer_height)+dy);
@@ -2207,7 +2207,7 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 	tptr = &tptr[sx * bptr->w]; /*note add of sx here instead of in loop*/
 
 	// tsy = sy;
-	
+
 	if (light != DARKEST)
 	{
 		if (light == 0)
@@ -2220,9 +2220,9 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 					// Test for transparency
 					if (pix)
 					{
-						*(sptr+1)=*sptr = (UBYTE)pix;		
+						*(sptr+1)=*sptr = (UBYTE)pix;
 					}
-			
+
 					tsy += src_inc;
 					sptr += sptr_inc;
 				} while(sptr < sptr_end);
@@ -2235,9 +2235,9 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 					// Test for transparency
 					if (pix)
 					{
-						*sptr = (UBYTE)pix;		
+						*sptr = (UBYTE)pix;
 					}
-			
+
 					tsy += src_inc;
 					sptr += sptr_inc;
 				} while(sptr < sptr_end);
@@ -2245,7 +2245,7 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 		}
 		else
 		{
-			
+
 #if !defined(_WINDOWS)
 			if (fAIMoving)
 			{
@@ -2254,9 +2254,9 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 					// Test for transparency
 					if (pix)
 					{
-						*(sptr+1)=*sptr = (UBYTE)pix;		
+						*(sptr+1)=*sptr = (UBYTE)pix;
 					}
-			
+
 					tsy += src_inc;
 					sptr += sptr_inc;
 				} while(sptr < sptr_end);
@@ -2269,9 +2269,9 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 					// Test for transparency
 					if (pix)
 					{
-						*sptr = (UBYTE)pix;		
+						*sptr = (UBYTE)pix;
 					}
-			
+
 					tsy += src_inc;
 					sptr += sptr_inc;
 				} while(sptr < sptr_end);
@@ -2280,7 +2280,7 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 	}
 	else
 	{
-		
+
 #if !defined(_WINDOWS)
 		if (fAIMoving)
 		{
@@ -2301,7 +2301,7 @@ static void scale_obj (LONG t, LONG sx, LONG dx, LONG dy, LONG dye, LONG clipped
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 void draw_thing_spans (void)
 {
@@ -2335,7 +2335,7 @@ void draw_thing_spans (void)
 		// "SetLight" is a macro that sets the global pointer "shade" to
 		// the appropriate shade_table.
 		THING_SPAN *pthing_spans = &thing_spans[i];
-		
+
 		SetLight (pthing_spans->light);
 		scale_obj(pthing_spans->t,
 			pthing_spans->sx,
@@ -2348,7 +2348,7 @@ void draw_thing_spans (void)
 }
 
 /* =======================================================================
-	
+
 	======================================================================= */
 static void draw_thing (LONG t)
 {
@@ -2379,7 +2379,7 @@ static void draw_thing (LONG t)
 	LONG			mirror_thing = FALSE;
 
 	CHECK_THING_INDEX(t,"draw_thing");
-	
+
 	// GWP HACK to get to get trees out of the way of the camera for fights.
 	if (gDontDrawInfo.SetFlag == TRUE &&
 		mythings[t].iAnim == (SHORT)fERROR &&		// Not A Flc
@@ -2418,12 +2418,12 @@ static void draw_thing (LONG t)
 		SHORT			iSeq;
 		POINT 			c;
 		POINT 			e;
-		
+
 		/* Find angle between camera location and thing */
 		approach_angle = (
 			RelativeAngle(
 				mythings[t].angle,
-				AngleFromPoint(	
+				AngleFromPoint(
 								mythings[t].x,
 								mythings[t].y,
 								CAMERA_INT_VAL(camera.x),
@@ -2454,11 +2454,11 @@ static void draw_thing (LONG t)
 
 		/* check for invalid request and fall back to STAND at 0 deg. */
 		iSeq = (mythings[t].iSequence * NUMROTATIONS) + rotation;
-		
+
 		if (pAnim->type == TYPE_FLIC)
 		{
 			FLICHEADPTR		pHead;
-			
+
 			if (pAnim->hiData <= 0)
 			{
 				return; // Sorry no animations for this type.
@@ -2470,50 +2470,50 @@ static void draw_thing (LONG t)
 			    IsHandleFlushed(iHead))
 			{
 				iAnim = load_FLC_sequence(iAnim, mythings[t].type, mythings[t].iSequence, rotation);
-				
+
 				// Refresh the handles.
 				pAnim = (ANIMPTR)BLKPTR(iAnim);
 				piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 				iHead = piData->iData[iSeq];
-				
+
 				// Were we successful?
 				if (iHead <= 0 ||
 					IsHandleFlushed(iHead))
 				{
-#ifndef QUIETDEGRADE				
-					printf("WARNING - degrading %s seq:%c to stand\n", GetThingName(type), cAction[mythings[t].iSequence]);
-#endif				
+#ifndef QUIETDEGRADE
+					logWarn("degrading %s seq:%c to stand", GetThingName(type), cAction[mythings[t].iSequence]);
+#endif
 					// Couldn't load it.  Degrade to STAND
-					
+
 					MarkOldAnimPurgable(iAnim, mythings[t].iSequence);
 					mythings[t].iSequence = ANIMATION0SEQ;
 					iSeq = rotation + (ANIMATION0SEQ * NUMROTATIONS);
 					iHead = piData->iData[iSeq];
-					
+
 					// Test whether the stand sequence has ever been loaded.
 					if (iHead <= 0 ||
 						IsHandleFlushed(iHead))
 					{
 						// Get the stand sequence.
 						load_FLC_sequence(iAnim, mythings[t].type, mythings[t].iSequence, rotation);
-						
+
 						pAnim = (ANIMPTR)BLKPTR(iAnim);
 						piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 						iHead = piData->iData[iSeq];
 						if (iHead <= 0)
 						{
-							printf("WARNING - Unable to get stand animation %s seq: %c !!\n",
+							logWarn("Unable to get stand animation %s seq: %c !!",
 							GetThingName(t), cAction[mythings[t].iSequence]);
 							return;	// couldn't load the stand.
 						}
 					}
 					SetAnimSequence(iAnim, iSeq);
-					
+
 					// Refresh the handles.
 					pAnim = (ANIMPTR)BLKPTR(iAnim);
 					piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 					iHead = piData->iData[iSeq];
-					
+
 					// We could have changed this Handle in SetAnimSequence so refresh it.
 					mythings[t].iBitm = pAnim->iBuff;
 					if (mythings[t].iBitm != fERROR)
@@ -2535,27 +2535,27 @@ static void draw_thing (LONG t)
 					iHead = piData->iData[iSeq];		// get the memory handle for this resource
 				}
 			}
-			
-			
+
+
 			/* get width and height of selected sequence */
 			pHead = (FLICHEADPTR)BLKPTR(iHead);
 			// We've been paged out.
 			if (pHead <= 0)
 				return;
-				
+
 			hei = pHead->width;
 			wid = pHead->height;
-	
+
 			/* only decompress flics that can be seen */
-			
+
 			if(mythings[t].Frozen == TRUE)
 			   // && mythings[t].fDrawnLastFrame == TRUE)		// -GWP- Optimization for Battlefields, causes us to be one frame off...
-			{	
+			{
 				mythings[t].bControl = 0;
 				mythings[t].iBitm = NextAnimFrame(iAnim, mythings[t].iSequence, rotation, &(mythings[t].bControl), pAnim->frame);
 				if ( mythings[t].iBitm == fERROR)
 				{
-					printf("WARNING - NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR\n",type,mythings[t].iSequence,rotation);
+					logWarn("NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR",type,mythings[t].iSequence,rotation);
 					return;
 				}
 				else
@@ -2564,13 +2564,13 @@ static void draw_thing (LONG t)
 					mythings[t].heiScaled = (pBitm->h*UNITARY_SCALE)/pBitm->scale;
 					mythings[t].widScaled = (pBitm->w*UNITARY_SCALE)/pBitm->scale;
 				}
-					
+
 				if (mythings[t].SkipFrame == TRUE)
 				{
 					mythings[t].iBitm = NextAnimFrame(iAnim, mythings[t].iSequence, rotation, &(mythings[t].bControl), pAnim->frame);
 					if ( mythings[t].iBitm == fERROR)
 					{
-						printf("WARNING - NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR\n",type,mythings[t].iSequence,rotation);
+						logWarn("NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR",type,mythings[t].iSequence,rotation);
 						return;
 					}
 					else
@@ -2579,7 +2579,7 @@ static void draw_thing (LONG t)
 						mythings[t].heiScaled = (pBitm->h*UNITARY_SCALE)/pBitm->scale;
 						mythings[t].widScaled = (pBitm->w*UNITARY_SCALE)/pBitm->scale;
 					}
-					
+
 				}
 			}
 			else
@@ -2589,7 +2589,7 @@ static void draw_thing (LONG t)
 					mythings[t].iBitm = NextAnimFrame(iAnim, mythings[t].iSequence, rotation, &(mythings[t].bControl), -1);
 					if ( mythings[t].iBitm == fERROR)
 					{
-						printf("WARNING - NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR\n",type,mythings[t].iSequence,rotation);
+						logWarn("NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR",type,mythings[t].iSequence,rotation);
 						return;
 					}
 					else
@@ -2598,13 +2598,13 @@ static void draw_thing (LONG t)
 						mythings[t].heiScaled = (pBitm->h*UNITARY_SCALE)/pBitm->scale;
 						mythings[t].widScaled = (pBitm->w*UNITARY_SCALE)/pBitm->scale;
 					}
-					
+
 					if (mythings[t].SkipFrame == TRUE)
 					{
 						mythings[t].iBitm = NextAnimFrame(iAnim, mythings[t].iSequence, rotation, &(mythings[t].bControl), -1);
 						if ( mythings[t].iBitm == fERROR)
 						{
-							printf("WARNING - NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR\n",type,mythings[t].iSequence,rotation);
+							logWarn("NextAnimFrame %ld (seq:%ld rot:%ld) returned fERROR",type,mythings[t].iSequence,rotation);
 							return;
 						}
 						else
@@ -2624,7 +2624,7 @@ static void draw_thing (LONG t)
 			{
 				return; // Sorry no animations for this type.
 			}
-			
+
 			// Test whether this sequence has been paged out.
 			piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 			iHead = piData->iData[iSeq];
@@ -2632,28 +2632,28 @@ static void draw_thing (LONG t)
 			    IsHandleFlushed(iHead))
 			{
 				iAnim = load_PCX_sequence(iAnim, mythings[t].type, mythings[t].iSequence, rotation);
-				
+
 				// Refresh the handles.
 				pAnim = (ANIMPTR)BLKPTR(iAnim);
 				piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 				iHead = piData->iData[iSeq];
-				
+
 				// Were we successful?
 				if (iHead <= 0 ||
 				    IsHandleFlushed(iHead))
 				{
-#ifndef QUIETDEGRADE				
-					printf("WARNING - degrading %s seq:%c to stand\n", GetThingName(type), cAction[mythings[t].iSequence]);
-#endif				
+#ifndef QUIETDEGRADE
+					logWarn("degrading %s seq:%c to stand", GetThingName(type), cAction[mythings[t].iSequence]);
+#endif
 					// Couldn't load it.  Degrade to STAND
-					
+
 					MarkOldAnimPurgable(iAnim, mythings[t].iSequence);
 					mythings[t].iSequence = ANIMATION0SEQ;
 					iSeq = ANIMATION0SEQ + rotation;
-					
+
 					// Test whether the stand sequence has ever been loaded.
 					iHead = piData->iData[iSeq];
-					
+
 					if (iHead <= 0 ||
 					    IsHandleFlushed(iHead))
 					{
@@ -2662,23 +2662,23 @@ static void draw_thing (LONG t)
 						pAnim = (ANIMPTR)BLKPTR(iAnim);
 						piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 						iHead = piData->iData[iSeq];
-					
+
 						if (iHead <= 0)
 						{
 							// unable to load stand.
-							printf("WARNING - Unable to get stand animation %s seq: %c !!\n",
+							logWarn("Unable to get stand animation %s seq: %c !!",
 							GetThingName(t), cAction[mythings[t].iSequence]);
 							return;
 						}
 					}
-					
+
 					SetPCXSequence(iAnim, iSeq);
-					
+
 					// Refresh the handles.
 					pAnim = (ANIMPTR)BLKPTR(iAnim);
 					piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 					iHead = piData->iData[iSeq];
-					
+
 					mythings[t].iBitm = pAnim->iBuff;
 					if (mythings[t].iBitm != fERROR)
 					{
@@ -2691,39 +2691,39 @@ static void draw_thing (LONG t)
 				else
 				{
 					SetPCXSequence(iAnim, iSeq);
-					
+
 					// Refresh the handles.
 					pAnim = (ANIMPTR)BLKPTR(iAnim);
 					piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 					iHead = piData->iData[iSeq];
 				}
 			}
-			
+
 			/* get width and height of selected sequence */
 			pBitm = (BITMPTR)BLKPTR(iHead);
 			// We've been paged out.
 			if (pBitm <= 0)
 				return;
-			
+
 			hei = pBitm->h;		// these are the original (as drawn) width and height of the graphic
 			wid = pBitm->w;
-			
+
 			mythings[t].iBitm = NextPCXFrame(iAnim, mythings[t].iSequence, rotation);
 			if ( mythings[t].iBitm == fERROR)
 			{
-				printf("WARNING - NextPCXFrame %ld (seq:%ld rot:%ld) returned fERROR\n",type,mythings[t].iSequence,rotation);
+				logWarn("NextPCXFrame %ld (seq:%ld rot:%ld) returned fERROR",type,mythings[t].iSequence,rotation);
 				return;
 			}
-			
+
 		}
-		
+
 		pBitm = (BITMPTR) BLKPTR(mythings[t].iBitm);
 		scale_factor = pBitm->scale;
 		/* create a line to represent the thing, length is width of thing */
 		c.x = 0;
 		c.y = mythings[t].widScaled = (wid*UNITARY_SCALE*mythings[t].scale_adjust)/(scale_factor*UNIT_SCALE_ADJUST);
 		rot8(&c);									// insure line is perp to viewer
-		
+
 		/* create a line to represent the center point */
 	 	e.x = 0;
 	 	e.y = ((pBitm->x_ctr_pt)*UNITARY_SCALE*mythings[t].scale_adjust)/(scale_factor*UNIT_SCALE_ADJUST);
@@ -2743,7 +2743,7 @@ static void draw_thing (LONG t)
 	 		b.x=mythings[t].x+e.y;
 	 		b.y=mythings[t].y+e.x;
 	 	}
-		
+
  	}
 	// CODE FOR STATIC OBJECTS ONLY (not flc & no rotations)
 	else
@@ -2751,7 +2751,7 @@ static void draw_thing (LONG t)
 		if (mythings[t].iBitm > 0)
 		{
 			POINT c;
-			
+
 			pBitm = (BITMPTR) BLKPTR(mythings[t].iBitm);
 			// We've been paged out.
 			if (pBitm == 0)	// We've been paged out.
@@ -2759,25 +2759,25 @@ static void draw_thing (LONG t)
 				Load_Bitm(&mythings[t].iBitm, mythings[t].OriginalType);
 				pBitm = (BITMPTR) BLKPTR(mythings[t].iBitm);
 			}
-			
+
 			if (pBitm <= 0)
 				return;
-			
+
 			hei = pBitm->w;		// these are the original (as drawn) width and height of the graphic
 			wid = pBitm->h;
 			scale_factor = pBitm->scale;
-		 	
+
 			/* create a line to represent the thing, length is width of thing */
 			c.x = 0;
 			c.y = mythings[t].widScaled = (wid*UNITARY_SCALE*mythings[t].scale_adjust)/(scale_factor*UNIT_SCALE_ADJUST);
 			rot8(&c);									// insure line is perp to viewer
-			
+
 			// create a line, half on either side
 			a.x=mythings[t].x-(c.y>>1);			// a is upper-left
 			a.y=mythings[t].y-(c.x>>1);
 			b.x=mythings[t].x+(c.y>>1);			// b is lower-right
 			b.y=mythings[t].y+(c.x>>1);
-		
+
 		}
 		else
 		{
@@ -2825,7 +2825,7 @@ static void draw_thing (LONG t)
 	{
 		POINT	 d;
 		SHORT	 thingZ;						// [d8-29-96 JPC]
-		
+
 		if (oldHeiScaled != mythings[t].heiScaled)
 		{
 			// [d9-05-96 JPC]
@@ -2894,13 +2894,13 @@ static void draw_thing (LONG t)
 	{
 	    BOOL        	fHeatSource;               // [d7-16-96 JPC]
 		LONG 			mySrcInc;						// [d7-17-96 JPC]
-	
+
 		// y did change, so we do need to calculate light.
 		mySrcInc = (hei << 15) / myDeltaY;
 		if (mythings[t].ssect != -1)
 		{
 			LONG			iSector;							// [d6-27-96 JPC]
-			
+
 			// [d6-27-96 JPC] Retrieve the light for this subsector.
 			// Ignore NSEW lighting, which does not seem relevant for things.
 			// The following does not work because sometimes you need
@@ -2955,7 +2955,7 @@ static void draw_thing (LONG t)
 				light += REMAP_TABLE_OFFSET + 32 * mythings[t].ColorRemap;
 		}
 	}
-	
+
 #ifdef _JPC
 // Debugging breakpoints.
 		if (mythings[t].type == giType1 && mythings[t].x == -534)
@@ -2966,12 +2966,12 @@ static void draw_thing (LONG t)
 	while (a.x < b.x)
 	{
 		LONG			delta_y;
-		
+
 		topY=a.y;
       // [d9-03-96 JPC] Added "bottomClip" factor to the following;
 		// bottomClip is 0 in most cases, but is some fraction of the
 		// thing's SCALED and PROJECTED height if the thing is in water.
-		bottomY=b.y - bottomClip;			
+		bottomY=b.y - bottomClip;
 		delta_y = b.y - a.y;		// isn't delta_y always the same within the loop?
 
 		if (clip_obj(a.x,&topY,&bottomY,&clip))
@@ -3022,7 +3022,7 @@ static void draw_thing (LONG t)
 			if (thing_spans[tot_thing_spans].sx < 0)
 				thing_spans[tot_thing_spans].sx = 0; // put breakpoint here
 #endif
-			
+
 			thing_spans[tot_thing_spans].t=mythings[t].iBitm;
 
 			thing_spans[tot_thing_spans].light = light;
@@ -3078,12 +3078,12 @@ void draw_things (LONG ss)
 	// calculate the distance to the thing
 	d = (aprox_dist(CAMERA_INT_VAL(camera.x),
 					CAMERA_INT_VAL(camera.y), mythings[i].x, mythings[i].y)) << PLAYER_FIXEDPT;
-#if WRC_CAMERA_TEST	
+#if WRC_CAMERA_TEST
 	if (!VideoCurrentlyRedirected)
 	{
 #endif
 		mythings[i].dist = d;
-#if WRC_CAMERA_TEST	
+#if WRC_CAMERA_TEST
 	}
 #endif
 
@@ -3094,18 +3094,18 @@ void draw_things (LONG ss)
 		// this section could take a bit of time so we will
 		// call the timer critical routine
 		// GWP Too often to be called here. run_timers();
-		
+
 		nd = (aprox_dist(CAMERA_INT_VAL(camera.x),
 						 CAMERA_INT_VAL(camera.y),
 						 mythings[ni].x,
 						 mythings[ni].y)) << PLAYER_FIXEDPT;
-		
-#if WRC_CAMERA_TEST	
+
+#if WRC_CAMERA_TEST
 		if (!VideoCurrentlyRedirected)
 		{
 #endif
 			mythings[ni].dist = nd;
-#if WRC_CAMERA_TEST	
+#if WRC_CAMERA_TEST
 		}
 #endif
 
@@ -3129,7 +3129,7 @@ void draw_things (LONG ss)
 			i = ni;
 		}
 	}
-	
+
 	if (mythings[i].valid == TRUE)
 		draw_thing(i);
 
@@ -3153,12 +3153,12 @@ SHORT AllocateAnim(SHORT Type, LONG ttype)
 	ANIMPTR	pAnim = 0;
 	SHORT	iAnim = fERROR;
 	char	cpBuffer[40];
-	
+
 	/* allocate memory for animation header */
 	iAnim = NewBlock(sizeof(ANIMHDR));
 	if ( iAnim == fERROR)
 		return fERROR;
-	
+
 	SetClass2(iAnim);	// GWP There is a leak somewhere and this will guarentee we free this block.
 	SetQuickLock(iAnim);
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
@@ -3170,13 +3170,13 @@ SHORT AllocateAnim(SHORT Type, LONG ttype)
 	pAnim->iBuff		= fERROR;
 	sprintf(cpBuffer, "%s.IDA", GetThingName(ttype));
 	pAnim->hiData = GetResourceStd(cpBuffer, FALSE);
-	
+
 	// Debug information about the iAnim.
 #if defined (MEMORY_CHK)
 	sprintf(cpBuffer, "%s.IAM", GetThingName(ttype));
 	SetBlockName(cpBuffer,iAnim);
 #endif
-	
+
 	ClrLock(iAnim);
 	return iAnim;
 }
@@ -3204,7 +3204,7 @@ SHORT OpenAnim (SHORT iAnim, SHORT iSeq, CSTRPTR szFileName, SHORT Type)
 				// refresh the pointer
 				pAnim = (ANIMPTR)BLKPTR(iAnim);
 				piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
-				
+
 				piData->iData[iSeq] = iHead;
 			}
 		}
@@ -3222,11 +3222,11 @@ SHORT OpenAnim (SHORT iAnim, SHORT iSeq, CSTRPTR szFileName, SHORT Type)
 				BLKPTR(piData->iData[iSeq]) <= 0)
 			{
 				iHead = GetResourceRot(szFileName);
-				
+
 				// refresh the pointer
 				pAnim = (ANIMPTR)BLKPTR(iAnim);
 				piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
-				
+
 				piData->iData[iSeq] = iHead;
 			}
 		}
@@ -3280,27 +3280,27 @@ void RemoveAnim (SHORT iAnim)
 // printf("Disposed of iAnim and iBuff in RemoveAnim\n");
 
 }
-	
+
 
 /* ========================================================================
    Function    - MarkOldAnimPurgable
    Description - Purge out the previous animation.
    Returns     -
    ======================================================================== */
-   	
+
 void MarkOldAnimPurgable(SHORT iAnim, ULONG seq)
 {
 	if (iAnim != fERROR && seq <= NUMACTIONS)
 	{
 		ANIMPTR		pAnim = (ANIMPTR)BLKPTR(iAnim);
-		
+
 		// mark old sequence as purgable if we're changing sequences.
 		if (pAnim->hiData > 0)
 		{
 			ULONG		rot;
 			ULONG		iSeq = seq * NUMROTATIONS;
 			I_DATA_BLK	*piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
-			
+
 			for (rot=0; rot<NUMROTATIONS; ++rot)
 			{
 				SHORT iSeq_and_rotation = iSeq + rot;
@@ -3326,7 +3326,7 @@ void MarkOldAnimPurgable(SHORT iAnim, ULONG seq)
 static void MarkAllAnimPurgable(SHORT iAnim)
 {
 	ULONG i;
-	
+
 	for (i = ANIMATION0SEQ; i < MAX_ANIMATIONSEQ; ++i)
 	{
 		MarkOldAnimPurgable(iAnim, i);
@@ -3347,22 +3347,22 @@ static SHORT SetPCXSequence(SHORT iAnim, SHORT iSeq)
 
 	if (iAnim == fERROR)
 		return fERROR;
-		
+
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
 	/* set to new sequence, check for invalid request */
 	if (pAnim->hiData < 0)
 		return fERROR;
-		
+
 	piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 	if (piData->iData[iSeq] < 0)
 		return fERROR;
-	
+
 	iHead = piData->iData[iSeq];
 	if (iHead < 0)
 		return fERROR;
 
 	pBitm = (BITMPTR) BLKPTR(iHead);
-	
+
 	pAnim->sequence		= iSeq;
 	pAnim->frame		= 0;
 	pAnim->width		= pBitm->h;
@@ -3370,7 +3370,7 @@ static SHORT SetPCXSequence(SHORT iAnim, SHORT iSeq)
 	pAnim->offData		= 0;
 	pAnim->totalFrames	= 0;
 	pAnim->iBuff		= iHead;	/* make iBuff point to correct PCX frame */
-	
+
 	return fNOERR;
 }
 
@@ -3390,16 +3390,16 @@ SHORT SetAnimSequence (SHORT iAnim, SHORT iSeq)
 
 	if (iAnim == fERROR)
 		return fERROR;
-		
+
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
 	/* set to new sequence, check for invalid request */
 	if (pAnim->hiData < 0)
 		return fERROR;
-		
+
 	piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 	if (piData->iData[iSeq] < 0)
 		return fERROR;
-	
+
 	iHead = piData->iData[iSeq];
 	if (iHead <= 0)
 		return fERROR;
@@ -3407,11 +3407,11 @@ SHORT SetAnimSequence (SHORT iAnim, SHORT iSeq)
 	pHead = (FLICHEADPTR)BLKPTR(iHead);
 	if (!IsPointerGood(pHead))
 		return fERROR;
-	
+
 	ClrPurge(iHead);		// Make sure this animation stays in memory.
 	// Need to reset the class 2 flag.
 	SetClass2(iHead);		// allow all things to be purged en masse
-	
+
 	pAnim->sequence		= iSeq;
 	pAnim->frame		= 0;
 	pAnim->width		= pHead->width;
@@ -3432,7 +3432,7 @@ SHORT SetAnimSequence (SHORT iAnim, SHORT iSeq)
 	{
 		// Allocate a new Bitm.
 		iBitm = OpenBitm(pAnim->width, pAnim->height);
-		
+
 		pAnim = (ANIMPTR)BLKPTR(iAnim); // refresh the pointer.
 		pHead = (FLICHEADPTR)BLKPTR(iHead);	// refresh the pointer.
 		pAnim->iBuff = iBitm;
@@ -3455,16 +3455,16 @@ SHORT SetAnimSequence (SHORT iAnim, SHORT iSeq)
 		{
 			((BITMPTR)BLKPTR(pAnim->iBuff))->scale = scale;
 			scale = pBuff->scale;	/* save current scale */
-			
+
 			// Toss the old Bitm back into the heap.
 			DisposBlock(pAnim->iBuff);
-			
+
 			// Allocate a new Bitm.
 			iBitm = OpenBitm(pAnim->width, pAnim->height);
-			
+
 			pAnim = (ANIMPTR)BLKPTR(iAnim); // refresh the pointer.
 			pHead = (FLICHEADPTR)BLKPTR(iHead);	// refresh the pointer.
-			
+
 			pAnim->iBuff = iBitm;
 			if (iBitm == fERROR)
 			{
@@ -3474,9 +3474,9 @@ SHORT SetAnimSequence (SHORT iAnim, SHORT iSeq)
 				return fERROR;
 			}
 			SetClass2(iBitm);
-			
+
 		}
-		
+
 		decode_frame(pAnim, pHead);		/* decode the 1st frame */
 		detect_scale(pAnim->iBuff, pAnim->width, pAnim->height);	/* scan for scale factor */
 	}
@@ -3492,7 +3492,7 @@ SHORT NextPCXFrame (SHORT iAnim, SHORT sequence, SHORT rotation )
 	ANIMPTR			pAnim;
 	SHORT			iHead = fERROR;
 	SHORT			seq_and_rot = (sequence * NUMROTATIONS) + rotation;
-	
+
 	if (iAnim == fERROR)						/* double check */
 		return fERROR;
 
@@ -3506,18 +3506,18 @@ SHORT NextPCXFrame (SHORT iAnim, SHORT sequence, SHORT rotation )
 	if (pAnim->hiData > 0)
 	{
 		I_DATA_BLK		*piData;
-		
+
 		piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 		iHead = piData->iData[seq_and_rot];
 	}
 	else
 		return fERROR;
-	
+
 	if (iHead < 0)
 		return fERROR;
 
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
-	
+
 	if (iHead == fERROR || IsHandleFlushed(iHead))
 	{
 #if defined (_DEBUG)
@@ -3555,15 +3555,15 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 	BOOL			iDataLocked = FALSE;
 	BOOL			iHeadLocked = FALSE;
 	BOOL			iAnimLocked = FALSE;
-	
+
 	if (iAnim == fERROR)						/* double check */
 		return fERROR;
 
 	iAnimLocked = IsLocked(iAnim);
-	
+
 	if (!iAnimLocked)
 		SetQuickLock(iAnim);	/* quick SetLock without memory move */
-		
+
 	pAnim = (ANIMPTR)BLKPTR(iAnim);
 
 	/* not looping and not changing seq or rot and already did one pass */
@@ -3577,28 +3577,28 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 		iDataLocked = IsLocked(ihiData);
 		if (!iDataLocked)
 			SetQuickLock(ihiData);
-		
+
 		piData = (I_DATA_BLK *) BLKPTR(ihiData);
 		iHead = piData->iData[seq_and_rot];
 		if (iHead < 0)
 			goto error_exit;
-			
+
 		iHeadLocked = IsLocked(iHead);
 		if (!iHeadLocked)
 			SetQuickLock(iHead);
 	}
 	else
 		goto error_exit;
-	
+
 
 	//pAnim = (ANIMPTR)BLKPTR(iAnim);
-	
+
 	/* prepare for sequence check and frame decoding */
 	pHead = (FLICHEADPTR)BLKPTR(iHead);
 	// Paged out or non-existent art.
 	if (!IsPointerGood(pHead))
 		goto error_exit;
-	
+
 	old_sequence = pAnim->sequence / NUMROTATIONS;
 	old_rotation = pAnim->sequence % NUMROTATIONS;
 
@@ -3619,21 +3619,21 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 		if (SetAnimSequence(iAnim, seq_and_rot) == fERROR)
 			goto error_exit;
 			//return fERROR;
-		
+
 		// Refresh the pointers after call to SetAnimSequence.
 		//pAnim = (ANIMPTR)BLKPTR(iAnim);
 		//piData = (I_DATA_BLK *) BLKPTR(ihiData);
-		
+
 		iHead = piData->iData[seq_and_rot];
 		if (iHead <= 0)
 			goto error_exit;
-		
+
 		pHead = (FLICHEADPTR)BLKPTR(iHead);
 		if (!IsPointerGood(pHead))
 			goto error_exit;
-		
+
 		totalFrames = pHead->frames;
-		
+
 		if(frame != -1 && *pCtrl == 0)
 		{
 			// GWP What is this next if statement for????
@@ -3680,7 +3680,7 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 			}
 			desired_frame = pAnim->frame = 0;
 			decode_frame(pAnim, pHead);		/* decode the 1st frame */
-			
+
 			detect_scale(pAnim->iBuff, pAnim->width, pAnim->height);	/* scan for scale factor */
 
 			/* added check for loop once being reset */
@@ -3695,14 +3695,14 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 		if ( pAnim->offData >= pHead->size)
 		{
 #if defined(_DEBUG)
-			printf("WARNING! Things.c is missing %ld frames.\n",
+			logWarn("Things.c is missing %ld frames.",
 			        (LONG)(pAnim->totalFrames - pAnim->frame));
 #endif
 			pHead->frames = pAnim->frame;
 			pAnim->totalFrames = pAnim->frame;
 			break;
 		}
-		
+
 		++pAnim->frame;
 		decode_frame(pAnim, pHead);	/* advance to next frame */
 	}
@@ -3713,7 +3713,7 @@ SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl,
 exit:
 	rv = pAnim->iBuff;		// Current frame now in iBuff
 	if (rv == fERROR)
-		printf("WARNING - iBuff is fERROR in NextAnimFrame\n");
+		logWarn("iBuff is fERROR in NextAnimFrame");
 #if defined(_DEBUG)
 	if (IsHandleFlushed(rv))
 	{
@@ -3729,7 +3729,7 @@ error_exit:
 	if (!iAnimLocked)
 		ClrLock(iAnim);
 
-	
+
 	return rv;
 }
 
@@ -4008,11 +4008,11 @@ void sort_things_from_camera(long n)
 
 #if 0
 
-GEH SAYS - NONE OF THE FOLLOWING WORK, IN FACT THEY ARE VERY BAD!!!!!!!!!!	
+GEH SAYS - NONE OF THE FOLLOWING WORK, IN FACT THEY ARE VERY BAD!!!!!!!!!!
 
 /* ======================================================================= */
 /* =======================================================================
-	
+
 	======================================================================= */
 void sort_things_from_camera(long n)
 {
@@ -4472,7 +4472,7 @@ SHORT LoadIData (
 	LONG  iResFileSlot)
 {
 	SHORT hiData = fERROR;
-	
+
 	hiData = NewBlock(sizeof(I_DATA_BLK));
 	if (hiData > 0)
 	{
@@ -4480,9 +4480,9 @@ SHORT LoadIData (
 		// Just do a lock in place so this can float later.
 		if (fLockRes)
 			SetQuickLock(hiData);
-		
+
 		piData = (I_DATA_BLK *) BLKPTR(hiData);
-		
+
 		memset (piData->iData, -1, (NUMSEQUENCES * sizeof (SHORT)));
 #if defined (_DEBUG)
 		strncpy(piData->cpType, szFileName, sizeof(piData->cpType));
@@ -4490,7 +4490,7 @@ SHORT LoadIData (
 		SetClass2(hiData);
 		SetModifyResource(hiData);
 	}
-	
+
 	return hiData;
 }
 
@@ -4504,7 +4504,7 @@ SHORT DisposeIDataBlk (SHORT iResBlk, SHORT iMemBlk)
 {
 	I_DATA_BLK *piData = (I_DATA_BLK *) BLKPTR(iMemBlk);
 	LONG i;
-	
+
 	for (i = 0; i < NUMSEQUENCES; ++i)
 	{
 		if (piData->iData[i] > 0)
@@ -4515,7 +4515,7 @@ SHORT DisposeIDataBlk (SHORT iResBlk, SHORT iMemBlk)
 			piData->iData[i] = fERROR;
 		}
 	}
-	
+
 	// Now clear our resource
 	return DisposRes(iResBlk, iMemBlk);
 }
@@ -4533,23 +4533,23 @@ static void Load_Bitm(SHORT *piBitm, ULONG ttype)
 	char	pn[128];
 	char  	n[40];
 	BITMPTR pBitm;
-	
+
 	*piBitm = fERROR;
-	
+
 	/* get base filename from registered TType array */
 	/* GEH also check for the ultra low memory config */
 	/* and swap out some of the bitmaps for another */
 	if(fLowResAni == TRUE)
 	{
 		SHORT count;
-		
+
 		count = GetLowResIndex(ttype);
-		
+
 		if(count!=-1)
 			count = GetMinMemConvert(count);
 		else
 			count = GetMinMemConvert(ttype);
-			
+
 		if(count!=-1)
 			sprintf(n,"%s", GetThingName(count));
 		else
@@ -4559,7 +4559,7 @@ static void Load_Bitm(SHORT *piBitm, ULONG ttype)
 	{
 		sprintf(n,"%s", GetThingName(ttype));
 	}
-	
+
 	sprintf(pn,"%sPCX\\%s.pcx",THING_PATH,n);
 
 //		printf("Loading %s as a bitm\n",pn);
@@ -4572,15 +4572,15 @@ static void Load_Bitm(SHORT *piBitm, ULONG ttype)
 		return;
 #endif
 	}
-	
+
 	SetClass2(*piBitm);
 	SetMultiUser(*piBitm);
 #if fUSE_RES_FILES
 	SetPurge(*piBitm);
 #endif
-	
+
 	pBitm = (BITMPTR) BLKPTR(*piBitm);
-	
+
 	// If missing the center point dot, put it in the middle.
 	if (pBitm->x_ctr_pt == 0)
 	{
@@ -4596,7 +4596,7 @@ static void Load_Bitm(SHORT *piBitm, ULONG ttype)
 ULONG RestrictAniSeq(ULONG seq)
 {
 	ULONG GetSeq = seq;
-	
+
 	if( seq == ANIMATION4SEQ )		// ATTACK2
 	{								// goes to
 		GetSeq = ANIMATION3SEQ;		// attack 1
@@ -4616,6 +4616,4 @@ ULONG RestrictAniSeq(ULONG seq)
 }
 
 // ---------------------------------------------------------------------------
-// ---------------------------------------------------------------------------
 
-

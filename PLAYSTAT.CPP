@@ -153,14 +153,14 @@ void PLAYER_STATS::mfInitValues()
 	Gold = 0;
 	Blindness = FALSE;
 	Paralyized = FALSE;
-	
+
 	//ShieldType = SHIELD_INFO::NO_SHIELD;
 	//Task[0] = 0;
 	//IdHeir = 0;
 	//Age = 0;
 	//Height = 0;
 	//Weight = 0;
-	
+
 	//this should definitly be done outside of this function.
 	//printf("initting invn with stats handle %li and ID %li\n",hResult,ID);
 	//Inventory.mfInit(hResult,ID);
@@ -176,25 +176,25 @@ void PLAYER_STATS::mfInitValues()
 HDL_PLAYER_STATS PLAYER_STATS::mfAllocateSpace(SHORT hAvatar,LONG ID)
 {
 	HDL_PLAYER_STATS hResult = NewBlock(sizeof(PLAYER_STATS));
-	
+
 	if (hResult != fERROR)
 	{
 		DumbAutoLockPtr <PLAYER_STATS > const pPlayerStats(hResult);
 		pPlayerStats->mfInitValues();
 		pPlayerStats->hAvatar = hAvatar;
 		pPlayerStats->hThis = hResult;
-		
+
 #if defined (MEMORY_CHK)
 		if (ID != fERROR)
 		{
 			char cpBuffer[20];
-			
+
 			sprintf(cpBuffer, "%ld", ID);
 			SetBlockName(cpBuffer,hResult);
 		}
 #endif
 	}
-	
+
 	return hResult;
 }
 
@@ -216,18 +216,18 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	LONG lTemp6;
 	char	cpBuffer[126];
 	LONG FileVersion;
-	
-	
+
+
 	if (EOF != GetNextLine(fp, cpBuffer, sizeof(cpBuffer)))
 	{
 		sscanf(cpBuffer, "%ld", &FileVersion);
 	}
 	else
 	{
-		printf("WARNING: No File version in AVA file.\n");
+		logWarn("No File version in AVA file.");
 		goto Leave_fn;
 	}
-	
+
 	if (EOF != GetNextLine(fp, cpBuffer, sizeof(cpBuffer)))
 	{
 		sscanf(cpBuffer, "%ld", &lTemp);
@@ -235,39 +235,39 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	}
 	else
 	{
-		printf("WARNING: No ThingType Id in AVA file.\n");
+		logWarn("No ThingType Id in AVA file.");
 		ThingType = NO_THING;
 		goto Leave_fn;
 	}
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing  AVA Version number.\n");
+		logWarn("Missing  AVA Version number.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%ld", &lTemp);		/* PLAYER_STATS::VERSION  */
 	StructVersion = (PLAYER_STATS::VERSION) lTemp;
-	
+
 	Result = Ability.mfReadData(fp);							// ABILITY
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing AVA Ability info.\n");
+		logWarn("Missing AVA Ability info.");
 		goto Leave_fn;
 	}
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing AVA player race info.\n");
+		logWarn("Missing AVA player race info.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%ld", &Race);				/* PLAYER_RACE_TYPE */	
-	
+	sscanf(cpBuffer, "%ld", &Race);				/* PLAYER_RACE_TYPE */
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing player name.\n");
+		logWarn("Missing player name.");
 		goto Leave_fn;
 	}
 	// [d4-08-97, 4-23-97 JPC] AVA files now contain the name.
@@ -282,7 +282,7 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing player title.\n");
+		logWarn("Missing player title.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%ld", &lTemp);
@@ -291,7 +291,7 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing player Name.\n");
+		logWarn("Missing player Name.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%ld", &lTemp);
@@ -300,75 +300,75 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing player alignment data.\n");
+		logWarn("Missing player alignment data.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%ld", &lTemp);			/* ALIGNMENT_TYPE */	
+	sscanf(cpBuffer, "%ld", &lTemp);			/* ALIGNMENT_TYPE */
 	Alignment = (ALIGNMENT_INFO::TYPE) lTemp;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing player hit point data in AVA file.\n");
+		logWarn("Missing player hit point data in AVA file.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%hd", &HitPts);				/* LONG */	
-	
+	sscanf(cpBuffer, "%hd", &HitPts);				/* LONG */
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Armor Class information in AVA file.\n");
+		logWarn("Missing Armor Class information in AVA file.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%ld", &lTemp);			/* LONG */	
+	sscanf(cpBuffer, "%ld", &lTemp);			/* LONG */
 	sbArmorClass = (SBYTE) lTemp;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Armor type information in AVA file.\n");
+		logWarn("Missing Armor type information in AVA file.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%ld", &lTemp);			/* ARMOR_TYPE */	
+	sscanf(cpBuffer, "%ld", &lTemp);			/* ARMOR_TYPE */
 	DefaultArmor = (ARMOR_INFO::TYPE) lTemp;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Weapon type information in AVA file.\n");
+		logWarn("Missing Weapon type information in AVA file.");
 		goto Leave_fn;
 	}
-	sscanf(cpBuffer, "%ld", &lTemp);			/* WEAPON_TYPE */	
+	sscanf(cpBuffer, "%ld", &lTemp);			/* WEAPON_TYPE */
 	DefaultWeapon = (WEAPON_INFO::TYPE) lTemp;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Morale data in AVA file.\n");
+		logWarn("Missing Morale data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%d",  &sMorale);
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Full HitPt data in AVA file.\n");
+		logWarn("Missing Full HitPt data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%hd", &FullHitPts);
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Thac0 data in AVA file.\n");
+		logWarn("Missing Thac0 data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%ld", &Thac0);
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Damage Dice data in AVA file.\n");
+		logWarn("Missing Damage Dice data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "(%ld %ld %ld) (%ld %ld %ld)",
@@ -379,32 +379,32 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 	DamageDice[1].sbNumberOfDice = (SBYTE) lTemp4;
 	DamageDice[1].sbNumberOfSides = (SBYTE) lTemp5;
 	DamageDice[1].sbModifier = (SBYTE) lTemp6;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Hit Dice data in AVA file.\n");
+		logWarn("Missing Hit Dice data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "(%ld %ld %ld)", &lTemp, &lTemp2, &lTemp3);
 	HitDice.sbNumberOfDice = (SBYTE) lTemp;
 	HitDice.sbNumberOfSides = (SBYTE) lTemp2;
 	HitDice.sbModifier = (SBYTE) lTemp3;
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("WARNING: Missing Experience Pts data in AVA file.\n");
+		logWarn("Missing Experience Pts data in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer, "%ld", &XP);
-	
+
 	Result = PlayerClassList.mfReadTextData(fp);
-	
+
 	Result = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 	if (EOF == Result)
 	{
-		printf("Warning: Missing number of Attacks in AVA file.\n");
+		logWarn("Missing number of Attacks in AVA file.");
 		goto Leave_fn;
 	}
 	sscanf(cpBuffer,"%ld", &lTemp);
@@ -429,7 +429,7 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 			}
 		}
 	}
-	
+
 	// Now Calculate the other fields as necessary.
 	if (HitPts == 0)
 	{
@@ -441,29 +441,29 @@ LONG PLAYER_STATS::mfReadTextData(FILE *fp)
 		{
 			HitPts = PlayerClassList.mfRollHitPts();
 		}
-		
+
 	}
-	
+
 	if (FullHitPts == 0)
 	{
 		FullHitPts = HitPts;
 	}
-	
+
 	if (DefaultArmor != ARMOR_INFO::NO_ARMOR)
 	{
 		sbArmorClass = ARMOR_INFO::mfGetArmorClass(DefaultArmor);
 	}
-	
+
 	//GEH PATCH1
 	//GEH fix for bad data send in production AVA files
 	if ( Thac0 == 16 )
 		Thac0 = 0;
-	
+
 	if (Thac0 == 0)
 	{
 		Thac0 = PlayerClassList.mfGetBestThac0();
 	}
-	
+
 Leave_fn:
 	return Result;
 }
@@ -478,7 +478,7 @@ SHORT const PLAYER_STATS::mfGetSpellCastClass(
 						SPELL_INFO::CASTERTYPE const SpellCaster) const
 {
 	LONG i=0;
-	
+
 	for (i=0;i<MAX_PLAYER_CLASSTYPES;i++)
 		if (num_spells_of(SpellCaster,SPELL_INFO::LEVEL_1,mfGetClassType(i),mfGetLevel(i)))
 			return i;
@@ -496,7 +496,7 @@ void PurgePS(LONG count)
 {
 	PTR_PLAYER_STATS pPS;
 	LONG i;
-	
+
 	Regenerator::InitList();
 	ItemEffects::WipeActiveItems();
 	DisposeResExtension ( "AVD" );	// GEH 9/97 remove any trace from resource manager
@@ -525,7 +525,7 @@ void StatReadFromAVA(BOOL SaveAfter)
 	 MAP_ICON 	oldIcon, newIcon;		// [d5-30-97 JPC]
     int        icref;               // [d5-30-97 JPC]
 
-    printf("loading stats from AVA files.\n");
+    logInfo("loading stats from AVA files.");
 
 
     for (i=1; i < CHARACTER_COUNT; i++)
@@ -608,17 +608,17 @@ void StatReadFromAVA(BOOL SaveAfter)
 				}
 			}
 			// Only change the icons of the regents.
-			if (oldIcon != newIcon 
-			    && (oldIcon >= REG_LORDM1_UNIT_ICON 
+			if (oldIcon != newIcon
+			    && (oldIcon >= REG_LORDM1_UNIT_ICON
 			        && oldIcon <= REG_GLADY1_UNIT_ICON))
 	        {
 				regents[i].mfSeticon (newIcon);
 			}
 		}
 
-		printf("Loaded id%d.ava, with handle %d, for character %d\n",
+		logInfo("Loaded id%d.ava, with handle %d, for character %d",
 			regents[i].mfGetid(), playerstats[i], i);
-        fflush(stdout);
+		fflush(stdout);
 
 
 		// [d5-05-97 JPC] Kludge implemented, see notes above.
@@ -630,10 +630,10 @@ void StatReadFromAVA(BOOL SaveAfter)
 		}
     }
 
-#if 0	
+#if 0
 	if (SaveAfter)
 	{
-		printf("Writing stats to single file.\n");
+		logInfo("Writing stats to single file.");
 		StatWriteAll();
 	}
 #endif
@@ -681,7 +681,7 @@ void StatReadAllFrom(FILE *fp)
     fread( &count, sizeof(LONG), 1, fp);
     if (count != CHARACTER_COUNT - 1)
     {
-        printf("Wrong characters version. Re");
+        logInfo("Wrong characters version. Re");
         StatReadFromAVA(TRUE);
         return;
     }
@@ -806,28 +806,28 @@ void StatWriteAll()
 LONG PLAYER_STATS::mfWriteTextData(FILE *fp)
 {
 	LONG Result;
-	
+
 	fprintf(fp, "%ld\n", (LONG)ThingType);
 	fprintf(fp, "%ld\n", StructVersion);		/* PLAYER_STATS::VERSION  */
 	Ability.mfWriteData(fp);					/* ABILITY	*/
-	fprintf(fp, "%ld\n", (LONG)Race);			/* PLAYER_RACE_TYPE */	
-	fprintf(fp, "%ld\n", Alignment);			/* ALIGNMENT_TYPE */	
-	fprintf(fp, "%hd\n", HitPts);				/* LONG */	
-	fprintf(fp, "%ld\n", (LONG)sbArmorClass);  	/* LONG */	
-	fprintf(fp, "%ld\n", (LONG)Inventory.mfGetCurrentArmor());		/* ARMOR_TYPE */	
-	fprintf(fp, "%ld\n", (LONG)Inventory.mfGetCurrentWeapon());		/* ARMOR_TYPE */	
+	fprintf(fp, "%ld\n", (LONG)Race);			/* PLAYER_RACE_TYPE */
+	fprintf(fp, "%ld\n", Alignment);			/* ALIGNMENT_TYPE */
+	fprintf(fp, "%hd\n", HitPts);				/* LONG */
+	fprintf(fp, "%ld\n", (LONG)sbArmorClass);  	/* LONG */
+	fprintf(fp, "%ld\n", (LONG)Inventory.mfGetCurrentArmor());		/* ARMOR_TYPE */
+	fprintf(fp, "%ld\n", (LONG)Inventory.mfGetCurrentWeapon());		/* ARMOR_TYPE */
 	fprintf(fp, "%d\n",  sMorale);				/* SHORT	*/
 	//fprintf(fp, "%s\n",  Task);
-	//fprintf(fp, "%ld\n", (LONG)ShieldType);		/* SHIELD_TYPE */	
+	//fprintf(fp, "%ld\n", (LONG)ShieldType);		/* SHIELD_TYPE */
 	//fprintf(fp, "%d\n",  IdHeir);				/* SHORT	*/
-	//fprintf(fp, "%ld\n", Age);					/* LONG */	
-	//fprintf(fp, "%ld\n", Height);				/* LONG */	
-	//fprintf(fp, "%ld\n", Weight);				/* LONG */	
-	
+	//fprintf(fp, "%ld\n", Age);					/* LONG */
+	//fprintf(fp, "%ld\n", Height);				/* LONG */
+	//fprintf(fp, "%ld\n", Weight);				/* LONG */
+
 	//GEH NOTE: these three pointers to lists need special treatment
 	//fprintf(fp, "%ld\n", PlayerClassList);	/* PLAYER_CLASS_LIST	*/
-	//fprintf(fp, "%ld\n", CurrentWeapons);		/* PTR_WEAPON_LIST */	
-	//fprintf(fp, "%ld\n", pSpellBook);			/* PTR_SPELL_LIST */	
+	//fprintf(fp, "%ld\n", CurrentWeapons);		/* PTR_WEAPON_LIST */
+	//fprintf(fp, "%ld\n", pSpellBook);			/* PTR_SPELL_LIST */
 	//fprintf(fp, "%ld\n", pSpellSchools);		/* PTR_SPELL_SCHOOL_LIST	*/
 	//fprintf(fp, "%ld\n", BloodInfo);			/* PLAYER_BLOOD_INFO	*/
 	return Result; // bogus
@@ -844,7 +844,7 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 	char	szFileName[40];
 	SHORT	hPlayerStats = fERROR;
 	SHORT	hRPlayerStats = fERROR;
-	
+
 	/* theoretically, if we've loaded all the stats, we never have
 	   to call this function for regent/lieutenant characters again.
 	   Therefore, we simply search the regents[] array until we find
@@ -854,13 +854,13 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
     /* note: this makes it rather crucial that character tID's be
        unique.  Really, anything that knows it's a regent/lieutenant
        shouldn't be calling this function... (hint hint)  */
-	
+
 	if (playerStatsInitted && tID >= 1000 && tID < 3000)
 	{
 	    LONG i;
 	    PTR_PLAYER_STATS pPS;
 		CAvatar* pAvatar;
-	
+
 		for (i=1; i < CHARACTER_COUNT; i++)
 		{
 			if (regents[i].mfGetid() == tID)
@@ -877,16 +877,16 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 				return playerstats[i];
 			}
 		}
-		printf("LoadStats: tID=%d seems to be the ID of a PC/NPC, "
-				"but doesn't match any I know of.\n", tID);
+		logInfo("LoadStats: tID=%d seems to be the ID of a PC/NPC, "
+				"but doesn't match any I know of.", tID);
 	}
-	
+
 	sprintf(szFileName,"scenes\\id%ld.avd", tID);
 
 	// We may at some time in the future want to check the result of the freads!
-	
+
 	hRPlayerStats = GetResourceStd(szFileName,(BOOL)hAvatar); //bool?
-	
+
 	if ( fStartMultiGame )
 	{
 		// we must reload all these puppies from CDROM in the multiplayer
@@ -894,7 +894,7 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 		DisposBlock(hRPlayerStats);
 		hRPlayerStats = GetResourceStd(szFileName,(BOOL)hAvatar);
 	}
-		
+
 	if (hRPlayerStats < 0 && tID > 1000 && tID < 3000)
 	{
 #if defined(_DEBUG)
@@ -902,21 +902,21 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
         sprintf(buffer, "Can't load resource %s", szFileName);
         fatal_error(buffer);
 #else
-        printf("Failed to load %s; trying default...\n", szFileName);
+        logInfo("Failed to load %s; trying default...", szFileName);
 #endif
 	    hRPlayerStats = GetResourceStd("scenes\\id1999.avd",(BOOL)hAvatar);
 	}
-	
+
 	if (hRPlayerStats > fERROR)
 	{
 		// Allocate another one and copy this one into it.
 		hPlayerStats = PLAYER_STATS::mfAllocateSpace(hAvatar,tID);
-		
+
 		DumbAutoLockPtr < PLAYER_STATS> const pPlayerStats(hPlayerStats);
 		DumbAutoLockPtr < PLAYER_STATS> const pRPlayerStats(hRPlayerStats);
 		// Structure copy only.
 		*pPlayerStats = *pRPlayerStats;
-		
+
 		pPlayerStats->Inventory.mfInit(hPlayerStats,tID);
 		pPlayerStats->StatsMod.mfClearStatMods();
 		// hack -- Gorgon needs magic resistance
@@ -925,29 +925,29 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 		{
 			pPlayerStats->StatsMod.mfModifyStats(STATSMOD::MAGIC_RESIST_MOD, 95);
 		}
-		
+
 		pPlayerStats->Inventory.ReadINV(hPlayerStats, tID);
-		
+
 		pPlayerStats->hAvatar = hAvatar;
 		if(hAvatar != fERROR)
 		{
 			CAvatar *pAvatar = (CAvatar *) BLKPTR (hAvatar);
 			pAvatar->attrib.RuntimeCreated = TRUE;
 		}
-		
+
 		SetPurge(hRPlayerStats);
 		hRPlayerStats = fERROR;
 	}
-	
+
 #if 0
 	FILE	*pFileRead;
-	
+
 	pFileRead = FileOpen(szFileName,"rb");
 	if (pFileRead != 0)
 	{
 		// Version'd files a production and are binary
 		hPlayerStats = PLAYER_STATS::mfAllocateSpace(hAvatar);
-		
+
 		if (hPlayerStats != fERROR)
 		{
 			DumbAutoLockPtr <PLAYER_STATS> const pPlayerStats(hPlayerStats);
@@ -961,10 +961,10 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 		pFileRead = FileOpen(szFileName,"r");
 		if (pFileRead == NULL)
 		{
-			printf("WARNING! Unable to open file %s\n.", szFileName);
+			logInfo("WARNING! Unable to open file %s.", szFileName);
 			return fERROR;
 		}
-		
+
 		// read text file
 		hPlayerStats = PLAYER_STATS::mfAllocateSpace(hAvatar);
 		if (hPlayerStats != fERROR)
@@ -973,11 +973,11 @@ SHORT LoadStats(LONG tID,SHORT hAvatar)
 			pPlayerStats->mfReadTextData(pFileRead);
 		}
 
-		FileClose(pFileRead);		
+		FileClose(pFileRead);
 	}
-		
+
 #endif
-	
+
 	return hPlayerStats;
 }
 
@@ -999,13 +999,13 @@ SHORT LoadAVD (
 	SHORT hPlayerStats = fERROR;
 	FILE * pFileRead;
 	FILE_MODE OldFileMode;
-	
+
 	// in the multiplayer game, we don't want any altered avatar file
 	#ifndef _DEBUG
 	if ( fStartMultiGame )
 		OldFileMode = SetFileMode( FILEOPEN_CDROM_ONLY );
 	#endif
-	
+
 	//GEH 9/97 We will never be using this feature and it is slowing
 	//down the game.  Bye, Bye for now
 	//pFileRead = FileOpen(szFileName,"rb");
@@ -1024,23 +1024,23 @@ SHORT LoadAVD (
 	{
 		// now we always stamp an A at the end of the file name
 		char cpTextFileName[80];
-		
+
 		strcpy(cpTextFileName, szFileName);
 		cpTextFileName[strlen(cpTextFileName) - 1] = 'A';
-		
+
 		pFileRead = FileOpen(cpTextFileName,"r");
 		if (pFileRead == NULL)
 		{
 #if defined(_DEBUG)
             char buffer[100];
-            sprintf(buffer, "Can't load file %s", cpTextFileName);			
+            sprintf(buffer, "Can't load file %s", cpTextFileName);
             fatal_error(buffer);
-#else			
-			printf("WARNING! Unable to open file %s.\n", cpTextFileName);
+#else
+			logInfo("WARNING! Unable to open file %s.", cpTextFileName);
 #endif
 			goto Error;
 		}
-		
+
 		// read text file
 		hPlayerStats = PLAYER_STATS::mfAllocateSpace((SHORT)fhAvatar,fERROR);
 		if (hPlayerStats != fERROR)
@@ -1049,27 +1049,27 @@ SHORT LoadAVD (
 			pPlayerStats->mfReadTextData(pFileRead);
 		}
 
-		FileClose(pFileRead);		
+		FileClose(pFileRead);
 	}
-	
+
 	// in the multiplayer game, reset file mode
 	#ifndef _DEBUG
 	if ( fStartMultiGame )
 		SetFileMode( OldFileMode );
 	#endif
-	
+
 	return hPlayerStats;
-	
+
 Error:
 	return fERROR;
 }
-	
+
 SHORT const PLAYER_STATS::mfCanMemorize(
 	SPELL_INFO::CASTERTYPE type, SPELL_INFO::LEVEL level) const
 {
 	LONG i;
 	SHORT max_spells = 0;
-	
+
     for (i=0; i < MAX_PLAYER_CLASSTYPES; i++)
     {
         if (mfGetClassType(i) == PLAYER_CLASS_INFO::NOT_SET)
@@ -1099,7 +1099,7 @@ SHORT const PLAYER_STATS::mfCanMemorize(
 
     return (max_spells);
 }
-	
+
 SHORT const PLAYER_STATS::mfMemorized(
 	SPELL_INFO::CASTERTYPE type, SPELL_INFO::LEVEL level)
 {
@@ -1122,7 +1122,7 @@ SHORT const PLAYER_STATS::mfMemorized(
 
     return cur_num_memorized;
 }
-	
+
 /* ========================================================================
    Function    - mfCanIMemorizeThisSpell
    Description - Test whether a character can memorize this spell.
@@ -1132,7 +1132,7 @@ SHORT const PLAYER_STATS::mfMemorized(
 BOOL const PLAYER_STATS::mfCanIMemorizeThisSpell(ITEMTYPE const NewSpell)
 {
     BOOL Result = 0;
-	
+
     SPELL_INFO::TYPE const 					index	= (SPELL_INFO::TYPE) ItemTypes[NewSpell].mfGetExtendedData();
     SPELL_INFO::SPELL_ITEM const & const	spell	= SPELL_INFO::mfGetSpell(index);
     SPELL_INFO::CASTERTYPE const 			type	= spell.Type;
@@ -1142,7 +1142,7 @@ BOOL const PLAYER_STATS::mfCanIMemorizeThisSpell(ITEMTYPE const NewSpell)
     {
         Result = TRUE;
 	}
-	
+
 	return Result;
 }
 
@@ -1156,14 +1156,14 @@ BOOL const PLAYER_STATS::mfCanIMemorizeThisSpell(ITEMTYPE const NewSpell)
 void PLAYER_STATS::mfMemorizeAllInvSpells()
 {
 	InventoryItor itor(Inventory);
-	
+
 	for (itor.mfAdvance(IC_SPELL);
 	     itor != Inventory.end();
 	     itor.mfAdvanceToNext(IC_SPELL))
 	{
 		ITEMTYPE const itemType = (*itor)->mfType();
 		LONG infiniteLoop;
-		
+
 		// memorize as many charges as you can.
 		for (infiniteLoop = 0;
 		     mfCanIMemorizeThisSpell(itemType) && infiniteLoop < 99;
@@ -1203,7 +1203,7 @@ BOOL IsAvatarDead(THINGTYPE t)
 					return FALSE;
 
 				PLAYER_STATS const * pAvatarStats=(PLAYER_STATS const *)BLKPTR(pAvaTesting->hPlayerStats);
-				
+
 				if (pAvatarStats->mfGetCurHitPoints()<=0)
 					return TRUE;
 				return FALSE;
@@ -1223,7 +1223,7 @@ BOOL IsAvatarDead(THINGTYPE t)
 THINGTYPE const GetThingTypeFromID(LONG const tID)
 {
 	THINGTYPE Result = NO_THING;
-	
+
 	if (playerStatsInitted && tID >= 1000 && tID < 3000)
 	{
 	    LONG i;
@@ -1240,10 +1240,10 @@ THINGTYPE const GetThingTypeFromID(LONG const tID)
 	else
 	{
 		char cpTextFileName[80];
-		
+
 		sprintf(cpTextFileName,"scenes\\id%ld.avd", tID);
 		SHORT hPlayerStats = GetResourceStd(cpTextFileName,(BOOL)fERROR); //bool?
-		
+
 		if ( fStartMultiGame )
 		{
 			// we must reload all these puppies from CDROM in the multiplayer
@@ -1251,16 +1251,16 @@ THINGTYPE const GetThingTypeFromID(LONG const tID)
 			DisposBlock(hPlayerStats);
 			hPlayerStats = GetResourceStd(cpTextFileName,(BOOL)fERROR);
 		}
-		
+
 		if (hPlayerStats != fERROR)
 		{
 			PLAYER_STATS const * const pPS = (PLAYER_STATS const * const) BLKPTR(hPlayerStats);
-			
+
 			Result = pPS->mfGetType();
 			SetPurge(hPlayerStats);
 		}
 	}
-	
+
 	return Result;
 }
 // Release any allocated memory.
@@ -1279,5 +1279,3 @@ void PLAYER_STATS::mfDelete()
 	}
 	hAvatar = fERROR;
 }
-
-

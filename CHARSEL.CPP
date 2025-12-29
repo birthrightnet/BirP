@@ -311,20 +311,20 @@ void MultiResetRealmSelect(void)
 	else
 #endif
 		fp = fopen("rlmstart.dat", "rb");
-	
+
 	LoadGameFiles(fp);
 	fclose(fp);
 	date = 0;
-	
+
 	fRealmSelected = FALSE;
 	iOldRealm = fERROR;
 	iProvSelect = 0;
 	HomeRealm = REALM::NO_COUNTRY;
 	char_selected = FALSE;
-	
+
 	ReconstructMap();
 	SetRedrawMainMapLevel();
-	
+
 	iCurrentRealmIndex = 0;
 	max_actions = 3;
 	for (i=0; i<LAND_REALM_COUNT; i++)
@@ -374,7 +374,7 @@ void NewGameYNProc(LONG MenuCombo,LONG arg)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	RunMenus();
@@ -398,7 +398,7 @@ void NewGameYNProc(LONG MenuCombo,LONG arg)
 #endif
 		   OpenGameSelect(0,lMultiFlagGlobal);
 	}
-}	
+}
 
 
 
@@ -414,7 +414,7 @@ void DomainNewGame (LONG, LONG lMultiFlag )
 		master_game_type != GAME_ADVENTURE &&
 		master_game_type != GAME_BATTLE )
 		return;
-		
+
 	if ( mouse_button == 2 )
 	{
 		SystemHelp( STR_MAIN1_HELP_NEW_TITLE,
@@ -424,7 +424,7 @@ void DomainNewGame (LONG, LONG lMultiFlag )
 	else //---- We need help
 	{
 
-printf("DomainNewGame - char_selected:%d\n",char_selected);
+		logInfo("DomainNewGame - char_selected:%d",char_selected);
 
 		if (!char_selected)
 		{
@@ -458,7 +458,7 @@ printf("DomainNewGame - char_selected:%d\n",char_selected);
 		// turn on the third button as CANCEL
 		SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_CANCEL, BTN_LABEL_COLOR );
 		SetButtonProc   (D_QUESTION2, QUESTION_BTN2, NewGameYNProc, QUESTION_BTN3, D_KEY_CANCEL );
-	
+
 		ShowMenu(D_QUESTION2);
 	}
 }
@@ -479,7 +479,7 @@ void NewGameConfirmed2(BOOL fMulti)
 		realm[i].mfSetPlayerCtrl(FALSE);
 
 	ReconstructMap();
-	
+
 	// make the menu go away
 //	fPause = FALSE;
 //	fRender = TRUE;
@@ -505,7 +505,7 @@ void NewGameConfirmed2(BOOL fMulti)
 	ResetMenus();
 	ResetPanels();
 	ResetRequests();
-	
+
 	// clear all adventure sites from being viewable
 
 	if ( !fMulti )
@@ -516,7 +516,7 @@ void NewGameConfirmed2(BOOL fMulti)
 	// set the new mode
 	dturn_mode = CHARSEL_MODE;
 	SetButtonFlag(D_GAMEBUTTON, 0, D_INVISIBLE);
-	
+
 //	activate_region(regDOMAIN_TURN_MODE,	FALSE);		// domain turn mode OFF
 //	activate_region(regACTION_MODE,			FALSE);		// action mode OFF
 //	activate_region(regMINIMIZED,			FALSE);		// minimized OFF
@@ -554,7 +554,7 @@ void NewGameConfirmed(LONG,LONG lMultiFlag)
 	{
 	   ShowMultiQuit(iMPQ_BEGINNEW, 0);
 	   return;
-	
+
 //	   AMultiPlayer.Finalize();
 
 	}
@@ -566,7 +566,7 @@ void NewGameConfirmed(LONG,LONG lMultiFlag)
 
 	if (!fDomainTurn)  // New Game only allowed at map level
 	    return;
-	
+
 	FILE *fp;
 #ifdef _WINDOWS
 	if ( IsMultiPlayer() )
@@ -574,7 +574,7 @@ void NewGameConfirmed(LONG,LONG lMultiFlag)
 	else
 #endif
 		fp = fopen("rlmstart.dat", "rb");
-	
+
 	LoadGameFiles(fp);
 	fclose(fp);
 	date = 0;
@@ -694,11 +694,11 @@ static void ShowRegentInfo(ULONG x,ULONG y,LONG RegentIdx,LONG iWhichRegent,LONG
 	REGENT_PTR			pRegent = &regents[RegentIdx];
 
 	SHORT hPortraitBack = GetResourceStd ("UI\\REGAREA1.PCX", FALSE);
-	
 
-#if !defined(_JUNEDEMO)	
+
+#if !defined(_JUNEDEMO)
 	add_region(x, y+15, 72, 92,  0, SelectRegent, iWhichRegent, REG_MORE_INFO, 1009, STR_CS_SELECT_REGENT);
-#endif	
+#endif
 	add_region(x, y+112, 84, 28,   0, SelectRegent, iWhichRegent, REG_SHOW_STATUS,1009, -1);
 	add_region(x+85,y+112, 84, 28,0, SelectRegent, iWhichRegent, REG_BEGIN_RULE, 1009, -1);
 
@@ -713,8 +713,8 @@ static void ShowRegentInfo(ULONG x,ULONG y,LONG RegentIdx,LONG iWhichRegent,LONG
 		PLAYER_STATS* pStat = (PLAYER_STATS *) BLKPTR(hStat);
 		sprintf(buff,"UI\\PORTS_L\\LG%s.pcx", GAME_TTYPE::mfGetArtFileName(pStat->mfGetType()));
 
-		iThingType = pStat->mfGetType();	
-		iAlignment = pStat->mfGetAlignment();	
+		iThingType = pStat->mfGetType();
+		iAlignment = pStat->mfGetAlignment();
 
 		iRegent = GetResourceStd (buff, FALSE);
 	}
@@ -756,7 +756,7 @@ static void ShowRegentInfo(ULONG x,ULONG y,LONG RegentIdx,LONG iWhichRegent,LONG
 		ClearRemapTable();
 	}
 
-	
+
 	if (pCharButton)
 	{
 		//pCharButton->Bkgnd=SaveBitmap(x-3,y+109,90,34);
@@ -779,12 +779,12 @@ static void ShowRegentInfo(ULONG x,ULONG y,LONG RegentIdx,LONG iWhichRegent,LONG
 			pCharButton->hDepressedButtonArt = GetResourceStd("UI\\REGBTN5B.PCX", FALSE);
 		}
 	}
-		
+
 	// draw the "Character" button
 	DrawBitmap (x, y+112, pCharButton->hButtonArt, 0, 0, 84, 28);
 	print_textf(x+11, y+119, BTN_LABEL_COLOR, STRMGR_GetStr(STR_3PT_CHARACTER));
 
-	
+
 	LONG BeginRuleColor=BTN_LABEL_COLOR;
 #ifdef _WINDOWS
 	if(IsMultiPlayer() && lRealmSelectedByPlayer[pRegent->mfGetRealm()] != -1)
@@ -859,7 +859,7 @@ void DisplayRealmSelection(void)
 
 	// make sure data area is the proper size
 	if(l_map != DATA_AREA_MID)
-	{	
+	{
 		req_l_map = DATA_AREA_MID;
 		return;
 	}
@@ -907,14 +907,14 @@ void DisplayRealmSelection(void)
 			gprint_text(10, 5, buf, DKBROWN);
 		}
 		crease(10, 35, 144, 1);						// seperator
-	
+
 		//print fields
 		init_gfont(FONT_SANS_8PT);
 		gprint_text(10, 40, STRMGR_GetStr(STR_REALM_DATA_FIELDS), DKBROWN);
-							
+
 		//print realm data
 		init_gfont(FONT_SANS_8PT);
-#if 0		
+#if 0
 		gprint_text(100, 40, STRMGR_GetStr(RealmInfoBlurbs[HomeRealm]), DKBROWN);
 #else
 		//-------------------------------------------------------------
@@ -922,30 +922,30 @@ void DisplayRealmSelection(void)
 		//
 		// This is ridiculous.  This should be centralized.
 		//-------------------------------------------------------------
-		
+
 		SHORT my_provinces=0, my_income=0;
 		SHORT my_law = 0, my_guild=0, my_temple=0, my_source=0;
 		SHORT my_castle=0, my_troops=0, my_allies=0;
-		
+
 		for (i = 1; i <= PROVINCE_COUNT; i++)
 		{
 			SHORT civlevel = province[i].CivLevel;
 			SHORT taxlevel = province[i].TaxLevel;
 			BOOL province_mine = (province[i].Realm == HomeRealm);
-			
+
 			if (province_mine)
 			{
 				my_income += AveProvinceTaxes(civlevel, taxlevel);
 				my_provinces++;
 			}
-			
+
 			SHORT place = province[i].FirstPlace;
 			while (place > 0)
 			{
 				if (places[place].Realm == HomeRealm)
 				{
 					SHORT placelevel = places[place].Level;
-					
+
 					switch (places[place].Icon)
 					{
 					case LAW1_ICON:
@@ -969,45 +969,45 @@ void DisplayRealmSelection(void)
 						break;
 					}
 				}
-				
+
 				if (places[place].NextPlace == 0)
 					break;
-				
+
 				place = province[i].FirstPlace + places[place].NextPlace;
 			}
 		}
-		
+
 		for (i = 1; i < MAX_UNITS; i++)
 		{
 			if (units[i].Realm == HomeRealm)
 				my_troops++;
 		}
-		
+
 		for (i = 1; i < LAND_REALM_COUNT; i++)
 		{
 			if (realm[i].mfExists() && (RealmStatus[HomeRealm][i]&0x0F) >= STATUS_PERMISSIVE_ALLIANCE)
 				my_allies++;
 		}
-		
+
 		char realminfobuf[120];
 		SHORT count;
-		
+
 		strcpy(realminfobuf, STRMGR_GetStr(RealmInfoBlurbs[HomeRealm]));
-		
+
 		// look for second newline
 		for (i = 0, count = 0; i < strlen(realminfobuf) && count < 2; i++)
 		{
 			if (realminfobuf[i] == '\n')
 				count++;
 		}
-		
+
 		sprintf(realminfobuf+i, "%d \n%d \n%d \n%d \n%d \n%d \n%d \n%d \n%d",
 			my_provinces, my_income, my_law, my_guild, my_temple, my_source, my_castle,
 			my_troops, my_allies);
 		gprint_text(100, 40, realminfobuf, DKBROWN);
-		
+
 #endif
-		
+
 		crease(10, 195, 144, 1);					// seperator
 
 		//WRC the following function has lots of output parameters only
@@ -1017,7 +1017,7 @@ void DisplayRealmSelection(void)
 		LONG idxRegent2=(HomeRealm * 2);
 
 		memset(&Buttons[0][0], -1, 4 * sizeof(ButtonInfo));
-		
+
 		if (regents[idxRegent1].mfGetunit() > 0)
 		{
 			ShowRegentInfo(5,196,idxRegent1,1,&iThingType1,&iAlignment1,&iRegent1,&itUnit1,&itRegent1ID,&Buttons[0][0],&Buttons[0][1]);
@@ -1054,7 +1054,7 @@ void ButtonClickSound(BOOL fDelay)
 	//AddSndObj( SND_UI_BUTTON_CLICK, NULL, VOLUME_NINETY);
 	if(!fDelay)
 		return;
-	
+
 	//delay so the button click will play
 	LONG endtime=get_time()+10;
 	while(get_time()<endtime)
@@ -1074,15 +1074,15 @@ void DepressRegentInfoButtons(LONG iWhichRegent,LONG iWhichButton)
 	SysShowCursor();
 	update_screen();
 	TickDelay(4);
-	
+
 	SysHideCursor();
 	DrawBitmap(Butt.Pos.x,Butt.Pos.y,Butt.hButtonArt,0,0,84,28);
 	print_textf(Butt.Pos.x+Butt.TextOffs.x,Butt.Pos.y+Butt.TextOffs.y, Butt.TextColor, STRMGR_GetStr(Butt.Text));
 	SysShowCursor();
 	update_screen();
 }
-		
-	
+
+
 
 /* ========================================================================
    Function	- SelectRegent
@@ -1112,7 +1112,7 @@ void SelectRegent(LONG arg1, LONG arg2)
 			//FALSE means don't delay, DepressRegentInfoButtons delays for us.
  			ButtonClickSound(FALSE);
 			DepressRegentInfoButtons(iWhichRegent-1,BUTTON_CHARACTER);
-			
+
 			switch(arg1)
 			{
 				case 1:
@@ -1156,7 +1156,7 @@ void SelectRegent(LONG arg1, LONG arg2)
 			//FALSE means don't delay, DepressRegentInfoButtons delays for us.
  			ButtonClickSound(FALSE);
 			DepressRegentInfoButtons(iWhichRegent-1,BUTTON_BEGIN_RULE);
-			
+
 			SysHideCursor();
 
 			BeginRule(0,0);
@@ -1205,7 +1205,7 @@ void BeginRule(LONG, LONG)
 	}
 
 	ClearButtonFlag(D_GAMEBUTTON, 0, D_INVISIBLE);
-	
+
 	// HideCharacter(0,0); // GWP HideMenu(D_BEGIN_RULE);
 
 	//---- wait for menu to minimize
@@ -1221,7 +1221,7 @@ void BeginRule(LONG, LONG)
 		//---- Everyone has selected a realm
 
 		if ( MultiAllRealmsSelected() )
-		{					
+		{
 
 			MultiSetAdvSite();
 
@@ -1264,7 +1264,7 @@ void BeginRule2(LONG, LONG)
 	//---- If you have any questions about this come ask me dlj
 
 	#ifdef _WINDOWS
-		AMultiPlayer.StartSeed();		
+		AMultiPlayer.StartSeed();
 	#endif
 
 
@@ -1297,7 +1297,7 @@ void BeginRule2(LONG, LONG)
 		SetPurge(iRegn3);
 		iRegn3 = fERROR;
 	}
-	
+
 	for (LONG i = 0; i < 2; i++)
 	{
 		for (LONG j = 0; j < 2 ; j++)
@@ -1307,13 +1307,13 @@ void BeginRule2(LONG, LONG)
 				SetPurge (Buttons[i][j].hButtonArt);
 				Buttons[i][j].hButtonArt = fERROR;
 			}
-			
+
 			if (Buttons[i][j].hDepressedButtonArt != fERROR)
 			{
 				SetPurge (Buttons[i][j].hDepressedButtonArt);
 				Buttons[i][j].hDepressedButtonArt = fERROR;
 			}
-			
+
 		}
 	}
 
@@ -1328,7 +1328,7 @@ void BeginRule2(LONG, LONG)
 
    // fix up the units array with the new regent information
 	TransferRegentIconsToUnitsArray();
-	
+
 	//Goes through provinces links the units in them (including regents)
 
 	LinkUnits(FALSE); // Don't send to others
@@ -1353,7 +1353,7 @@ void BeginRule2(LONG, LONG)
 	iProvInfo = 0;				// no info up
 	iUnitInfo = 0;
 	iPlaceInfo = 0;
-	
+
 #ifdef _WINDOWS
 	if (!IsMultiPlayer ())
 		date = 0;
@@ -1469,7 +1469,7 @@ void SelectAdvParty(void)
 	localActiveRegent = ActiveRegent;
 
 	dturn_mode = ADVPARTY_MODE;
-	
+
 	activate_region(regDOMAIN_TURN_MODE	 , FALSE);			   // domain turn mode OFF
 	activate_region(regACTION_MODE		  , FALSE);			   // action mode OFF
 	activate_region(regMINIMIZED			, FALSE);			   // minimized OFF
@@ -1493,7 +1493,7 @@ void EndAdvParty(LONG i, LONG j)
 	del_region(SelectSite,0);
 	del_region(ToggleShowParty,0);
 	del_region(ShowPartyStatus,0);
-	
+
 	if(i == 1)			  // done with select party
 	{
 
@@ -1507,7 +1507,7 @@ void EndAdvParty(LONG i, LONG j)
 			{
 				SelectSite( EventResults.data2, 77777 );
 				return;
-			}			
+			}
 
 		}
 #endif
@@ -1520,10 +1520,10 @@ void EndAdvParty(LONG i, LONG j)
 #ifdef _WINDOWS
 
 		//---- MULTI dont allow cancel in multiplayer
-		
+
 		if ( IsMultiPlayer() && i == 2 )
 		{
-			return;			
+			return;
 		}
 
 #endif
@@ -1547,7 +1547,7 @@ void EndAdvParty(LONG i, LONG j)
 			SetPurge(iRegn1);
 			iRegn1 = fERROR;
 		}
-		
+
 		if (iRegn2!=fERROR)
 		{
 			SetPurge(iRegn2);
@@ -1613,14 +1613,14 @@ void EndAdvParty(LONG i, LONG j)
 				LONG	unit;		 // index for unit search loop
 				LONG	count = 0;	// how many people in party
 				LONG	lastGuy = -1; // lockstep link
-				
+
 				for (who=0; who<ADVENTURER_LIST_SIZE; who++)
 				{
 					BOOL did_break = FALSE;
 					me = whoIndex[who];
 					if (me == -1)  /* end of list */
 						break;
-						
+
 					if (inParty[who])  // he's going; take him out of map
 					{
 						if (units[me].Joined)
@@ -1644,7 +1644,7 @@ void EndAdvParty(LONG i, LONG j)
 							}
 						}
 						units[me].NextUnit = -1;
-						
+
 						if (lastGuy < 0)
 						{
 							iPartyLead = me;
@@ -1659,7 +1659,7 @@ void EndAdvParty(LONG i, LONG j)
 							units[me].DestProvince = units[iPartyLead].DestProvince;
 							units[me].Joined = TRUE;
 						}
-						
+
 						/* pull me out of the province I'm in */
 						units[me].province = NO_PROVINCE;
 
@@ -1669,14 +1669,14 @@ void EndAdvParty(LONG i, LONG j)
 					if (count >= 4)  // That's all we can carry!
 						break;
 					}
-			}	
-	
+			}
+
 			fPreparingSpells = FALSE;
 			// let the scene manager know who's going, and where
-		
+
 			LONG index;
 			SCENE_MGR::Aggressor = REALM::MONSTERS;
-			
+
 			// find the realm in the advsite array instead of places,
 			// because this guarantees the _landed_ realm
 			for (index = 0; index < MAX_SITES; index++)
@@ -1699,7 +1699,7 @@ void EndAdvParty(LONG i, LONG j)
 			SCENE_MGR::PlacesIndex = j;			// where we're going
 			SCENE_MGR::SceneType = SCENE_AI::ADVENTURE_SCENE;	   // type for next scene ai
 			SCENE_MGR::mfRequestNewScene( places[j].scene, TYPE_PLAYERSTART1, FALSE); // load first scene
-			
+
 //			TurnOffAllSounds();
 			InitDomainTurn(0);
 			// dturn_mode = ACTN_MODE;
@@ -1761,9 +1761,9 @@ void ToggleShowParty(LONG i, LONG)
 		else
 		{
 			if (numGoing < 4 || inParty[i])
-				inParty[i] = !inParty[i];	
+				inParty[i] = !inParty[i];
 		}
-		
+
 		SetRedrawMainMapLevel();
 }
 
@@ -1814,13 +1814,13 @@ void SelectSite(LONG i, LONG multi )
 
 		}
 
-#endif 				
+#endif
 
 
 		// clean up region
 		del_region(SelectSite,0);
 		del_region(EndAdvParty,0);
-			
+
 		// goto adventure site
 		//EndAdvParty(3, i);
 		iAdvMode = ADV_SITE_GO;
@@ -1831,7 +1831,7 @@ void SelectSite(LONG i, LONG multi )
 	{
 		del_region(SelectSite,0);
 		del_region(EndAdvParty,0);
-		
+
 		// temporarily display site info
 		EndAdvParty(4, i);
 	}
@@ -1921,11 +1921,11 @@ void DisplayAdvParty(void)
 
 		for(i=0; i<MAX_UNITS; i++)
 		{
-			if (realm[units[i].Realm].mfExists() 
-				&& units[i].Realm == HomeRealm 
-				&& units[i].id >= 1000 
-				&& units[i].id < 3000 
-				&& i != activeRegentUnit 
+			if (realm[units[i].Realm].mfExists()
+				&& units[i].Realm == HomeRealm
+				&& units[i].id >= 1000
+				&& units[i].id < 3000
+				&& i != activeRegentUnit
 				&& i != realRegentUnit )
 			{
 				whoIndex[count++] = i;
@@ -1988,7 +1988,7 @@ void DisplayAdvParty(void)
 
 		// add cancel button if not in multiplayer
 
-#ifdef _WINDOWS			
+#ifdef _WINDOWS
 		if ( !IsMultiPlayer() )
 		{
 #endif
@@ -2001,7 +2001,7 @@ void DisplayAdvParty(void)
 		}
 #endif
 	}
-	else if (iAdvMode == ADV_GETSITE)	
+	else if (iAdvMode == ADV_GETSITE)
 	{
 		// delete the check box and name regions
 		del_region(EndAdvParty,0);
@@ -2082,7 +2082,7 @@ void DisplayAdvParty(void)
 		char textbuf[4096];
 		char buff[127];
 		int i;
-		
+
 		del_region(SelectSite,0);
 		del_region(EndAdvParty, 0);
 
@@ -2128,15 +2128,15 @@ void DisplayAdvParty(void)
 			gprint_text(10, 40, textbuf, DKBROWN);
 
 
-			 	
-			if (advsite[i].realm!=REALM::FIVEPEAKS)	
+
+			if (advsite[i].realm!=REALM::FIVEPEAKS)
 				if (((RealmStatus[HomeRealm][advsite[i].realm])&0x0F) > STATUS_NEUTRAL)
 				{
 					y = 60 + gtext_height(textbuf);
 					gprint_text(10, y, STRMGR_GetStr(STR_CS_WARN_ALLIED), DKBROWN);
 				}
 		}
-			
+
 		if (iAdvMode == ADV_SITE_DESCR)
 		{
 			// done button
@@ -2144,7 +2144,7 @@ void DisplayAdvParty(void)
 			add_region(13, y, 68,28,0,EndAdvParty,1,0,0, -1);
 			DrawBitmap (13, y, iRegn1, 0, 0, 68, 28);
 			print_textf(23, y+7, BTN_LABEL_COLOR, STRMGR_GetStr(STR_CS_DONE));
-		}	
+		}
 		else
 		{
 			if (iAdvCountdown > 0)
@@ -2310,10 +2310,10 @@ void PaintBattleMagicPrep(LONG, LONG)
 
 	if( GetButtonPosition( D_BATTLE_PREP, 0, &mx, &my ) == fERROR)
 		return;
-	
+
 	if( GetButtonSize( D_BATTLE_PREP, 0, &mw, &mh ) == fERROR)
 		return;
-	
+
 	// print title
 	init_gfont(FONT_TITL_20PT);
 	{
@@ -2322,17 +2322,17 @@ void PaintBattleMagicPrep(LONG, LONG)
 		gprint_text(mx+10, my+5, buf, DKBROWN);
 	}
 	gprint_text(mx+10, my+36, STRMGR_GetStr(STR_CS_BCHOOSE), DKBROWN);
-	
+
 	y=my+66;
 
 	crease(mx+10, y, mw-28, 1);				  // separator
 	y += 8;
-	
+
 	// show the possible magic users in the unit stack
-	
+
 	init_gfont(FONT_SANS_8PT);
 	count = 0;
-	
+
 	// next, find all other eligible characters
 	// check the home team
 	UnitIndex = SCENE_MGR::HomeIndex;
@@ -2349,18 +2349,18 @@ void PaintBattleMagicPrep(LONG, LONG)
 	    {
 		    SHORT const hPlayerStats = LoadStats(units[UnitIndex].id, fERROR);
 		    DumbHandlePtr<PLAYER_STATS const> const dhPlayerStats(hPlayerStats);
-		
+
 		    if (dhPlayerStats->mfIsMagicUser())
 		    {
 				whoIndex[count++] = UnitIndex;
 		    }
 	    }
-	
+
 		UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 	} while (UnitIndex != fERROR);
-	
+
 	whoIndex[count] = -1;	// clear this entry, just in case
-	
+
 	// now print the results and add regions for activation
 	for (i=0; i < count; i++)
 	{
@@ -2371,10 +2371,10 @@ void PaintBattleMagicPrep(LONG, LONG)
 			if(regents[k].mfGetunit() == whoIndex[i])
 			{
 				sprintf(namebuf, "%s", regents[k].mfGetname());
-				
+
 				// equip character region - anyone can give items away
 				add_region(mx+10, y, 130,12,0,ShowPartyStatus,whoIndex[i],0,0, -1);
-				
+
 				gprint_text(mx+10, y, namebuf, DKBROWN);
 				break;
 			}
@@ -2391,4 +2391,3 @@ void PaintBattleMagicPrep(LONG, LONG)
 void SetupAdvsitePlaces(void)
 {
 }
-

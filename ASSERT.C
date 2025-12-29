@@ -6,11 +6,11 @@
    Author: 	 Greg Hightower
    ========================================================================
    Contains the following general functions:
-   
+
    assert()
-   
+
    Contains the following internal functions:
-   
+
    ======================================================================== */
 /* ------------------------------------------------------------------------
    Includes
@@ -24,7 +24,7 @@
    Defines and Compile Flags
    ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------
-	Macros   
+	Macros
    ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------
    Prototypes
@@ -61,18 +61,18 @@ void fatal_exit(const char *format, ...)
 	char texbuffer[200];
 	FILE *f;
 	va_list argp;
-	
+
 	f=fopen("Fatal.err","wt");
 	va_start(argp, format);
 	vsprintf(texbuffer,format,argp);
 	close_graph();
 	remove_keyint();
-	printf("Fatal Error:%s\n",texbuffer);
+	logFatal("Fatal Error:%s",texbuffer);
 	fprintf(f,"Fatal Error:%s\n",texbuffer);
 	fclose(f);
 
-	printf("Exiting...\n");
-	
+	logInfo("Exiting...");
+
 #if defined(_DEBUG)
 	// if debuggable, crash into the debugger
 	{
@@ -86,4 +86,3 @@ void fatal_exit(const char *format, ...)
 }
 
 #endif // !defined(_RELEASE)
-

@@ -125,7 +125,7 @@ int __far crit_error_handler(unsigned deverr, unsigned errcode, unsigned far *de
 	// tell the screen to update
 	SetRedrawMainMapLevel();
 
-	// return a retry	
+	// return a retry
 	return(_HARDERR_RETRY);
 #endif
 
@@ -205,14 +205,14 @@ checkit:
 
 			// save the state of the fade
 			fFadeOut = fIsFadedOut;
-		
+
 			// if we are faded out, fade in first
 			if(fIsFadedOut = TRUE)
 			{
 				FadeIn(0);
 			}
 
-			// printf("Put up box\n");		
+			// printf("Put up box\n");
 			// put up a box telling the user to put in the birthright CD
 		//	sprintf(szText, "^F02%s", STRMGR_GetStr(STR_REPLACE_CD));
 			sprintf(szText, "^F02%s", "Please insert your Birthright CD, and press a key.");
@@ -223,34 +223,34 @@ checkit:
 			color_rect(x, y, w, h, 223);            // lt tan
 			color_box(x, y, w, h, 223-8);           // md tan
 			print_textf(x + 4, y + 4, 128, szText); // dk brown
-		
-			// printf("Wait for key\n");		
+
+			// printf("Wait for key\n");
 			// now wait for a key
 			// clear key states
 			fAnyKeyChanged = FALSE;
 			clear_key_status(0);
-		
+
 			while(TRUE)
 			{
 				run_timers();
 				if(fAnyKeyChanged)
 					break;
 			}
-		
+
 			// clear key states
 			fAnyKeyChanged = FALSE;
 			clear_key_status(0);
-		
+
 			// restore the state of the fade
 			if(fFadeOut)
 				FadeOut(0);
-		
+
 			// tell the screen to update
 			SetRedrawMainMapLevel();
 
 			// and try again
 			goto checkit;
-		}	
+		}
 #endif
 		goto checkit;
 	}
@@ -369,8 +369,8 @@ FILE * FileOpen(
 	{
 		strcpy(chFileName, pszFile);
 	}
-	
-	
+
+
 	// Returns -1 if file doesn't exist
 	if( ( access( chFileName, ( F_OK ) ) ) == 0 )
 	{
@@ -432,7 +432,7 @@ SHORT DiskOpen(
 	{
 		strcpy(chFileName, pszFile);
 	}
-	
+
 	// Returns -1 if file doesn't exist
 	if( ( access( chFileName, ( F_OK ) ) ) == 0 )
 	{
@@ -456,7 +456,7 @@ SHORT DiskOpen(
 
 //	if(iFile == -1)
 //		CheckCD();
-		
+
 	return( iFile );
 }
 
@@ -467,7 +467,7 @@ LONG FileAccess(
 {
 	LONG iFile = -1;
 	char	chFileName[_MAX_PATH];
-	
+
 	// Check resource files, then local drive, then CD-ROM.
 	if (ResourceFileAccess (pszFile) == 0)
 	{
@@ -494,7 +494,7 @@ LONG FileAccess(
 			}
 		}
 	}
-	
+
 	// Returns -1 if file doesn't exist
 
 	return( iFile );
@@ -509,7 +509,7 @@ int DiskClose (short handle)
 // Compare FileClose.
 
 	int Result;
-	
+
 	if (!gfUseFileSystem)
 	{
 		Result = close (handle);
@@ -531,7 +531,7 @@ int FileClose (FILE * fp)
 // Compare DiskClose.
 
 	int Result;
-	
+
 	if (!gfUseFileSystem)
 	{
 		Result = fclose (fp);
@@ -541,7 +541,7 @@ int FileClose (FILE * fp)
 		RecordClose (fp, -1);
 		Result = 0;
 	}
-	
+
 	return Result;
 }
 
@@ -648,7 +648,7 @@ static void CloseOldestFile ()
 
    // [d4-29-97 JPC] Added + 1 to the following to fix the bug where all
 	// of the last-opened files were opened in the current time tick.
-	time = get_time() + 1;					
+	time = get_time() + 1;
 	iOldest = -1;
 
 	// printf ("CloseOldestFile:\n");
@@ -713,7 +713,7 @@ static FILE * FileInQueue (CSTRPTR pszFile, CSTRPTR pszAccess)
 //			to return the existing pointer.)
 
 	LONG			i;
-	
+
 	for (i = 0; i < gcMaxRecords; i++)
 	{
 		if (gFileRecord[i].fInUse && gFileRecord[i].fOpened == FALSE)
@@ -765,7 +765,7 @@ static SHORT DiskInQueue (CSTRPTR pszFile)
 //			same file.  It would not be correct to return the existing handle.)
 
 	LONG			i;
-	
+
 	for (i = 0; i < gcMaxRecords; i++)
 	{
 		if (gFileRecord[i].fInUse && gFileRecord[i].fOpened == FALSE)
@@ -805,7 +805,7 @@ void CloseAllFiles ()
 		if (gFileRecord[i].fInUse)
 		{
 #if defined (_DEBUG)
-			printf ("Closing record %d, file %s\n", i, gFileRecord[i].szFilename);
+			logInfo("Closing record %d, file %s", i, gFileRecord[i].szFilename);
 #endif
 			if (gFileRecord[i].fp != NULL)
 			{
@@ -832,5 +832,3 @@ FILE_MODE SetFileMode ( FILE_MODE NewFileMode )
 	fmCurrentFileMode = NewFileMode;
 	return OldMode;
 }
-
-

@@ -1163,7 +1163,7 @@ VOX_TYPE GameIconVOX[MAP_ICON_COUNT] = {
 /* LET_GLADY1_UNIT_ICON */		VOX_GOBLIN_MALE_1,
 };
 
-DEFINE_VECTOR_DATA(UBYTE,UnitDisplaySize) = 
+DEFINE_VECTOR_DATA(UBYTE,UnitDisplaySize) =
 //		A A A A A A A A A M M M M M E E E D D G G G N N
 //		i e b i p l s k c i b i p c i b c i b i b c i i h s s h w
 //		n i o r i v c n a n o r i a n o a n o n o a n r p k p e y
@@ -1174,7 +1174,7 @@ DEFINE_VECTOR_DATA(UBYTE,UnitDisplaySize) =
 
 DEFINE_VECTOR_CLASS(UBYTE, UnitDisplaySize);
 
-DEFINE_VECTOR_DATA(SHORT,UnitMaintCost) = 
+DEFINE_VECTOR_DATA(SHORT,UnitMaintCost) =
 //		A A A A A A A A A M M M M M E E E D D G G G N N
 //		i e b i p l s k c i b i p c i b c i b i b c i i h s s h w
 //		n i o r i v c n a n o r i a n o a n o n o a n r p k p e y
@@ -1212,8 +1212,8 @@ ITEMTYPE battle_spells[NUM_BATTLE_SPELLS] = {
 // No attack results
 	ITEM_SPELL_POWER_STUN,
 	ITEM_SPELL_POWER_BLIND,
-	ITEM_SPELL_TIME_STOP,			
-	
+	ITEM_SPELL_TIME_STOP,
+
 // Magic items useful in battle.
 	ITEM_WAND_OF_FIRE_3,
 	ITEM_WAND_OF_FIRE_2,
@@ -1445,7 +1445,7 @@ void DepressIcon (void)
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	- void
 	======================================================================== */
@@ -1506,7 +1506,7 @@ void DisplayProcess (LONG mode, LONG color, LONG index1, LONG index2)
 	{
 		char RealmName[80];
 		char RealmName2[80];
-		
+
 		case WAITINGFOR:
 			if (index1)
 			{
@@ -1561,9 +1561,9 @@ void DisplayProcess (LONG mode, LONG color, LONG index1, LONG index2)
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
-	Returns	- 
+	Returns	-
 	======================================================================== */
 static void PaintDeathNotification(LONG MenuCombo, LONG RealmThatBitTheDust)
 {
@@ -1584,7 +1584,7 @@ static void PaintDeathNotification(LONG MenuCombo, LONG RealmThatBitTheDust)
 	sprintf(buffer,STRMGR_GetStr(STR_FMT_DEATHNOTIFY),Realmbuf);
 
 	Y += my/2-gtext_height(buffer)/2;		//centered vertically
-	
+
 	// reload because gtext_height modifies our string
 	sprintf(buffer,STRMGR_GetStr(STR_FMT_DEATHNOTIFY),Realmbuf);
 
@@ -1627,25 +1627,25 @@ static void PaintDeathNotification(LONG MenuCombo, LONG RealmThatBitTheDust)
 static void NotifyPlayerOfRealmDeath(LONG RealmIdx)
 {
 	AddReport(IMMEDIATE_DEATHNOTIFY, RealmIdx, 0, 0);
-	
+
 //GEH 	PFVLL OldProc = GetButtonProc(D_MOREINFO,0);
 //GEH 	LONG OldArg = GetButtonValue(D_MOREINFO,0);
 //GEH 	LONG MenuCombo = BUILD_LONG((SHORT)D_MOREINFO,(SHORT)0);
-//GEH 
+//GEH
 //GEH 	if (RealmIdx == HomeRealm && IsMenuActive(D_DACTN))
 //GEH 	{
 //GEH 		HideMenu(D_DACTN);
 //GEH 		RunMenus();
 //GEH 	}
-//GEH 
+//GEH
 //GEH 	SetButtonProc(D_MOREINFO, 0, PaintDeathNotification, RealmIdx, NO_KEY);
 //GEH 	SetButtonProc(D_MOREINFO, 4, HideSubMenu, D_MOREINFO, 0);
 //GEH 	ShowMenu(D_MOREINFO);
-//GEH 
+//GEH
 //GEH 	SysForceCursor();
 //GEH 	while(IsMenuActive(D_MOREINFO))
 //GEH 		MenuLoop();
-//GEH 
+//GEH
 //GEH 	SetButtonProc(D_MOREINFO, 0, OldProc, OldArg, NO_KEY);
 //GEH 	SetButtonProc(D_MOREINFO, 4, NULL, 0, 0);
 }
@@ -1654,8 +1654,8 @@ static void NotifyPlayerOfRealmDeath(LONG RealmIdx)
 /* ========================================================================
    Function    - CheckRealmStatus
    Description - check for lose game due to no provinces
-						fSend means tell remote players about this change 
-   Returns     - 
+						fSend means tell remote players about this change
+   Returns     -
    ======================================================================== */
 void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 {
@@ -1723,7 +1723,7 @@ void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 			// deleted.
 			for (j=1; j<MAX_UNITS; ++j)			// kill units
 				if (units[j].Realm == i)
-					DeleteUnit(j, fSend );	
+					DeleteUnit(j, fSend );
 
 			for (l=0; l<PROVINCE_COUNT; ++l)		// kill holdings
 			{
@@ -1736,7 +1736,7 @@ void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 					 * DeleteHolding() will change the province's FirstPlace as well as each places' NextPlace.
 					 */
 					m = province[l].FirstPlace + k;
-		
+
 					if (places[j].Realm == i)
 					{
 						if (places[j].Icon == SEAPORT_ICON
@@ -1781,7 +1781,7 @@ void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 /* ========================================================================
    Function    - AdjustNames
    Description - Support functions for CheckRealmStatus
-   Returns     - 
+   Returns     -
    ======================================================================== */
 #define X_CLUMP_BOUNDS		180
 #define Y_CLUMP_BOUNDS		160
@@ -1891,8 +1891,8 @@ RestartFindBounds:
 /* ========================================================================
    Function    - CheckRealmStatus
    Description - check for lose game due to no provinces
-						fSend means tell remote players about this change 
-   Returns     - 
+						fSend means tell remote players about this change
+   Returns     -
    ======================================================================== */
 void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 {
@@ -1938,7 +1938,7 @@ void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 			// deleted.
 			for (j=1; j<MAX_UNITS; ++j)			// kill units
 				if (units[j].Realm == i)
-					DeleteUnit(j, fSend );	
+					DeleteUnit(j, fSend );
 
 			for (l=0; l<PROVINCE_COUNT; ++l)		// kill holdings
 			{
@@ -1951,7 +1951,7 @@ void CheckRealmStatus (LONG investor, LONG victim, BOOL fSend )
 					 * DeleteHolding() will change the province's FirstPlace as well as each places' NextPlace.
 					 */
 					m = province[l].FirstPlace + k;
-		
+
 					if (places[j].Realm == i)
 					{
 						if (places[j].Icon == SEAPORT_ICON
@@ -2712,7 +2712,7 @@ LONG ProvinceInfo (PROVINCE prov, MAP_ICON holding_type)
 							roll = RollGuildTempleTaxes((SHORT)province[prov].CivLevel,(SHORT)level, mod=1);
 						else if(province[prov].Blighted > 0)
 							roll = RollGuildTempleTaxes((SHORT)province[prov].CivLevel,(SHORT)level, mod=-1);
-						else 
+						else
 							roll = RollGuildTempleTaxes((SHORT)province[prov].CivLevel,(SHORT)level, mod=0);
 						prov_tax += roll;
 
@@ -2857,7 +2857,7 @@ LONG ProvinceInfo (PROVINCE prov, MAP_ICON holding_type)
 
 /* ========================================================================
 	Function	- Fortify Deamon
- 
+
    This is done locally on each machine !!!! DONT PASS TO OTHERS !!!!
 
 	Description -
@@ -2947,7 +2947,7 @@ void UpdatingFortify (void)
 								while(m < PROVINCE_COUNT)
 								{
 									if(province[m].Realm != HomeRealm)
-									{	
+									{
 										++m;
 										continue;
 									}
@@ -3000,7 +3000,7 @@ void DisplayHolding (LONG type, LONG)
 	// GWP reqSound = SND_UI_BUTTON_CLICK;
 	// The region code does the click.
 	reqSound = FALSE;
-	
+
 	fRedrawAll = TRUE;
 
 	// make holding buttons radio buttons
@@ -3272,7 +3272,7 @@ void DoTaxRolls (LONG /* type */, LONG)
 
 /*	========================================================================
    Function    - CancelGoBankrupt
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void CancelGoBankrupt (LONG, LONG)
@@ -3283,7 +3283,7 @@ void CancelGoBankrupt (LONG, LONG)
 
 /*	========================================================================
    Function    - OkGoBankrupt
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void OkGoBankrupt (LONG, LONG)
@@ -3332,7 +3332,7 @@ void OkGoBankrupt (LONG, LONG)
 
 /* ========================================================================
    Function    - PaintGoBankrupt
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void PaintGoBankrupt (LONG MenuCombo, LONG)
@@ -3388,7 +3388,7 @@ void PaintGoBankrupt (LONG MenuCombo, LONG)
 
 /* ========================================================================
    Function    - SwitchToActionMode
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void SwitchToActionMode (LONG, LONG)
@@ -3426,7 +3426,7 @@ void SwitchToActionMode (LONG, LONG)
 	del_region(SwitchToActionMode,0);
 
 #ifdef _WINDOWS
-	//----  SYNC POINT #1 
+	//----  SYNC POINT #1
 	if ( IsMultiPlayer() )
 	{
 		StartSync( iMPS_SYNC1 );
@@ -3493,14 +3493,14 @@ void SwitchToActionMode (LONG, LONG)
 		if (date%4 == 3)
 		{
 			SHORT realm;
-			
+
 			lossevent = IMMEDIATE_PARTY;
 			amount = random(4)+1;				// 1d4 kgb
 			for (realm=1; realm < LAND_REALM_COUNT; ++realm)
 			{
 				if (realm == HomeRealm)
 					continue;
-					
+
 				if (realm == REALM::GORGONSCROWN ||
 					realm == REALM::RHUOBHE ||
 					realm == REALM::SPIDERFELL ||
@@ -3511,7 +3511,7 @@ void SwitchToActionMode (LONG, LONG)
 					realm == REALM::THURAZOR ||
 					realm == REALM::MONSTERS)
 					continue;
-					
+
 				// some people might have appreciated the party
 				// (but probably not the exceptions listed above)
 				for (SHORT j=random(amount+2)-1; j > 0; --j)
@@ -3528,7 +3528,7 @@ void SwitchToActionMode (LONG, LONG)
 			lossevent = IMMEDIATE_EMBEZZLE;
 			amount = 2;							// 2 kgb
 		}
-		
+
 		AddReport(lossevent, amount, 0, 0);
 		//realm[HomeRealm].mfAddTreasury( -( amount * 10000));
 		new_treasury -= amount * 10000;
@@ -3859,7 +3859,7 @@ void AddBloodlineStrength (LONG MenuCombo, LONG button)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -3877,12 +3877,12 @@ void AddBloodlineStrength (LONG MenuCombo, LONG button)
 	fUpdatePanels = TRUE;
 	RunPanels();
 	RunMenus();
-	
+
 	SetButtonLabel  (MenuId, QUESTION_TEXT, -1, BLACK );
 	if(button == QUESTION_BTN1)
 	{
 		SHORT regentidx = realm[HomeRealm].mfGetRegent();
-		
+
 		realm[HomeRealm].mfAddRegency(- (regents[realm[HomeRealm].mfGetRegent()].mfGetBL_strength() + 1));
 		SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, realm[HomeRealm].mfGetRegency(), TRUE);
 		regents[regentidx].mfIncrBL_strength();
@@ -3897,24 +3897,24 @@ void QueryBloodlineStrength (LONG, LONG)
 	// test to see if we are about to get too high
 	if (regents[realm[HomeRealm].mfGetRegent()].mfGetBL_strength() >= 99)
 		return;
-	
+
 	if (realm[HomeRealm].mfGetRegency() <= regents[realm[HomeRealm].mfGetRegent()].mfGetBL_strength() + 1)
 	    return;
 
 	SetButtonProc   (D_QUESTION2, 0, NULL, 0, NO_KEY );
-	
+
 	// set the question text
 	print_global[0] = regents[realm[HomeRealm].mfGetRegent()].mfGetBL_strength() + 1;
 	SetButtonLabel  (D_QUESTION2, QUESTION_TEXT, STR_GM_BLOODLINE_ADD, BLACK );
-	
+
 	// turn on the first button as YES
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES1, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, AddBloodlineStrength, QUESTION_BTN1, D_KEY_YES );
-	
+
 	// turn on the last button as CANCEL
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_CANCEL1, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, AddBloodlineStrength, QUESTION_BTN2, D_KEY_CANCEL );
-	
+
 	ShowMenu(D_QUESTION2);
 }
 /*	======================================================================== */
@@ -4019,9 +4019,9 @@ void DoAction (LONG iAction, LONG)
 	if(mouse_button == 2)
 	{
 		char buffer[80];
-		
+
 		strcpy(buffer, Action[iAction].mfGetTitle());
-		
+
 		SystemHelp(
 			buffer,
 			Action[iAction].mfGetVerbose(),
@@ -4055,7 +4055,7 @@ void DoAction (LONG iAction, LONG)
 		if (iAction == ADVENTURE)
 		{
 		#if defined(_JUNEDEMO)
-			// show teaser screen here	
+			// show teaser screen here
 			ShowAdScreen(0);
 			IncActionTurn();
 		#else
@@ -4063,7 +4063,7 @@ void DoAction (LONG iAction, LONG)
 			//---- if this is multiplayer then we need to determine if everyone wants to go
 			if ( IsMultiPlayer() )
 			{
-			   	ShowVoteWaitWindow(0,0);  //---- Make it an election for multi play	
+			   	ShowVoteWaitWindow(0,0);  //---- Make it an election for multi play
 			}
 			else
 			#endif
@@ -4183,7 +4183,7 @@ void UpdateHoldingFlag (void)
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	- void
 	======================================================================== */
@@ -4231,7 +4231,7 @@ BOOL CastleBesieged (PROVINCE iProv, LONG iPlace)
 /* ========================================================================
 	Function	- CheckEnemyCastle
 	Description - test for other people's castles
-	Returns	- 
+	Returns	-
 	======================================================================== */
 BOOL CheckEnemyCastle (LONG iProv, LONG rlm)
 {
@@ -4245,7 +4245,7 @@ BOOL CheckEnemyCastle (LONG iProv, LONG rlm)
 				||	places[j].Icon == CASTLE3_ICON	// awnsheigh2 castle
 				||	places[j].Icon == CASTLE4_ICON	// awnsheigh3 castle
 				)
-			//&& places[j].Realm != rlm )		// abc 8/15 
+			//&& places[j].Realm != rlm )		// abc 8/15
 			&& !AREALLIED(places[j].Realm, rlm) )
 		{
 			return TRUE;
@@ -4282,7 +4282,7 @@ void DegradeCastles (void)
 				// if the holding which is about to delete is the first one in the province
 				// DeleteHolding() will change the province's FirstPlace as well as each places' NextPlace.
 				LONG const m = province[i].FirstPlace + k;
-				
+
 				if ( places[j].Icon == CASTLE1_ICON
 					&& places[j].Realm == HomeRealm
 					&& places[j].iRoute1 == 0			// not currently fortifying it
@@ -4314,7 +4314,7 @@ void DegradeCastles (void)
 			// if the holding which is about to delete is the first one in the province
 			// DeleteHolding() will change the province's FirstPlace as well as each places' NextPlace.
 			LONG const m = province[i].FirstPlace + k;
-			
+
 			if (	(	places[j].Icon == CASTLE1_ICON	// normal castle
 					||	places[j].Icon == CASTLE2_ICON	// awnsheigh1 castle
 					||	places[j].Icon == CASTLE3_ICON	// awnsheigh2 castle
@@ -4381,7 +4381,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 
 	switch (select)
 	{
-		case 0:		printf("Lots of gold given to Gorgon\n");
+		case 0:		logInfo("Lots of gold given to Gorgon");
 			if ( !realm[REALM::GORGONSCROWN].mfIsPlayerCtrl() )
 			{
 				realm[REALM::GORGONSCROWN].mfAddTreasury((200*date)+1000);
@@ -4398,7 +4398,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 //				SetGameData(MP_REALM, MPRLM_SURPLUSINCOME, REALM::MURKILAD, realm[REALM::MURKILAD].mfGetSurplusIncome(), fSend );
 			}
 			break;
-		case 1:		printf("Gold given to Gorgon\n");
+		case 1:		logInfo("Gold given to Gorgon");
 			if ( !realm[REALM::GORGONSCROWN].mfIsPlayerCtrl() )
 			{
 				realm[REALM::GORGONSCROWN].mfAddTreasury(1000);
@@ -4409,43 +4409,43 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 				SetGameData(MP_REALM, MPRLM_TREASURY, REALM::MURKILAD, realm[REALM::MURKILAD].mfGetTreasury(), fSend );
 			}
 			break;
-		case 2:		printf("Gold given to Rhuobhe\n");
+		case 2:		logInfo("Gold given to Rhuobhe");
 			if ( !realm[REALM::RHUOBHE].mfIsPlayerCtrl() )
 			{
 				realm[REALM::RHUOBHE].mfAddTreasury(2000);
 				SetGameData(MP_REALM, MPRLM_TREASURY, REALM::RHUOBHE, realm[REALM::RHUOBHE].mfGetTreasury(), fSend );
 			}
 			break;
-		case 3:		printf("Gold given to the Spider\n");
+		case 3:		logInfo("Gold given to the Spider");
 			if ( !realm[REALM::SPIDERFELL].mfIsPlayerCtrl() )
 			{
 				realm[REALM::SPIDERFELL].mfAddTreasury(2000);
 				SetGameData(MP_REALM, MPRLM_TREASURY, REALM::SPIDERFELL, realm[REALM::SPIDERFELL].mfGetTreasury(), fSend );
 			}
 			break;
-		case 4:		printf("Magical Event: Blessed in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+		case 4:		logInfo("Magical Event: Blessed in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 			province[prov].Blessed = 3;
 			SetGameData(MP_PROVINCE, MPPROV_BLESSED, prov, 3, fSend );
 			AddReportTo(province[prov].Realm, IMMEDIATE_BLESS_LAND, prov, 0, 0);
 			break;
-		case 5:		printf("Magical Event: Blighted in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+		case 5:		logInfo("Magical Event: Blighted in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 			province[prov].Blighted = 3;
 			SetGameData(MP_PROVINCE, MPPROV_BLIGHTED, prov, 3, fSend );
 			AddReportTo(province[prov].Realm, IMMEDIATE_BLIGHT, prov, 0, 0);
 			break;
-		case 6:		printf("Magical Event: Warded in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+		case 6:		logInfo("Magical Event: Warded in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 			province[prov].Warded = 3;
 			SetGameData(MP_PROVINCE, MPPROV_WARDED, prov, 3, fSend );
 			SetGameData(MP_PROVINCE, MPPROV_DISPELLVL, prov, REALM::MONSTERS, fSend );
 			SetGameData(MP_PROVINCE, MPPROV_DISPEL, prov, 0, fSend );
 			AddReportTo(province[prov].Realm, IMMEDIATE_WARDING, prov, 0, 0);
 			break;
-		case 7:		printf("Magical Event: Honest in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+		case 7:		logInfo("Magical Event: Honest in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 			province[prov].Honest = 3;
 			SetGameData(MP_PROVINCE, MPPROV_HONEST, prov, 3, fSend );
 			AddReportTo(province[prov].Realm, IMMEDIATE_HONEST, prov, 0, 0);
 			break;
-		case 8:		printf("Magical Event: Dispel in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+		case 8:		logInfo("Magical Event: Dispel in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 			province[prov].Dispel = 3;
 			province[prov].DispelLvl = random(16+4);
 			SetGameData(MP_PROVINCE, MPPROV_DISPEL, prov, 3, fSend );
@@ -4456,7 +4456,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 9:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Monsters: Goblin Inf in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Monsters: Goblin Inf in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, G_INF_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4471,7 +4471,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 10:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Monsters: Goblin Cav in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Monsters: Goblin Cav in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, G_CAV_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4486,7 +4486,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 11:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Monsters: Gnoll Irr in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Monsters: Gnoll Irr in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, N_IRR_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4501,7 +4501,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 12:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Monsters: Skeletons in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Monsters: Skeletons in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, C_SKL_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4516,7 +4516,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 13:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Monsters: Spiders in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Monsters: Spiders in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, C_SPD_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4531,7 +4531,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 14:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Bandits: Merc Irr in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Bandits: Merc Irr in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, M_IRR_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4546,7 +4546,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 15:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Bandits: Merc Inf in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Bandits: Merc Inf in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, M_INF_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4561,7 +4561,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 		case 16:
 			if (cntUnits_() < maxNPCUnits())
 			{
-				printf("Bandits: Merc Cav in %s in %s\n",province[prov].name,realm[province[prov].Realm].mfGetName());
+				logInfo("Bandits: Merc Cav in %s in %s",province[prov].name,realm[province[prov].Realm].mfGetName());
 				k = CreateUnit (prov, M_CAV_UNIT_ICON, 0, m_rlm, fSend );
 				if (k!=fERROR)
 				{
@@ -4584,14 +4584,14 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 				}
 			province[prov].Loyalty = 0;
 			SetGameData(MP_PROVINCE, MPPROV_LOYALTY, prov, 0, fSend );
-			printf("Rebellion in %s in %s\n",province[prov].name,realm[r].mfGetName());
+			logInfo("Rebellion in %s in %s",province[prov].name,realm[r].mfGetName());
 			AddReportTo(province[prov].Realm, IMMEDIATE_REBELLION, prov, 0, 0);
 			break;
 	}
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	- void
 	======================================================================== */
@@ -4637,7 +4637,7 @@ void RandomEvents (void)
 			realm[HomeRealm].mfSetTreasury(((105 * realm[HomeRealm].mfGetTreasury() ) / 100) + (random(20) + 1) * 10);
 		}
 	}
-	
+
 	if (date < 2 || fTutorialSelected)
 		return;		// no random events the first turn
 
@@ -4686,8 +4686,8 @@ void RandomEvents (void)
 	}
 
 
-	//----- Change the seed JUST IN CASE WE ARE OUT OF SYNC ALREADY OTHERWISE 
-	//      A couple of people will get the plot and the others will not 
+	//----- Change the seed JUST IN CASE WE ARE OUT OF SYNC ALREADY OTHERWISE
+	//      A couple of people will get the plot and the others will not
 
 #ifdef _WINDOWS
 	AMultiPlayer.NextSeed(__FILE__,__LINE__);
@@ -4852,9 +4852,9 @@ void RandomEvents (void)
 }
 
 /* ========================================================================
-	Function	- cntUnits_ 
+	Function	- cntUnits_
 	Description - Count the number of valid troops.
-	Returns	- 
+	Returns	-
 	======================================================================== */
 LONG cntUnits_ (void)
 {
@@ -4870,7 +4870,7 @@ LONG cntUnits_ (void)
 /* ========================================================================
    Function    - maxNPCUnits
    Description - The number of troops that NPC's can muster.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 LONG maxNPCUnits()
 {
@@ -4972,7 +4972,7 @@ BOOL UpdateDataArea (void)
 
 	// GEH for the chat panel
 	fUpdatePanels = TRUE;
-	
+
 	//--------------------------------------------------
 	// SELECT A REALM
 	//--------------------------------------------------
@@ -5076,7 +5076,7 @@ BOOL UpdateDataArea (void)
 				{
 					province[p].Contested = TRUE;		// CONTESTED, not occupied
 					province[p].OccupRealm = 0;
-					printf("OCCUPY - castle causes contest in prov:%s\n",province[p].name);
+					logInfo("OCCUPY - castle causes contest in prov:%s",province[p].name);
 				}
 
 				// if non-ally, 2nd unit causes prov to be contested
@@ -5084,14 +5084,14 @@ BOOL UpdateDataArea (void)
 				{
 					province[p].Contested = TRUE;		// CONTESTED, not occupied
 					province[p].OccupRealm = 0;
-					printf("OCCUPY - 2nd unit causes contest in prov:%s\n",province[p].name);
+					logInfo("OCCUPY - 2nd unit causes contest in prov:%s",province[p].name);
 				}
 
 				// otherwise, unit occupies
 				else if (!AREALLIED(province[p].Realm, units[i].Realm))	// don't occupy friends
 				{
 					province[p].OccupRealm = units[i].Realm;		// occupy the prov
-					printf("OCCUPY - %s occupies prov:%s\n",realm[units[i].Realm].mfGetName(),province[p].name);
+					logInfo("OCCUPY - %s occupies prov:%s",realm[units[i].Realm].mfGetName(),province[p].name);
 				}
 
 				fProv[p] = units[i].Realm;
@@ -5659,7 +5659,7 @@ BOOL UpdateDataArea (void)
 //			dact_ic_active[ADVENTURE] = FALSE;
 		dact_ic_active[ADVENTURE] = !(IsMultiPlayer());
 	#endif
-	
+
 		if (fTutorialSelected)
 		{
 			for (j=0; j<19; ++j)
@@ -6038,7 +6038,7 @@ BOOL UpdateDataArea (void)
 										// display province status symbol
 										// province controller
 										DrawShield(6,y,(REALM::REALM_TYPE)province[i].Realm);
-		
+
 										if (province[i].Contested)				// province contested
 											DrawBitmap (6, (SHORT)y, iDCtstIc, 0, 0, 999, 999);
 										else if (province[i].OccupRealm)		// occupied province
@@ -6050,10 +6050,10 @@ BOOL UpdateDataArea (void)
 										print_textf(120, y, DKBROWN, (q==2)?"^T2%d/%d":"%d/%d", province[i].CivLevel-province[i].Pillaged,province[i].MagLevel);
 									}
 								}
-		
+
 								//!!!!!!!!!!!!  castle_index = ProvinceInfo((PROVINCE)i, CASTLE1_ICON);
 								ProvinceInfo((PROVINCE)i, CASTLE1_ICON);
-		
+
 								if (prov_castle>0 && province[i].CastleSptd) ++cCastles;
 								if (prov_law>0)  ++cProvHolds;
 								if (prov_temple>0) ++cProvHolds;
@@ -6185,7 +6185,7 @@ BOOL UpdateDataArea (void)
 											if(lPrint)
 												print_textf(158, y, DKBROWN, "^L-");
 										}
-		
+
 										if (prov_castle>0)
 										{
 											if(lPrint)
@@ -6213,9 +6213,9 @@ BOOL UpdateDataArea (void)
 //												DrawBitmap(320, (SHORT)(y+5-24), iDRollIc, 0, 0, 999, 999);
 										}
 									}
-		
+
 								}
-		
+
 								// display realm spell symbols
 								if (l_map==DATA_AREA_MAX || l_map==DATA_AREA_MIN)
 								{
@@ -6477,7 +6477,7 @@ BOOL UpdateDataArea (void)
 								if(lPrint1)
 									gprint_text(124, y, province[units[iUnit].province].name, LoyaltyColor[province[units[iUnit].province].Loyalty]);
 							}
-	
+
 							if (UnitMaintCost[units[iUnit].Icon])
 							{
 								if(lPrint1)
@@ -6485,11 +6485,11 @@ BOOL UpdateDataArea (void)
 									print_textf(220, y+6, DKBROWN, (units[iUnit].Paid)?"^c%d":"^T2^c%d", UnitMaintCost[units[iUnit].Icon]);
 									DrawBitmap (228, (SHORT)y, iCheck[units[iUnit].Paid], 0, 0, 20, 20);
 									add_region(228-5, y, 30, 12, 0, AdjUnitPay, iUnit, 0, 0, STR_NULL);
-	
+
 									print_textf(260, y, DKBROWN, (units[iUnit].Use_Regency)?"^L%d":"^T2^L%d", UnitMaintCost[units[iUnit].Icon]*5);
 									DrawBitmap (265, (SHORT)y, iCheck[units[iUnit].Use_Regency], 0, 0, 20, 20);
 									add_region(265-5, y, 30, 12, 0, AdjUnitPay, iUnit, 1, 0, STR_NULL);
-	
+
 									if (units[iUnit].Paid)
 										print_textf(300, y, DKBROWN, "^L%d", UnitMaintCost[units[iUnit].Icon]);
 									else
@@ -6503,11 +6503,11 @@ BOOL UpdateDataArea (void)
 									print_textf(220, y+6, DKBROWN, (units[iUnit].Paid)?"^c%d":"^T2^c%d", units[iUnit].Salary);
 									DrawBitmap (228, (SHORT)y, iCheck[units[iUnit].Paid], 0, 0, 20, 20);
 									add_region(228-5, y, 30, 12, 0, AdjUnitPay, iUnit, 2, 0, STR_NULL);
-	
+
 									print_textf(260, y, DKBROWN, (units[iUnit].Use_Regency)?"^L%d":"^T2^L%d", units[iUnit].Salary*5);
 									DrawBitmap (265, (SHORT)y, iCheck[units[iUnit].Use_Regency], 0, 0, 20, 20);
 									add_region(265-5, y, 30, 12, 0, AdjUnitPay, iUnit, 3, 0, STR_NULL);
-	
+
 									if (units[iUnit].Paid)
 										print_textf(300, y, DKBROWN, "^L%d", units[iUnit].Salary);
 									else
@@ -6595,9 +6595,9 @@ BOOL UpdateDataArea (void)
 				y += 14;
 				strcpy(temp1, STRMGR_GetStr(STR_GM_MAINT_COURT));
 				strcpy(temp2, STRMGR_GetStr(gsCourt[realm[HomeRealm].mfGetCourt()]));
-				print_textf(190, y+3, DKBROWN, 
-					temp1, 
-					temp2, 
+				print_textf(190, y+3, DKBROWN,
+					temp1,
+					temp2,
 					CourtCost[realm[HomeRealm].mfGetCourt()]);
 			    DrawLittleButton(265, y, 10, 4, FALSE);
 				if (realm[HomeRealm].mfGetCourt() < 4)
@@ -6736,13 +6736,13 @@ BOOL UpdateDataArea (void)
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	-
 	======================================================================== */
 void DeleteDomainRegions (void)
 {
-printf("DeleteDomainRegions\n");
+		logInfo("DeleteDomainRegions");
 
 		del_region(AdjTaxLevel,0);
 		del_region(AdjCastleSupport,0);
@@ -6772,7 +6772,7 @@ printf("DeleteDomainRegions\n");
 
 void AddDomainRegions (void)
 {
-	printf("AddDomainRegions\n");
+		logInfo("AddDomainRegions");
 
 		del_region(TempDataAreaMode,0);
 		del_region(DisplayHolding,0);
@@ -6787,14 +6787,14 @@ void AddDomainRegions (void)
 //		add_region(  0,0,DATA_AREA_MIN,376,0,DataAreaMode,MAX_MODE,0,regMINIMIZED, STR_NULL);
 //		add_region(DATA_AREA_MAX-32,0,32,376,0,DataAreaMode,MIN_MODE,0,regMAXIMIZED, STR_NULL);
 		if(fRealmSelected || fTutorialSelected )
-		{	
+		{
 			add_region(422,432,32,48,0,TempDataAreaMode,(LONG)&fSelectDomains,1,regSHOW_HOLDINGS, STR_GM_TT_SELECT_DOMAIN);
 			add_region(456,432,32,48,0,DisplayHolding,LAW1_ICON,0,regSHOW_HOLDINGS, STR_GM_TT_DISPLAY_LAW);
 			add_region(490,432,32,48,0,DisplayHolding,GUILD1_ICON,0,regSHOW_HOLDINGS, STR_GM_TT_DISPLAY_GUILD);
 			add_region(524,432,32,48,0,DisplayHolding,TEMPLE1_ICON,0,regSHOW_HOLDINGS, STR_GM_TT_DISPLAY_TEMPLE);
 			add_region(558,432,32,48,0,DisplayHolding,SOURCE1_ICON,0,regSHOW_HOLDINGS, STR_GM_TT_DISPLAY_SOURCE);
 			add_region(592,432,48,48,0,ZoomOut,0,0,regSHOW_HOLDINGS, STR_GM_TT_ZOOM_OUT);
-			
+
 			add_region(  9,380,48,46,0,DataAreaMode,TAXLVL_MODE,0,regADJUST_TAXES, STR_GM_TT_TAX);
 			add_region( 57,380,48,46,0,DataAreaMode,OCCUPATION_MODE,0,regDOMAIN_TURN_MODE, STR_GM_TT_LAW);
 			add_region(105,380,48,46,0,DataAreaMode,PAYRL_MODE,0,regDOMAIN_TURN_MODE, STR_GM_TT_PAY);
@@ -6806,7 +6806,7 @@ void AddDomainRegions (void)
 }
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	-
 	======================================================================== */
@@ -6883,24 +6883,24 @@ void ReleaseDomainTurn (LONG Fake)
 /* ========================================================================
    Function    - WriteRealmStartData
 	Description - like the name says
-	Returns     - 
+	Returns     -
 	======================================================================== */
 extern BOOL fStartMultiGame;
 void WriteRealmStartData ( void )
 {
 	FILE *fp;
 	BOOL OldfStartMPG = fStartMultiGame ;
-	
-#ifdef _WINDOWS	
-#ifndef _JUNEDEMO	
+
+#ifdef _WINDOWS
+#ifndef _JUNEDEMO
 	// GEH 8/25/97
 	// read multiplayer player realm start data
 	fStartMultiGame = TRUE;
-	
+
 	StatReadAll();
 	if (Exists("mpstart.dat"))
 		remove ("mpstart.dat");
-		
+
 	fp = fopen("mpstart.dat", "wb");
 	if (fp == NULL)
 	{
@@ -6915,9 +6915,9 @@ void WriteRealmStartData ( void )
 	// read single player realm start data
 	fStartMultiGame = FALSE;
 	StatReadAll();
-	
+
 	//GEH 8/25/97 above this is new.......
-	
+
 	if (Exists("rlmstart.dat"))
 		remove ("rlmstart.dat");
 	fp = fopen("rlmstart.dat", "wb");
@@ -6931,7 +6931,7 @@ void WriteRealmStartData ( void )
 
 
 	fStartMultiGame = OldfStartMPG;
-	
+
 }
 
 /* ========================================================================
@@ -7014,7 +7014,7 @@ void InitDomainTurn (LONG Fake)
 		if (fMapAltered || iLgMap == fERROR)
 		{
 			ReleaseDomainUI(0);
-printf("GAMEMAP.CPP - InitDomainTurn: load large map\n");
+			logInfo("GAMEMAP.CPP - InitDomainTurn: load large map");
 
 #ifdef _WINDOWS
 			// Always small map in multiplayer otherwise we go out of sync
@@ -7204,7 +7204,7 @@ printf("GAMEMAP.CPP - InitDomainTurn: load large map\n");
 			ACTIVATE_REGION_(regSWITCH_TO_ACTIONS	, FALSE);	// switch to actions OFF
 			ACTIVATE_REGION_(regADJUST_TAXES			, TRUE);		// adjust taxes ON
 			DataAreaMode(MIN_MODE, 1);
-			
+
 		}
 		else
 		{
@@ -7392,8 +7392,8 @@ void RealmNames (LONG clipped_x, LONG clipped_y)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 BOOL CheckForCastleNeutralized (PROVINCE iProvince, LONG iMovingUnit)
@@ -7445,8 +7445,8 @@ BOOL CheckForCastleNeutralized (PROVINCE iProvince, LONG iMovingUnit)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 BOOL CheckUnit2ndMoveBlocked (LONG iMovingUnit, PROVINCE iProvince, PROVINCE iNewProv)
@@ -7493,15 +7493,15 @@ BOOL CheckUnit2ndMoveBlocked (LONG iMovingUnit, PROVINCE iProvince, PROVINCE iNe
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 BOOL CheckNotWarded (LONG iMovingUnit, PROVINCE iNewProv, PROVINCE iOldProv)
 {
 	//return (	(province[iNewProv].Warded == 0 || province[iNewProv].DispelLvl == units[iMovingUnit].Realm)
 	//		&& (province[iOldProv].Warded == 0 || province[iOldProv].DispelLvl == units[iMovingUnit].Realm));
-	
+
 	// GWP You have to check that the warded flag is set, otherwise the DispelLvl
 	//     doesn't apply to the warding information.
 	return !(	(province[iNewProv].Warded > 0 && province[iNewProv].DispelLvl != units[iMovingUnit].Realm)
@@ -7509,8 +7509,8 @@ BOOL CheckNotWarded (LONG iMovingUnit, PROVINCE iNewProv, PROVINCE iOldProv)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 void NewTutorial (BOOL fInReport)
@@ -7572,8 +7572,8 @@ void NewTutorial (BOOL fInReport)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 extern "C" {
@@ -7599,8 +7599,8 @@ void MoveZoomMap (LONG xx, LONG yy)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 LONG	lCurrentStartMapDraw = 0;
@@ -7653,8 +7653,8 @@ void ResumeTimeLimit (void)
 }
 
 /* ========================================================================
-	Function	- 
-	Description - 
+	Function	-
+	Description -
 	Returns	-
 	======================================================================== */
 BOOL		fDataAreaChanged = FALSE;
@@ -7745,7 +7745,7 @@ void DomainTurnUI (void)
 		SHORT	sRegency;
 		SHORT	sBlood;
 		SHORT regentidx = realm[HomeRealm].mfGetRegent();
-		
+
 		if ( (hPlayerStats = playerstats[realm[HomeRealm].mfGetRegent()]) != fERROR)
 		{
 			DumbAutoLockPtr<PLAYER_STATS> const pPS(hPlayerStats);
@@ -7760,13 +7760,13 @@ void DomainTurnUI (void)
 		sRegency /= 2;
 		SetGameData(MP_REALM, MPRLM_TREASURY, HomeRealm, sTreasure, TRUE);
 		SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, sRegency, TRUE);
-		
+
 		// finally, reduce the regents blood line strength by one
 		sBlood = regents[regentidx].mfGetBL_strength() - 1;
 		if ( sBlood < 0 )
 			sBlood = 0;
 		SetGameData(MP_REGENT, MPREG_BL_STRENGTH, regentidx, sBlood, TRUE);
-		
+
 		fUpdateDataArea = TRUE;
 		RegentKilled = FALSE;
 	}
@@ -7882,7 +7882,7 @@ void DomainTurnUI (void)
 			cntSaveBkgnd = 0;
 		}
 	}
-	
+
 	else if (old_sMenusUp)		  // redraw if menu just cleared
 	{
 		fRedrawAll = TRUE;
@@ -7893,12 +7893,12 @@ void DomainTurnUI (void)
 		fInfoOnlyDomainUI = FALSE;
 		return;
 	}
-	
+
 	#ifdef _WINDOWS
 	if (IsMultiPlayer())
 		ShowChatDisplayWindow(0,0);
 	#endif
-	
+
 	// detect fRegentSeesHidden value
 	fRegentSeesHidden = FALSE;
 	if (playerstats[realm[HomeRealm].mfGetRegent()] != fERROR)
@@ -7907,7 +7907,7 @@ void DomainTurnUI (void)
 		if (pPS != NULL)
 			fRegentSeesHidden = (pPS->StatsMod.mfGetMod(STATSMOD::SEEHIDDEN_MOD) > 0);
 	}
-	
+
 	// ========================================================
 	// check for mouse button click
 	// ========================================================
@@ -8127,7 +8127,7 @@ void DomainTurnUI (void)
 				// select a place on the map for map move or info or unit move
 				// keywords: select unit move unit
 				// ========================================================
-				// select destination for unit 
+				// select destination for unit
                // only allow this during a players turn in MP mode
 
 #ifdef _WINDOWS
@@ -8682,7 +8682,7 @@ DoSpecial:
 						PROVINCE destprov = (PROVINCE)units[j].DestProvince;
 						REALM::REALM_TYPE invaders = (REALM::REALM_TYPE)units[j].Realm;
 						REALM::REALM_TYPE defenders = (REALM::REALM_TYPE)province[destprov].Realm;
-						
+
 						// check for hostile move
 						if ((units[j].MovePart == 8)
 							&& ISATWAR(invaders, defenders)
@@ -8704,7 +8704,7 @@ DoSpecial:
 										break;
 									}
 								}
-					
+
 								if (atwar)
 								{
 									// do nothing
@@ -8717,7 +8717,7 @@ DoSpecial:
 									AddReport(IMMEDIATE_NPC_MOVE_TROOP_ALLY, invaders, 1, defenders);
 							}
 						}
-						
+
 						if (units[j].MovePart == 15)		// at end of move
 						{
 							units[j].MovePart = 0;
@@ -8734,12 +8734,12 @@ DoSpecial:
 								PROVINCE	thisProv = prov;
 								PROVINCE	nextProv;
 								LONG		k;
-								
+
 								if(CanISeeAnyoneInThisProv(HomeRealm, thisProv))
 								{
 									MarkUnitsSpotted(nextProv);
 								}
-								
+
 								for(k=0;k<7;k++)
 								{
 									nextProv = province[thisProv].Border[k].Province;
@@ -8769,7 +8769,7 @@ DoSpecial:
 							y_icon = (((LONG)units[j].MovePart * ((LONG)province[units[j].DestProvince].y - y_icon)) / 16) + y_icon;
 						}
 					}
-					
+
 					// now, check to see if unit should be drawn
 					if (realm[units[j].Realm].mfShowUnits() &&
 						  (fRegentSeesHidden ||
@@ -9190,10 +9190,10 @@ print_textf(0,0,BLACK,buffer6);
 			}
 			char buffer6[50];
 			char buffer7[50];
-			
+
 			strcpy(buffer6,realm[province[iProvInfo].Realm].mfGetName());
 			strcpy(buffer7,STRMGR_GetStr(gsTerrain[province[iProvInfo].Terrain]));
-			
+
 			DisplayInfoStr("UI\\DINF3_BK.PCX",0,
 				buffer,
 				province[iProvInfo].name,
@@ -9386,13 +9386,13 @@ print_textf(0,0,BLACK,buffer6);
 				CopyReactionTable();
 
 #ifdef _WINDOWS
-				if ( fStartSIGS == TRUE ) 
+				if ( fStartSIGS == TRUE )
 				{
 					fStartSIGS = FALSE;
 					StartInSIGS();
 				}
 				else
-#endif                       
+#endif
 					GAMEToggleMainMenu(TRUE, 0);
 
 			}
@@ -9706,11 +9706,11 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 	if ( units[iMovingUnit].DestProvince != 0 )
 	{
 		// -- GEH test for illegal movement case
-		// -- if he has somewhere to go and is just standing around, 
+		// -- if he has somewhere to go and is just standing around,
 		// -- kick him in the butt to get him moving
 		if ( units[iMovingUnit].MovePart == 0 )
-			units[iMovingUnit].MovePart = 1; 
-		
+			units[iMovingUnit].MovePart = 1;
+
 		return 0;
 	}
 
@@ -9734,7 +9734,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 		// Spotted flag is not transmitted.
 		//SetGameData(MP_UNITS, MPUNITS_NOTSPOTTED, iMovingUnit, FALSE, FALSE );
 	}
-	
+
 	//---------------------------
 	// check for join
 	// don't ask if not at end of movement
@@ -9812,7 +9812,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 				{
 					char temp[150];
 					char MovingUnitRealmName[50];
-					
+
 					strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName() );
 					sprintf ( temp, "CheckUnitArrival - mov:%s vs j:%s in prov:%s",
 						MovingUnitRealmName,
@@ -9868,7 +9868,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							(iMPS_SYNC_INITIATIVE + BattleSync));
 						RandomLogComment ( temp );
 					}
-					
+
 					BattleSync = (BattleSync + 1) & 3;
 					rv = fAUTOBATTLE;
 				}
@@ -9878,7 +9878,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 				// ----------------------------------------------
 				// if WE are one of the participants
 				// ----------------------------------------------
-				if ( units[iMovingUnit].Realm == HomeRealm || 
+				if ( units[iMovingUnit].Realm == HomeRealm ||
  				     units[j].Realm == HomeRealm   )
 				{
 					CHAR	cTerrain;
@@ -9889,7 +9889,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					{
 						char temp[150];
 						char MovingUnitRealmName[50];
-						
+
 						strcpy(MovingUnitRealmName, realm[units[j].Realm].mfGetName());
 						sprintf ( temp, "CheckUnitArrival - we are one: mov:%s vs j:%s in prov:%s",
 							MovingUnitRealmName,
@@ -9964,15 +9964,15 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					#endif
 
 					// allow YES on the Query menu?
-					// only if not multiplayer, or if multiplayer with only 
+					// only if not multiplayer, or if multiplayer with only
 					// one opponent
 
 					#ifdef _WINDOWS
-					f = (!IsMultiPlayer() 
+					f = (!IsMultiPlayer()
 						|| (HowManyPlayers() == 1 && realm[AwayRealm].mfIsPlayerCtrl()));
 						#if defined(_JUNEDEMO)
 						f = FALSE;
-						#endif	
+						#endif
 					#else
 					f = TRUE;
 					#endif
@@ -9993,9 +9993,9 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							sprintf ( temp, "CheckUnitArrival - we are one: send RealmSceneFlags sync");
 							RandomLogComment ( temp );
 						}
-						
+
 						SetGameData(MP_REALM, MPRLM_BATTLEQUERY, HomeRealm, result, TRUE);
-						
+
 						LOGCOMMENTSLEEP
 						if ( fLogComment )
 						{
@@ -10003,7 +10003,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							sprintf ( temp, "CheckUnitArrival - we are one: start waiting at RealmSceneFlags delay");
 							RandomLogComment ( temp );
 						}
-						
+
 						StartWait(99);
 						while (RealmSceneFlags[AwayRealm] == 99)	// wait for opponent
 						{
@@ -10019,7 +10019,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							#endif
 						}
 						EndWait(99);
-						
+
 						LOGCOMMENTSLEEP
 						if ( fLogComment )
 						{
@@ -10069,7 +10069,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 										RandomLogComment ( temp );
 									}
 									#endif
-									
+
 									AMultiPlayer.SendEvent (NPCBATTLE_ACTION,
 										SCENE_MGR::Loser,
 										SCENE_MGR::Victor,
@@ -10143,7 +10143,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							#endif
 								NPCBattleResults(TRUE);
 						}
-						else 
+						else
 						if (result == 2) // result 2 just displays the lose
 						{
 							SCENE_MGR::Loser = SCENE_MGR::HomeIndex;
@@ -10171,7 +10171,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						{
 							char temp[150];
 							char VictorRealmName[50];
-							
+
 							strcpy(VictorRealmName, realm[units[SCENE_MGR::Victor].Realm].mfGetName());
 							sprintf ( temp, "CheckUnitArrival - we are one: winner:%s loser:%s in prov:%s",
 								VictorRealmName,
@@ -10181,11 +10181,11 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						}
 
 						#ifdef _WINDOWS
-						// in multiplay, units are withdrawn only on the 
+						// in multiplay, units are withdrawn only on the
 						// looser's machine, the results are broadcast
 						if ( IsMultiPlayer() )
 						{
-							if ( (!realm[AwayRealm].mfIsPlayerCtrl()) || 
+							if ( (!realm[AwayRealm].mfIsPlayerCtrl()) ||
 									SCENE_MGR::LoserRealm == HomeRealm)
 								WithdrawLosingUnit(TRUE);
 						}
@@ -10226,7 +10226,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 									(iMPS_SYNC_INITIATIVE + BattleSync));
 								RandomLogComment ( temp );
 							}
-							
+
 							BattleSync = (BattleSync + 1) & 3;
 
 							RealmSceneFlags[HomeRealm] = 99;
@@ -10294,7 +10294,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					{
 						char temp[150];
 						char MovingUnitRealmName[50];
-						
+
 						strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName());
 						sprintf ( temp, "CheckUnitArrival - NPC only - mov:%s vs j:%s in prov:%s",
 							MovingUnitRealmName,
@@ -10376,7 +10376,7 @@ void WithdrawLosingUnit (BOOL fSend)
 		LosingRealm = units[LosingUnit].Realm;
 		prov = units[LosingUnit].province;
 
-		// find adjacient province that belongs to me 
+		// find adjacient province that belongs to me
 		// and is not warded and is passable
 		// and doesn't have any non-friendly troops in it
 		for (i=0; i<7; ++i)
@@ -10539,7 +10539,7 @@ void WithdrawLosingUnit (BOOL fSend)
 					goto FoundOne;
 				}
 			}
-			
+
 			// or else just kill him, but tell the user he vanished
 			// into thin are never to be seen again "I'll be back!"
 			SystemHelp(" ",STRMGR_GetStr(STR_GM_GORGON_BE_BACK), -1, NULL, 0);
@@ -10555,21 +10555,21 @@ void WithdrawLosingUnit (BOOL fSend)
 		}
 
 		// destroy losing army
-		if (units[WinningUnit].Realm == HomeRealm || 
+		if (units[WinningUnit].Realm == HomeRealm ||
 			units[LosingUnit].Realm == HomeRealm)
 		{
 			char buf1[80];
 			char cpLosingRealmName[80];
-			
-			
+
+
 			strcpy(buf1,STRMGR_GetStr(STR_NO_PROVINCE_DELUNIT));
 			strcpy(cpLosingRealmName,realm[units[LosingUnit].Realm].mfGetName());
 			sprintf(buffer,
 				buf1,
-				//"With no safe haven to retreat to, the army %s %s are slaughtered.", 
+				//"With no safe haven to retreat to, the army %s %s are slaughtered.",
 				STRMGR_GetStr((((REALM::REALM_TYPE)SCENE_MGR::VictorRealm==REALM::MONSTERS)?STR_NPC_OF:STR_NPC_FROM)),
 				cpLosingRealmName);
-				
+
 			SystemHelp(" ", buffer, -1, NULL, 0);
 			// stay here until we clear the message box
 			if (sMenusUp > 0)
@@ -10581,7 +10581,7 @@ void WithdrawLosingUnit (BOOL fSend)
 				}
 			}
 		}
-			
+
 		//printf("	Destroying LosingUnits:\n");
 		while (LosingUnit != -1)
 		{
@@ -10648,7 +10648,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	prov = units[UnitIndex].province;
 
 	// -----------------------------------------------------------------
-	// -- find adjacient province that belongs to me 
+	// -- find adjacient province that belongs to me
 	// -- and doesn't have any non-friendly troops
 	// -----------------------------------------------------------------
 
@@ -10669,7 +10669,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 					break;
 				}
 			}
-			
+
 			if (!fFoundEnemy)
 			{
 				return TRUE;
@@ -10710,7 +10710,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	// -- Finally, find any place I'm at war with
 	// -- to go that doesn't have the enemy in it
 	// -----------------------------------------------------------------
-	
+
 	for (i=0; i<7; ++i)
 	{
 		j = province[prov].Border[i].Province;
@@ -10763,7 +10763,7 @@ SHORT CalculatePoints (REALM::REALM_TYPE CheckRealm)
 
 /* ========================================================================
    Function    - CalculateProvPoints
-   Description - calculate the province points 
+   Description - calculate the province points
    Returns     - SHORT points
    ======================================================================== */
 SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
@@ -10777,29 +10777,29 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 	sFullAllyPoints = 0;
 	sPermissivePoints = 0;
 	sOtherPoints = 0;
-	
+
 	if (!realm[CheckRealm].mfExists())
 		return 0;
-		
+
 	// points for provinces
 	for (j=1; j<PROVINCE_COUNT; ++j)
 	{
 		REALM::REALM_TYPE ThisProvRealm = (REALM::REALM_TYPE)province[j].Realm;
-		
+
 		// my province - 3 points
 		if (ThisProvRealm == CheckRealm)
 		{
 			accumPoints += 3;
 			sProvPoints += 3;
 		}
-		
+
 		// my vassals provinces - 3 points
 		if (ISVASSAL(ThisProvRealm,CheckRealm) && ThisProvRealm != CheckRealm)
 		{
 			accumPoints += 3;
 			sVassalPoints += 3;
 		}
-		
+
 		// full aliance provinces - 2 points
 		else
 		{
@@ -10809,7 +10809,7 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 				sFullAllyPoints += 2;
 			}
 
-		
+
 			// permissive alliances provinces - 1 point
 			else
 			{
@@ -10820,7 +10820,7 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 				}
 			}
 		}
-		
+
 		// Spiderfell provinces - 10 points, add 7, 3 added above
 		if (ThisProvRealm == CheckRealm && j == SPIDERFELL )
 		{
@@ -10833,7 +10833,7 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 				sOtherPoints += 7;
 			}
 		}
-		
+
 		// Manslayer provinces - 10 points, add 7, 3 added above
 		if (ThisProvRealm == CheckRealm && j == RHUOBHE )
 		{
@@ -10846,7 +10846,7 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 				sOtherPoints += 7;
 			}
 		}
-		
+
 		// Gorgons Crown provinces - 10 points, add 7, 3 added above
 		if ( ThisProvRealm == CheckRealm
 			&&
@@ -10878,7 +10878,7 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 				sOtherPoints += 7;
 			}
 		}
-		
+
 		// Awnsheghlien allies provinces - 5 points
 		if ( ThisProvRealm == CheckRealm
 			&&
@@ -10942,13 +10942,13 @@ SHORT CalculateProvPoints (REALM::REALM_TYPE CheckRealm)
 		}
 #endif
 	}
-	
+
 	return accumPoints;
-}		
+}
 
 /* ========================================================================
    Function    - CalculateRelicPoints
-   Description - calculate the relic points 
+   Description - calculate the relic points
    Returns     - SHORT points
    ======================================================================== */
 SHORT CalculateRelicPoints(REALM::REALM_TYPE CheckRealm)
@@ -10960,10 +10960,10 @@ SHORT CalculateRelicPoints(REALM::REALM_TYPE CheckRealm)
 	BOOL  bWeHaveRegaliaOfEmpire = FALSE;
 	BOOL  bWeHaveCrownOfAnuire = FALSE;
 	BOOL  bWeHaveBannerOfRoele = FALSE;
-	
+
 	if (!realm[CheckRealm].mfExists())
 		return 0;
-		
+
 	for (ThisRegent=1; ThisRegent < CHARACTER_COUNT; ++ThisRegent)
 	{
 		if (regents[ThisRegent].mfGetRealm()  != CheckRealm
@@ -10972,69 +10972,69 @@ SHORT CalculateRelicPoints(REALM::REALM_TYPE CheckRealm)
 			// either not our realm or dead.
 			continue;
 		}
-		
+
 		// for our regents and lieutenents.
 		SHORT const ThisID = regents[ThisRegent].mfGetid();
 		SHORT const hPlayerStats = LoadStats(ThisID, fERROR);
 		if (hPlayerStats != fERROR)
 		{
 			DumbAutoLockPtr<PLAYER_STATS> const pPS(hPlayerStats);
-			
-			// NOTE: the following are 10 points less because you get 
+
+			// NOTE: the following are 10 points less because you get
 			// an additional 10 points for each of them as relics of power
-			
+
 			//points for Sword of Roele
 			if(pPS->Inventory.mfDoIHaveItem(SWORD_OF_ROELE) && !bWeHaveSwordOfRoele)
 			{
 				accumPoints += 50;
 				bWeHaveSwordOfRoele = TRUE;
 			}
-			
+
 			//points for Regalia of Empire
 			if(pPS->Inventory.mfDoIHaveItem(REGALIA_OF_EMPIRE) && !bWeHaveRegaliaOfEmpire)
 			{
 				accumPoints += 20;
 				bWeHaveRegaliaOfEmpire = TRUE;
 			}
-			
+
 			//points for State Crown of Anuire
 			if(pPS->Inventory.mfDoIHaveItem(STATE_CROWN_OF_ANUIRE) && !bWeHaveCrownOfAnuire)
 			{
 				accumPoints += 20;
 				bWeHaveCrownOfAnuire = TRUE;
 			}
-			
+
 			//points for Banner of Roele
 			if(pPS->Inventory.mfDoIHaveItem(BANNER_OF_ROELE) && !bWeHaveBannerOfRoele)
 			{
 				accumPoints += 10;
 				bWeHaveBannerOfRoele = TRUE;
 			}
-			
+
 			//BIG POINTS FOR Gorgons Banner
 			if(pPS->Inventory.mfDoIHaveItem(GORGONS_BANNER) && !bWeHaveTheGorgonsBanner)
 			{
 				accumPoints += 100;
 				bWeHaveTheGorgonsBanner = TRUE;
 			}
-		
+
 			// finally scan my inventory for relics o power
 			InventoryItor itor(pPS->Inventory);
 			LONG i;
-			
+
 			for (i = 0, itor.mfAdvance(IC_MAGITEM);
-				 itor != pPS->Inventory.end(); 
+				 itor != pPS->Inventory.end();
 				 ++i, itor.mfAdvanceToNext(IC_MAGITEM))
 			{
 				if(GAME_TTYPE::mfIsRelicOfPower(ItemTypes[(*itor)->mfType()].mfGameType()))
 					accumPoints += 10;
 			}
-		
+
 		}
 	}
-	
+
 	return accumPoints;
-}		
+}
 
 /* ========================================================================
    Function    - QueryCommandBattle
@@ -11044,7 +11044,7 @@ SHORT CalculateRelicPoints(REALM::REALM_TYPE CheckRealm)
 SHORT QueryCommandBattle (BOOL fAddYes)
 {
 	ShowMenu(D_BTLCOMMAND);
-	
+
 	if (fAddYes)
 	{
 		SetButtonLabelColor(D_BTLCOMMAND, 333, BTN_LABEL_COLOR);
@@ -11067,7 +11067,7 @@ SHORT QueryCommandBattle (BOOL fAddYes)
 /* ========================================================================
    Function    - SetCommandBattlePaint
    Description - paint routine for the Going To Battle...
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void SetCommandBattlePaint(LONG, LONG)
 {
@@ -11080,38 +11080,38 @@ void SetCommandBattlePaint(LONG, LONG)
 	SHORT	UnitCount = 0;
 	SHORT	UnitIndex = 0;
 	SHORT	scale;
-	
+
 	/* -----------------------------------------------------------------
 	   print dialog title
 	   ----------------------------------------------------------------- */
 
 	if( GetButtonPosition( D_BTLCOMMAND, 0, &mx, &my ) == fERROR)
 		return;
-	
+
 	if( GetButtonSize( D_BTLCOMMAND, 0, &mw, &mh ) == fERROR)
 		return;
-	
+
 	X = mx + (mw / 2);
 	Y = my + 25;
-	
+
 	init_gfont( FONT_SANS_16PT );
-	
-	strcpy( buffer, STRMGR_GetStr( BTL_COMMAND_BATTLE1 )); 
+
+	strcpy( buffer, STRMGR_GetStr( BTL_COMMAND_BATTLE1 ));
 	print_text_centered( X, Y, buffer, DKBROWN );
 	Y += 20;
-	
-	strcpy( buffer, STRMGR_GetStr( BTL_COMMAND_BATTLE2 )); 
+
+	strcpy( buffer, STRMGR_GetStr( BTL_COMMAND_BATTLE2 ));
 	print_text_centered( X, Y, buffer, DKBROWN );
 	Y += 20;
-	
-	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE3 )); 
+
+	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE3 ));
 	sprintf(
-		buffer, 
-		temp, 
+		buffer,
+		temp,
 		realm[units[SCENE_MGR::AwayIndex].Realm].mfGetName(),
 		province[units[SCENE_MGR::AwayIndex].province].name
 		);
-	
+
 	// calculate scale
 	scale = ((mw-40)*100/gtext_width(buffer));
 	if(scale > 100)
@@ -11122,62 +11122,62 @@ void SetCommandBattlePaint(LONG, LONG)
 	{
 		print_textf( mx+20, Y, DKBROWN, "^X%03d%s", scale, buffer);
 	}
-	
+
 	//print_text_centered( mx, my, buffer, DKBROWN);
-				
+
 	/* -----------------------------------------------------------------
 	   print unit list for in the text box
 	   ----------------------------------------------------------------- */
 
 	if( GetButtonPosition( D_BTLCOMMAND, 1, &mx, &my ) == fERROR)
 		return;
-	
+
 	if( GetButtonSize( D_BTLCOMMAND, 1, &mw, &mh ) == fERROR)
 		return;
-	
+
 	halfw = mw/2;
-	
+
 	init_gfont( FONT_SANS_8PT );
-	
+
 	/* -----------------------------------------------------------------
 	   Home Unit List
 	   ----------------------------------------------------------------- */
 
 	X = mx;
 	Y = my;
-	
+
 	UnitIndex = SCENE_MGR::HomeIndex;
-	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE4 )); 
+	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE4 ));
 	sprintf( buffer,temp, realm[units[UnitIndex].Realm].mfGetName() );
 	gprint_text( X, Y, buffer, BLUE );
-	
+
 	Y += 15;
 	crease( X, Y, halfw-40, 1 );			// seperator
-	
+
 	while( UnitIndex != -1 )
 	{
 		// no more then gUnitStackSize units may ever go to a single battle
 		if( ++UnitCount > gUnitStackSize )
 			break;
-			
+
 		Y += 12;
 		sprintf( buffer, "%s", STRMGR_GetStr(gsUnitTitle[units[UnitIndex].Icon]) );
 		gprint_text( X, Y, buffer, BLUE );
-	
+
 		UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 	}
-	
+
 	X = mx + halfw;
 	Y = my;
-	
+
 	UnitIndex = SCENE_MGR::AwayIndex;
-	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE4 )); 
+	strcpy( temp, STRMGR_GetStr( BTL_COMMAND_BATTLE4 ));
 	sprintf( buffer, temp, realm[units[UnitIndex].Realm].mfGetName() );
 	gprint_text( X, Y, buffer, RED-5 );
-	
+
 	Y += 15;
 	crease( X, Y, halfw-40, 1 );			// seperator
-	
+
 	UnitCount = 0;
 	init_gfont( FONT_SANS_8PT );
 	while( UnitIndex != -1 )
@@ -11185,26 +11185,26 @@ void SetCommandBattlePaint(LONG, LONG)
 		// no more then gUnitStackSize units may ever go to a single battle
 		if( ++UnitCount > gUnitStackSize )
 			break;
-			
+
 		Y += 10;
 		sprintf( buffer, "%s", STRMGR_GetStr(gsUnitTitle[units[UnitIndex].Icon]) );
 		gprint_text( X, Y, buffer, RED-5 );
-	
+
 		UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 	}
-	
+
 }
 
 /* ========================================================================
    Function    - SetCommandBattleProc
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void SetCommandBattleProc(LONG, LONG button)
 {
 	HideMenu(D_BTLCOMMAND);
 	RunMenus();
-	
+
 	if(button == QUESTION_BTN1)	// Yes, command this battle
 	{
 		sCommandBattle = 1;
@@ -11212,7 +11212,7 @@ void SetCommandBattleProc(LONG, LONG button)
 #if defined(_NETJUNEDEMO)
 		ShowAdScreen(3);
 		sCommandBattle = 0;
-#endif	
+#endif
 	}
 	else
 	if(button == QUESTION_BTN2)	// Ahhhhhh, run away!
@@ -11231,8 +11231,8 @@ void SetCommandBattleProc(LONG, LONG button)
 
 /* ========================================================================
    Function    - PrepSpellBoxes
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void PrepSpellBoxes ( SHORT UnitIndex )
 {
@@ -11244,37 +11244,37 @@ void PrepSpellBoxes ( SHORT UnitIndex )
 		{
 			SHORT const hPlayerStats = LoadStats(units[UnitIndex].id, fERROR);
 			DumbHandlePtr<PLAYER_STATS> const dhPlayerStats(hPlayerStats);
-			
+
 			// -- first clear out all memorized spells
 			dhPlayerStats->Inventory.ClearSpells(hPlayerStats);
-			
+
 			// -- scan magic list and memorize and load hotboxes for
 			// -- as many spells as we can
 			for (LONG jkl = 0; jkl < NUM_BATTLE_SPELLS; ++jkl )
 			{
 				// -- must be a mage to use anything other then
 				// -- magic missiles
-				
+
 				if ( jkl < ITEM_NECKLACE_OF_MISSILES_8 &&
 					!dhPlayerStats->mfIsMagicUser() )
 					continue;
-					
-				while ( 
-					dhPlayerStats->Inventory.PrepBattleSpell( 
-						battle_spells[jkl], 
+
+				while (
+					dhPlayerStats->Inventory.PrepBattleSpell(
+						battle_spells[jkl],
 						hPlayerStats )
 					)
 				{
 					/* keep adding until false or looked too many times */
 					if (!--SpellLoopCount)
 						break;
-				}	
+				}
 				SpellLoopCount = 20;
 			}
 		}
 		UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 	} while (--LoopCount > 0 && UnitIndex != fERROR);
-}	
+}
 
 /* ========================================================================
    Function    - BattlePrep
@@ -11289,9 +11289,9 @@ BOOL BattlePrep(void)
 	// check the home team
 	UnitIndex = SCENE_MGR::HomeIndex;
 	fBattlePrep = TRUE;
-	
+
 	PrepSpellBoxes(SCENE_MGR::HomeIndex);
-	
+
 	// check the away team
 	#ifdef _WINDOWS
 	// prep non-playercontrolled opponents
@@ -11299,7 +11299,7 @@ BOOL BattlePrep(void)
 	#endif
 		PrepSpellBoxes(SCENE_MGR::AwayIndex);
 
-	fBattlePrep = FALSE;	
+	fBattlePrep = FALSE;
 
 	return RetVal;
 }
@@ -11307,13 +11307,13 @@ BOOL BattlePrep(void)
 /* ========================================================================
    Function    - BattlePrepProc
    Description - handle the done button on the prep dialog
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void BattlePrepProc(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -11327,7 +11327,7 @@ void BattlePrepProc(LONG MenuCombo, LONG)
 	RunMenus();
 	update_screen();
 	TickDelay(4);
-	
+
 	HideMenu(MenuId);
 	RunMenus();
 	// turn off menu loop
@@ -11338,7 +11338,7 @@ void BattlePrepProc(LONG MenuCombo, LONG)
 /* ========================================================================
    Function    - DisplayNPCResults
    Description - tell the results of a NPC battle
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void DisplayNPCResults(void)
 {
@@ -11371,7 +11371,7 @@ void DisplayNPCResults(void)
 /* ========================================================================
    Function    - PaintNPCResults
    Description - paint routine for NPC results
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void PaintNPCResults(LONG, LONG)
 {
@@ -11390,11 +11390,11 @@ void PaintNPCResults(LONG, LONG)
 		if (SCENE_MGR::VictorRealm == HomeRealm) // you won, they retreated
 		{
 			char cpLosingRealmName[80];
-			
+
 			strcpy(cpLosingRealmName, realm[SCENE_MGR::LoserRealm].mfGetName());
 			strcpy(format,STRMGR_GetStr(STR_NPC_WE_RETREAT));
 			// strcpy(format,"^W270The cowards %s %s ran from the field of battle.  They are not worthy of our hate.");
-			sprintf(buffer,format, 
+			sprintf(buffer,format,
 				STRMGR_GetStr((((REALM::REALM_TYPE)SCENE_MGR::LoserRealm==REALM::MONSTERS)?STR_NPC_OF:STR_NPC_FROM)),
 				cpLosingRealmName);
 		}
@@ -11409,7 +11409,7 @@ void PaintNPCResults(LONG, LONG)
 	if (SCENE_MGR::VictorRealm == HomeRealm) // you won
 	{
 		char cpLosingRealmName[80];
-		
+
 		strcpy(cpLosingRealmName, realm[SCENE_MGR::LoserRealm].mfGetName());
 		strcpy(format,STRMGR_GetStr(STR_NPC_WON));
 		sprintf(buffer,format,
@@ -11422,7 +11422,7 @@ void PaintNPCResults(LONG, LONG)
 	else
 	{
 		char cpVictorRealmName[80];
-		
+
 		strcpy(cpVictorRealmName,realm[SCENE_MGR::VictorRealm].mfGetName());
 		strcpy(format,STRMGR_GetStr(STR_NPC_LOST));
 		sprintf(buffer,format,
@@ -11476,7 +11476,7 @@ static LONG GetMagicUserPower (SHORT UnitIndex)
 					case PLAYER_CLASS_INFO::PRIEST:
 					case PLAYER_CLASS_INFO::BARD:
 #if defined (_DEBUG)
-						printf ("Magic power = %d\n", level);
+						logInfo("Magic power = %d", level);
 #endif
 						return level;
 					case PLAYER_CLASS_INFO::WIZARD:
@@ -11495,7 +11495,7 @@ static LONG GetMagicUserPower (SHORT UnitIndex)
 	======================================================================== */
 SHORT UnitPower( SHORT UnitIndex )
 {
-	
+
 	// -----------------------------------------------------------------
 	// -- Your get points equal to your melee, charge
 	// -- added together plus 2 * your missile rating, 1.5 your defence,
@@ -11503,12 +11503,12 @@ SHORT UnitPower( SHORT UnitIndex )
 	// -- for being blessed
 	// -----------------------------------------------------------------
 
-	return ((SHORT)( GetMagicUserPower (UnitIndex) 
+	return ((SHORT)( GetMagicUserPower (UnitIndex)
 		+ (IsRegentOrLieutenant(UnitIndex) ? 6 : 0 )
 		// GEH later...   + (units[UnitIndex].Blessed ? 3 : 0 )
 		+ (GetBattleMissile(units[UnitIndex].Icon) * 2)
-		+ GetBattleCharge(units[UnitIndex].Icon) 
-		+ GetBattleMelee(units[UnitIndex].Icon) 
+		+ GetBattleCharge(units[UnitIndex].Icon)
+		+ GetBattleMelee(units[UnitIndex].Icon)
 		+ ((3 * GetBattleDefense(units[UnitIndex].Icon)) / 2) ) );
 }
 
@@ -11520,22 +11520,22 @@ SHORT UnitPower( SHORT UnitIndex )
 SHORT GetLastUnit( SHORT FirstUnit )
 {
 	SHORT lastUnit=FirstUnit,k;
-	
+
 	while (units[lastUnit].NextUnit != fERROR )
 	{
 		k = units[lastUnit].NextUnit;
-		
+
 		// end of list, Im the last guy
 		if ( k == fERROR )
 			break;
-			
+
 		// next guy in the list is a stack head, Im last guy of this stack
 		if ( units[k].Joined == 0)
 			break;
-		
+
 		lastUnit = units[lastUnit].NextUnit;
 	}
-	
+
 	return lastUnit;
 }
 
@@ -11562,13 +11562,13 @@ void NPCBattleResults (BOOL fSend)
 	SHORT HomeRealm = units[SCENE_MGR::HomeIndex].Realm;
 	SHORT AwayRealm = units[SCENE_MGR::AwayIndex].Realm;
 	BOOL  HomeLarger = FALSE;
-	
+
 	// printf ("NPCBattleResults\n");
 
 	// exp points for being brave enough to fight
 	BattleExpPoints( SCENE_MGR::HomeIndex, BTL_EXP_ENGAGE, 0, FALSE );
 	BattleExpPoints( SCENE_MGR::AwayIndex, BTL_EXP_ENGAGE, 0, FALSE );
-	
+
 	LOGCOMMENTSLEEP
 	if ( fLogComment )
 	{
@@ -11577,7 +11577,7 @@ void NPCBattleResults (BOOL fSend)
 			realm[units[SCENE_MGR::HomeIndex].Realm].mfGetName());
 		RandomLogComment ( temp );
 	}
-	
+
 	for (UnitIndex = SCENE_MGR::HomeIndex;
 		 UnitIndex != fERROR;
 		 UnitIndex = (SHORT) units[UnitIndex].NextUnit)
@@ -11593,10 +11593,10 @@ void NPCBattleResults (BOOL fSend)
 				);
 			RandomLogComment ( temp );
 		}
-	
+
 		++HomeOrigCount;
 	}
-	
+
 	LOGCOMMENTSLEEP
 	if ( fLogComment )
 	{
@@ -11605,7 +11605,7 @@ void NPCBattleResults (BOOL fSend)
 			realm[units[SCENE_MGR::AwayIndex].Realm].mfGetName());
 		RandomLogComment ( temp );
 	}
-	
+
 	for (UnitIndex = SCENE_MGR::AwayIndex;
 		 UnitIndex != fERROR;
 		 UnitIndex = (SHORT) units[UnitIndex].NextUnit)
@@ -11621,10 +11621,10 @@ void NPCBattleResults (BOOL fSend)
 				);
 			RandomLogComment ( temp );
 		}
-	
+
 		++AwayOrigCount;
 	}
-	
+
 	// -----------------------------------------------------------------
 	// -- Fight Battle
 	// -----------------------------------------------------------------
@@ -11637,14 +11637,14 @@ void NPCBattleResults (BOOL fSend)
 	HomeUnitPower += random(HomeUnitPower/2);
 	AwayUnitPower = UnitPower(AwayUnitIndex);
 	AwayUnitPower += random(AwayUnitPower/2);
-	
+
 	if ( HomeUnitPower > AwayUnitPower )
 		HomeLarger = TRUE;
-		
+
 	// -- check if they have a place to run to or are they cornered?
 	fHomeRetreatPath = CheckWithdrawPath (HomeUnitIndex);
 	fAwayRetreatPath = CheckWithdrawPath (AwayUnitIndex);
-		
+
 	while (TRUE)
 	{
 		// -- If there are no more units, declair winner
@@ -11657,7 +11657,7 @@ void NPCBattleResults (BOOL fSend)
 		{
 			goto AwayWins;
 		}
-		
+
 		// -----------------------------------------------------------------
 		// -- calc the total power of the unit lists
 		// -----------------------------------------------------------------
@@ -11669,7 +11669,7 @@ void NPCBattleResults (BOOL fSend)
 		{
 			HomePower += UnitPower(UnitIndex);
 		}
-		
+
 		AwayPower = 0;
 		for (UnitIndex = SCENE_MGR::AwayIndex;
 			 UnitIndex != fERROR;
@@ -11677,7 +11677,7 @@ void NPCBattleResults (BOOL fSend)
 		{
 			AwayPower += UnitPower(UnitIndex);
 		}
-	
+
 		// -----------------------------------------------------------------
 		// -- If one side is great enough in power over the other
 		// -- then must have them retreat, except in the case
@@ -11692,7 +11692,7 @@ void NPCBattleResults (BOOL fSend)
 		{
 				goto HomeWins;
 		}
-		
+
 		// -----------------------------------------------------------------
 		// -- Fight battle, kill loser, setup next unit in loser list
 		// -- note that the power of the winning unit is reduced due
@@ -11701,12 +11701,12 @@ void NPCBattleResults (BOOL fSend)
 		if (HomeUnitPower > AwayUnitPower)
 		{
 			// -- check for special case units
-			if (units[AwayUnitIndex].Icon == GORGON_UNIT_ICON 
+			if (units[AwayUnitIndex].Icon == GORGON_UNIT_ICON
 				|| units[AwayUnitIndex].Icon == RHUOBHE_UNIT_ICON )
 			{
 				goto HomeWins; // -- You win, but they don't die
 			}
-			
+
 			// -- check for special case units before killing
 			if ( IsRegent(AwayUnitIndex) )
 			{
@@ -11714,7 +11714,7 @@ void NPCBattleResults (BOOL fSend)
 				if(!random(3))
 					goto HomeWins;
 			}
-			
+
 			// -- check for top of stack before killing
 			if ( units[AwayUnitIndex].Joined == 0)
 			{
@@ -11729,7 +11729,7 @@ void NPCBattleResults (BOOL fSend)
 						);
 					RandomLogComment ( temp );
 				}
-	
+
 				// -- delete top of stack and leave
 				DeleteUnit(AwayUnitIndex, fSend);
 				++AwayCount;
@@ -11748,31 +11748,31 @@ void NPCBattleResults (BOOL fSend)
 						);
 					RandomLogComment ( temp );
 				}
-	
+
 				// -- otherwise, delete loser and get next dude
 				DeleteUnit(AwayUnitIndex, fSend);
 				++AwayCount;
-				
+
 				// -- decrease winning unit power by a factor
 				HomeUnitPower -= AwayUnitPower/2;
-				
+
 				// -- get next last unit
 				AwayUnitIndex = GetLastUnit(SCENE_MGR::AwayIndex);
 				AwayUnitPower = UnitPower(AwayUnitIndex);
 				AwayUnitPower += random(AwayUnitPower/2);
-				
+
 			}
 		}
 		else
 		if (AwayUnitPower > HomeUnitPower)
 		{
 			// -- check for special case units
-			if (units[HomeUnitIndex].Icon == GORGON_UNIT_ICON 
+			if (units[HomeUnitIndex].Icon == GORGON_UNIT_ICON
 				|| units[HomeUnitIndex].Icon == RHUOBHE_UNIT_ICON )
 			{
 				goto AwayWins; // -- You win, but they don't die
 			}
-			
+
 			// -- check for special case units before killing
 			if ( IsRegent(HomeUnitIndex) )
 			{
@@ -11780,7 +11780,7 @@ void NPCBattleResults (BOOL fSend)
 				if(!random(3))
 					goto AwayWins;
 			}
-			
+
 			// -- check for top of stack before killing
 			if ( units[HomeUnitIndex].Joined == 0)
 			{
@@ -11795,7 +11795,7 @@ void NPCBattleResults (BOOL fSend)
 						);
 					RandomLogComment ( temp );
 				}
-	
+
 				// -- delete top of stack and leave
 				DeleteUnit(HomeUnitIndex, fSend);
 				++HomeCount;
@@ -11814,14 +11814,14 @@ void NPCBattleResults (BOOL fSend)
 						);
 					RandomLogComment ( temp );
 				}
-	
+
 				// -- otherwise, delete loser and get next dude
 				DeleteUnit(HomeUnitIndex, fSend);
 				++HomeCount;
-				
+
 				// -- decrease winning unit power by a factor
 				AwayUnitPower -= HomeUnitPower/2;
-				
+
 				// -- get next last unit
 				HomeUnitIndex = GetLastUnit(SCENE_MGR::HomeIndex);
 				HomeUnitPower = UnitPower(HomeUnitIndex);
@@ -11842,7 +11842,7 @@ void NPCBattleResults (BOOL fSend)
 			}
 		}
 	}
-	
+
 	/* -----------------------------------------------------------------
 	   Decide winner
 	   ----------------------------------------------------------------- */
@@ -11853,44 +11853,44 @@ HomeWins:
 	SCENE_MGR::LoserRealm  = AwayRealm;
 	sUnitsLostWinner = HomeCount;
 	sUnitsLostLoser = AwayCount;
-	
+
 	// -- if either side wiped out, signal by setting handle to 0
 	if (( HomeOrigCount - HomeCount) == 0 )
 		SCENE_MGR::Victor = 0;
 	if (( AwayOrigCount - AwayCount) == 0 )
 		SCENE_MGR::Loser = 0;
-		
+
 	BattleExpPoints( SCENE_MGR::HomeIndex, BTL_EXP_WIN, 0, FALSE );
 	if ( !HomeLarger )
 		BattleExpPoints( SCENE_MGR::HomeIndex, BTL_EXP_WIN_GREATER_STRENGTH, 0, FALSE );
-	
+
 	return;
 
-AwayWins:	
+AwayWins:
 	SCENE_MGR::Victor = SCENE_MGR::AwayIndex;
 	SCENE_MGR::Loser = SCENE_MGR::HomeIndex;
 	SCENE_MGR::VictorRealm = AwayRealm;
 	SCENE_MGR::LoserRealm  = HomeRealm;
 	sUnitsLostWinner = AwayCount;
 	sUnitsLostLoser = HomeCount;
-	
+
 	// -- if either side wiped out, signal by setting handle to 0
 	if (( AwayOrigCount - AwayCount) == 0 )
 		SCENE_MGR::Victor = 0;
 	if (( HomeOrigCount - HomeCount) == 0 )
 		SCENE_MGR::Loser = 0;
-		
+
 	BattleExpPoints( SCENE_MGR::AwayIndex, BTL_EXP_WIN, 0, FALSE );
 	if ( HomeLarger )
 		BattleExpPoints( SCENE_MGR::AwayIndex, BTL_EXP_WIN_GREATER_STRENGTH, 0, FALSE );
-	
+
 	return;
 }
 
 /* ========================================================================
-   Function    - 
-	Description - 
-	Returns     - 
+   Function    -
+	Description -
+	Returns     -
 	======================================================================== */
 #if defined(_JUNEDEMO)
 
@@ -11898,7 +11898,7 @@ void ShowAdScreen(SHORT whichScreen)
 {
 	SHORT bitm = fERROR;
 	LONG	now;
-	
+
 	switch (whichScreen)
 	{
 		case 0:
@@ -11908,7 +11908,7 @@ void ShowAdScreen(SHORT whichScreen)
 			DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
 			gprint_text(155,335, STRMGR_GetStr(STR_DEMO_NOADV), BLACK);
 			break;
-		
+
 		case 1:
 		case 2:
 			bitm = GetResourceStd("graphics\\keepplay.pcx", FALSE);
@@ -11927,7 +11927,7 @@ void ShowAdScreen(SHORT whichScreen)
 			gprint_text(200,427, STRMGR_GetStr(STR_DEMO_KEEPPLAY8), CYAN);
 			gprint_text(200,449, STRMGR_GetStr(STR_DEMO_KEEPPLAY9), CYAN);
 			break;
-			
+
 		case 3:
 			bitm = GetResourceStd("graphics\\nobattle.pcx", FALSE);
 			if (bitm == fERROR)
@@ -11935,7 +11935,7 @@ void ShowAdScreen(SHORT whichScreen)
 			DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
 			gprint_text(150,293, STRMGR_GetStr(STR_DEMO_NOBATTLE), BLACK);
 			break;
-		
+
 		case 4:
 			bitm = GetResourceStd("graphics\\keepplay.pcx", FALSE);
 			if (bitm == fERROR)
@@ -11944,36 +11944,36 @@ void ShowAdScreen(SHORT whichScreen)
 			init_gfont( FONT_SANS_8PT );
 			gprint_text(56,460, "The Sword of Roele must be given to Caliedhe Dosiere.", WHITE);
 			break;
-			
+
 		default:
-			break;	
+			break;
 	}
-		
+
 	update_screen();
-	
+
 	now = get_time() + (20*182/10);
-	
+
 #ifdef _WINDOWS
 	ClearMessageQueue();
-#endif	
+#endif
 
 	fAnyKeyChanged = FALSE;
 	clear_key_status(0);
-	
+
 	while (mouse_button > 0)
 	{
 		mouse_button = 0;
 		update_buttons();
 	}
-	
+
 	while (get_time() < now)
 	{
 		run_timers();
-	
+
 	#ifdef _WINDOWS
 		ClearMessageQueue();
-	#endif	
-	
+	#endif
+
 		update_buttons();
 		if (mouse_button)
 		{
@@ -11991,4 +11991,3 @@ void ShowAdScreen(SHORT whichScreen)
 
 #endif
 /*	========================================================================*/
-

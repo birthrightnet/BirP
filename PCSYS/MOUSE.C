@@ -145,12 +145,12 @@ void init_mouse (CSTRPTR name, BOOL Centered)
 	{
 		sprintf(path,"%s",cursor_path);
 	}
-	
+
 	if (cursor_bitmap != fERROR)
 	{
 		SetPurge(cursor_bitmap);
 	}
-#endif	
+#endif
 	sprintf(path, "graphics\\%s.pcx", name);
 	cursor_bitmap = GetResourceStd(path,FALSE);
 	if (cursor_bitmap == fERROR)
@@ -161,7 +161,7 @@ void init_mouse (CSTRPTR name, BOOL Centered)
 		p = ((PTR)BLKPTR(cursor_bitmap)) + sizeof(BITMHDR);
 		w = ((BITMPTR)BLKPTR(cursor_bitmap))->w;
 		h = ((BITMPTR)BLKPTR(cursor_bitmap))->h;
-	
+
 		hot_x = w/2;
 		hot_y = h/2;
 	}
@@ -170,7 +170,7 @@ void init_mouse (CSTRPTR name, BOOL Centered)
 		hot_x = 0;
 		hot_y = 0;
 	}
-	
+
 //JKE	set_mouse_max();
 }
 
@@ -215,10 +215,10 @@ void set_mouse_max()
 void set_mouse_position (LONG x,LONG y)
 {
 //	union REGS inregs,outregs;
-	
+
 	cursor_x = x;
 	cursor_y = y; //we don't need the rest
-	printf("SET_MOUSE_POSITION : %d, %d\n", x, y);
+	logInfo("SET_MOUSE_POSITION : %d, %d", x, y);
 
 //	inregs.w.ax = 0x0004; 	/* mouse set */
 //	inregs.w.cx = x<<1;	 	/* row */
@@ -308,7 +308,7 @@ void SysHideCursor (void)
 
 		// clear the erase buffer
 		memset(&st[0], 0, 1024);
-	
+
 		// force this new data to the display
 		if(fRender)
 			ScreenCopy(iDispBuffer,cursor_x-hot_x,cursor_y-hot_y,w,h, SC_DEFAULT_RES);
@@ -334,19 +334,19 @@ void SysDrawCursor (void)
 		p = ((PTR)BLKPTR(cursor_bitmap)) + sizeof(BITMHDR);
 		w = ((BITMPTR)BLKPTR(cursor_bitmap))->w;
 		h = ((BITMPTR)BLKPTR(cursor_bitmap))->h;
-	
+
 		read_mouse();
-		
+
 		//plot to the display buffer the cursor bitmap
 		for (yy=y=0; y<h; y++, yy+=w)
 			for (xy=yy,x=0; x<w; x++,xy++)
 				if ((pix = p[xy]))
 				{
 					//GEH plot(cursor_x-hot_x+x, cursor_y-hot_y+y, antia_table[(pix*256)+(st[xy]=get_pixel(cursor_x-hot_x+x, cursor_y-hot_y+y))] );
-					st[xy]=get_pixel(cursor_x-hot_x+x, cursor_y-hot_y+y);	
+					st[xy]=get_pixel(cursor_x-hot_x+x, cursor_y-hot_y+y);
 					plot(cursor_x-hot_x+x, cursor_y-hot_y+y, pix);
 				}
-				
+
 		// force this new data to the display
 		if(fRender)
 			ScreenCopy(iDispBuffer,cursor_x-hot_x,cursor_y-hot_y,w,h, SC_DEFAULT_RES);
@@ -410,5 +410,3 @@ LONG cursor_in_box (LONG x1,LONG y1,LONG w,LONG h)
 
 /* ======================================================================== */
 
-
-

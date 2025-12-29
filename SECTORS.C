@@ -75,7 +75,7 @@ static void point_to_ssector(LONG n);
 
 extern LONG first_seg;
 extern BOOL	gfWadLoaded;
-								
+
 //short sInside = TRUE;
 
 /* =======================================================================
@@ -142,9 +142,9 @@ void point_to_sector_info(
 {
 	point_ssector_x=x;
 	point_ssector_y=y;
-	
+
 	point_to_ssector(tot_nodes-1);
-	
+
 	ssector_to_sector_info(x, y, point_ssector, sector, floor, ceiling, special, tag);
 }
 /* =======================================================================
@@ -168,7 +168,7 @@ void ssector_to_sector_info(
 	LONG sided;
 	LONG const seg=ssectors[PointSsector].o;
 	SEG * pSeg = &segs[seg];				// [d2-28-97 JPC] optimization
-	
+
 #if 0	// GWP doesn't seem to be the problem.
 #if defined (_DEBUG)
 	if (seg < 0 || seg >= tot_segs)
@@ -179,12 +179,12 @@ void ssector_to_sector_info(
 	if (segs[seg].a < 0 || segs[seg].a >= tot_vertexs ||
 	    segs[seg].b < 0 || segs[seg].b >= tot_vertexs)
 	{
-		printf("ERROR segs[seg].a = %ld\n", segs[seg].a);
+		logError("ERROR segs[seg].a = %ld\n", segs[seg].a);
 		fatal_error("ERROR segs[seg].b = %ld\n", segs[seg].b);
 	}
 #endif
 #endif
-	
+
 	if(pSeg->flip)
 	{
 		sx=vertexs[pSeg->b].x;
@@ -199,7 +199,7 @@ void ssector_to_sector_info(
 		sa=vertexs[pSeg->b].x-sx;
 		sb=vertexs[pSeg->b].y-sy;
 	}
-	
+
 	{
 	LONG const r= ( sa *( y-sy ) ) - ( ( x-sx) * sb );
 
@@ -207,7 +207,7 @@ void ssector_to_sector_info(
 	//	return(seg_to_height(seg,FRONT));
 	//else
 	//	return(seg_to_height(seg,BACK));
-	
+
 	{
 	LONG const l=(LONG)pSeg->lptr;
 
@@ -224,10 +224,10 @@ void ssector_to_sector_info(
 	}
 	}
 	}
-	
+
 	{
 	LONG const sec=(LONG)sidedefs[sided].sec_ptr;
-	
+
 	*sector  = (LONG)sec;
 	*floor   = (LONG)sectors[sec].fh;
 	*ceiling = (LONG)sectors[sec].ch;
@@ -315,19 +315,19 @@ The_Begining:
 		// GWP ptss_last_front doesn't appear to have a use at this time.
 		// ptss_last_front=TRUE;
 		//point_to_ssector(nodes[n].f);
-		
+
 		n = nodes[n].f;
 		goto The_Begining;
-		
+
 	}
 	else
 	{
 		// ptss_last_front=FALSE;
 		// point_to_ssector(nodes[n].r);
-		
+
 		n = nodes[n].r;
 		goto The_Begining;
-		
+
 	}
 }
 
@@ -420,9 +420,9 @@ void activate_seg(LONG DistanceSquared)
 {
 	LONG special;
 	LONG iLinedef;
-	
+
 #if !defined(_RELEASE)
-	printf("trying to activate seg (maxdist squared= %li)\n",DistanceSquared);
+	logInfo("trying to activate seg (maxdist squared= %li)",DistanceSquared);
 #endif
 
 	// JPC Note:
@@ -435,7 +435,7 @@ void activate_seg(LONG DistanceSquared)
 	// the segments from the linedefs and don't let us edit them directly.
 	if (first_seg == 0)
 		return;
-	
+
 	if (DistanceToSeg (first_seg, player.x >> PLAYER_FIXEDPT, player.y >> PLAYER_FIXEDPT)
 		> DistanceSquared)
 		return;
@@ -520,10 +520,10 @@ void activate_seg(LONG DistanceSquared)
 			//	load_new_wad("castle86.wad",1);
 			//sInside = !sInside;
 			break;
-		
+
 		case LSP_TELE_1WAY:
 #if !defined(_RELEASE)
-			printf("teleporting to sector %li\n",tag_to_sector(linedefs[iLinedef].tag));
+			logInfo("teleporting to sector %li",tag_to_sector(linedefs[iLinedef].tag));
 #endif
 			TeleportPlayer(tag_to_sector(linedefs[iLinedef].tag));
 			break;
@@ -532,7 +532,7 @@ void activate_seg(LONG DistanceSquared)
 		case LSP_CEIL_SR:
 			CeilingActivate (iLinedef, linedefs[iLinedef].tag, special);
 			break;
-	
+
 		case LSP_LIFT_SI:       // lift
 		case LSP_LIFT_SA:       // lift
 		case LSP_LIFT_SIC:      // lift
@@ -705,5 +705,3 @@ BOOL IsLavaSector (LONG iSector)
 
 // ---------------------------------------------------------------------------
 // ---------------------------------------------------------------------------
-
-

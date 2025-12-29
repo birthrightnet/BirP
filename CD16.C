@@ -115,7 +115,7 @@ int main (int argc, char *argv[])
 
 	if (get_cd_drive_handle() == 1)
 	{
-		printf ("No CD-ROM drive found.\n");
+		logFatal("No CD-ROM drive found.");
 		exit(1);
 	}
 
@@ -350,13 +350,13 @@ void interrupt CDPlayHandler (void)
 #if 0
 		monopos = 80;
 		Print_to_Mono (start >> 28);
-		Print_to_Mono (start >> 24); 
-		Print_to_Mono (start >> 20); 
-		Print_to_Mono (start >> 16); 
-		Print_to_Mono (start >> 12); 
-		Print_to_Mono (start >>  8); 
-		Print_to_Mono (start >>  4); 
-		Print_to_Mono (start >>  0); 
+		Print_to_Mono (start >> 24);
+		Print_to_Mono (start >> 20);
+		Print_to_Mono (start >> 16);
+		Print_to_Mono (start >> 12);
+		Print_to_Mono (start >>  8);
+		Print_to_Mono (start >>  4);
+		Print_to_Mono (start >>  0);
 
 		monopos = 104;
 		Print_to_Mono (length >> 28);

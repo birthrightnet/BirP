@@ -121,7 +121,7 @@ typedef struct {
 // For debugging I've included this next structure.
 typedef struct {
 	MEMORY_DEBUG_INFO	fHeaderBlk;
-	
+
 	// Put a watch on this fDataStart and cast it to the correct type.
 	void				*fDataStart;
 } LOOK_AT_BLOCK, *LOOK_AT_BLOCK_PTR;
@@ -222,7 +222,7 @@ struct meminfo {
 } MemInfo;
 
 static ULONG	cbFreemem;
-	
+
 #if CHECK_REALLY_OFTEN
 static void ScanAllBlocks();
 #endif
@@ -243,20 +243,20 @@ ULONG InitMemManag (
 	CHAR		buffer[128];
 
 	fReport = fReport_;
-	
+
 	#if defined(MEMORY_CHK)
 	pLook = 0;
 	#endif
 
 	if (fReport & fREPORT_MEMMGR)
-		printf("\n\n\nMemory Manager Initialization\n");
+		logInfo("\n\n\nMemory Manager Initialization");
 
 	cNumBlkHeads = cNumBlkHeads_;
 	apBlocks	 = (ULONG *)malloc((ULONG)(cNumBlkHeads*sizeof(ULONG *)));
 	aiNextBlk	 = (SHORT *)malloc((ULONG)(cNumBlkHeads*sizeof(SHORT)));
 	aiPrevBlk	 = (SHORT *)malloc((ULONG)(cNumBlkHeads*sizeof(SHORT)));
 	abBlockAttr	 = (ATTR_BLK_TYPE *)malloc((ULONG)cNumBlkHeads *sizeof(ATTR_BLK_TYPE));
-	
+
 	for (i=0; i<cNumBlkHeads; ++i)		/* init all blocks to unused */
 		abBlockAttr[i] = UNUSED;
 
@@ -280,7 +280,7 @@ ULONG InitMemManag (
 #endif
 	//cbMaxFree = (45 * 1014 * 1024) / 10;
 
-	printf("memory available: %ld\n",cbMaxFree);
+	logInfo("memory available: %ld",cbMaxFree);
 
 	cbFreemem = cbMaxFree - 4000;
 //	cbFreemem = MIN_MEMORY_16MEG_WINDOWS - 4000;
@@ -289,7 +289,7 @@ ULONG InitMemManag (
 	for (pHeap = NULL; pHeap == NULL && cbFreemem > cbMinMemoryNeeded; cbFreemem -= 0x10000)
 		pHeap = (PTR)malloc(cbFreemem);
 
-	printf("memory allocated: %ld Starting at 0x%lx\n",cbFreemem, pHeap);
+	logInfo("memory allocated: %ld Starting at 0x%lx",cbFreemem, pHeap);
 
 	if (cbFreemem < cbMinMemoryNeeded || pHeap == NULL)
 	{
@@ -301,9 +301,9 @@ ULONG InitMemManag (
 				(cbMinMemoryNeeded/1024L), (cbFreemem/1024L) );
 			puts(buffer);
 		}
-		
+
 		FreeResourceManager();
-		
+
 		free(pHeap);
 		free(apBlocks);
 		free(aiNextBlk);
@@ -347,7 +347,7 @@ void QuitMemManag ()
 	// Purge all the memory you can, we're looking for leaks.
 	BOOL SingleBlock = FALSE;
 	SHORT FoundBlock;
-	
+
 	PrintUnFreedMemoryReport();
 	PurgeMem_(ReportFreeMem(TRUE), &SingleBlock, &FoundBlock);
 #endif
@@ -394,7 +394,7 @@ static LONG CheckValidBlock (LONG i, LONG LineNo)
 	{
 #if defined(_DEBUG)
 		if (fReport & fREPORT_MEMMGR)
-			printf("MEMMANAG WARNING CheckValidBlock - out of range block number: %d [%d]\n",i, LineNo);
+			logInfo("MEMMANAG WARNING CheckValidBlock - out of range block number: %d [%d]",i, LineNo);
 #endif
 #if defined (MEMORY_CHK)
 		fatal_error("MEMMANAG ERROR CheckValidBlock - out of range block number: %d [%d]\n",i, LineNo);
@@ -407,7 +407,7 @@ static LONG CheckValidBlock (LONG i, LONG LineNo)
 	{
 #if defined (_DEBUG)
 		if (fReport & fREPORT_MEMMGR)
-			printf("MEMMANAG WARNING CheckValidBlock - not currently using block number: %d [%d]\n",i, LineNo);
+			logInfo("MEMMANAG WARNING CheckValidBlock - not currently using block number: %d [%d]",i, LineNo);
 #endif
 #if defined (MEMORY_CHK)
 		fatal_error("MEMMANAG ERROR CheckValidBlock - not currently using block number: %d [%d]\n",i, LineNo);
@@ -480,7 +480,7 @@ TryAgain:
 			else
 			{
 				LONG LargestBlock;
-				
+
 				// compact all memory
 				CompactMem_(ULONG_MAX, aiNextBlk[START_BLOCK], &LargestBlock);
 				fAlreadyTriedAgain = TRUE;
@@ -492,8 +492,8 @@ TryAgain:
 	++iMaxBlkHeadUsed;
 
 	if (fReport & fREPORT_MEMMGR)
-		printf("FindFreeHeader: found free header %d\n",j);
-	
+		logInfo("FindFreeHeader: found free header %d",j);
+
 	return j;
 }
 
@@ -513,7 +513,7 @@ SHORT NewExternalBlock (PTR p)
 	aiPrevBlk[i] = (SHORT)fERROR;
 
 	if (fReport & fREPORT_MEMMGR)
-		printf("NewExternalBlock: assigned block %d\n",i);
+		logInfo("NewExternalBlock: assigned block %d",i);
 
 #if CHECKLINKS
 	CheckLinks("NewExternalBlock");
@@ -542,7 +542,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 	if ( IsResourceHandle(i))
 	{
 		SHORT iResBlk = GetResourceHandleBlk(i);
-		
+
 		if (iResBlk < 0 || iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -551,7 +551,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 			return fERROR;
 	#endif
 		}
-		
+
 #if fUSE_RES_FILES
 		if ((mask & CLASS2) == CLASS2)
 		{
@@ -597,7 +597,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 				gResFlags[iResBlk] &= (0xFFFF ^ RM_LOCKED);
 			}
 		}
-		
+
 		i = iResBlock[iResBlk];
 		if (i == 0 && giResFileNames != 0)	// It's not in memory but that's ok.
 			return fNOERR;
@@ -617,7 +617,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 	{
 #if defined(_DEBUG)
 		if (fReport & fREPORT_MEMMGR)
-			printf("MEMMANAG WARNING - out of range block number: %d\n",i);
+			logInfo("MEMMANAG WARNING - out of range block number: %d",i);
 #endif
 #if defined (MEMORY_CHK)
 		fatal_error("MEMMANAG ERROR - out of range block number: %d\n",i);
@@ -628,7 +628,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 
 	if (!TEST_BLK_INUSE(abBlockAttr[i]))
 		return fERROR;
-		
+
 #if defined (MEMORY_CHK)
 
 	#if RES_MANAGER
@@ -641,7 +641,7 @@ SHORT SetBlockAttr (SHORT i, ATTR_BLK_TYPE mask, ATTR_BLK_TYPE value)
 
 	if (!(abBlockAttr[i] & LOCKED) && mask == LOCKED && value == 0)
 		fatal_error("MEMMANAGE ERROR! Cannot clear lock on unlocked block %ld.\n", i);
-	
+
 #endif
 
 
@@ -663,7 +663,7 @@ ATTR_BLK_TYPE GetBlockAttr (SHORT i)
 	if ( IsResourceHandle(i))
 	{
 		SHORT iResBlk = GetResourceHandleBlk(i);
-		
+
 		if (iResBlk < 0 || iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -672,24 +672,24 @@ ATTR_BLK_TYPE GetBlockAttr (SHORT i)
 			return (ATTR_BLK_TYPE) 0;
 	#endif
 		}
-		
+
 		i = iResBlock[iResBlk];
 	#if fUSE_RES_FILES
 		if (i == 0 && giResFileNames[iResBlk] != 0)	// we're currently paged out, but we could come back.
 		{
 			Result |= RESOURCE;
-				
+
 			// Because we don't load resources until we have too, this information
 			// is duplicated in the resource manager, with its own set of flags.
 			if ((gResFlags[iResBlk] & RM_LOCKED) == RM_LOCKED)
 				Result |= LOCKED;
-			
+
 			if ((gResFlags[iResBlk] & RM_CLASS2) == RM_CLASS2)
 				Result |= CLASS2;
-		
+
 			if ((gResFlags[iResBlk] & RM_PURGABLE) == RM_PURGABLE)
 				Result |= PURGABLE;
-		
+
 			if ((gResFlags[iResBlk] & RM_MULTI_USER) == RM_MULTI_USER)
 				Result |= MULTI_USER_BIT;
 		}
@@ -708,7 +708,7 @@ ATTR_BLK_TYPE GetBlockAttr (SHORT i)
 	{
 #if defined(_DEBUG)
 		if (fReport & fREPORT_MEMMGR)
-			printf("MEMMANAG WARNING - out of range block number: %d\n",i);
+			logInfo("MEMMANAG WARNING - out of range block number: %d",i);
 #endif
 #if defined (MEMORY_CHK)
 		fatal_error("MEMMANAG ERROR - out of range block number: %d\n",i);
@@ -738,7 +738,7 @@ ULONG GetDataBlkSize (LONG i)
 		}
 	}
 #endif
-	
+
 	if (aiNextBlk[i] == fERROR)		/* handle size request of ENDBLOCK */
 		return 0L;
 
@@ -801,34 +801,34 @@ SHORT	GetBlockIndex (PTR p)
 static void WriteTestMemory(SHORT iHandle,LONG cBytes)
 {
 	MEMORY_DEBUG_INFO * pHeader = (MEMORY_DEBUG_INFO *)apBlocks[iHandle];
-	
+
 	// GWP Test code to see if we are overwritting the blocks.
-	// GWP if (cBytes <= (sizeof (LONG) + sizeof(MEMORY_DEBUG_INFO)) || 
+	// GWP if (cBytes <= (sizeof (LONG) + sizeof(MEMORY_DEBUG_INFO)) ||
 	// GWP     GetBlockSize(iHandle) > cBytes)
 	// GWP {
 	// GWP 	fatal_error("MEMMANAG ERROR! Bad allocation %ld.\n", cBytes);
 	// GWP }
-	
+
 	// Set the whole block to a default setting.
 	memset((void *)apBlocks[iHandle], UNINITED_MEMORY, cBytes);
-	
+
 	// Now initialize the header marker.
 	pHeader->FileName[0]			= 0;
 	pHeader->FileLineNo				= 0;
 	pHeader->BlockName[0]			= 0;
 	pHeader->BlockSize				= cBytes;
 	pHeader->HeadMarker				= MEMORY_MARKER;
-	
+
 	// Now initialize the tail marker.
 	*((LONG *)((PTR)(apBlocks[iHandle]) + cBytes - sizeof(LONG))) 	= MEMORY_MARKER;
-	
+
 	// GWP Test code to see if we are overwriting the next block.
 	// GWP if (TEST_BLK_INUSE(abBlockAttr[aiNextBlk[iHandle]]))
 	// GWP {
 	// GWP 	PTR pFoo = (PTR) BLKPTR(aiNextBlk[iHandle]);
 	// GWP 	pFoo = 0;
 	// GWP }
-	
+
 }
 #endif
 
@@ -841,7 +841,7 @@ SHORT _NewBlock (ULONG cBytes)
 {
 	SHORT		i;
 	LONG		alignment;
-	
+
 	//printf("_NewBlock (%ld)\n", cBytes);
 
 #if defined (MEMORY_CHK)
@@ -849,7 +849,7 @@ SHORT _NewBlock (ULONG cBytes)
 	{
 		fatal_error("MEMMANAG ERROR! Not allowed to allocate blocks of %ld.\n", cBytes);
 	}
-	
+
 	cBytes += MARKER_SPACE;
 #endif
 
@@ -859,12 +859,12 @@ SHORT _NewBlock (ULONG cBytes)
 	{
 		cBytes += (sizeof(int) - alignment);
 	}
-	
+
 	/* find a block of the requested size */
 	if ((i = FindBlock(cBytes)) == fERROR)
 	{
 #if defined (_DEBUG)
-		printf("MEMMANAG ERROR - Unable to find a block.\n");
+		logInfo("MEMMANAG ERROR - Unable to find a block.");
 #endif
 		return (SHORT)fERROR;
 	}
@@ -876,7 +876,7 @@ SHORT _NewBlock (ULONG cBytes)
 	// GWP{
 	// GWP	volatile int x = i;
 	// GWP}
-	
+
 	/* clean up the block to the requested size */
 	CleanUpBlock(i, CLEAN_TO_HIGHER, cBytes);
 
@@ -886,7 +886,7 @@ SHORT _NewBlock (ULONG cBytes)
 
 #if defined (MEMORY_CHK)
 	WriteTestMemory(i, cBytes);
-	
+
 	#if CHECK_REALLY_OFTEN
 	ScanAllBlocks();
 	#endif
@@ -896,7 +896,7 @@ SHORT _NewBlock (ULONG cBytes)
 	CheckLostBlocks("NewBlock");
 #endif
 
-	
+
 	return i;
 }
 
@@ -912,13 +912,13 @@ static SHORT FindBlock (ULONG cBytes)
 
 	if (cBytes == 0)					/* can't have zero size blocks */
 		return (SHORT)fERROR;
-			
+
 #if MOVE_MEMORY_TEST
 #if RES_MANAGER		// Only Resources can be marked purgable.
 	{
 		BOOL SingleBlock = FALSE;
 		SHORT FoundBlock;
-		
+
 		PurgeMem_(cBytes, &SingleBlock, FoundBlock);
 	}
 #endif
@@ -926,10 +926,10 @@ static SHORT FindBlock (ULONG cBytes)
 #endif
 
 Restart:
-	
+
 	i = aiNextBlk[START_BLOCK];
 	attrMask = abBlockAttr[i] & BLKTYPEMASK;
-	
+
 	if (attrMask == FREEMEM && abBlockAttr[aiNextBlk[i]] == FREEMEM)
 	{
 		MergeBlocks(i);
@@ -941,7 +941,7 @@ Restart:
 		i = aiNextBlk[i];			/* move to next block */
 
 		attrMask = abBlockAttr[i] & BLKTYPEMASK;
-		
+
 		// Concatinate adjcent free blocks as we find them.
 		if (attrMask == FREEMEM && abBlockAttr[aiNextBlk[i]] == FREEMEM)
 		{
@@ -952,7 +952,7 @@ Restart:
 			|| ( (abBlockAttr[i] & HIGHMEMORY) && FirstPass == TRUE) // Try to stay out of high memory
 			)
 		{
-			
+
 		FirstPass = FALSE;		// Well if you have to use the high memory.
 		/* No block has been found which is large enough. Therefore we must
 			do garbage collection. We will attempt the following steps:
@@ -963,12 +963,12 @@ Restart:
 			/* purge enough to insure that compact will succeed */
 			{
 				ULONG cbCurrentFree = ReportFreeMem(FALSE);
-				
+
 				if (cbCurrentFree < cBytes)
 				{
 					BOOL SingleBlock = FALSE;
 					SHORT FoundBlock;
-					
+
 					PurgeMem_(cBytes, &SingleBlock, &FoundBlock);
 					if (SingleBlock == TRUE)
 					{
@@ -980,7 +980,7 @@ Restart:
 			}
 		#endif
 			cbFound=CompactMem_(cBytes, aiNextBlk[START_BLOCK], &i);
-			
+
 #if defined(CHECKLOST_BLKS)
 			CheckLostBlocks("FindBlock");
 #endif
@@ -996,7 +996,7 @@ Restart:
 			PrintUnFreedMemoryReport();
 			fatal_error("MEMMANAG ERROR - insufficient memory, requested:%ld  available:%ld\n",cBytes,cbFound);
 #else
-			printf("MEMMANAG ERROR - insufficient memory, requested:%ld  available:%ld\n",cBytes,cbFound);
+			logInfo("MEMMANAG ERROR - insufficient memory, requested:%ld  available:%ld",cBytes,cbFound);
 			PrintMemList();
 			return (SHORT)fERROR;
 #endif
@@ -1006,11 +1006,11 @@ Restart:
 LeaveFn:
 	if(i < 0 || i > cNumBlkHeads)
 		i = fERROR;
-		
+
 	/* a free block of an acceptable size has been found */
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("FindBlock: need 0x%lx (%lu) bytes. Found block %u\n", cBytes, cBytes, i);
+		logInfo("FindBlock: need 0x%lx (%lu) bytes. Found block %u", cBytes, cBytes, i);
 #endif
 	return (SHORT)i;
 }
@@ -1026,21 +1026,21 @@ SHORT _NewBlockHigh (ULONG cBytes)
 	BOOL		FirstPass = TRUE;
 
 	//printf("_NewBlockHigh (%ld)\n", cBytes);
-	
+
 	if (cBytes == 0)					/* can't have zero size blocks */
 		return (SHORT)fERROR;
 
 #if defined (MEMORY_CHK)
 	cBytes += MARKER_SPACE;
 #endif
-	
+
 	// return int aligned data pointers, by allocating %sizeof(int);
 	alignment = cBytes % sizeof(int);
 	if (alignment)
 	{
 		cBytes += (sizeof(int) - alignment);
 	}
-	
+
 	ConcatinateMem();	// Combine any free blocks into as large as can be.
 
 Restart:
@@ -1057,19 +1057,19 @@ Restart:
 		   )
 		{
 			LONG iStartBlk;
-			
+
 			FirstPass = FALSE;
-			
+
 		#if RES_MANAGER		// Only Resources can be marked purgable.
 			/* purge enough to insure that compact will succeed */
 			{
 				ULONG cbCurrentFree = ReportFreeMem(FALSE);
-				
+
 				if (cbCurrentFree < cBytes)
 				{
 					BOOL SingleBlock = FALSE;
 					SHORT FoundBlock;
-					
+
 					// We're not going to use any found blocks as we want to
 					// compact to try and keep high memory blocks high.
 					PurgeMem_(cBytes, &SingleBlock, &FoundBlock);
@@ -1102,13 +1102,13 @@ LeaveFn:
 	/* a free block of an acceptable size has been found */
 #if defined (_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("NewBlockHigh: need 0x%lx (%lu) bytes. Found block %u\n", cBytes, cBytes, i);
+		logInfo("NewBlockHigh: need 0x%lx (%lu) bytes. Found block %u", cBytes, cBytes, i);
 #endif
 
 	/* mark the block as allocated */
 	abBlockAttr[i] = BLKINUSE | HIGHMEMORY;
 
-	
+
 	/* clean up the block to the requested size */
 	CleanUpBlock(i, CLEAN_TO_LOWER, cBytes);
 
@@ -1118,7 +1118,7 @@ LeaveFn:
 
 #if defined (MEMORY_CHK)
 	WriteTestMemory(i, cBytes);
-	
+
 	#if CHECK_REALLY_OFTEN
 	ScanAllBlocks();
 	#endif
@@ -1138,7 +1138,7 @@ LeaveFn:
    				 to the starting index for which if you compacted, you'd have
    				 contigous cBytes.
    				 Call this after calling purge.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static LONG SearchBackFor(LONG cBytes)
@@ -1146,13 +1146,13 @@ static LONG SearchBackFor(LONG cBytes)
 	LONG iHandle;
 	ULONG MaxBlockSize = 0;
 	ULONG BlkBits;
-	
-	for (iHandle = aiPrevBlk[END_BLOCK], 
+
+	for (iHandle = aiPrevBlk[END_BLOCK],
 		  BlkBits = abBlockAttr[iHandle] & BLKTYPEMASK;
-	     
+
 	     BlkBits != STARTBLK && cBytes > MaxBlockSize;
-	     
-	     iHandle = aiPrevBlk[iHandle], 
+
+	     iHandle = aiPrevBlk[iHandle],
 	      BlkBits = abBlockAttr[iHandle] & BLKTYPEMASK
 	    )
     {
@@ -1165,7 +1165,7 @@ static LONG SearchBackFor(LONG cBytes)
     		MaxBlockSize = 0;
     	}
     }
-    
+
     return iHandle;
 }
 /* ========================================================================
@@ -1183,12 +1183,12 @@ SHORT _SetPurge (SHORT iHandle)
 		return fNOERR;
 	#endif
 	}
-		
+
 	if (IsResourceHandle(iHandle))
 	{
 		SHORT iMemBlk;
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-		
+
 		if (iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -1197,11 +1197,11 @@ SHORT _SetPurge (SHORT iHandle)
 			return fNOERR;
 	#endif
 		}
-		
+
 		iMemBlk = iResBlock[iResBlk];
 		if (iMemBlk < 0)
 			return fNOERR;	// Its not available.
-		
+
 		/* inform the resource manager */
 	#if MOVE_MEMORY_TEST
 		return (*ResExtentions[iResExtIndex[iResBlk]].pfDisposeProc)(iResBlk,iMemBlk);
@@ -1236,12 +1236,12 @@ SHORT _ClrPurge (SHORT iHandle)
 		return fERROR;
 	#endif
 	}
-	
+
 	if (IsResourceHandle(iHandle))
 	{
 		SHORT iMemBlk;
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-		
+
 		if (iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -1250,21 +1250,21 @@ SHORT _ClrPurge (SHORT iHandle)
 			return fERROR;
 	#endif
 		}
-		
+
 		iMemBlk = iResBlock[iResBlk];
 		if (iMemBlk < 0)
 			return fERROR;	// Its either not available or already gone.
-		
+
 	#if defined (MEMORY_CHK)
 		if (iMemBlk != 0)
 		{
 			if (CheckValidBlock(iMemBlk, __LINE__) == fERROR)
 				return fERROR;
-		
+
 				ReportBlockError(iMemBlk,CheckBlockOverwrite(iMemBlk));
 		}
 	#endif
-	
+
 		/* inform the resource manager */
 		return (*ResExtentions[iResExtIndex[iResBlk]].pfClrPurgeProc)(iResBlk,iMemBlk);
 	}
@@ -1283,12 +1283,12 @@ SHORT DisposBlock (SHORT iHandle)
 {
 
 #if RES_MANAGER
-	
+
 	if (IsResourceHandle(iHandle))
 	{
 		SHORT iMemBlk;
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-		
+
 		if (iResBlk < 0 || iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -1297,21 +1297,21 @@ SHORT DisposBlock (SHORT iHandle)
 			return fERROR;
 	#endif
 		}
-		
+
 		iMemBlk = iResBlock[iResBlk];
 		if (iMemBlk < 0)
 			return fERROR;	// Its either not available or already gone.
-		
+
 	#if defined (MEMORY_CHK)
 		if (iMemBlk != 0)
 		{
 			if (CheckValidBlock(iMemBlk, __LINE__) == fERROR)
 				return fERROR;
-		
+
 				ReportBlockError(iMemBlk,CheckBlockOverwrite(iMemBlk));
 			}
 	#endif
-		
+
 		return (*ResExtentions[iResExtIndex[iResBlk]].pfDisposeProc)(iResBlk,iMemBlk);
 	}
 #endif
@@ -1337,7 +1337,7 @@ SHORT DisposBlock (SHORT iHandle)
 	if (abBlockAttr[iHandle] & RESOURCE)
 	{
 		SHORT iResBlk;
-		
+
 		// Note: We got here by being called by PurgeMem_ and do not have the
 		//       resource handle.
 		/* inform the resource manager */
@@ -1355,7 +1355,7 @@ SHORT DisposBlock (SHORT iHandle)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("DisposBlock: %u\n", iHandle);
+		logInfo("DisposBlock: %u", iHandle);
 #endif
 
 	if (aiNextBlk[iHandle] == fERROR)		/* check for an external block */
@@ -1366,18 +1366,18 @@ SHORT DisposBlock (SHORT iHandle)
 	}
 
 	abBlockAttr[iHandle] = FREEMEM;			/* mark the block as free */
-   	
+
    	// Concatinate adjacent free blocks.
    	// You can't concatinate the blocks, it disrupts the links
    	// in searches for purging etc. (GWP)
-   	
-	
+
+
 #if defined(MEMORY_CHK)
 	#if CHECK_REALLY_OFTEN
 	ScanAllBlocks();
 	#endif
 #endif
-	
+
 	return fNOERR;
 }
 
@@ -1422,7 +1422,7 @@ SHORT DisposClass (UBYTE Class)
 			iHandle = aiNextBlk[iHandle];				/* move to next block */
 		}
 	}
-	
+
 	return fNOERR;
 }
 
@@ -1462,7 +1462,7 @@ static LONG CleanUpBlock (LONG iHandle,
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("   CleanUpBlock: %u to 0x%lx (%lu) bytes\n", iHandle, cBytes, cBytes);
+		logInfo("   CleanUpBlock: %u to 0x%lx (%lu) bytes", iHandle, cBytes, cBytes);
 #endif
 
 	/* check for invalid block */
@@ -1483,7 +1483,7 @@ static LONG CleanUpBlock (LONG iHandle,
 	{
 		LONG const iPrev = aiPrevBlk[iHandle];					/* get index of previous link */
 		LONG const iNext = aiNextBlk[iHandle];					/* get index of next link */
-		
+
 		/* find a free block header */
 		j = FindFreeHeader();
 		if (j == fERROR)
@@ -1498,7 +1498,7 @@ static LONG CleanUpBlock (LONG iHandle,
 			aiPrevBlk[j] = iHandle;
 			apBlocks[j] = apBlocks[iHandle] + cBytes;	/* calc address of new block */
 			abBlockAttr[j] = FREEMEM;					/* set attribute */
-			
+
 			/* if new block and next block are both free then concatinate them */
 			if ((abBlockAttr[aiNextBlk[j]] & BLKTYPEMASK) == FREEMEM)
 				MergeBlocks(j);
@@ -1513,7 +1513,7 @@ static LONG CleanUpBlock (LONG iHandle,
 			apBlocks[j] = apBlocks[iHandle];			/* calc address of new block */
 			apBlocks[iHandle] = apBlocks[iNext]-cBytes;	/* move address of old block */
 			abBlockAttr[j] = FREEMEM;					/* set attribute */
-		
+
 			/* if new block and prev block are both free then concatinate them */
 			if ((abBlockAttr[aiPrevBlk[j]] & BLKTYPEMASK) == FREEMEM)
 				MergeBlocks(aiPrevBlk[j]);
@@ -1524,7 +1524,7 @@ static LONG CleanUpBlock (LONG iHandle,
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("   Created new block %u with 0x%lx (%lu) bytes\n", j, GetBlockSize(j), GetBlockSize(j));
+		logInfo("   Created new block %u with 0x%lx (%lu) bytes", j, GetBlockSize(j), GetBlockSize(j));
 #endif
 
 
@@ -1536,7 +1536,7 @@ static LONG CleanUpBlock (LONG iHandle,
 }
 
 /* ========================================================================
-	MergeBlocks			- If current and next blocks are free then 
+	MergeBlocks			- If current and next blocks are free then
 					concatinate them. Mark the appropriate header as unused.
 	======================================================================== */
 static LONG MergeBlocks (LONG iHandle)
@@ -1555,24 +1555,24 @@ static LONG MergeBlocks (LONG iHandle)
 	{
 		iNext = aiNextBlk[iHandle];
 		BlkBits = abBlockAttr[iNext] & BLKTYPEMASK;
-		
+
 		if (BlkBits != FREEMEM)		// Includes ENDBLK
 			break;
-	
+
 #if defined(_DEBUG)
 		if (fReport & fREPORT_MEMMGR)
-			printf("   MergeBlocks: %u with %u\n", iHandle, iNext);
+			logInfo("   MergeBlocks: %u with %u", iHandle, iNext);
 #endif
-	
+
 		iNN = aiNextBlk[iNext];
 		aiNextBlk[iHandle] = iNN;			/* unlink iNext forward */
 		aiPrevBlk[iNN] = iHandle;			/* unlink iNext back */
-		
+
 		aiNextBlk[iNext] = fERROR;
 		aiPrevBlk[iNext] = fERROR;
 		apBlocks[iNext] = 0;				/* clear pointer */
 		abBlockAttr[iNext] = UNUSED;		/* clear attribute */
-		
+
 		iMaxBlkHeadUsed--;
 	}
 
@@ -1618,7 +1618,7 @@ ULONG ReportInUse(ULONG fPurgable)
 {
 	SHORT i = 0;
 	ULONG Result = cbFreemem;
-	
+
 	for (i = aiNextBlk[START_BLOCK];
 		 i >= 0 && ((abBlockAttr[i] & BLKTYPEMASK) != ENDBLK);
 		 i = aiNextBlk[i])
@@ -1630,7 +1630,7 @@ ULONG ReportInUse(ULONG fPurgable)
 			Result -= GetBlockSize(i);
 		}
 	}
-	
+
 	return Result;
 }
 
@@ -1646,16 +1646,16 @@ static void ConcatinateMem ()
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("Concatinate\n");
+		logInfo("Concatinate");
 #endif
 
 
 	/* search for a free block */
 	for (i = aiNextBlk[START_BLOCK],
 			abBlockMask = abBlockAttr[i] & BLKTYPEMASK;
-		
+
 		abBlockMask != ENDBLK;
-		
+
 		i = aiNextBlk[i],										/* ..move to next block */
 			abBlockMask = abBlockAttr[i] & BLKTYPEMASK
 		)
@@ -1679,7 +1679,7 @@ static ULONG CompactMem_ (ULONG cBytes, LONG iStartBlk, LONG *pLargestBlock)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("CompactMem\n");
+		logInfo("CompactMem");
 #endif
 
 
@@ -1696,7 +1696,7 @@ static ULONG CompactMem_ (ULONG cBytes, LONG iStartBlk, LONG *pLargestBlock)
 		cbMaxBlock = 0;
 		*pLargestBlock = fERROR;
 	}
-	
+
 	while (abBlockMask != ENDBLK && cbMaxBlock < cBytes)
 	{
 		if ( abBlockMask != FREEMEM) /* if not free block.. */
@@ -1709,30 +1709,30 @@ static ULONG CompactMem_ (ULONG cBytes, LONG iStartBlk, LONG *pLargestBlock)
 		/* Current block is free, if next blocks are free, concatinate them */
 		MergeBlocks(i);
 
-			
+
 		// current block is free
 		if (abBlockMask == FREEMEM)
 		{
 			// Must do this before back filling because the next block is locked.
 			// And the area past the locked block might not have enough room.
 			ULONG cbBlockSize = GetBlockSize(i);
-			
+
 			if (cbBlockSize > cbMaxBlock)
 			{
 				cbMaxBlock = cbBlockSize;
 				*pLargestBlock = i;
 			}
-			
+
 			if (cbMaxBlock >= cBytes)
 				break;
-				
+
 			if ((abBlockAttr[aiNextBlk[i]] & LOCKED) == LOCKED )
 			{
 				// And next block is locked then fill it
 				LONG const iNext = aiNextBlk[i];	// Skip any new blocks created by FillFreeBlock.
 				cbMaxBlock = cbBlockSize = FillFreeBlock(i);
 				*pLargestBlock = i;
-				
+
 				i = iNext;	// move to next block
 				abBlockMask = abBlockAttr[i] & BLKTYPEMASK;
 			}
@@ -1751,7 +1751,7 @@ static ULONG CompactMem_ (ULONG cBytes, LONG iStartBlk, LONG *pLargestBlock)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf(" compact free: %lx (%lu)\n", cbMaxBlock, cbMaxBlock);
+		logInfo(" compact free: %lx (%lu)", cbMaxBlock, cbMaxBlock);
 #endif
 
 	return cbMaxBlock;
@@ -1770,26 +1770,26 @@ static ULONG PurgeMem_ (ULONG cBytes, BOOL *pSingleBlock, SHORT *pFoundBlock)
 	ULONG		attrBits;
 #if defined(_DEBUG)
 	ULONG		cbOriginalSpace;
-	
+
 	if (fReport & fREPORT_MEMMGR)
 	{
-		printf("PurgeMem\n");
+		logInfo("PurgeMem");
 		cbOriginalSpace = ReportFreeMem(FALSE);
 	}
 #endif
-	
-	
+
+
 	*pSingleBlock = FALSE;
 	*pFoundBlock = fERROR;
 
 
 	{
 	ULONG const cBytesPlus10Percent = cBytes + cBytes/10;
-	
+
 	// Since no one puragable resource is better than another, lets
 	// compact the fewest possible blocks by starting at the high end of memory.
 	// We may thrash, but at least we won't shift memory and thrash.
-	
+
 	// search for one "same size" block to free up first.
 	// Then we can skip the compact phase.
 	for (i = aiPrevBlk[END_BLOCK], attrBits = abBlockAttr[i];
@@ -1797,14 +1797,14 @@ static ULONG PurgeMem_ (ULONG cBytes, BOOL *pSingleBlock, SHORT *pFoundBlock)
 		  i = aiPrevBlk[i], attrBits = abBlockAttr[i]	/* move to next block */
 		 )
 	{
-		if (attrBits & PURGABLE 
+		if (attrBits & PURGABLE
 		    && !(attrBits & LOCKED)
 		    && !((attrBits & MOLDYBIT) ||
 		      (attrBits & MOLDYBITLASTTIME))
 		   )
 		{
 		    ULONG	const BlockSize = GetBlockSize(i);
-		
+
 			// find a similar size block to reuse.
 			if (cBytes <= BlockSize &&
 			    cBytesPlus10Percent >= BlockSize)
@@ -1818,16 +1818,16 @@ static ULONG PurgeMem_ (ULONG cBytes, BOOL *pSingleBlock, SHORT *pFoundBlock)
 		}
 	}
 	}
-	
+
 	/* search for purgable & Moldy blocks next */
 	for ( i = aiPrevBlk[END_BLOCK], attrBits = abBlockAttr[i];
 		 (attrBits & BLKTYPEMASK) != STARTBLK && cbMaxBlock < cBytes;
 		  i = aiPrevBlk[i], attrBits = abBlockAttr[i]	/* move to next block */
 		 )
 	{
-		if (attrBits & PURGABLE 
+		if (attrBits & PURGABLE
 		    && !(attrBits & LOCKED)
-			&& !((attrBits & MOLDYBIT) || 
+			&& !((attrBits & MOLDYBIT) ||
 			   (attrBits & MOLDYBITLASTTIME))
 		   )
 		{
@@ -1840,7 +1840,7 @@ static ULONG PurgeMem_ (ULONG cBytes, BOOL *pSingleBlock, SHORT *pFoundBlock)
 			cbMaxBlock = ReportFreeMem(FALSE);
 		}
 	}
-	
+
 	/* search for any purgable blocks */
 	for (i = aiPrevBlk[END_BLOCK], attrBits = abBlockAttr[i];
 	     (attrBits & BLKTYPEMASK) != STARTBLK && cbMaxBlock < cBytes;
@@ -1866,8 +1866,8 @@ Leave_fn:
 	if (fReport & fREPORT_MEMMGR)
 	{
 		ULONG cbPurgedSpace = cbOriginalSpace - cbMaxBlock;
-		
-		printf("	purge free: %lx (%lu)\n", cbPurgedSpace, cbPurgedSpace);
+
+		logInfo("	purge free: %lx (%lu)", cbPurgedSpace, cbPurgedSpace);
 	}
 #endif
 
@@ -1885,10 +1885,10 @@ static BOOL MoveFreeBlockUp (LONG i)
 	LONG const iPrev = aiPrevBlk[i];
 	LONG const iNext = aiNextBlk[i];
 	LONG const iNN	= aiNextBlk[iNext];
-	
+
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("MoveFreeBlock: %u moves up.\n", i);
+		logInfo("MoveFreeBlock: %u moves up.", i);
 #endif
 
 
@@ -1905,7 +1905,7 @@ static BOOL MoveFreeBlockUp (LONG i)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf(" moving block %u from %lx to %lx length %lx (%lu)\n",
+		logInfo(" moving block %u from %lx to %lx length %lx (%lu)",
 			iNext, Src, Dest, cBytes, cBytes);
 #endif
 
@@ -1937,7 +1937,7 @@ static BOOL MoveFreeBlockDown (LONG i)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("MoveFreeBlock: %u moves down.\n", i);
+		logInfo("MoveFreeBlock: %u moves down.", i);
 #endif
 
 	/* move i down by moving previous block up */
@@ -1953,7 +1953,7 @@ static BOOL MoveFreeBlockDown (LONG i)
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf(" moving block %u from %lx to %lx length %lx (%lu)\n", iPrev, Src, Dest, cBytes, cBytes);
+		logInfo(" moving block %u from %lx to %lx length %lx (%lu)", iPrev, Src, Dest, cBytes, cBytes);
 #endif
 
 	memmove((PTR)Dest, (PTR)Src, cBytes);
@@ -1986,7 +1986,7 @@ SHORT SetBlockSize (SHORT i, ULONG cBytes)
 		i = Query_iResBlock(i);
 		if (i <= 0 || i > cNumBlkHeads)
 			return fERROR;
-		
+
 	#if defined (CRC_CHK)
 		if (!(abBlockAttr[i] & MODIFYABLE_RESOURCE))
 		{
@@ -2002,14 +2002,14 @@ SHORT SetBlockSize (SHORT i, ULONG cBytes)
 	ReportBlockError(i,CheckBlockOverwrite(i));
 	cBytes += MARKER_SPACE;
 #endif
-	
+
 	// return int aligned data pointers, by allocating %sizeof(int);
 	alignment = cBytes % sizeof(int);
 	if (alignment)
 	{
 		cBytes += (sizeof(int) - alignment);
 	}
-	
+
 
 SetHandleSizeLoop:
 
@@ -2051,7 +2051,7 @@ SetHandleSizeLoop:
 
 #if defined(_DEBUG)
 	if (fReport & fREPORT_MEMMGR)
-		printf("SetHandleSize: Block %u to 0x%lx (%lu) bytes\n", i, cBytes, cBytes);
+		logInfo("SetHandleSize: Block %u to 0x%lx (%lu) bytes", i, cBytes, cBytes);
 #endif
 
 #if CHECKLINKS
@@ -2061,11 +2061,11 @@ SetHandleSizeLoop:
 	// zero out the overflow bytes.
 	*((LONG *)((PTR)(apBlocks[i]) + cBytes - sizeof(LONG))) = MEMORY_MARKER;
 	((MEMORY_DEBUG_INFO *)(apBlocks[i]))->BlockSize			= cBytes;
-	
+
 	#if CHECK_REALLY_OFTEN
 	ScanAllBlocks();
 	#endif
-	
+
 #endif
 
 #if defined(CHECKLOST_BLKS)
@@ -2090,7 +2090,7 @@ SHORT SetLock (SHORT iHandle)
 	{
 	#if fUSE_RES_FILES
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-		
+
 		// Test if purged out.
 		if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 		{
@@ -2098,7 +2098,7 @@ SHORT SetLock (SHORT iHandle)
 			return fNOERR;
 		}
 	#endif
-		
+
 		i = Query_iResBlock(iHandle);
 		if ( i < 0 || i > cNumBlkHeads)
 			return fERROR;		// It's not in memory.
@@ -2115,7 +2115,7 @@ SHORT SetLock (SHORT iHandle)
 	if (fReport & fREPORT_MEMMGR)
 	{
 //		PrintMemList();
-		printf("SetLock on block %d\n",i);
+		logInfo("SetLock on block %d",i);
 	}
 #endif
 
@@ -2193,26 +2193,26 @@ SHORT SetLock (SHORT iHandle)
 
 	//SetBlockAttr(i,LOCKED,LOCKED);		/* lock the new block */
 	abBlockAttr[i] |= LOCKED;
-	
+
 	if (IsClass1(j))
 	{
 		SetClass1(i);
 	}
-	
+
 	if (IsClass2(j))
 	{
 		SetClass2(i);
 	}
-	
+
 	if (IsClassTemp(j))
 	{
 		SetClassTemp(i);
 	}
-	
+
 	if (IsResource(j))
 	{
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-		
+
 		if (iResBlk < 0 || iResBlk >= iMaxResSlots)
 		{
 	#if defined (MEMORY_CHK)
@@ -2221,20 +2221,20 @@ SHORT SetLock (SHORT iHandle)
 			return fERROR;
 	#endif
 		}
-		
+
 		SetResource(i);
 		// Find the resource handle and update it.
 		iResBlock[iResBlk] = i;
-		
+
 		ClrResource(j);
 	}
-	
-	
+
+
 	if (IsPurgable(j))
 	{
 		SetPurge(i);
 	}
-	
+
 	DisposBlock(j);
 
 #if CHECKLINKS
@@ -2242,11 +2242,11 @@ SHORT SetLock (SHORT iHandle)
 #endif
 #if defined (MEMORY_CHK)
 	ReportBlockError(i,CheckBlockOverwrite(i));
-	
+
 	#if CHECK_REALLY_OFTEN
 	ScanAllBlocks();
 	#endif
-	
+
 #endif
 #if defined(CHECKLOST_BLKS)
 	CheckLostBlocks("SetLock");
@@ -2265,15 +2265,15 @@ SHORT HandleOutOfMemory ()
 	LONG iHandle;
 	ULONG BlkBits;
 	SHORT Success = FALSE;
-	
+
 	// Memory is hashed, Blow all the purable memory out and try again.
 	// Its slow but is better than crashing.
-	
+
 	for (iHandle = aiNextBlk[START_BLOCK],
 		  BlkBits = abBlockAttr[iHandle];
-		 
+
 		 BlkBits != ENDBLK && iHandle > 0;
-		 
+
 		 iHandle = aiNextBlk[iHandle],
 		  BlkBits = abBlockAttr[iHandle]
 		)
@@ -2283,15 +2283,15 @@ SHORT HandleOutOfMemory ()
 			DisposBlock(iHandle);
 			Success = TRUE;
 		}
-	} 
-	
+	}
+
 	if (Success == TRUE)
 	{
 		LONG LargestBlock;
-		
+
 		CompactMem_(ULONG_MAX, aiNextBlk[START_BLOCK], &LargestBlock);
 	}
-	     
+
 
 	return Success;		/* no more memory availabe to release */
 }
@@ -2311,8 +2311,8 @@ static void CheckLinks (CSTRPTR sz)
 	{
 		LONG const iNext = aiNextBlk[iHandle];
 		++c;
-		if (iNext != fERROR && (iNext == iHandle 
-			|| aiPrevBlk[iNext] != iHandle 
+		if (iNext != fERROR && (iNext == iHandle
+			|| aiPrevBlk[iNext] != iHandle
 			|| c > cNumBlkHeads))
 		{
 			fatal_error("MEMMANAG ERROR - faulty links after function: %s",sz);
@@ -2321,7 +2321,7 @@ static void CheckLinks (CSTRPTR sz)
 		{
 			fatal_error("MEMMANAG ERROR - Data block pointers out of order after function %s.",sz);
 		}
-		
+
 		#if 0
 		// GWP This happens but CompactMem will clean it up.
 		if (((abBlockAttr[iHandle] & BLKTYPEMASK) == FREEMEM)
@@ -2349,14 +2349,14 @@ static void CheckLostBlocks (CSTRPTR cpCallinFn)
 		 iHandle = aiNextBlk[iHandle])
 	{
 		LONG const BlkBits = abBlockAttr[iHandle] & BLKTYPEMASK;
-		
+
 		if (BlkBits == BLKTYPE4 || 	// Check for external blks.
 		    BlkBits == UNUSED
 		   )
 		{
 			continue;
 		}
-		
+
 		if (BlkBits & FREEMEM)
 		{
 			TotalFoundMemory += GetBlockSize(iHandle);
@@ -2374,7 +2374,7 @@ static void CheckLostBlocks (CSTRPTR cpCallinFn)
 			TotalFoundMemory += pHeader->BlockSize;
 		}
 	}
-	
+
 	if (TotalFoundMemory != cbFreemem)
 	{
 		fatal_error("MEMMANAGE - LOST Memory Blocks! Found %lu Had %lu. After call to %s",
@@ -2421,7 +2421,7 @@ void PrintMemList ()
 			else if (type == STARTBLK)			fprintf(fp,"START");
 			else if (type == ENDBLK)			fprintf(fp,"END  ");
 			else								fprintf(fp,"ERROR");
-			
+
 			if (abBlockAttr[i] & LOCKED)		fprintf(fp," L"); else fprintf(fp," -");
 			if (abBlockAttr[i] & RESOURCE)		fprintf(fp,"R");  else fprintf(fp,"-");
 			if (abBlockAttr[i] & PURGABLE)		fprintf(fp,"P");  else fprintf(fp,"-");
@@ -2444,7 +2444,7 @@ void PrintMemList ()
 				else if (type == STARTBLK)			fprintf(fp,"START");
 				else if (type == ENDBLK)			fprintf(fp,"END  ");
 				else							  	fprintf(fp,"ERROR");
-				
+
 				if (abBlockAttr[i2] & LOCKED)		fprintf(fp," L"); else fprintf(fp," -");
 				if (abBlockAttr[i2] & RESOURCE)		fprintf(fp,"R");  else fprintf(fp,"-");
 				if (abBlockAttr[i2] & PURGABLE)		fprintf(fp,"P");  else fprintf(fp,"-");
@@ -2454,7 +2454,7 @@ void PrintMemList ()
 
 		fprintf(fp,"\n");
 	}
-	
+
 	fclose(fp);
 
 #endif
@@ -2472,7 +2472,7 @@ static MEM_ERROR_CODE CheckBlockOverwrite(LONG i)
 {
 	LONG size;
 	MEM_ERROR_CODE Result = MEM_ERROR_NONE;
-	
+
 	if (i < 1 || i > cNumBlkHeads)
 	{
 		Result = MEM_ERROR_BAD_HANDLE;
@@ -2491,7 +2491,7 @@ static MEM_ERROR_CODE CheckBlockOverwrite(LONG i)
 	if ((abBlockAttr[i] & BLKTYPEMASK) != BLKTYPE4)	// Check for external blks.
 	{
 		size = GetBlockSize(i);
-		
+
 		if (size > MARKER_SPACE)
 		{
 			MEMORY_DEBUG_INFO * pHeader = (MEMORY_DEBUG_INFO *)apBlocks[i];
@@ -2530,7 +2530,7 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 		break;
 	case MEM_ERROR_BAD_HEAD:
 		{
-		
+
   		if ((abBlockAttr[i] & BLKTYPEMASK) != ENDBLK)
 		{
 			FILE *fp = fopen("memdmp.txt", "w");
@@ -2538,25 +2538,25 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 			{
 				LONG infiniteLoop;
 				SHORT PrevBlock = i;
-				
+
 				for (infiniteLoop = 0, PrevBlock = aiPrevBlk[i];
-				
+
 				     PrevBlock > 0 &&
 				     ((abBlockAttr[PrevBlock] & BLKTYPEMASK) != STARTBLK) &&
 				     infiniteLoop < 10;
-				
+
 				     ++infiniteLoop, PrevBlock = aiPrevBlk[PrevBlock])
 				{
 					ULONG BlockSize = 0;
 					MEM_ERROR_CODE ErrorResult;
-					
+
 					if (!TEST_BLK_INUSE(abBlockAttr[PrevBlock]))
 					{
 						fprintf(fp,"Previous block %d not in use.\n", PrevBlock);
 						fflush(fp);
 						break;
 					}
-						
+
 					BlockSize = GetBlockSize(PrevBlock);
 					ErrorResult = CheckBlockOverwrite(PrevBlock);
 					if (ErrorResult == MEM_ERROR_NONE)
@@ -2565,7 +2565,7 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 						fflush(fp);
 						break;
 					}
-					
+
 					if (ErrorResult == MEM_ERROR_BAD_HEAD)
 					{
 						fprintf(fp,"Previous block Head %d overwritten, size = %lu.\n",
@@ -2592,17 +2592,17 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 						fflush(fp);
 					}
 				}
-				
+
 				fclose(fp);
 			}
 		}
-		
+
 		fatal_error("MEMMANAG ERROR! Block %ld head was overwritten!\n", i);
 		}
 		break;
 	case MEM_ERROR_BAD_TAIL:
 		{
-		
+
 		if ((abBlockAttr[i] & BLKTYPEMASK) != ENDBLK)
 		{
 			FILE *fp = fopen("memdmp.txt", "w");
@@ -2610,35 +2610,35 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 			{
 				LONG infiniteLoop;
 				SHORT NextBlock;
-				
+
 				for (infiniteLoop = 0, NextBlock = aiNextBlk[i];
-				
+
 				     NextBlock > 0 &&
 				     ((abBlockAttr[NextBlock] & BLKTYPEMASK) != ENDBLK) &&
 				     infiniteLoop < 10;
-				
+
 				     ++infiniteLoop, NextBlock = aiNextBlk[NextBlock])
 				{
 					MEM_ERROR_CODE ErrorResult;
 					ULONG BlockSize = 0;
-					
+
 					if (!TEST_BLK_INUSE(abBlockAttr[NextBlock]))
 					{
 						fprintf(fp,"Next block %d not in use.\n", NextBlock);
 						fflush(fp);
 						break;
 					}
-						
+
 					BlockSize = GetBlockSize(NextBlock);
 					ErrorResult = CheckBlockOverwrite(NextBlock);
-					
+
 					if (ErrorResult == MEM_ERROR_NONE)
 					{
 						fprintf(fp,"Last Good block %d, size = %lu\n.", NextBlock, BlockSize);
 						fflush(fp);
 						break;
 					}
-					
+
 					if (ErrorResult == MEM_ERROR_BAD_HEAD)
 					{
 						fprintf(fp,"Previous block Head %d overwritten, size = %lu.\n",
@@ -2665,11 +2665,11 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 						fflush(fp);
 					}
 				}
-				
+
 				fclose(fp);
 			}
 		}
-		
+
 		fatal_error("MEMMANAG ERROR! Block %ld tail was overwritten!\n", i);
 		}
 		break;
@@ -2683,7 +2683,7 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 		fatal_error("MEMMANAGE ERROR! Block %ld has been free'd.\n", i);
 		break;
 	}
-	
+
 }
 #endif
 /* ========================================================================
@@ -2702,7 +2702,7 @@ void * BLKPTR(LONG i)
 		return (void *) i;
 #endif
 	}
-	
+
 #if RES_MANAGER
 	if (IsResourceHandle(i))
 	{
@@ -2710,10 +2710,10 @@ void * BLKPTR(LONG i)
 		i = Query_iResBlock(i);	// Convert a resource handle to a memory handle.
 		if ( i <= 0)
 			return (void *)i;
-		
+
 		if ( i > cNumBlkHeads)
 			return (void *) fERROR;
-	
+
 		//SetBlockAttr(i,MOLDYBIT, MOLDYBIT);		/* set the moldy bit */
 		abBlockAttr[i] |= MOLDYBIT;
 	}
@@ -2725,14 +2725,14 @@ void * BLKPTR(LONG i)
 		fatal_error("MEMMANAG ERROR! Invalid block handle BLKPTR(%ld).\n", i);
 	}
 	ReportBlockError(i,CheckBlockOverwrite(i));
-	
+
 	// #if CHECK_REALLY_OFTEN
 	// Don't call this from interupt or threaded code!
 	//ScanAllBlocks();
 	//#endif
 #endif
 
-	
+
 #if defined(MEMORY_CHK)
 	if ((abBlockAttr[i] & BLKTYPEMASK) == BLKTYPE4)	// Check for external blks.
 	{
@@ -2751,7 +2751,7 @@ void * BLKPTR(LONG i)
    ======================================================================== */
 
 void *_zalloc(char * FileName, LONG FileLineNo, LONG size)
-{				
+{
 	SHORT iHandle = _NewBlockHigh(size);
 	if (iHandle > 0)
 	{
@@ -2777,7 +2777,7 @@ void *_zalloc(char * FileName, LONG FileLineNo, LONG size)
    ======================================================================== */
 
 void *_zone_alloc(LONG size)
-{		
+{
 	SHORT iHandle = _NewBlockHigh(size);
 	if (iHandle > 0)
 	{
@@ -2792,7 +2792,7 @@ void *_zone_alloc(LONG size)
 		return NULL;
 #endif
 	}
-	
+
 	return BLKPTR(iHandle);
 }
 
@@ -2813,10 +2813,10 @@ ULONG WinCheckMem(void)
 
 	memset( &memStats, sizeof(MEMORYSTATUS), 0 );
 	memStats.dwLength = sizeof(MEMORYSTATUS);
-	
+
 	// ask about memory
 	GlobalMemoryStatus(&memStats) ;
-	
+
 	// while this scheme is cool, dosen't appear to work
 	// // malloc the whole physical memory
 	// pBallast = malloc(memStats.dwTotalPhys);
@@ -2836,9 +2836,9 @@ ULONG WinCheckMem(void)
 	// GlobalMemoryStatus(&memStats) ;
 	//
 	// MaxFree = (ULONG)(memStats.dwAvailPhys&0xFFFFFFF0);
-		
+
 	MaxFree = (ULONG)(memStats.dwTotalPhys&0xFFFFFFF0);
-	
+
 	// on a >32Meg, try to run hires
 	if(MaxFree > (34*1024*1024) )
 	{
@@ -2855,7 +2855,7 @@ ULONG WinCheckMem(void)
 	{
 		MaxFree = MIN_MEMORY_16MEG_WINDOWS;
 	}
-	
+
 	return (MaxFree);
 }
 #endif // _WINDOWS
@@ -2873,7 +2873,7 @@ void ClearAllMoldyBits()
 {
 	LONG iHandle;
 	// Start at 1 past the head to use the first real block.
-	
+
 	for (iHandle = aiNextBlk[START_BLOCK];
 		 iHandle >= 0;
 		 iHandle = aiNextBlk[iHandle])
@@ -2881,13 +2881,13 @@ void ClearAllMoldyBits()
 		ATTR_BLK_TYPE * const pabBlockAttr = &abBlockAttr[iHandle];
 		ULONG	const abAttr = *pabBlockAttr;
 		ULONG	const abMaskedAttr = abAttr & BLKTYPEMASK;
-		
+
 		// WARNING!!! This next test counts on FREEMEM being < ENDBLK!!!!!!!!
 		if (abMaskedAttr > FREEMEM)
 		{
 			if (abMaskedAttr == ENDBLK)
 				break;
-			
+
 			if (abAttr & RESOURCE)		// Only resources get marked purgable.
 			{
 				/* set the moldy last time bit */
@@ -2895,7 +2895,7 @@ void ClearAllMoldyBits()
 				{
 					//SetBlockAttr(iHandle,MOLDYBITLASTTIME,MOLDYBITLASTTIME);
 					*pabBlockAttr |= MOLDYBITLASTTIME;
-					
+
 					//SetBlockAttr(iHandle,MOLDYBIT,0);					/* clear the moldy bit */
 					*pabBlockAttr &= (0xFFFF ^ MOLDYBIT);
 				}
@@ -2905,7 +2905,7 @@ void ClearAllMoldyBits()
 					//SetBlockAttr(iHandle,MOLDYBIT,0);					/* clear the moldy bit */
 					*pabBlockAttr &= (0xFFFF ^ (MOLDYBITLASTTIME | MOLDYBIT));
 				}
-				
+
 			}
 		}
 	}
@@ -2923,16 +2923,16 @@ void ClearAllMoldyBits()
 BOOL IsBlockMoldy(SHORT iBlk)
 {
 	SHORT iHandle;
-	
+
 	if (iBlk < 0)
 		return FALSE;
-		
+
 #if RES_MANAGER
 	if (IsResourceHandle(iBlk))
 	{
 	#if fUSE_RES_FILES
 		SHORT iResBlk = GetResourceHandleBlk(iBlk);
-	
+
 		if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 		{
 			return FALSE;
@@ -2945,18 +2945,18 @@ BOOL IsBlockMoldy(SHORT iBlk)
 	{
 		iHandle = iBlk;
 	}
-	
+
 	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
 		return FALSE;
 
 #if defined (MEMORY_CHK)
 	ReportBlockError(iHandle,CheckBlockOverwrite(iHandle));
 #endif
-	
+
 	// If we touched it this time or last time its not moldy.
 	if ((abBlockAttr[iHandle] & MOLDYBIT) || (abBlockAttr[iHandle] & MOLDYBITLASTTIME))
 		return FALSE;
-	
+
 	return TRUE;
 }
 
@@ -2970,16 +2970,16 @@ BOOL IsBlockPurgable(SHORT iBlk)
 {
 	SHORT iHandle;
 	BOOL Result = FALSE;
-	
+
 	if (iBlk < 0)
 		return Result;
-		
+
 #if RES_MANAGER
 	if (IsResourceHandle(iBlk))
 	{
 	#if fUSE_RES_FILES
 		SHORT iResBlk = GetResourceHandleBlk(iBlk);
-	
+
 		if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 		{
 			Result = ((gResFlags[iResBlk] & RM_PURGABLE) == RM_PURGABLE);
@@ -2999,7 +2999,7 @@ BOOL IsBlockPurgable(SHORT iBlk)
 #if defined (MEMORY_CHK)
 	ReportBlockError(iHandle,CheckBlockOverwrite(iHandle));
 #endif
-	
+
 	return ((abBlockAttr[iHandle] & PURGABLE) ? TRUE : FALSE);
 }
 
@@ -3013,16 +3013,16 @@ BOOL IsBlockMultiUser(SHORT iBlk)
 {
 	BOOL Result = FALSE;
 	SHORT iHandle;
-	
+
 	if (iBlk < 0)
 		return Result;
-		
+
 #if RES_MANAGER
 	if (IsResourceHandle(iBlk))
 	{
 	#if fUSE_RES_FILES
 		SHORT iResBlk = GetResourceHandleBlk(iHandle);
-	
+
 		if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 		{
 			Result = ((gResFlags[iResBlk] & RM_MULTI_USER) == RM_MULTI_USER);
@@ -3042,7 +3042,7 @@ BOOL IsBlockMultiUser(SHORT iBlk)
 #if defined (MEMORY_CHK)
 	ReportBlockError(iHandle,CheckBlockOverwrite(iHandle));
 #endif
-	
+
 	return ((abBlockAttr[iHandle] & MULTI_USER_BIT) ? TRUE : FALSE);
 }
 
@@ -3056,7 +3056,7 @@ BOOL IsBlockMultiUser(SHORT iBlk)
 static void ScanAllBlocks()
 {
 	SHORT iHandle;
-	
+
 	for (iHandle = aiNextBlk[START_BLOCK];
 	     (abBlockAttr[iHandle] & BLKTYPEMASK) != ENDBLK;
 	     iHandle = aiNextBlk[iHandle]
@@ -3064,8 +3064,8 @@ static void ScanAllBlocks()
 	{
 		MEM_ERROR_CODE ErrorCode;
 		LONG const BlkBits = abBlockAttr[iHandle] & BLKTYPEMASK;
-		
-		
+
+
 		if (BlkBits == BLKTYPE4 || 	// Check for external blks.
 		    BlkBits == UNUSED ||
 		    BlkBits == FREEMEM
@@ -3073,7 +3073,7 @@ static void ScanAllBlocks()
 		{
 			continue;
 		}
-		
+
 		ErrorCode = CheckBlockOverwrite(iHandle);
 		if (ErrorCode != MEM_ERROR_FREE_BLOCK)
 		{
@@ -3098,13 +3098,13 @@ SHORT SetBlockName( char * Name, SHORT iBlk)
 		LONG	startIndex = 0;
 		LONG	NameLen;
 		SHORT	iHandle;
-		
+
 	#if RES_MANAGER
 		if (IsResourceHandle(iBlk))
 		{
 		#if fUSE_RES_FILES
 			SHORT iResBlk = GetResourceHandleBlk(iBlk);
-		
+
 			// Do nothing, we'll write the name in later.
 			if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 				return iBlk;
@@ -3120,20 +3120,20 @@ SHORT SetBlockName( char * Name, SHORT iBlk)
     #else
 	    iHandle = iBlk;
 	#endif
-	
+
 		pHeader = (MEMORY_DEBUG_INFO *)apBlocks[iHandle];
-		
+
 		// Now initialize the header marker.
 		NameLen = strlen(Name);
 		if (NameLen > MAX_HEADER_NAME_LEN)
 		{
 			startIndex = NameLen - MAX_HEADER_NAME_LEN;
 		}
-		
+
 		strncpy(pHeader->BlockName, &Name[startIndex], MAX_HEADER_NAME_LEN);
 		pHeader->BlockName[MAX_HEADER_NAME_LEN] = 0;
 	}
-	
+
 	return iBlk;
 }
 #endif
@@ -3152,18 +3152,18 @@ SHORT SetDebugInfo(char * FileName, LONG LineNo, SHORT iBlk)
 		LONG	FileNameLen;
 		MEMORY_DEBUG_INFO * pHeader;
 		SHORT	iHandle;
-		
+
 	#if RES_MANAGER
 		if (IsResourceHandle(iBlk))
 		{
 		#if fUSE_RES_FILES
 			SHORT iResBlk = GetResourceHandleBlk(iBlk);
-		
+
 			// Do nothing, Sorry its purged out at this moment..
 			if (iResBlock[iResBlk] == 0 && giResFileNames[iResBlk] != 0)
 				return iBlk;
 		#endif
-		
+
 			iHandle = Query_iResBlock(iBlk);	// Convert a resource handle to a memory handle.
 			if ( iHandle <= 0 || iHandle > cNumBlkHeads)
 				return iBlk;
@@ -3175,22 +3175,22 @@ SHORT SetDebugInfo(char * FileName, LONG LineNo, SHORT iBlk)
     #else
 	    iHandle = iBlk;
 	#endif
-	
+
 		pHeader = (MEMORY_DEBUG_INFO *)apBlocks[iHandle];
-		
+
 		// Now initialize the header marker.
 		FileNameLen = strlen(FileName);
 		if (FileNameLen > MAX_HEADER_NAME_LEN)
 		{
 			startIndex = FileNameLen - MAX_HEADER_NAME_LEN;
 		}
-		
+
 		strncpy(pHeader->FileName, &FileName[startIndex], MAX_HEADER_NAME_LEN);
 		pHeader->FileName[MAX_HEADER_NAME_LEN] = 0;
-		
+
 		pHeader->FileLineNo	= LineNo;
 	}
-	
+
 	return iBlk;
 }
 
@@ -3202,13 +3202,13 @@ SHORT SetDebugInfo(char * FileName, LONG LineNo, SHORT iBlk)
    Description - Dump into a file all the blocks not released and some
                  information about them.
                  (Should help find memory leaks & miss-locked blocks.)
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void PrintUnFreedMemoryReport()
 {
 	FILE	*fp;
-	
+
 	fp = fopen("inuseblk.txt", "w");
 	if (fp)
 	{
@@ -3219,12 +3219,12 @@ void PrintUnFreedMemoryReport()
 		ULONG	TotalNumberOfHandles = 0;
 		ULONG	TotalPurgableSpace = 0;
 		SHORT	iHandle;
-		
+
 		// Print File Header.
 		fprintf(fp, "Non PURGABLE memory blocks still in use when the program quit.\n\n");
 		fprintf(fp,"  Id     Size Locked Resource Moldy Class  FileName[LineNo] BlockName\n");
 		fprintf(fp,"=====================================================================\n");
-		
+
 		for (iHandle = aiNextBlk[START_BLOCK];
 		     (abBlockAttr[iHandle] & BLKTYPEMASK) != ENDBLK;
 		     iHandle = aiNextBlk[iHandle]
@@ -3233,14 +3233,14 @@ void PrintUnFreedMemoryReport()
 			MEM_ERROR_CODE ErrorCode;
 			MEMORY_DEBUG_INFO * pHeader = (MEMORY_DEBUG_INFO *)apBlocks[iHandle];
 			ULONG	SpaceThisBlock;
-			
+
 			if ((abBlockAttr[iHandle] & BLKTYPEMASK) == BLKTYPE4 || 	// Check for external blks.
 			    (abBlockAttr[iHandle] & BLKTYPEMASK) == UNUSED
 			   )
 			{
 				continue;
 			}
-			
+
 		    if ((abBlockAttr[iHandle] & BLKTYPEMASK) == FREEMEM)
 			{
 				SpaceThisBlock = GetBlockSize(iHandle);
@@ -3248,16 +3248,16 @@ void PrintUnFreedMemoryReport()
 				TotalFreeBlkSpace += SpaceThisBlock;
 				continue;
 			}
-			
+
 			SpaceThisBlock = GetDataBlkSize(iHandle);
 		    if (IsBlockPurgable(iHandle) && !IsLocked(iHandle))
 		    {
 		    	TotalPurgableSpace += SpaceThisBlock;
 		    	continue;
 		    }
-		    
+
 			++TotalNumberOfHandles;
-			
+
 			ErrorCode = CheckBlockOverwrite(iHandle);
 			switch (ErrorCode)
 			{
@@ -3270,11 +3270,11 @@ void PrintUnFreedMemoryReport()
 				fflush(fp);
 				break;
 			}
-			
+
 			TotalSpaceInUse += SpaceThisBlock;
-			
+
 			fprintf(fp, "%4d %8lu",	iHandle, SpaceThisBlock);
-			
+
 			if (IsLocked(iHandle))
 			{
 				fprintf(fp, " LOCKED");
@@ -3283,7 +3283,7 @@ void PrintUnFreedMemoryReport()
 			{
 				fprintf(fp, "       ");
 			}
-			
+
 			if (IsResource(iHandle))
 			{
 				fprintf(fp, " RESOURCE");
@@ -3291,8 +3291,8 @@ void PrintUnFreedMemoryReport()
 			else
 			{
 				fprintf(fp, "         ");
-			}	
-			
+			}
+
 			if (IsBlockMoldy(iHandle))
 			{
 				fprintf(fp, " MOLDY");
@@ -3301,7 +3301,7 @@ void PrintUnFreedMemoryReport()
 			{
 				fprintf(fp, "      ");
 			}
-			
+
 			if (IsClass1(iHandle))
 			{
 				fprintf(fp, " CLASS1");
@@ -3322,17 +3322,17 @@ void PrintUnFreedMemoryReport()
 			{
 				fprintf(fp, "       ");
 			}
-			
-			
+
+
 		#if defined(MEMORY_CHK)
 			fprintf(fp," %13s[%ld] %s", pHeader->FileName, pHeader->FileLineNo, pHeader->BlockName);
 		#endif
-				
+
 			fprintf(fp, "\n");
 			fflush(fp);
-			
+
 		}
-		
+
 		fprintf(fp, "\n");
 		fprintf(fp,"Total space still in use = %lu\n", TotalSpaceInUse);
 		fprintf(fp,"Total number of Handles used by this space = %lu\n", TotalNumberOfHandles);
@@ -3341,7 +3341,7 @@ void PrintUnFreedMemoryReport()
 		fprintf(fp,"Total class2 space still in use  = %lu\n", Class2SpaceInUse);
 		fprintf(fp,"Total Free block space available = %lu\n", TotalFreeBlkSpace);
 		fprintf(fp,"Total Purgable space available   = %lu\n", TotalPurgableSpace);
-		
+
 		fclose(fp);
 	}
 }
@@ -3357,13 +3357,13 @@ void PrintUnFreedMemoryReport()
 BOOL IsHandleFlushed(LONG iHandle)
 {
 	void *ptr = BLKPTR(iHandle);
-	
+
 	return ( !IsPointerGood(ptr));
 }
 
 /* ========================================================================
    Function    - FindCloseFit
-   Description - Given a size, find a block which is the same size or 
+   Description - Given a size, find a block which is the same size or
    				 smaller.
    Returns     - Handle to that block.
    ======================================================================== */
@@ -3373,9 +3373,9 @@ static LONG FindCloseFit(LONG iHandleStart, ULONG cBytes, ULONG *BestBlockSize)
 	LONG iHandle;
 	LONG iBestHandle = fERROR;
 	ULONG BlkBits;
-	
+
 	*BestBlockSize = 0;
-	
+
 	// Start at the end of memory and work backward until we reach our
 	// starting location.
 	for (iHandle = aiPrevBlk[END_BLOCK], BlkBits = abBlockAttr[iHandle];
@@ -3406,55 +3406,55 @@ static LONG FindCloseFit(LONG iHandleStart, ULONG cBytes, ULONG *BestBlockSize)
    				 good blocks from memory higher than this blocks as will fit.
    				 This fn is used to get moveable memory blocks around
    				 This is recursive, without doing a recursive fn call.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static ULONG	FillFreeBlock(LONG iHandle)
 {
 	ULONG BlkSize;
-	
+
 	while (1)
 	{
 		LONG iNextHandle = aiNextBlk[iHandle];
 		BlkSize = GetBlockSize(iHandle);
-		
+
 		if ((abBlockAttr[iNextHandle] & BLKTYPEMASK) != ENDBLK)
 		{
 			ULONG BestBlockSize;	// Initialized by FindCloseFit
-			
+
 			LONG iFillerHandle = FindCloseFit(iHandle, BlkSize, &BestBlockSize);
 			if (iFillerHandle != fERROR)
 			{
-				
+
 				// Copy the good block into the free space.
-				
+
 				ULONG const Src = apBlocks[iFillerHandle];
 				ULONG const Dest = apBlocks[iHandle];
 				LONG  const iNext = aiNextBlk[iHandle];
 				LONG  const iPrev = aiPrevBlk[iHandle];
 				LONG  const iFillNext = aiNextBlk[iFillerHandle];
 				LONG  const iFillPrev = aiPrevBlk[iFillerHandle];
-				
+
 				memmove((PTR)Dest, (PTR)Src, BestBlockSize);
-				
+
 				apBlocks[iHandle] = Src;
 				apBlocks[iFillerHandle] = Dest;
-				
+
 				// Now relink it up in ascending memory order!
 				aiNextBlk[iPrev] = iFillerHandle;
 				aiPrevBlk[iNext] = iFillerHandle;
 				aiNextBlk[iFillerHandle] = iNext;
 				aiPrevBlk[iFillerHandle] = iPrev;
-				
-				
+
+
 				aiNextBlk[iFillPrev] = iHandle;
 				aiPrevBlk[iFillNext] = iHandle;
 				aiNextBlk[iHandle] = iFillNext;
 				aiPrevBlk[iHandle] = iFillPrev;
-				
-				// Having moved a new free block check whether we can 
+
+				// Having moved a new free block check whether we can
 				// concatinate it.
-				
+
 				if ((abBlockAttr[iFillPrev] & BLKTYPEMASK) == FREEMEM)
 				{
 					MergeBlocks(iFillPrev);
@@ -3463,13 +3463,13 @@ static ULONG	FillFreeBlock(LONG iHandle)
 				{
 				   	MergeBlocks(iHandle);
 				}
-			
+
 			#if CHECKLINKS
 				// Call after Merge'ing so that adjcent free blocks have been
 				// concatinated.
 				CheckLinks("FillFreeBlock");
 			#endif
-				
+
 				if (BestBlockSize < BlkSize)
 				{
 					// Get a handle to the free block of what's left of the space
@@ -3491,8 +3491,7 @@ static ULONG	FillFreeBlock(LONG iHandle)
 			break;	// At the end of the list of memory blocks.
 		}
 	}
-	
+
 	return BlkSize;	// Free space left.
 }
 /* ======================================================================== */
-

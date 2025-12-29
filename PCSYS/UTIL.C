@@ -5,7 +5,7 @@
    Filename: UTIL.C      -Low Level Utitilies
    Author: Chris Phillips
    ========================================================================
-   Contains the following internal functions: 
+   Contains the following internal functions:
 
    Contains the following general functions:
    get_free_mem          -gets the largest free block of memory
@@ -111,19 +111,19 @@ void fatal_error(const char *format, ...)
 	vsprintf(texbuffer,format,argp);
 	close_graph();
 	remove_keyint();
-	printf("Fatal Error:%s\n",texbuffer);
+	logFatal("Fatal Error:%s",texbuffer);
 	fprintf(f,"Fatal Error:%s\n",texbuffer);
 	fclose(f);
-	
+
 #if defined(_DEBUG)
-	// if debuggable, crash out so the debugger will catch us 
+	// if debuggable, crash out so the debugger will catch us
 	// still live in the code
 	{
 	volatile SHORT i = 1;
 	i /= 0;
 	}
 #endif
-	
+
 	exit(0);
 }
 
@@ -137,7 +137,7 @@ void fatal_error(const char *format, ...)
 LONG get_time()
 {
 	LONG time;
-	
+
 	//_bios_timeofday(_TIME_GETCLOCK,&time);
 	// Read the time directly, "We don't need no d*mm fn() calls!"
 	time = * (volatile LONG *)(0x46c);
@@ -164,5 +164,3 @@ void pause(LONG t)
 
 /* ======================================================================== */
 
-
-

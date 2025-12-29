@@ -210,13 +210,13 @@ void ProcessResponseFile (char * szArgument)
 	if (fp == NULL)
 	{
 #if !defined(_RELEASE)
-		printf ("Unable to open response file\n");
+		logInfo("Unable to open response file");
 #endif
 		return;
 	}
 
 #if !defined(_RELEASE)
-		printf ("Opened response file %s\n", szArgument);
+		logInfo("Opened response file %s", szArgument);
 #endif
 
 	// Ignore all but the "-file" line.
@@ -233,7 +233,7 @@ void ProcessResponseFile (char * szArgument)
 			sprintf (pwad, szWadname);
 			JustLoadWad = TRUE;
 #if !defined(_RELEASE)
-			printf ("Found -file line, WAD = %s\n", pwad);
+			logInfo("Found -file line, WAD = %s", pwad);
 #endif
 
 		}
@@ -318,15 +318,15 @@ void AppIdle(void)
    ======================================================================== */
 static void print_usage()
 {
-	printf("Usage:NOVA <switches>\n");
-	printf("   Switches:\n");
-	printf("      w WADFILE.WAD    Wad file to use, i.e. castle86.wad\n");
-	printf("      s SCENEFILE      Scene file to use, i.e. castle\n");
-	printf("      l                Assume low memory condition\n");
-	printf("      i                Don't attack the adventurers\n");
-	printf("      g WADFILE.WAD    Generate a resource script for WAD file\n");
+	logInfo("Usage:NOVA <switches>");
+	logInfo("   Switches:");
+	logInfo("      w WADFILE.WAD    Wad file to use, i.e. castle86.wad");
+	logInfo("      s SCENEFILE      Scene file to use, i.e. castle");
+	logInfo("      l                Assume low memory condition");
+	logInfo("      i                Don't attack the adventurers");
+	logInfo("      g WADFILE.WAD    Generate a resource script for WAD file");
 #if defined (_WADBUILDERS)
-	printf("      @respfile.rsp    Read switches from DCK response file\n");
+	logInfo("      @respfile.rsp    Read switches from DCK response file");
 #endif
 }
 #endif
@@ -393,5 +393,3 @@ void __interrupt __far timer_routine (void)
 
 /* ======================================================================= */
 
-
-

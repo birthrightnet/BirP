@@ -536,7 +536,7 @@ void MainLoop(void)
 	if(cMemDebugTimer++ == 0)
 	{
 		ULONG ulMemUsed = ReportInUse(FALSE);
-		printf("MEM USAGE:	%ld\n", ulMemUsed);
+		logInfo("MEM USAGE:	%ld", ulMemUsed);
 	}
 #endif
 
@@ -2134,7 +2134,7 @@ void FadeTo (LONG red, LONG green, LONG blue, LONG steps)
 	UBYTE	TempPal[768];
 	LONG	i, j, c;
 
-printf("FadeTo called %d/%d/%d, %d\n", red, green, blue, steps);
+	logInfo("FadeTo called %d/%d/%d, %d", red, green, blue, steps);
 
 	if (steps==0)		// just set palette
 	{
@@ -2368,7 +2368,7 @@ void NewIntro (void)
 		if (key_status(KEY_SPACEBAR))
 		{
 			j = (get_time()-startTime);
-			printf("%d\n",j);
+			logInfo("%d",j);
 		}
 #endif
 
@@ -2498,4 +2498,3 @@ void NewIntro (void)
 }
 
 /* ======================================================================== */
-

@@ -4,12 +4,12 @@
    ========================================================================
    Filename: scene.cpp  -
    Author:   Gary Powell
-   
+
    ========================================================================
-   
+
    Contains the following general functions:
 
-   
+
    ======================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -41,11 +41,11 @@
 /* ------------------------------------------------------------------------
    Defines and Compile Flags
    ------------------------------------------------------------------------ */
-   
+
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
-   
+
 /* ------------------------------------------------------------------------
    Prototypes
    ------------------------------------------------------------------------ */
@@ -53,7 +53,7 @@
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
-	
+
 /* ========================================================================
    Function    - mfCreateKey
    Description - Make a Key handle and stick it on the keyboard.
@@ -62,20 +62,20 @@
 void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 {
 	char cpKeyIdStr[10];
-	
+
 	mfInitVals();
 	if ( 1 == sscanf(cpBuffer, "%s", cpKeyIdStr))
 	{
 		LONG KeyId = NO_KEY;
-		
+
 		// Decode the Key Id string.
-		// Do this wacky special case code cause no one is going to use all 
+		// Do this wacky special case code cause no one is going to use all
 		// 128 keys.
 		// If later we need lots more keys lets build a lookup table!
 		if (strncmp(cpKeyIdStr,"KEY_", 4) == 0 )
 		{
 			LONG KeyStrLen = strlen(&cpKeyIdStr[4]);
-			
+
 			if (KeyStrLen == 1)
 			{
 				switch(cpKeyIdStr[4])
@@ -111,7 +111,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 					KeyId = KEY_9;
 					break;
 				default:
-					printf("Undefined key set. \"%s\"\n", cpKeyIdStr);
+					logInfo("Undefined key set. \"%s\"", cpKeyIdStr);
 					break;
 				}
 			}
@@ -133,11 +133,11 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 						case '0':
 							KeyId = KEY_F10;
 							break;
-						
+
 						case '1':
 							// GWP KeyId = KEY_F11;
 							break;
-						
+
 						case '2':
 							// GWP KeyId = KEY_F12;
 							break;
@@ -178,20 +178,20 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 				}
 			}
 		}
-		
+
 		if (KeyId != NO_KEY)
 		{
-			
+
 			char cpFuncIdStr[20];
-			
+
 			// Remove the Keystring.
 			cpBuffer = &cpBuffer[strlen(cpKeyIdStr)];
-			
+
 			// Strip off leading White space
 			for(int i = 0; isspace(cpBuffer[i]) ;i++)
 			{
 			}
-			
+
 			if (i > 0) // Leading white space found.
 			{
 				cpBuffer = &cpBuffer[i];
@@ -200,7 +200,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 			{
 				// strip off the Func Id.
 				cpBuffer = &cpBuffer[strlen(cpFuncIdStr)];
-			
+
 				if (strcmp(cpFuncIdStr, "SetCamera") == 0)
 				{
 					if (fCameraData.mfReadData(cpBuffer))
@@ -210,7 +210,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 					}
 					else
 					{
-						printf("WARNING! Bad arguments for SetCamera \"%s\"\n", cpBuffer);
+						logWarn("Bad arguments for SetCamera \"%s\"", cpBuffer);
 					}
 				}
 				else
@@ -223,7 +223,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 					}
 					else
 					{
-						printf("WARNING! Bad arguments for MoveCamera \"%s\"\n", cpBuffer);
+						logWarn("Bad arguments for MoveCamera \"%s\"", cpBuffer);
 					}
 				}
 				else
@@ -231,7 +231,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 				{
 					// GWP I suspose for debugging we could test for the scene's existance.
 					//     and warn the person running the game.
-					if (1 == sscanf(cpBuffer, "%s", 
+					if (1 == sscanf(cpBuffer, "%s",
 					                 fscInfo.mfGetSceneName()))
 					{
 						fKeyId = KeyId;
@@ -239,7 +239,7 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 					}
 					else
 					{
-						printf("WARNING! Bad arguments for LoadScene \"%s\"\n", cpBuffer);
+						logWarn("Bad arguments for LoadScene \"%s\"", cpBuffer);
 					}
 				}
 				else
@@ -251,14 +251,14 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 				else
 				{
 					fKeyId = NO_KEY;
-					printf("WARNING! Hot Key function \"%s\" not recognized\n", cpFuncIdStr);
-					printf("         Key commands available:\n");
-					printf("         SetCamera\n");
-					printf("         MoveCamera\n");
-					printf("         LoadScene\n");
+					logWarn("Hot Key function \"%s\" not recognized", cpFuncIdStr);
+					logWarn("Key commands available:");
+					logWarn("SetCamera");
+					logWarn("MoveCamera");
+					logWarn("LoadScene");
 				}
-			
-				
+
+
 				strncpy(fcpKeyIdStr, cpKeyIdStr, sizeof(fcpKeyIdStr) - 1);
 				fcpKeyIdStr[sizeof(fcpKeyIdStr) - 1] = 0;
 				strncpy(fcpKeyFuncName, cpFuncIdStr, sizeof(fcpKeyFuncName) - 1);
@@ -267,9 +267,9 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 			else
 			{
 				fKeyId = NO_KEY;
-				printf("WARNING! Incomplete key definition.\n");
+				logWarn("Incomplete key definition.");
 			}
-		
+
 		}
 	}
 }
@@ -288,20 +288,20 @@ HDL_KEY KEY::mfCreateSetCamera (char *cpKeyIdStr,
                                               LONG Roll)
 {
 	HDL_KEY hKey = fERROR;
-	
+
 	hKey = NewBlock(sizeof(KEY));
-	
+
 	if (hKey != fERROR)
 	{
 		DumbAutoLockPtr<KEY> pKey(hKey);
-		
+
 		pKey->mfInitVals();
-		
+
 		pKey->fKeyId = KeyId;
 		pKey->mfChangeCameraLocation(X, Y, Z, Angle, Pitch, Roll);
-		
+
 		replace_key_vals(KeyId, KEY::mfCallBackSetCamera, hKey, 0, &pKey->fOldKeyStruct);
-		
+
 		strncpy(pKey->fcpKeyIdStr, cpKeyIdStr, sizeof(pKey->fcpKeyIdStr) - 1);
 		pKey->fcpKeyIdStr[sizeof(pKey->fcpKeyIdStr) - 1] = 0;
 		strncpy(pKey->fcpKeyFuncName, "SetCamera", sizeof(pKey->fcpKeyFuncName) - 1);
@@ -326,26 +326,26 @@ HDL_KEY KEY::mfCreateMoveCamera (char *cpKeyIdStr,
                                               LONG Roll)
 {
 	HDL_KEY hKey = fERROR;
-	
+
 	hKey = NewBlock(sizeof(KEY));
-	
+
 	if (hKey != fERROR)
 	{
 		DumbAutoLockPtr<KEY> pKey(hKey);
-		
+
 		pKey->mfInitVals();
-		
+
 		pKey->fKeyId = KeyId;
 		pKey->mfChangeCameraLocation(X, Y, Z, Angle, Pitch, Roll);
-		
+
 		replace_key_vals(KeyId, KEY::mfCallBackMoveCamera, hKey, 0, &pKey->fOldKeyStruct);
-		
+
 		strncpy(pKey->fcpKeyIdStr, cpKeyIdStr, sizeof(pKey->fcpKeyIdStr) - 1);
 		pKey->fcpKeyIdStr[sizeof(pKey->fcpKeyIdStr) - 1 ] = 0;
 		strncpy(pKey->fcpKeyFuncName, "MoveCamera", sizeof(pKey->fcpKeyFuncName) - 1);
 		pKey->fcpKeyFuncName[sizeof(pKey->fcpKeyFuncName) - 1] = 0;
 
-		
+
 	}
 	return hKey;
 }
@@ -354,7 +354,7 @@ HDL_KEY KEY::mfCreateMoveCamera (char *cpKeyIdStr,
 /* ========================================================================
    Function    - mfCallBackSetCamera
    Description - Hot Key fn to set the camera to a new location.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void KEY::mfCallBackSetCamera(LONG hKey, LONG)
@@ -363,7 +363,7 @@ void KEY::mfCallBackSetCamera(LONG hKey, LONG)
     if (hKey != fERROR)
     {
 		DumbAutoLockPtr<KEY> pKey(hKey);
-		
+
 		SCENE_MGR::fgCamera.mfSetCameraState(GAME_CAMERA::WANDER_FREELY);
 		pKey->fCameraData.mfSetCamera();
     }
@@ -372,7 +372,7 @@ void KEY::mfCallBackSetCamera(LONG hKey, LONG)
 /* ========================================================================
    Function    - mfCallBackMoveCamera
    Description - Hot Key fn to move the camera to a new location.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void KEY::mfCallBackMoveCamera(LONG hKey, LONG)
@@ -381,7 +381,7 @@ void KEY::mfCallBackMoveCamera(LONG hKey, LONG)
     if (hKey != fERROR)
     {
 		DumbAutoLockPtr<KEY> pKey(hKey);
-		
+
 		SCENE_MGR::fgCamera.mfSetCameraState(GAME_CAMERA::WANDER_FREELY);
 		pKey->fCameraData.mfSwoopCamera();
     }
@@ -389,7 +389,7 @@ void KEY::mfCallBackMoveCamera(LONG hKey, LONG)
 /* ========================================================================
    Function    - mfCallBackLoadScene
    Description - Hot Key fn to Change to a new scene file.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void KEY::mfCallBackLoadScene(LONG hKey, LONG)
@@ -398,20 +398,20 @@ void KEY::mfCallBackLoadScene(LONG hKey, LONG)
     if (hKey != fERROR)
     {
 		PTR_KEY pKey = (PTR_KEY) BLKPTR(hKey);
-		
+
 		//GWP Hard code the start location for now. Talk to Greg and decide later
 		//    whether to have this driven by the scene file.
 		SCENE_MGR::mfRequestNewScene(pKey->fscInfo.mfGetSceneName(), TYPE_PLAYERSTART1, TRUE);
-		
+
 		// Note: We can't clear the lock on the key handle here because when we
-		//       return from loading the next scene the handle won't be valid 
+		//       return from loading the next scene the handle won't be valid
 		//       anymore.
 	}
 }
 /* ========================================================================
    Function    - mfCallBackAttachPlayer
    Description - Hot Key fn to set the camera to a new location.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 void KEY::mfCallBackAttachPlayer(LONG, LONG)

@@ -6,9 +6,9 @@
    Author:	 Craig Clayton
    ========================================================================
    Contains the following general functions:
-   
+
    Contains the following internal functions:
-   
+
    ======================================================================== */
 /* ------------------------------------------------------------------------
    Includes
@@ -46,7 +46,7 @@ BOOL bEditMode = FALSE;
 /* ------------------------------------------------------------------------
    Defines and Compile Flags
    ------------------------------------------------------------------------ */
-typedef struct 
+typedef struct
 {
 	char 		ThingName[20];
 	THINGTYPE	ThingType;
@@ -54,7 +54,7 @@ typedef struct
 
 
 /* ------------------------------------------------------------------------
-	Macros   
+	Macros
    ------------------------------------------------------------------------ */
 
 extern "C" {
@@ -95,10 +95,10 @@ BOOL CALLBACK DlgEditorProc(
    );
 
 BOOL CALLBACK DlgEditAIProc(
-	HWND  hwndDlg,    
-	UINT  uMsg, 
-	WPARAM  wParam,  
-	LPARAM  lParam 
+	HWND  hwndDlg,
+	UINT  uMsg,
+	WPARAM  wParam,
+	LPARAM  lParam
    );
 
 /* ------------------------------------------------------------------------
@@ -208,8 +208,8 @@ static AvatarThingTableType AvatarThingTable[] = {
 	{"Wyvern",				WYVERN           }
 };
 
-static LONG	NumAvatarThings = sizeof(AvatarThingTable)/sizeof(AvatarThingTableType);	
-		
+static LONG	NumAvatarThings = sizeof(AvatarThingTable)/sizeof(AvatarThingTableType);
+
 static AvatarIdRef AvatarIDtable[] = {
 	{"Archer",				ARCHER           },
 	{"Light Cavalry",		LIGHT_CAVALRY    },
@@ -313,7 +313,7 @@ static AvatarIdRef AvatarIDtable[] = {
 	{"Battle Avatar 107", 1107},
 	{"Battle Avatar 108", 1108},
 	{"Battle Avatar 109", 1109}
-}; 
+};
 
 
 
@@ -382,7 +382,7 @@ void DoEditorDialog(
 	{
 		SCENE *pCurrentScene = (SCENE *) BLKPTR(SCENE_MGR::hCurrentScene);
 		CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[iAvatarIndex]);
-		
+
 		iAvatarID = pAvatar->Id;  // Initialize global variables to Avatar values
 		iAvatarThingType = pAvatar->mfType();
 		iAvatarTargetID =  0; //pAvatar->TargetId;
@@ -413,7 +413,7 @@ BOOL CALLBACK DlgEditorProc(
 	char szText[100];
 	CAvatar *pAvatar;
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	
+
 	switch (uMsg)
 	{
 	case WM_INITDIALOG:
@@ -427,10 +427,10 @@ BOOL CALLBACK DlgEditorProc(
 		case IDOK:	// Save to memory
 			if (iAvatarIndex == -1)
 			{
-				iAvatarIndex = CAvatar::CreateAvatar(iAvatarID, 
-													 iAvatarThingType, 
-													 iAvatarX, iAvatarY, 0, 
-													 iAvatarFuncIndex, 
+				iAvatarIndex = CAvatar::CreateAvatar(iAvatarID,
+													 iAvatarThingType,
+													 iAvatarX, iAvatarY, 0,
+													 iAvatarFuncIndex,
 													 pCurrentScene,
 													 REALM::NO_COUNTRY);
 			}
@@ -442,9 +442,9 @@ BOOL CALLBACK DlgEditorProc(
 			// Create the avatar
 			if (iAvatarIndex == -1)
 			{
-				iAvatarIndex = CAvatar::CreateAvatar(iAvatarID, iAvatarThingType, 
-										iAvatarX, iAvatarY, 0, 
-										iAvatarFuncIndex, 
+				iAvatarIndex = CAvatar::CreateAvatar(iAvatarID, iAvatarThingType,
+										iAvatarX, iAvatarY, 0,
+										iAvatarFuncIndex,
 										pCurrentScene,
 										REALM::NO_COUNTRY);
 			}
@@ -494,7 +494,7 @@ BOOL CALLBACK DlgEditorProc(
 			CAvatar::DeleteAvatar(pCurrentScene->Avatars[iAvatarIndex]);
 			pCurrentScene->Avatars[iAvatarIndex] = fERROR;
 			sprintf(szText, "Avatar deleted.  You must delete id%d.ava and save the scene before exiting.", iAvatarID);
-			MessageBox(hwndDlg, szText, "Delete", MB_OK);   
+			MessageBox(hwndDlg, szText, "Delete", MB_OK);
 			break;
 
 		case IDC_BUTTON_SAVE_SCENE:	      // Must save the scene for the Avatar to appear again in scene
@@ -563,7 +563,7 @@ BOOL CALLBACK DlgEditorProc(
 			}
 			break;
 
-		default: 
+		default:
 			break ;
 		}
 
@@ -621,7 +621,7 @@ static void InitEditDialog(
 	if (iAvatarIndex != -1)
 	{
 		CAvatar *pAvatar = (CAvatar *) BLKPTR(pScene->Avatars[iAvatarIndex]);
-		// Put the ID in static text 
+		// Put the ID in static text
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_STATIC_ID);
 		itoa(iAvatarID, szTemp, 10);
 		SetWindowText(hwndCtrl, szTemp);
@@ -649,25 +649,25 @@ static void InitEditDialog(
 			// Set the alignment
 			PTR_PLAYER_STATS pPlayerStats = (PTR_PLAYER_STATS) BLKPTR(pAvatar->hPlayerStats);
 			SendDlgItemMessage(hwndDlg, IDC_LIST_ALIGNMENT, LB_SETCURSEL, (WPARAM) pPlayerStats->Alignment, (LPARAM) 0);
-	
+
 			// Set the class
 			SendDlgItemMessage(hwndDlg, IDC_LIST_CLASS, LB_SETCURSEL, (WPARAM) pPlayerStats->PlayerClassList.ClassType, (LPARAM) 0);
-	
+
 			// Set the level
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_LEVEL);
 			itoa(pPlayerStats->PlayerClassList.sLevel, szTemp, 10);
 			SetWindowText(hwndCtrl, szTemp);
-	
+
 			// Set the hit points
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_HP);
 			itoa(pPlayerStats->HitPts, szTemp, 10);
 			SetWindowText(hwndCtrl, szTemp);
-	
+
 			// Set the armor class
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_AC);
 			itoa(pPlayerStats->ArmorClass, szTemp, 10);
 			SetWindowText(hwndCtrl, szTemp);
-	
+
 			// Set the primary 6 characteristics
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_STRENGTH);
 			itoa(pPlayerStats->Ability.Abilities[ABILITY::STRENGTH], szTemp, 10);
@@ -687,11 +687,11 @@ static void InitEditDialog(
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_CHARISMA);
 			itoa(pPlayerStats->Ability.Abilities[ABILITY::CHARISMA], szTemp, 10);
 			SetWindowText(hwndCtrl, szTemp);
-	
+
 			// Set the name
 			hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_NAME);
 			SetWindowText(hwndCtrl, pPlayerStats->Name);
-	
+
 			// Set the title
 			SendDlgItemMessage(hwndDlg, IDC_LIST_TITLE, LB_SETCURSEL, (WPARAM) pPlayerStats->Title, (LPARAM) 0);
 		}
@@ -791,7 +791,7 @@ BOOL CALLBACK DlgEditAIProc(
 }
 
 
-// This routine is only called by the Avatar editor.  
+// This routine is only called by the Avatar editor.
 // It creates an Avatar and places it in the array
 
 static void SaveAvatarData(
@@ -801,9 +801,9 @@ static void SaveAvatarData(
 	char szTemp[10];
 	HWND hwndCtrl;
 	CAvatar *pAvatar = (CAvatar *) BLKPTR(pScene->Avatars[iAvatarIndex]);
-	
+
 	// Get the angle
-	GetDlgItemText(hwndDlg, IDC_EDIT_ANGLE, szTemp, 10);    
+	GetDlgItemText(hwndDlg, IDC_EDIT_ANGLE, szTemp, 10);
 	iAvatarAngle = atoi(szTemp);
 
 
@@ -829,36 +829,36 @@ static void SaveAvatarData(
 	{
 		pAvatar->hPlayerStats = PLAYER_STATS::mfAllocateSpace();
 	}
-		
+
 	if (pAvatar->hPlayerStats != fERROR)
 	{
 		PTR_PLAYER_STATS pPlayerStats = (PTR_PLAYER_STATS) BLKPTR(pAvatar->hPlayerStats);
 		// Now set player characteristics
-	
+
 		// Set the alignment
 		pPlayerStats->Alignment = iAvatarAlignment;
-	
+
 		// Set the title
 		pPlayerStats->Title = iAvatarTitle;
-	
+
 		// Set the class
 		pPlayerStats->PlayerClassList.ClassType = iAvatarClass;
-	
+
 		// Set the level
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_LEVEL);
 		GetWindowText(hwndCtrl, szTemp, 10);
 		pPlayerStats->PlayerClassList.sLevel = (SHORT)atoi(szTemp);
-	
+
 		// Set the hit points
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_HP);
 		GetWindowText(hwndCtrl, szTemp, 10);
 		pPlayerStats->HitPts = atoi(szTemp);
-	
+
 		// Set the armor class
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_AC);
 		GetWindowText(hwndCtrl, szTemp, 10);
 		pPlayerStats->ArmorClass = atoi(szTemp);
-	
+
 		// Set the primary 6 characteristics
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_STRENGTH);
 		GetWindowText(hwndCtrl, szTemp, 10);
@@ -878,7 +878,7 @@ static void SaveAvatarData(
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_CHARISMA);
 		GetWindowText(hwndCtrl, szTemp, 10);
 		pPlayerStats->Ability.Abilities[ABILITY::CHARISMA] = (SHORT)atoi(szTemp);
-	
+
 		// Set the name
 		hwndCtrl = GetDlgItem(hwndDlg, IDC_EDIT_NAME);
 		GetWindowText(hwndCtrl, pPlayerStats->Name, PLAYER_NAME_MAX_LEN);
@@ -905,7 +905,7 @@ static void SaveSceneAvatars(PTR_SCENE pScene)
 {
 	BOOL bFileSave = pScene->mfWriteSceneFile();
 	char cpMsg[80];
-	
+
 
 	if (bFileSave == FALSE)
 	{
@@ -915,7 +915,7 @@ static void SaveSceneAvatars(PTR_SCENE pScene)
 	}
 
 	sprintf(cpMsg, "Scene saved in scenes\\%s.scn", pScene->mfGetSceneName());
-	MessageBox(NULL, cpMsg, "Save", MB_OK); 
+	MessageBox(NULL, cpMsg, "Save", MB_OK);
 }
 
 
@@ -938,7 +938,7 @@ static void SaveAllAvatars(PTR_SCENE pScene)
 		}
 	}
 
-	MessageBox(NULL, "All Avatars saved", "Save", MB_OK);   
+	MessageBox(NULL, "All Avatars saved", "Save", MB_OK);
 }
 
 #endif
@@ -952,47 +952,47 @@ static void SaveAllAvatars(PTR_SCENE pScene)
 
 void SetEditmode(long)
 {
-	
+
 	// If there is no scene file, you can't edit it!
 	if (SCENE_MGR::hCurrentScene != fERROR)
 	{
 		static PFVLLL pfPreviousObjClickFunc = 0;
 		static PFVLLL pfPreviousFloorClickFunc = 0;
-	
+
 		bEditMode = (bEditMode == TRUE) ? FALSE : TRUE;
 		if (bEditMode && !MapIsActive())
 			ToggleMap(0L);
-	
+
 		if (bEditMode)
 		{
-			printf("Edit mode ON\n");
-			
+			logInfo("Edit mode ON");
+
 			// Stop the Scene AI.
 			SCENE_MGR::mfSetScenePause(TRUE);
-			
+
 			push_regions();
 			// Add back the required keys for editing
 			add_key(KEY_C, PlayerClimbing, -1); // toggle climbing
 			add_key(KEY_E, SetEditmode, 0);
 			add_key(KEY_OTHERMINUS,ZoomMap,-1);
 			add_key(KEY_OTHERPLUS,ZoomMap,+1);
-			
+
 			pfPreviousObjClickFunc = SetMouseClicked(iOBJECT, DoMapFunc);
 			pfPreviousFloorClickFunc = SetMouseClicked(iFLOOR, DoMapFunc);
 		}
 		else
 		{
-			printf("Edit mode OFF\n");
-			
+			logInfo("Edit mode OFF");
+
 			// Let the scene AI start running again.
 			SCENE_MGR::mfSetScenePause(FALSE);
-			
+
 			// Restore the hot keys to the previous state.
 			pop_regions();
-			
+
 			// Get rid of unhandled pending key strokes.
 			clear_key_status(0);
-			
+
 			// Restore the mouse click fn.
 			SetMouseClicked(iOBJECT, pfPreviousObjClickFunc);
 			SetMouseClicked(iFLOOR, pfPreviousFloorClickFunc);
@@ -1013,16 +1013,16 @@ void DoMapFunc(LONG , LONG , LONG )
 
 #ifdef _WINDOWS
 #if defined(SCENE_EDITOR)
-	
+
 	if (whichButton == 1)	// Left mouse click
 	{
 		POINT tp;
-		
+
 		tp.x = 0;
 		tp.y = -30;
-		
+
 		rot8(&tp);
-		
+
 		// Put him right in front of the camera.
 		DoEditorDialog(-1,PLAYER_INT_VAL(player.x) + tp.x, PLAYER_INT_VAL(player.y) - tp.y);
 	}
@@ -1033,15 +1033,15 @@ void DoMapFunc(LONG , LONG , LONG )
 		{
 			LONG i;
 			SCENE *pCurrentScene = (SCENE *) BLKPTR(SCENE_MGR::hCurrentScene);
-			
+
 			for(i=0; i<MAX_AVATARS; i++)
 				if (pCurrentScene->Avatars[i] != fERROR)
 				{
 					CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
 					if (pAvatar->ThingIndex == ObjectClicked)
 					{
-						DoEditorDialog(i, 
-						               pAvatar->mfX(), 
+						DoEditorDialog(i,
+						               pAvatar->mfX(),
 						               pAvatar->mfY());
 					}
 				}

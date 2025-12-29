@@ -140,29 +140,29 @@ void PaintQuestItemFound(LONG MenuCombo,LONG b)
 	CHAR	FormatBuf[256];
 	CHAR	LongDesc[512];
 	CHAR	Buf[512];
-	
-	
+
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	// get position of screen
 	if( GetButtonPosition( MenuId, 0, &mx, &my ) == fERROR)
 		return;
-		
+
 	X = mx + 60;
 	Y = my + 20;
 
 	// paint dialog title
 	gprint_text(X,Y,STRMGR_GetStr(STR_SUCCESS), 31);
-	
+
 	X = mx + 27;
 	Y = my + 100;
-	
+
 	init_gfont(FONT_SANS_12PT);
-		
-	
+
+
 	strncpy(FormatBuf, STRMGR_GetStr(STR_QUESTITEM_CONGRATS), sizeof(FormatBuf));
 
-	
+
 	ITEMTYPE const QuestItem = ObjectList::mfGameTypetoItemType((THINGTYPE)GetQuestThing());
 	ItemType const &QuestItemData = ItemTypes[QuestItem];
 	if (QuestItemData.mfGetExtendedData() != -1) {
@@ -177,7 +177,7 @@ void PaintQuestItemFound(LONG MenuCombo,LONG b)
 
 	gprint_text(X,Y,Buf,color);
 	Y += gtext_height(Buf);
-	
+
 	strncpy(FormatBuf, STRMGR_GetStr(STR_QUESTITEM_YOUCANLEAVE), sizeof(FormatBuf));
 	if (SCENE_MGR::PlacesIndex != -1) {
 		sprintf(Buf, FormatBuf, place_names[SCENE_MGR::PlacesIndex]);
@@ -186,12 +186,12 @@ void PaintQuestItemFound(LONG MenuCombo,LONG b)
 	}
 	gprint_text(X, Y, Buf, color);
 }
-	
+
 void QuestItemFoundProc(LONG MenuCombo,LONG b)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -213,7 +213,7 @@ extern "C"
 LONG GetLevelFiendIndex(void)
 {
 	POINT ReturnMe;
-	
+
 	for (LONG i=0;i<MAX_THINGS;++i)
 	{
 		if (mythings[i].valid)
@@ -225,12 +225,12 @@ LONG GetLevelFiendIndex(void)
 
 	return -1;
 }
-	
+
 
 char const * const GivingRealms[]={
 {"braem_mw"},
 {"calri2kw"},
-{"haes_kw" },	
+{"haes_kw" },
 {"ruorv2mw"},
 {"sonne2kw"},
 {"moons_kw"},
@@ -253,23 +253,23 @@ static BOOL TheftAffectsAlliance(void)
 			return FALSE;
 		}
 	}
-	
+
 	return TRUE;
 }
-		
 
 
-			
+
+
 /* -----------------------
     ObjectList Members
    ----------------------- */
-	
+
 BOOL const ObjectList::mfDoIHaveItem(THINGTYPE const t)
 {
 	ITEMTYPE Donkey=ObjectList::mfGameTypetoItemType(t);
-	
+
 	InventoryItor itor(*this);
-	
+
 	return (itor.mfFind(Donkey));
 }
 
@@ -277,13 +277,13 @@ BOOL const ObjectList::mfCanICastSpell(ITEMTYPE const Donkey)
 {
 	InventoryItor itor(*this);
 	BOOL Result = FALSE;
-	
+
 	if (itor.mfFind(Donkey))
 	{
 		if ((*itor)->mfHowMany() > 0)
 			Result = TRUE;
 	}
-	
+
 	return Result;
 }
 
@@ -330,8 +330,8 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 	ITEMTYPE Itemtype;
 	SHORT hPlrStat=-1;
 	CAvatar* pAvatar;
-	
-	
+
+
 	//if they just want some information, not to pick it up.
   	if (but==2)
 	{
@@ -344,18 +344,18 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 
 
 	Itemtype=mfGameTypetoItemType((THINGTYPE)mythings[obj].OriginalType);
-	
+
 	if (Itemtype==MAX_ITEM_TYPES)  //if that gametype wasn't found.
 	{
 //		printf("The %s is not a gettable item!\n",GAME_TTYPE::mfGetDescription((THINGTYPE)mythings[obj].type));
-		
+
 		//this might be a dead player, so we check the player list
 		ADVENTURER_TEAM_ITOR AdvItor;
-		
+
 		for (AdvItor=ADVENTURER::begin();AdvItor!=ADVENTURER::end();AdvItor++)
 		{
 			DumbAutoLockPtr< CAvatar > const pAvatar(*AdvItor);
-			
+
 			if (pAvatar->ThingIndex==obj)
 			{
 				DumbAutoLockPtr< PLAYER_STATS > const pStats(pAvatar->hPlayerStats);
@@ -363,7 +363,7 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 					StaticInventoryGUI::mfDisplay(0,pAvatar->hPlayerStats);
 			}
 		}
-	
+
 
 		return;
 	}
@@ -375,12 +375,12 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 		AddSndObj(SND_UI_OUT_OF_REACH1, SND_UI_OUT_OF_REACH_TOTAL, VOLUME_FULL);
 		return;
 	}
-	
-		
+
+
 	pAvatar=((CAvatar*)BLKPTR(ADVENTURER::mfWhoGetsObjectsPickedUp()));
 	if (!IsPointerGood(pAvatar))
 	{
-		printf("BLKPTR returned NULL\n");
+		logWarn("BLKPTR returned NULL");
 
 		return;
 	}
@@ -414,7 +414,7 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 					ItemType& Item=ItemTypes[Itemtype]; //A reference to the item
 					char buffer[80];
 					sprintf(buffer, " picked up %s",Item.mfGetName());
-				
+
 					AMultiPlayer.Chat(buffer);
 				}
 
@@ -454,9 +454,9 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 				AddSndObj(SND_PICKUP_MAGIC_ITEM1,0,-1);
 			else
 				AddSndObj(SND_PICKUP_ITEM1,0,-1);
-			
+
 			if (ais&LIST_FULL)
-				printf("last item just added\n");
+				logInfo("last item just added");
 		}
 		else
 		{
@@ -465,19 +465,19 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 
 			char buffer[80];
 			strcpy(buffer,STRMGR_GetStr(STR_INVENTORY));
-	
-			
+
+
 			if (ais&LIST_OVERFLOW)
 			{
 				TitledMessageBox::Display(buffer,STRMGR_GetStr(STR_ITEM_TOO_MANY));
 				return;
 			}
-			
+
 			if (ais&EFFECT_ONLY)
 				AddSndObj(SND_PICKUP_ITEM1,0,-1);
-			else	
+			else
 			    TitledMessageBox::Display(buffer,STRMGR_GetStr(STR_ITEM_CANT_PICKUP));
-			
+
 			return;
 		}
 	}
@@ -532,12 +532,12 @@ void ObjectList::mfInit(SHORT a,LONG ID)
 //	}
 
 	hAvatarStats=a;
-	mfSetAvatarID(ID);	
-	
+	mfSetAvatarID(ID);
+
 
 	HeadIndex=-1;
-	
-	
+
+
 	for (LONG i=0;i<MAX_SPELL_BOXES;++i)
 		SpellBoxes[i]= fERROR;
 
@@ -549,7 +549,7 @@ LONG const ObjectList::mfTotalItems()
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor = begin();
 	     itor != end();
 	     ++itor)
@@ -568,7 +568,7 @@ LONG const ObjectList::mfTotalDifferentItems()
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor = begin();
 	     itor != end();
 	     ++itor)
@@ -578,7 +578,7 @@ LONG const ObjectList::mfTotalDifferentItems()
 			&& (*itor)->mfCategory() !=IC_REALM_SPELL
 			)
 			++i;
-			
+
 	}
 	return i;
 }
@@ -588,7 +588,7 @@ LONG const ObjectList::mfCountItems()
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor = begin();
 	     itor != end();
 	     ++itor)
@@ -601,7 +601,7 @@ LONG const ObjectList::mfCountItems()
 				if (!ItemChargeHandler::mfCharges((*itor)->mfType()))
 					++i;
 			}
-			
+
 	}
 	return i;
 }
@@ -610,12 +610,12 @@ LONG const ObjectList::mfLength()
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor = begin();
 	     itor != end();
 	     ++i, ++itor)
 	{}
-	
+
 	return i;
 }
 
@@ -623,12 +623,12 @@ LONG const ObjectList::mfLength(ItemCategory const cat)
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor.mfAdvance(cat);
 		 itor != end();
 		 ++i, itor.mfAdvanceToNext(cat))
 	{ }
-	
+
 	return i;
 }
 
@@ -636,12 +636,12 @@ LONG const ObjectList::mfNonEmptyLength(ItemCategory const cat)
 {
 	InventoryItor itor(*this);
 	LONG i;
-	
+
 	for (i = 0, itor.mfAdvanceNonEmpty(cat);
 		 itor != end();
 		 ++i, itor.mfAdvanceToNextNonEmpty(cat))
 	{ }
-	
+
 	return i;
 }
 
@@ -656,26 +656,26 @@ void ObjectList::mfLoad()
 	SHORT Data[2]; //[0]=Type [1]=Quantity
 	SHORT Items;
 	LONG i;
-	
-		
+
+
 	SHORT ID=mfGetAvatarID();
 	//printf("mf Loading OlID=%li (AID=%li)\n",GetID(),AvatarID);
 
-	
+
 	sprintf(FileName,"%sid%li.inv",SAVEDIR,ID);
 	if(!Exists(FileName))
 	{
 		//printf("no inventory data file to load from!\n");
 		return;
 	}
-	
+
 	DatFile=fopen(FileName,"rb");
 	if (!DatFile)
 	{
 		//printf("file not found\n");
 		return;
 	}
-	
+
 	fread(&Header,sizeof(SHORT),1,DatFile);
 
 	if (Header!=MAX_ITEM_TYPES)
@@ -683,16 +683,16 @@ void ObjectList::mfLoad()
 		//printf("wrong version! MIT=%li FileMIT=%li cannot load\n",MAX_ITEM_TYPES,Header);
 		return;
 	}
-	
+
 	fread(&Items,sizeof(SHORT),1,DatFile);
-	
+
 
 	// SHORT len;
 	// fseek(DatFile,0,SEEK_END);
 	// len=ftell(DatFile);
 	// fseek(DatFile,4,SEEK_SET);
 
-		
+
 	for (i=0;i<Items;++i)//!feof(DatFile))
 	{
 		fread(Data,sizeof(SHORT),2,DatFile);
@@ -705,7 +705,7 @@ void ObjectList::mfSaveTo(FILE *fp)
 {
 	SHORT iteminfo[2];
 	LONG  size, count;
-	
+
     count = mfLength();
 
     fwrite((char *) &count, sizeof(LONG), 1, fp);
@@ -771,7 +771,7 @@ void ObjectList::mfSave()
 	SHORT ID=mfGetAvatarID();
 	//printf("mf Saving OlID=%li (AID=%li)\n",GetID(),AvatarID);
 
-	
+
 	SHORT Header=MAX_ITEM_TYPES;
 	char FileName[40];
 	SHORT WriteMe[2]; //[0]=Type [1]=Quantity
@@ -785,7 +785,7 @@ void ObjectList::mfSave()
 	DatFile=fopen(FileName,"wb");
 	fwrite(&Header,sizeof(SHORT),1,DatFile);
 	fwrite(&Items,sizeof(SHORT),1,DatFile);
-	
+
 	InventoryItor itor(*this);
 	for (itor = begin(); itor != end(); ++itor)
 	{
@@ -794,9 +794,9 @@ void ObjectList::mfSave()
 		fwrite(WriteMe, sizeof(SHORT), 2, DatFile);
 	}
 	fclose(DatFile);
-}	
+}
 #endif
-	
+
 
 BOOL ObjectList::mfFindInSpellBoxes(InvenIndex ii,LONG  * outIdx)
 {
@@ -833,9 +833,9 @@ void ObjectList::mfChangeSpellBox(LONG a, InvenIndex newI)
 {
 	if (a>=0 && a<MAX_SPELL_BOXES)
 		SpellBoxes[a]=newI;
-	
+
 	return;
-}		
+}
 
 
 
@@ -848,22 +848,22 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 {
 	LONG i;
 	LONG EmptyIndex;
-	
+
 
 	InventoryItor itor(*this);
-	
+
 	if (fDomainTurn || cat != IC_SPELL)
 		itor.mfAdvanceTo(to,cat);
-	else	
+	else
 		itor.mfAdvanceToNonEmpty(to,cat);
-	
+
 	// Make sure that there is at least one charge on it.
 	if (itor == end() ||
 	    (*itor)->mfHowMany() <= 0)
 	{
 		return;
 	}
-	
+
 	// It may become charged on the way to an adventure or battle.
 	if (!fDomainTurn)
 	{
@@ -873,7 +873,7 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 			return;
 		}
 	}
-	
+
 	InvenIndex const CurrentInventoryIndex = itor.mfGetCurrentInvIndex();
 
 	// Only one per type in the spell boxes.
@@ -905,7 +905,7 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 		}
 
 
-		if (EquipTypes[(*itor)->mfType()]!=Unlimited)		
+		if (EquipTypes[(*itor)->mfType()]!=Unlimited)
 		{
 			//get how many of that type of item he's wearing
 			LONG numWorn=0;
@@ -928,15 +928,15 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 		if (Result!=CANT_COMPLETE)
 		{
 //			TitledMessageBox::Display("wow!","Wearing!");
-		
+
 			(*itor)->mfWear();
 		}
 		return;
 	}
-		
-		
+
+
 #if 0
-	
+
 	LONG Arg=BUILD_LONG((*itor)->mfType(),hAvatarStats);
 	LONG Result=ItemTypes[(*itor)->mfType()].mfEffect(Arg,EQUIP);
 
@@ -970,10 +970,10 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 		for (EmptyIndex=0;EmptyIndex<MAX_SPELL_BOXES;++EmptyIndex)
 			if (SpellBoxes[EmptyIndex] < 0)
 				break;
-	
+
 		if(EmptyIndex>=MAX_SPELL_BOXES)
 			return;
-	
+
 		SpellBoxes[EmptyIndex]=CurrentInventoryIndex;
 	}
 
@@ -986,7 +986,7 @@ void ObjectList::mfClearSpellBox(LONG const a)
 {
 	if (SpellBoxes[a] < 0)
 	    return;
-	
+
 	ITEMTYPE const SpellType = AllItems[SpellBoxes[a]].mfType();
 	LONG Arg=BUILD_LONG(SpellType,hAvatarStats);
 
@@ -1014,7 +1014,7 @@ void ObjectList::mfActivateSpellBox(LONG const a)
 		return;
 
 	ITEMTYPE const SpellType = AllItems[SpellBoxes[a]].mfType();
-	
+
 	InventoryItor itor(*this);
 	if (itor.mfFind(SpellType))
 	{
@@ -1047,7 +1047,7 @@ void ObjectList::mfActivateSpellBox(LONG const a)
 	if (OK == Result)
 	{
 		(*itor)->mfLoseOne();
-		
+
 		// If all items are used up, remove from spell box.
 		if ((*itor)->mfHowMany() <=0)
 		{
@@ -1057,7 +1057,7 @@ void ObjectList::mfActivateSpellBox(LONG const a)
 					SpellBoxes[i] = fERROR;
 			}
 			SpellBoxes[a] = fERROR;
-				
+
 			ItemCategory cat = (*itor)->mfCategory();
 			if (cat != IC_SPELL && cat != IC_REALM_SPELL && cat != IC_BLOODAB)
 			{
@@ -1079,7 +1079,7 @@ void ObjectList::mfActivateSpellBox(LONG const a)
 			SpellBoxes[a] = fERROR;
 		}
 	}
-}	
+}
 
 
 InvenIndex const ObjectList::mfGetSpellBox(LONG const a) const
@@ -1097,13 +1097,13 @@ InvenIndex const ObjectList::mfGetSpellBox(LONG const a) const
    Returns     - whether or not it found it.
    ======================================================================== */
 BOOL const ObjectList::mfDoesContain(ITEMTYPE const it)
-{	
+{
 	InventoryItor itor(*this);
-	
+
 	return (itor.mfFind(it));
 }
 
-	
+
 
 /* ========================================================================
    Function    - ObjectList::mfGameTypetoItemType(LONG)
@@ -1146,7 +1146,7 @@ static InvenIndex ObjectList::mfFirstBlank()
 #endif
 		NewHead = -1;
 	}
-		
+
 	return NewHead;
 }
 
@@ -1158,15 +1158,15 @@ static InvenIndex ObjectList::mfFirstBlank()
 //DJ
 
 AddItemStatus const ObjectList::mfAddItem(
-	ITEMTYPE const Type, 
-	SHORT const _count, 
+	ITEMTYPE const Type,
+	SHORT const _count,
 	SHORT const _charges,
 	BOOL fSend)
 {
 	SHORT count=(SHORT)_count;
 	AddItemStatus ReturnCode=NOT_ADDED;
 
-#ifdef _WINDOWS	
+#ifdef _WINDOWS
 	if (IsMultiPlayer() && fSend)
 	{
 		LONG i;
@@ -1193,13 +1193,13 @@ AddItemStatus const ObjectList::mfAddItem(
 		}
 	}
 #endif
-	
+
 	if (Type <= ITEM_NO_THING ||
 	    Type >= MAX_ITEM_TYPES)
     {
 	    return ReturnCode;
 	}
-	
+
 	if (mfCountItems() >= MAX_ITEMS_IN_LIST)
 		ReturnCode|=LIST_FULL;
 
@@ -1211,7 +1211,7 @@ AddItemStatus const ObjectList::mfAddItem(
 			// GWP We can't let charged items nest up because there is no way
 			//     to activate them one at a time.
 			//     The other alternative is to boost the charge on the one
-			//     we've got. However note many objects are of a n number of 
+			//     we've got. However note many objects are of a n number of
 			//     charges and when you drop and pick it up, we have no idea
 			//     how many charges are on it.
 			if (!ItemTypes[(*itor)->mfType()].mfRequires(CHARGES))
@@ -1219,12 +1219,12 @@ AddItemStatus const ObjectList::mfAddItem(
 				//if one is already there
 				for (LONG i=0; i < count; ++i)
 				    (*itor)->mfGainOne(); //add one to quantity
-	
+
 				return ReturnCode|ADD_DUP|ADD_OK;
 			}
 		}
 	}
-	
+
 	if (ReturnCode & LIST_FULL)
 	{
 		return ReturnCode|LIST_OVERFLOW;
@@ -1233,29 +1233,29 @@ AddItemStatus const ObjectList::mfAddItem(
 	//by calling the pick-up effect, if it does not fail, we
 	//must follow up by picking up the object, otherwise, weird stuff
 	//may happen.
-		
+
 	LONG Arg=BUILD_LONG(Type,hAvatarStats);
 	LONG EffectResult=ItemTypes[Type].mfEffect(Arg,PICKUP);
-		
+
 	if (EffectResult==CANT_COMPLETE)
 		return ReturnCode|EFFECT_FAILED;
 	else if (EffectResult==DONT_ADD)
 		return ReturnCode|ADD_OK|EFFECT_ONLY;
 	else if (EffectResult == DONT_PICKUP)
 		return ReturnCode|EFFECT_ONLY;
-	
+
 	if (begin() == end())						// empty inventory
 	{
 		mfMakeHead(Type, count, _charges);
-	}			
+	}
 	else
 	{
 		InventoryItor itor(*this);
 		SHORT NewItem;
-		
+
 		if (ReturnCode&LIST_FULL)
 			return ReturnCode|LIST_OVERFLOW;
-			
+
 		NewItem=mfFirstBlank();
 		if (NewItem < 0)				// No space available.
 			return ReturnCode|LIST_FULL;
@@ -1265,7 +1265,7 @@ AddItemStatus const ObjectList::mfAddItem(
 		++itor;
 		(*itor)->mfInit(Type,count,_charges,fERROR,TRUE);
 	}
-		
+
 	return ReturnCode|ADD_OK;
 }
 
@@ -1274,7 +1274,7 @@ AddItemStatus const ObjectList::mfAddItem(
 AddItemStatus const ObjectList::mfAddItem(ITEMTYPE const Type)
 {
 	ItemCategory const category = ItemTypes[Type].mfCategory();
-	
+
 	if (category == IC_SPELL ||
 	    category == IC_REALM_SPELL ||
 	    category == IC_BLOODAB)
@@ -1322,7 +1322,7 @@ void ObjectList::mfSetCurrentWeapon(InvenIndex const i)
 	CurrentWeapon=mfData().mfType();
 //	//printf("added %s\n",GAME_TTYPE::mfGetDescription(ItemTypes[CurrentWeapon].mfGameType()));
 
-	
+
 }
 #endif
 
@@ -1342,7 +1342,7 @@ void ObjectList::mfSetCurrentArmor(InvenIndex const i)
 	CurrentArmor=mfData().mfType();
 //	//printf("added %s\n",GAME_TTYPE::mfGetDescription(ItemTypes[CurrentWeapon].mfGameType()));
 
-	
+
 }
 #endif
 
@@ -1358,7 +1358,7 @@ void ObjectList::mfSetCurrentArmor(InvenIndex const i)
 void ObjectList::PrintWeaponInfo()
 {
 	SBYTE w;
-	
+
 	w=mfGetCurrentWeapon();
 
 	//printf("name: %s \nstyle: %li\n",WEAPON_INFO::mfGetName((WEAPON_INFO::TYPE)w),WEAPON_INFO::mfGetStyle((WEAPON_INFO::TYPE)w));
@@ -1375,14 +1375,14 @@ void ObjectList::PrintWeaponInfo()
 void ObjectList::PrintArmorInfo()
 {
 	SBYTE a;
-	
+
 	a=mfGetCurrentArmor();
 
 	//printf("name: %s\nac:%li\n",ARMOR_INFO::mfGetName((ARMOR_INFO::TYPE)a),ARMOR_INFO::mfGetArmorClass((ARMOR_INFO::TYPE)a));
 
 }
 #endif
-	
+
 #define BUFLEN 120
 
 void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
@@ -1403,7 +1403,7 @@ void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
 	if ( fStartMultiGame )
 		OldFileMode = SetFileMode( FILEOPEN_CDROM_ONLY );
 	#endif
-	
+
     sprintf(filename, "scenes\\id%ld.inv", id);
     fp = FileOpen(filename, "r");
     if (fp != NULL)
@@ -1413,9 +1413,9 @@ void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
 	    while (fgets(buffer, BUFLEN, fp) != NULL)
 	    {
 	        LONG i;
-	        
+
 	        count = strlen(buffer);
-	
+
 	        for (i=0; i < count; ++i)
 	        {
 	            if (buffer[i] == '/' && buffer[i+1] == '/')  /* comment */
@@ -1423,7 +1423,7 @@ void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
 	            else if (buffer[i] >= '0' && buffer[i] <= '9')
 	                break;
 	        }
-	
+
 	        if (i < count)
 	        {
 	            sscanf(buffer+i, "%d", &entry);
@@ -1437,7 +1437,7 @@ void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
 	AddPriestSpells(hPlayerStats);
 
 	fQuietItems = sQI;
-	
+
 	// in the multiplayer game, reset file mode
 	#ifndef _DEBUG
 	if ( fStartMultiGame )
@@ -1493,7 +1493,7 @@ LONG ObjectList::mfSellMundane(void)
 //	const ItemCategory cat = IC_MUNDANE;
 	InventoryItor itor(*this);
 	LONG gold = 0;
-	
+
 	itor = begin();
 	while (itor != end())
 	{
@@ -1508,20 +1508,20 @@ LONG ObjectList::mfSellMundane(void)
 			case ITEM_PARCHMENT_5:
 				value = 0;
 				break;
-				
+
 			case ITEM_CUP_1:
 			case ITEM_BOWL_1:
 			case ITEM_KNIFE_1:
 			case ITEM_PLATE_1:
 				value = 1;
 				break;
-			
+
 			case ITEM_BUCKET_1:
 			case ITEM_FLAGON_1:
 			case ITEM_SPEAR_1:
 				value = 2;
 				break;
-			
+
 			case ITEM_HELMET_1:
 			case ITEM_KEY_BLACK:
 			case ITEM_KEY_BLUE:
@@ -1535,19 +1535,19 @@ LONG ObjectList::mfSellMundane(void)
 			case ITEM_KEY_TINY:
 				value = 5;
 				break;
-			
+
 			case ITEM_SWORD_1:
 				value = 10;
 				break;
-			
+
 			case ITEM_GEM_BLUE:
 				value = 500;
 				break;
-				
+
 			case ITEM_GEM_GREEN:
 				value = 2000;
 				break;
-				
+
 			case ITEM_CAPTIVE_1:
 				value = -2;		// special case hack
 				break;
@@ -1587,7 +1587,7 @@ LONG ObjectList::mfSellMundane(void)
 			itor.mfAdvance();
 		}
 	}
-	
+
 	return gold;
 }
 
@@ -1600,9 +1600,9 @@ LONG ObjectList::mfSellMundane(void)
 ObjectList::~ObjectList()
 {
 	MouseCallbackInitted=FALSE;
-	
+
 	InventoryItor itor(*this);
-	
+
 	for (itor = begin(); itor != end(); ++itor)
 	{
 		(*itor)->mfInvalidate();
@@ -1614,31 +1614,31 @@ ObjectList::~ObjectList()
 LONG const InventoryItor::mfActivateCurrent()
 {
  	LONG Result = 0;
- 	
+
  	if (fCurrentIndex != fInventory.end())
  	{
 	 	ITEMTYPE const iType=mfData()->mfType();
-	 	
+
  	    if (ItemTypes[iType].mfRequires(CHARGES)
  	        && mfData()->mfGetCharges() <= 0)
  	    	return CANT_COMPLETE;
- 	    	
+
 		if (!fDomainTurn && !fBattleCombat)	// handle targeting in adventure
 		{
 			DumbAutoLockPtr< PLAYER_STATS > const pPS(fInventory.hAvatarStats);
 			if (pPS->hAvatar == fERROR)	// something wrong here
 				return CANT_COMPLETE;
-				
+
 	 		fInventory.SpellBoxes[MAX_SPELL_BOXES] = fCurrentIndex;
 			CombatCastSpellBox(pPS->hAvatar, MAX_SPELL_BOXES);
 			return OK;
 		}
-	 	
+
 	 	Result = fInventory.mfActivateSpell(iType);
 	 	if (Result == OK)
 	 	{
 	 		mfData()->mfLoseOne();
-	 		
+
 	 		if (mfData()->mfHowMany() <= 0)
 	 		{
 				// If its also in a spell box remove it.
@@ -1650,7 +1650,7 @@ LONG const InventoryItor::mfActivateCurrent()
 						fInventory.SpellBoxes[i] = fERROR;
 					}
 				}
-				
+
 				if (mfData()->mfCategory() != IC_SPELL &&
 				    mfData()->mfCategory() != IC_REALM_SPELL)
 				{
@@ -1690,7 +1690,7 @@ BOOL const InventoryItor::mfFind(ITEMTYPE const Type, ItemCategory const cat)
 		return FALSE;
 
 	BOOL Result = FALSE;
-	
+
 	// If this is the second call to this fn. advance one before looking again.
 	if (fCurrentIndex != fInventory.begin() &&
 		fCurrentIndex != fInventory.end() &&
@@ -1721,12 +1721,12 @@ BOOL const InventoryItor::mfFind(ITEMTYPE const Type, ItemCategory const cat)
    Returns     - void
    ======================================================================== */
 BOOL const InventoryItor::mfFind(ITEMTYPE const Type)
-{	
+{
 	if (Type==ITEM_NO_THING)
 		return FALSE;
 
 	BOOL Result = FALSE;
-	
+
 	// If this is the second call to this fn. advance one before looking again.
 	if (fCurrentIndex != fInventory.begin() &&
 		fCurrentIndex != fInventory.end() &&
@@ -1745,9 +1745,9 @@ BOOL const InventoryItor::mfFind(ITEMTYPE const Type)
 		}
 		++(*this);
 	}
-	
+
 	return Result;
-}	
+}
 
 
 /* ========================================================================
@@ -1758,12 +1758,12 @@ BOOL const InventoryItor::mfFind(ITEMTYPE const Type)
 void InventoryItor::mfDeleteItem()
 {
 	InvenIndex NextNode=mfData()->mfNext();
-	
+
 	if (fInventory.HeadIndex == fCurrentIndex)
 	{
 		fInventory.HeadIndex = NextNode;
 	}
-	
+
 	InventoryNode * const pPrev = mfPrevious();
 	// Test for head of the list.
 	if (pPrev)
@@ -1814,12 +1814,12 @@ void InventoryItor::mfDropItem(BOOL fSend)
 
 	LONG Arg=BUILD_LONG((mfData()->mfType()),fInventory.hAvatarStats);
 
-	
+
 	if (mfData()->mfHowMany() > 0)
 	{
 		mfData()->mfLoseOne();
 	}
-	
+
 	if (mfData()->mfHowMany() > 0 ||
 		mfData()->mfCategory() == IC_SPELL ||
 		mfData()->mfCategory() == IC_REALM_SPELL ||
@@ -1834,22 +1834,22 @@ void InventoryItor::mfDropItem(BOOL fSend)
 
 	//see if they're wearing it.
 	fEquipped=mfData()->mfWorn();
-	
+
 	//if they're not wearing it, maybe it's in the spell boxes
 	if (!fEquipped)
 		fEquipped=fInventory.mfFindInSpellBoxes(mfGetCurrentInvIndex(),&idxSpellBox);
-	
+
 	SHORT	Itemtype = mfData()->mfType();
 	if (fEquipped)
 	{
 		LONG UnequipResult=ItemTypes[Itemtype].mfEffect(Arg,UNEQUIP);
 
 		if (UnequipResult==CANT_COMPLETE)
-		{	
+		{
 			TitledMessageBox::SetTitle(STRMGR_GetStr(STR_INVENTORY));
 			TitledMessageBox::SetMessage(STRMGR_GetStr(STR_ITEM_CANT_UNEQUIP));
-			TitledMessageBox::Display();			
-			
+			TitledMessageBox::Display();
+
 			return;
 		}
 		else
@@ -1860,11 +1860,11 @@ void InventoryItor::mfDropItem(BOOL fSend)
 				mfData()->mfRemove();
 		}
 	}
-			
+
 	//now it's been unequipped, now we need to drop it.
-		
+
 	LONG DropResult=	ItemTypes[Itemtype].mfEffect(Arg,DROP);
-	
+
 	if (DropResult != CANT_COMPLETE)
 	{
 		mfDeleteItem();
@@ -1896,9 +1896,9 @@ void InventoryItor::mfDropItem(LONG const x, LONG const y)
 		{
 			return;
 		}
-		
+
 		THINGTYPE const GameType=ItemTypes[pCurrentNode->mfType()].mfGameType();
-		
+
 		LONG const ThingIndex = create_thing((LONG)GameType,x,y,point_to_floor_height(x,y));
 		mythings[ThingIndex].angle = 0;
 		LONG const ss = find_ssector(mythings[ThingIndex].x,
@@ -1919,16 +1919,16 @@ void InventoryItor::mfDropItem(LONG const x, LONG const y)
 void InventoryItor::mfDropItem(LONG const x, LONG const y, BOOL fWilliamTell)
 {
 	//WilliamTell, the apple, on top, get it?
-	
+
 	if (!fDomainTurn)
 	{
 		InventoryNode * const pCurrentNode = mfData();
 		if (!pCurrentNode)
 			return;
-		
+
 		DumbAutoLockPtr< PLAYER_STATS > const pAvatarStats(this->fInventory.hAvatarStats);
 		DumbAutoLockPtr< CAvatar > const pAvatar(pAvatarStats->hAvatar);
-		
+
 		THINGTYPE const GameType=ItemTypes[pCurrentNode->mfType()].mfGameType();
 		LONG NewThingZ;
 
@@ -1937,15 +1937,15 @@ void InventoryItor::mfDropItem(LONG const x, LONG const y, BOOL fWilliamTell)
 			LONG Floor;
 			LONG Ceiling;
 			LONG Special;
-			
+
 			pAvatar->mfGetSectorInfo(&Floor, &Ceiling, &Special);
-			
+
 			NewThingZ=Floor+pAvatar->mfDeathHeight();
 		}
 		else
 			NewThingZ=point_to_floor_height(x,y);
-			
-	
+
+
 		LONG const ThingIndex = create_thing((LONG)GameType,x,y,NewThingZ);
 		mythings[ThingIndex].angle = 0;
 		LONG const ss = find_ssector(mythings[ThingIndex].x,
@@ -1965,10 +1965,10 @@ void InventoryItor::mfChangeTo(ITEMTYPE it)
 	if (mfData()->mfHowMany()>1)
 	{
 		fInventory.mfFindInSpellBoxes(fCurrentIndex,&SpellBoxToUpdate);
-		
+
 		mfDropItem();
 		fInventory.mfAddItem(it);
-	
+
 		if (SpellBoxToUpdate!=-1)
 		{
 			if (!mfFind(it))
@@ -1999,7 +1999,7 @@ void MultiAddItem(LONG iRegentIndex, LONG iItemtype, LONG number)
 	SHORT hPlayerStats = playerstats[iRegentIndex];
 	ITEMTYPE Itemtype = (ITEMTYPE) iItemtype;
 	SHORT count = number;
-	
+
 	if (hPlayerStats != fERROR)
 	{
 		DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
@@ -2011,13 +2011,13 @@ void MultiDropItem(LONG iRegentIndex, LONG iItemtype)
 {
 	SHORT hPlayerStats = playerstats[iRegentIndex];
 	ITEMTYPE Itemtype = (ITEMTYPE) iItemtype;
-	
+
 	if (hPlayerStats != fERROR)
 	{
 		DumbAutoLockPtr< PLAYER_STATS > const pPlayerStats(hPlayerStats);
 		ObjectList& AvatarInventory=pPlayerStats->mfGetInventory();
 		InventoryItor itor(AvatarInventory);
-		
+
 		if (itor.mfFind(Itemtype))
 		{
 			itor.mfDropItem(FALSE);
@@ -2036,20 +2036,20 @@ void ObjectList::ClearSpells(SHORT AvatarStatsHdl)
 	BOOL   retVal = FALSE;	// assume the worst
 	DumbAutoLockPtr<PLAYER_STATS > const pPS(AvatarStatsHdl);
 	ObjectList& Inv=pPS->mfGetInventory();
-	
+
 	InventoryItor itor(Inv);
-	
+
 	// -- clear the memorized spells
 	for (itor.mfAdvance(IC_SPELL);
 		 itor != end();
 		 itor.mfAdvanceToNext(IC_SPELL))
-	{ 
+	{
 		while ((*itor)->mfHowMany() > 0)
 		{
 			(*itor)->mfLoseOne();
 		}
 	}
-	
+
 	// -- clear the hot boxes
 	for (SHORT i=0;i<MAX_SPELL_BOXES;++i)
 		SpellBoxes[i] = -1;
@@ -2069,17 +2069,17 @@ BOOL ObjectList::PrepBattleSpell(
 {
 	BOOL   retVal = FALSE;	// assume the worst
 	DumbAutoLockPtr<PLAYER_STATS > const pPS(AvatarStatsHdl);
-	
+
 	InventoryItor itor(*this);
-	
+
 	itor.mfFind(Item);
-	
+
 	if (itor == end())
 	{
 		// -- This character doesn't have this spell
 		return FALSE;
 	}
-		
+
 	// -- Check to see if this character can learn any more
 	// -- of this type of spell
 	LONG const Index = itor.mfGetCurrentInvIndex();
@@ -2092,12 +2092,12 @@ BOOL ObjectList::PrepBattleSpell(
 	{
 		retVal = FALSE;
 	}
-	
+
 	// -- if I know may of this spell, check for empty hot box to put it in
 	if ((*itor)->mfHowMany() > 0)
 	{
 		LONG EmptyIndex;
-	 	// -- check for existing hot box entry	
+	 	// -- check for existing hot box entry
 		for (EmptyIndex=0;EmptyIndex<MAX_SPELL_BOXES;++EmptyIndex)
 		{
 			if (SpellBoxes[EmptyIndex] == Index)
@@ -2105,7 +2105,7 @@ BOOL ObjectList::PrepBattleSpell(
 				goto Leave;
 			}
 		}
-		
+
 		for (EmptyIndex=0;EmptyIndex<MAX_SPELL_BOXES;++EmptyIndex)
 		{
 			if (SpellBoxes[EmptyIndex] < 0)
@@ -2116,24 +2116,24 @@ BOOL ObjectList::PrepBattleSpell(
 		}
 	}
 
-Leave:		
+Leave:
 	return retVal;	// -- can this character learn any more of this spell
 }
 
 /* ========================================================================
    Function    - mfIsBattleSpell
-   Description - Get my spell number ie, the third spell, and check to 
+   Description - Get my spell number ie, the third spell, and check to
                  see if it is a battle spell or not.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 BOOL ObjectList::mfIsBattleSpell(LONG MySpellNumber)
 {
 	LONG i;
-	
+
 	InventoryItor itor(*this);
 	itor.mfAdvance(IC_SPELL);
-	
+
 	// Advance my inventory itor to this spell number.
 	for (i = 0; i < MySpellNumber; ++i)
 	{
@@ -2143,11 +2143,8 @@ BOOL ObjectList::mfIsBattleSpell(LONG MySpellNumber)
 	}
 	if (itor == end())
 		return FALSE;
-	
+
 	SPELL_INFO::TYPE const spellindex = (SPELL_INFO::TYPE) ItemTypes[(*itor)->mfType()].mfGetExtendedData();
 	SPELL_INFO::SPELL_ITEM const spell = SPELL_INFO::mfGetSpell(spellindex);
 	return ((spell.WhereCast & SPELL_INFO::BATTLE) != 0);
 }
-
-
-

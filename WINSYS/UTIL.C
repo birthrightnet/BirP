@@ -79,13 +79,13 @@ void fatal_error(const char *format, ...)
 	char texbuffer[200];
 	FILE *f;
 	va_list argp;
-	
+
 	f=fopen("Fatal.err","wt");
 	va_start(argp, format);
 	vsprintf(texbuffer,format,argp);
 	close_graph();
 	remove_keyint();
-	printf("Fatal Error:%s\n",texbuffer);
+	logFatal("Fatal Error:%s",texbuffer);
 	fprintf(f,"Fatal Error:%s\n",texbuffer);
 	fclose(f);
 
@@ -96,9 +96,9 @@ void fatal_error(const char *format, ...)
 		MessageBox (NULL, texbuffer, "FATAL ERROR", MB_OK);
 	}
 #else
-	printf("Exiting...\n");
+	logFatal("Exiting...");
 #endif
-	
+
 #if defined(_DEBUG)
 	// if debuggable, crash into the debugger
 	{
@@ -138,9 +138,3 @@ LONG end,now;
 
 }
 
-
-
-
-
-
-

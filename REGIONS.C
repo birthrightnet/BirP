@@ -6,10 +6,10 @@
    Author: Chris Phillips
    [GEH removed]dialog modifications by Michael Branham
    ========================================================================
-   Contains the following internal functions: 
-   
+   Contains the following internal functions:
+
    Contains the following general functions:
-   add_key              -adds a key (zero-size region) to the command list                                       
+   add_key              -adds a key (zero-size region) to the command list
    add_region           -Adds a Region to the screen
    del_region           -Deletes a region from the screen
    del_all_regions      -Wipes the screen clear of regions
@@ -95,7 +95,7 @@ LONG lTipDisplayedTime = 0;	// timer tick tip was displayed, for auto erase
 #define MAKE_RECT(a,x,y,r,b) a.x=(x);a.y=(y);a.r=(r);a.b=(b)
 #define CURSOR_IN_BOX(x,y,w,h) \
 	(cursor_x>(x)&&cursor_y>(y)&&cursor_x<(x)+(w)&&cursor_y<(y)+(h))
-	
+
 /* ------------------------------------------------------------------------
    Prototypes
    ------------------------------------------------------------------------ */
@@ -122,9 +122,9 @@ static REGION *gpLastRegion = &regions[0];
 void add_key(LONG key,PFVLL func, LONG val, LONG val2)
 {
 	LONG i;
-	
+
 	i = add_region(0,0,0,0,key,func,val,val,0, -1);
-	
+
 	if(i != fERROR)
 		regions[i].flags=REGION_ACTIVE;
 }
@@ -135,19 +135,19 @@ void add_key(LONG key,PFVLL func, LONG val, LONG val2)
 		 if it has never been added, then just add it.
    Returns     - void
    ======================================================================== */
-void replace_key_vals(LONG key, 
+void replace_key_vals(LONG key,
 		 PFVLL pNewFunc,
 		 LONG NewVal,
 		 LONG NewVal2,
 		 PTR_KEYSTRUCT pOldKeyStruct)
 {
-	
+
 // Check in case we are attempting to restore a null function.
 	if (pNewFunc != 0)
 	{
 		LONG found = FALSE;
 		REGION *pThisRegion;
-		
+
 		for(pThisRegion=&regions[region_stack[CurStackIndex]];
 		    pThisRegion <= gpLastRegion;
 		    ++pThisRegion)
@@ -158,21 +158,21 @@ void replace_key_vals(LONG key,
 				pOldKeyStruct->func = pThisRegion->function;
 				pOldKeyStruct->val  = pThisRegion->val;
 				pOldKeyStruct->val2 = pThisRegion->val2;
-				
+
 				pThisRegion->function=pNewFunc;
 				pThisRegion->val=NewVal;
 				pThisRegion->val2=NewVal2;
 				break;
 			}
 		}
-		
+
 		if (found == FALSE)
 		{
 			add_key(key,
 				pNewFunc,
 				NewVal,
 				NewVal2);
-				
+
 			pOldKeyStruct->func = 0;
 			pOldKeyStruct->val  = 0;
 			pOldKeyStruct->val2  = 0;
@@ -182,7 +182,7 @@ void replace_key_vals(LONG key,
 	{
 		del_key(key, pOldKeyStruct);
 	}
-	
+
 }
 /* =======================================================================
    Function    - del_key
@@ -204,12 +204,12 @@ void del_key(LONG key, PTR_KEYSTRUCT pOldKeyStruct)
 			pOldKeyStruct->func = pThisRegion->function;
 			pOldKeyStruct->val = pThisRegion->val;
 			pOldKeyStruct->val2 = pThisRegion->val2;
-			
+
 			pThisRegion->flags = REGION_INVALID;
 			break;
 		}
 	}
-	
+
 	if (found == FALSE)
 	{
 		pOldKeyStruct->func = 0;
@@ -220,7 +220,7 @@ void del_key(LONG key, PTR_KEYSTRUCT pOldKeyStruct)
 /* ========================================================================
    Function    - add_tooltip
    Description - Find a vacant spot in the tool tip array and add one.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 
 static void add_tooltip(LONG i, LONG idTip)
@@ -228,7 +228,7 @@ static void add_tooltip(LONG i, LONG idTip)
 	if(idTip != -1)
 	{
 		LONG j;
-		
+
 		// find a tooltip position in the tooltip array
 		for(j=0; j<MAX_REGIONS; ++j)
 		{
@@ -276,7 +276,7 @@ LONG add_region(LONG x, LONG y, LONG w, LONG h, LONG key, PFVLL func, LONG val, 
 		gpLastRegion = &regions[i];
 		gLastRegionIndex = i;
 	}
-	
+
 	regions[i].x=x;
 	regions[i].y=y;
 	regions[i].w=w;
@@ -352,13 +352,13 @@ void del_all_regions(void)
 {
 	LONG i;
 
-printf("del_all_regions\n");
+	logInfo("del_all_regions");
 
-	// clear stack 
+	// clear stack
 	memset(&region_stack[0], 0, sizeof(LONG)*MAX_STACK_DEPTH);
 	// clear stack pointer
 	CurStackIndex = 0;
-	
+
 	// render all regions INVALID
 	for(i=0;i<MAX_REGIONS;++i)
 		regions[i].flags=REGION_INVALID;
@@ -366,7 +366,7 @@ printf("del_all_regions\n");
 	// clear all tool tips
 	for(i=0;i<MAX_REGIONS;++i)
 		tooltip[i].lId = -1;
-		
+
 	gpLastRegion = &regions[0];
 	gLastRegionIndex = 0;
 }
@@ -376,7 +376,7 @@ printf("del_all_regions\n");
    Function    - check_regions
    Description - checks all valid regions for activiation. returns whether
 		 routine has eaten the event.
-   Returns     - REGION_EVENT_TYPE  
+   Returns     - REGION_EVENT_TYPE
    ======================================================================== */
 REGION_EVENT_TYPE check_regions(void)
 {
@@ -456,7 +456,7 @@ REGION_EVENT_TYPE check_regions(void)
 						lLastTime = 0;
 						goto SKIP_TIP;
 					}
-					
+
 					if(lLastTime == 0)				//..wait until time to display
 						lLastTime = get_time();
 					else if (get_time() > lLastTime + ticsWAIT_BEFORE_DISPLAY)
@@ -487,7 +487,7 @@ REGION_EVENT_TYPE check_regions(void)
 									color_box(x, y, w, h, 223-8);           // md tan
 									print_textf(x + 2, y + 2, 128, szText); // dk brown
 									SysShowCursor();
-							
+
 									// set vars
 									lLastToolTip = pThisRegion->lTipIndex;
 									lTipDisplayedTime = get_time();
@@ -536,7 +536,7 @@ SKIP_TIP:
    Function    - check_regions
    Description - checks all valid regions for activiation. returns whether
 		 routine has eaten the event.
-   Returns     - REGION_EVENT_TYPE  
+   Returns     - REGION_EVENT_TYPE
    ======================================================================== */
 REGION_EVENT_TYPE check_regions(void)
 {
@@ -586,7 +586,7 @@ REGION_EVENT_TYPE check_regions(void)
 /* =======================================================================
    Function    - paint_tooltips
    Description - checks all valid regions for tooltips.
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void paint_tooltips(void)
 {
@@ -658,7 +658,7 @@ void paint_tooltips(void)
 						lLastTime = 0;
 						goto SKIP_TIP;
 					}
-					
+
 					if(lLastTime == 0)				//..wait until time to display
 						lLastTime = get_time();
 					else if (get_time() > lLastTime + ticsWAIT_BEFORE_DISPLAY)
@@ -688,14 +688,14 @@ void paint_tooltips(void)
 									color_rect(x, y, w, h, 223);            // lt tan
 									color_box(x, y, w, h, 223-8);           // md tan
 									print_textf(x + 2, y + 2, 128, szText); // dk brown
-									
+
 									// GWP We need to paint ourselves.
 									if (fRender)
 									{
 										ScreenCopy(0, x, y, w, h, SC_HIGH_RES);
 									}
 									SysShowCursor();
-							
+
 									// set vars
 									lLastToolTip = pThisRegion->lTipIndex;
 									lTipDisplayedTime = get_time();
@@ -724,8 +724,8 @@ SKIP_TIP:
 }
 /* =======================================================================
    Function    - LastRegionX
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 SHORT   LastRegionX (void)
 {
@@ -754,7 +754,7 @@ void init_regions(void)
 void push_regions(void)
 {
 	LONG i;
-	
+
 	//GEH what about errors?
 	if (CurStackIndex >= (MAX_STACK_DEPTH - 1))
 	{
@@ -763,17 +763,17 @@ void push_regions(void)
 #endif
 		return;
 	}
-		
+
 	for (i=gLastRegionIndex;i>=0;i--)
 	{
 		if (regions[i].flags != REGION_INVALID)
 		{
 			++CurStackIndex;
 			region_stack[CurStackIndex] = i + 1;
-			
+
 			gLastRegionIndex = region_stack[CurStackIndex];
 			gpLastRegion = &regions[gLastRegionIndex];
-			
+
 			break;
 		}
 	}
@@ -787,7 +787,7 @@ void push_regions(void)
 void pop_regions(void)
 {
 	REGION *pThisRegion;
-	
+
 	if (CurStackIndex <= 0)
 	{
 #if defined (_DEBUG)
@@ -804,7 +804,7 @@ void pop_regions(void)
 		// this region is unused
 		if (pThisRegion->flags == REGION_INVALID) /*not a valid region so go on*/
 			continue;
-		
+
 		pThisRegion->flags=REGION_INVALID;
 		if (pThisRegion->lTipIndex != -1)
 		{
@@ -812,11 +812,11 @@ void pop_regions(void)
 			pThisRegion->lTipIndex = -1;
 		}
 	}
-	
+
 	// Reset these to the old beginings.
 	gLastRegionIndex = region_stack[CurStackIndex] - 1;
 	gpLastRegion = &regions[gLastRegionIndex];
-	
+
 	// move stack index back on set (until at first slot)
 	if(CurStackIndex)
 	{
@@ -828,7 +828,7 @@ void pop_regions(void)
 /* ========================================================================
    Function    - activate_region
    Description - turn a region on or off by id
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void activate_region(LONG id, BOOL state_on)
 {
@@ -850,16 +850,16 @@ void activate_region(LONG id, BOOL state_on)
 				pThisRegion->flags = REGION_ACTIVE;
 			else
 				pThisRegion->flags = REGION_INACTIVE;
-				
+
 //                      break;          //[ABC] let's do all the regions with the id
 		}
 	}
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
-   Returns     - 
+   Function    -
+   Description -
+   Returns     -
    ======================================================================== */
 LONG CountRegions (void)
 {
@@ -875,15 +875,15 @@ LONG CountRegions (void)
 
 /* ========================================================================
    Function    - OutlineAllRegions
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void OutlineAllRegions(void)
 {
 /*      REGION *pThisRegion;
 	// REGION * const pLastRegion = &regions[MAX_REGIONS - 1];
 	REGION * const pFirstRegion = &regions[region_stack[CurStackIndex]];
-	
+
 
 	for (pThisRegion=gpLastRegion;
 	     pThisRegion>=pFirstRegion;
@@ -898,7 +898,7 @@ void OutlineAllRegions(void)
 			continue;
 		color_box(pThisRegion->x,pThisRegion->y,
 				pThisRegion->w,pThisRegion->h,79);
-		
+
 
 	}
 */
@@ -930,25 +930,25 @@ void OutlineAllRegions(void)
 /* ========================================================================
    Function    - change_tooltip
 				return;
-   Description - given a func and or key and an x,y , swap out the old tool 
+   Description - given a func and or key and an x,y , swap out the old tool
    				 tip for the new one.
    				 Change them all throughout the stack because we could have
    				 pushed the same data down several times.
    Returns     - TRUE | FALSE depending on success.
    ======================================================================== */
 
-BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y, 
+BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y,
 					LONG newToolTip,
 					CHANGE_REGION_MODE crMode)
 {
 	BOOL Result = FALSE;
 	LONG BeginingRegion = (crMode == CHANGE_ALL_REGIONS) ? 0 : region_stack[CurStackIndex];
-	
+
 	if(func!=NULL)
 	{
 		REGION *pThisRegion;
 		LONG i;
-		
+
 		for(pThisRegion=&regions[BeginingRegion], i = BeginingRegion;
 		    pThisRegion<=gpLastRegion;
 		    ++pThisRegion, ++i)
@@ -963,7 +963,7 @@ BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y,
 					tooltip[pThisRegion->lTipIndex].lId = -1;
 					pThisRegion->lTipIndex = -1;
 				}
-				
+
 				// Add the new tip.
 				add_tooltip(i, newToolTip);
 				Result = TRUE;
@@ -975,7 +975,7 @@ BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y,
 	{
 		REGION *pThisRegion;
 		LONG i;
-		
+
 		for(pThisRegion=&regions[BeginingRegion], i = BeginingRegion;
 		    pThisRegion<= gpLastRegion;
 		    ++pThisRegion, ++i)
@@ -990,7 +990,7 @@ BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y,
 					tooltip[pThisRegion->lTipIndex].lId = -1;
 					pThisRegion->lTipIndex = -1;
 				}
-				
+
 				// Add the new tip.
 				add_tooltip(i, newToolTip);
 				Result = TRUE;
@@ -1005,21 +1005,21 @@ BOOL change_tooltip(PFVLL func, LONG key, LONG x, LONG y,
 /* ========================================================================
    Function    - change_function
 				return;
-   Description - given a func and or key and an x,y , swap out the old func 
+   Description - given a func and or key and an x,y , swap out the old func
    				 key and vals
    				 Change them all throughout the stack because we could have
    				 pushed the same data down several times.
    Returns     - TRUE | FALSE depending on success.
    ======================================================================== */
 
-BOOL change_function(PFVLL func, LONG key, LONG x, LONG y, 
+BOOL change_function(PFVLL func, LONG key, LONG x, LONG y,
 					PFVLL NewFunc, LONG NewKey, LONG NewVal, LONG NewVal2,
 					CHANGE_REGION_MODE crMode)
 {
 	BOOL Result = FALSE;
 	LONG BeginingRegion = (crMode == CHANGE_ALL_REGIONS) ? 0 : region_stack[CurStackIndex];
 	REGION *pThisRegion;
-	
+
 	if(func!=NULL)
 	{
 		for(pThisRegion=&regions[BeginingRegion];
@@ -1053,7 +1053,7 @@ BOOL change_function(PFVLL func, LONG key, LONG x, LONG y,
 				pThisRegion->val = NewVal;
 				pThisRegion->val2 = NewVal2;
 				pThisRegion->function = NewFunc;
-				
+
 				Result = TRUE;
 			}
 		}
@@ -1063,8 +1063,8 @@ BOOL change_function(PFVLL func, LONG key, LONG x, LONG y,
 
 /* ========================================================================
    Function    - del_region_xy
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 
 BOOL del_region_xy(PFVLL oldFunc, LONG x, LONG y, LONG w, LONG h, CHANGE_REGION_MODE crMode)
@@ -1095,5 +1095,3 @@ BOOL del_region_xy(PFVLL oldFunc, LONG x, LONG y, LONG w, LONG h, CHANGE_REGION_
 	return Result;
 }
 /* ======================================================================== */
-
-
