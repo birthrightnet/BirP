@@ -46,7 +46,9 @@ void setLogLevelFromString(const char *level)
 
 void setLogLevel(LogLevel level)
 {
+	LogLevel oldLevel = currentLogLevel;
 	currentLogLevel = level;
+	logInfo("Changing logging from %s to %s.", logLevelToString(oldLevel), logLevelToString(currentLogLevel));
 }
 
 void logMessage(LogLevel level, const char *message)

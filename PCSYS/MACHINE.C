@@ -127,6 +127,11 @@ int main(int argc,char * argv[])
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
 				BypassCD = (atoi(cpBuffer) != 0) ? TRUE : FALSE;
 			}
+			else if(strcmp(cpBuffer,"[LOG_LEVEL]") == 0)
+			{
+				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
+				setLogLevelFromString(cpBuffer);
+			}
 		}
 	}while(fileResult != EOF);
 
