@@ -15,7 +15,8 @@ typedef enum {
 	LogInfo,
 	LogWarn,
 	LogError,
-	LogFatal
+	LogFatal,
+	LogMeta
 } LogLevel;
 
 void logTrace(const char *message, ...);
@@ -24,6 +25,7 @@ void logInfo(const char *message, ...);
 void logWarn(const char *message, ...);
 void logError(const char *message, ...);
 void logFatal(const char *message, ...);
+void logMeta(const char *message, ...);
 
 int initializeLogging(const char *filename);
 int closeLogging();

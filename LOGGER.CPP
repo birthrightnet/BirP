@@ -25,13 +25,13 @@ int initializeLogging(const char *filename)
 		perror("Unable to initialize logging.");
 		abort();
 	}
-	logInfo("Initialized logging to %s.", logLevelToString(currentLogLevel));
+	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
 	return logFile != NULL;
 }
 
 int closeLogging()
 {
-	logInfo("Closing logging.");
+	logMeta("Closing logging.");
 	if (logFile != NULL) {
 		fclose(logFile);
 		return 1;
@@ -48,7 +48,7 @@ void setLogLevel(LogLevel level)
 {
 	LogLevel oldLevel = currentLogLevel;
 	currentLogLevel = level;
-	logInfo("Changing logging from %s to %s.", logLevelToString(oldLevel), logLevelToString(currentLogLevel));
+	logMeta("Changing logging from %s to %s.", logLevelToString(oldLevel), logLevelToString(currentLogLevel));
 }
 
 void logMessage(LogLevel level, const char *message)
@@ -128,6 +128,15 @@ void logFatal(const char *message, ...) {
 	logMessage(LogFatal, buffer);
 }
 
+void logMeta(const char *message, ...) {
+	char buffer[256];
+	va_list args;
+	va_start(args, message);
+	vsprintf(buffer, message, args);
+	va_end(args);
+	logMessage(LogMeta, buffer);
+}
+
 const char* logLevelToString(LogLevel level)
 {
 	switch (level) {
@@ -137,6 +146,7 @@ const char* logLevelToString(LogLevel level)
 		case LogWarn:  return "WARN";
 		case LogError: return "ERROR";
 		case LogFatal: return "FATAL";
+		case LogMeta: return "LOG";
 	}
 	return "INFO";
 }
