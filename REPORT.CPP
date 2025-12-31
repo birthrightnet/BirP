@@ -40,9 +40,6 @@
 #include "places.hxx"
 #include "gamemap.hxx"
 
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
-
 
 extern "C" SHORT print_textf_(LONG x, LONG y, LONG color, const char *format, ...);
 
@@ -299,7 +296,7 @@ DEFINE_VECTOR_DATA(SUBJECT,Subject) = {
 /*SUBJ_NPC_BLIGHT*/    	    {WIZARD + 70, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_BLIGHT,STR_RPT_NPC_BLIGHT,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_NPC_WARDING*/    	{WIZARD + 71, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_WARDING,STR_RPT_NPC_WARDING,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_NPC_STRONGHOLD*/    	{WIZARD + 72, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_STRONGHOLD,STR_RPT_NPC_STRONGHOLD,STR_NULL,STR_NULL,STR_NULL}},
-/*SUBJ_NPC_ASSASSIN*/       {GENERAL + 73, REALM_NAME, PROV_NAME, NO_ARRAY, {STR_RPT_NPC_ASSASSIN, STR_RPT_NPC_ASSASSIN, STR_NULL, STR_NULL, STR_NULL}},		
+/*SUBJ_NPC_ASSASSIN*/       {GENERAL + 73, REALM_NAME, PROV_NAME, NO_ARRAY, {STR_RPT_NPC_ASSASSIN, STR_RPT_NPC_ASSASSIN, STR_NULL, STR_NULL, STR_NULL}},
 /*SUBJ_NPC_CONTEST_DESTROY*/ {GENERAL + 74, REALM_NAME, HOLDING_TYP,PROV_NAME,  {STR_RPT_NPC_CONTEST_DESTROY, STR_RPT_NPC_CONTEST_DESTROY,STR_NULL, STR_NULL, STR_NULL}},
 /*SUBJ_ALLY_DECLARE_WAR*/	{GENERAL +  75, ALLY_LEVEL, REALM_NAME,   REALM_NAME,   {STR_RPT_ALLY_DECLARE_WAR,STR_RPT_ALLY_DECLARE_WAR,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_USED_FREEACTION*/	{CHAMBER +  76, NO_ARRAY, NO_ARRAY,   NO_ARRAY,   {STR_RPT_USED_FREEACTION,STR_NULL,STR_NULL,STR_NULL,STR_NULL}},
@@ -551,7 +548,7 @@ void PaintProvinceLose(LONG MenuCombo, LONG)
 	CHAR	color = 1;
 	CHAR	cpBuffer[256];
 	LONG	TextHeight;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	// get position of lose screen
@@ -562,10 +559,10 @@ void PaintProvinceLose(LONG MenuCombo, LONG)
 
 	X = mx + 60;
 	Y = my + 20;
-	
+
  	// paint dialog title
 	gprint_text(X,Y,STRMGR_GetStr(STR_DEFEAT), 31);
-	
+
 
 	// build some text that says why you lost
 	init_gfont(FONT_SANS_16PT);
@@ -574,29 +571,29 @@ void PaintProvinceLose(LONG MenuCombo, LONG)
 	TextHeight=gtext_height(cpBuffer);
 	X = mx + 30;
 	Y = my + mh/2 - TextHeight/2;
-	
-	
-	
-	
+
+
+
+
 	gprint_text(X,Y,cpBuffer ,color);
-	
+
 	// paint the control buttons
 	init_gfont(FONT_TITL_10PT);
-		
+
 	// get position of Done button
 	if( GetButtonPosition( MenuId, 2, &mx, &my ) == fERROR)
 		return;
-		
+
 	X = mx;
 	Y = my;
-	
+
 	// get size of Done Button
 	if( GetButtonSize( MenuId, 2, &mx, &my ) == fERROR)
 		return;
-		
+
 	X += mx/2;
 	Y += my/2;
-	
+
 	strcpy(cpBuffer,STRMGR_GetStr(STR_OK));
 	print_text_centered(X,Y,cpBuffer,WHITE);
 }
@@ -610,7 +607,7 @@ void ProvinceLooseProc(LONG MenuCombo, LONG)
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	HideMenu(MenuId);
 	RunMenus();
 
@@ -634,7 +631,7 @@ void PaintRegentLose(LONG MenuCombo, LONG)
 	CHAR	color = 1;
 	CHAR	cpBuffer[256];
 	LONG	TextHeight;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	// get position of lose screen
@@ -645,10 +642,10 @@ void PaintRegentLose(LONG MenuCombo, LONG)
 
 	X = mx + 60;
 	Y = my + 20;
-	
+
  	// paint dialog title
 	gprint_text(X,Y,STRMGR_GetStr(STR_DEFEAT), 31);
-	
+
 
 	// build some text that says why you lost
 	init_gfont(FONT_SANS_16PT);
@@ -657,29 +654,29 @@ void PaintRegentLose(LONG MenuCombo, LONG)
 	TextHeight=gtext_height(cpBuffer);
 	X = mx + 30;
 	Y = my + mh/2 - TextHeight/2;
-	
-	
-	
-	
+
+
+
+
 	gprint_text(X,Y,cpBuffer ,color);
-	
+
 	// paint the control buttons
 	init_gfont(FONT_TITL_10PT);
-		
+
 	// get position of Done button
 	if( GetButtonPosition( MenuId, 2, &mx, &my ) == fERROR)
 		return;
-		
+
 	X = mx;
 	Y = my;
-	
+
 	// get size of Done Button
 	if( GetButtonSize( MenuId, 2, &mx, &my ) == fERROR)
 		return;
-		
+
 	X += mx/2;
 	Y += my/2;
-	
+
 	strcpy(cpBuffer,STRMGR_GetStr(STR_OK));
 	print_text_centered(X,Y,cpBuffer,WHITE);
 }
@@ -696,9 +693,9 @@ static void DoneImmediateReport(LONG MenuCombo, LONG)
 
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	SetButtonProc (MenuId, 0, NULL, 0, 0);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	RunMenus();
@@ -741,15 +738,15 @@ void CheckForImmediateReports(void)
 			strcpy(str0, STRMGR_GetStr(Subject[report[i].subject].sz[0]));
 
 			sprintf(n, str0, str1, str2, str3);
-		
+
 			// setup for generic statement box
 			SetButtonProc (D_QUESTION1, 0, PaintImmediateReport, 0, 0);
 			SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, -1, BLACK );
-		
+
 			// turn on the first button as YES
 			SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_OK, BTN_LABEL_COLOR );
 			SetButtonProc (D_QUESTION1, QUESTION_BTN1, HideSubMenuWithClick, D_QUESTION1, D_KEY_OK);
-			
+
 
 
            // We need to time out this menu in multiplayer
@@ -762,7 +759,7 @@ void CheckForImmediateReports(void)
            }
 
 #endif
-			
+
 			if (iHotSeatMultiplayerIndex != REALM::MIERES)
 			{
 				SuspendTimeLimit();				// stop the timer in timed multiplayer games
@@ -848,12 +845,7 @@ void SendReportTo (LONG iRealm, LONG subject, LONG index1, LONG index2, LONG ind
    	subject += IMMEDIATE;    // bump it up higher this is removed in gamemap.cpp
 
 	#ifdef _WINDOWS
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "SendReportTo: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("SendReportTo: SendEvent");
 	#endif
 		AMultiPlayer.SendEvent( subject, index1, index2, index3, 0, iRealm );
 		AMultiPlayer.InitEvent(0);
@@ -984,7 +976,7 @@ static BOOL SetReportString (void)
 					psz = &n1[0];
 				else
 					psz = NULL;
-					
+
 				sprintf(szReport, "%s\n \n     %s", n, psz);
 				return TRUE;
 			}
@@ -1008,11 +1000,11 @@ static BOOL SetReportString (void)
 				// put the report in the string
 				{
 					char str1[80], str2[80], str3[80];
-						
+
 					strncpy(str1, ReportString(Subject[iCurSubj].array1,report[i].index1), 80);
 					strncpy(str2, ReportString(Subject[iCurSubj].array2,report[i].index2), 80);
 					strncpy(str3, ReportString(Subject[iCurSubj].array3,report[i].index3), 80);
-					
+
 					sprintf(&szReport[p], STRMGR_GetStr(Subject[report[i].subject].sz[sz_type]),
 						str1, str2, str3);
 				}
@@ -1040,7 +1032,7 @@ static BOOL SetReportString (void)
 				psz = &n1[0];
 			else
 				psz = NULL;
-					
+
 			p = strlen(szReport);
 			sprintf(&szReport[p], "\n \n     %s", psz);
 
@@ -1118,36 +1110,36 @@ void GiveReport (LONG lArg)
 	{
 		SHORT	bitm;
 		LONG	now;
-		
+
 		PlayFinale(REALM::ROESONE,0);
 		bitm = GetResourceStd ("finale\\buymore.pcx", FALSE);
- 		
+
 		if (bitm != fERROR)
 		{
 			DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
 			update_screen();
 			SetPurge(bitm);
 		}
-		
+
 		// delay 20 seconds
 		now=get_time() + (20 * 182 / 10);
-		
+
 		#ifdef _WINDOWS
 		ClearMessageQueue();
 		#endif
-						
+
 		fAnyKeyChanged = FALSE;
 		clear_key_status(0);
 		mouse_button = 0;
-		
+
 		while(get_time()<now)
 		{
 			run_timers();
-			
+
 			#ifdef _WINDOWS
 			ClearMessageQueue();
 			#endif
-						
+
 			update_buttons();
 			if(mouse_button)
 			{
@@ -1166,10 +1158,10 @@ void GiveReport (LONG lArg)
 				break;
 			}
 		}
-		
-End:	
+
+End:
 		FadeOut(100);
-		
+
 		QuitSys(0,0);
 	}
 #endif
@@ -1183,19 +1175,19 @@ End:
 		sUnits[i] = 0;
 		sScores[i] = 0;
 	}
-	
+
 	for (i =0; i < NUMBER_OF_CT_HOLDINGS; ++i)
 	{
 		rCountHoldings[i].realm = REALM::NO_COUNTRY;
 		rCountHoldings[i].count = 0;
 	}
-	
+
 	for (i=0; i < NUMBER_OF_CT_PROVINCES; ++i)
 	{
 		rCountProvinces[i].realm = REALM::NO_COUNTRY;
 		rCountProvinces[i].count = 0;
 	}
-	
+
 	for (i= 0; i < NUMBER_OF_CT_UNITS; ++i)
 	{
 		rCountUnits[i].realm = REALM::NO_COUNTRY;
@@ -1297,7 +1289,7 @@ End:
 	for (i=1; i<LAND_REALM_COUNT; i++)
 		sScores[i] = CalculatePoints((REALM::REALM_TYPE)i);
 	sMyScore = sScores[HomeRealm];
-	
+
 	// count allies
 	for(i=0; i<LAND_REALM_COUNT-1; i++)
 	{
@@ -1324,7 +1316,7 @@ End:
 					allies[i].total++;
 				}
 				else
-				{	
+				{
 					// permissive alliances provinces
 					if (AREALLIED(j,t) && j != t)
 					{
@@ -1343,13 +1335,13 @@ End:
 	for (j=1; j<PROVINCE_COUNT; j++)
 	{
 		PROVINCE ThisProvRealm = (PROVINCE)province[j].Realm;
-		
+
 		// my province - 3 points
 		if (ThisProvRealm == HomeRealm)
 		{
 			sMyProvinces += 3;
 		}
-		
+
 		// my vassals provinces - 3 points
 		if (ISVASSAL(ThisProvRealm,HomeRealm) && ThisProvRealm != HomeRealm)
 		{
@@ -1363,7 +1355,7 @@ End:
 				sMyFull += 2;
 			}
 			else
-			{	
+			{
 				// permissive alliances provinces - 1 point
 				if (AREALLIED(ThisProvRealm,HomeRealm) && ThisProvRealm != HomeRealm)
 				{
@@ -1371,19 +1363,19 @@ End:
 				}
 			}
 		}
-		
+
 		// Spiderfell provinces - 10 points - add 7, 3 were added above
 		if (ThisProvRealm == HomeRealm && province[j].Realm == REALM::SPIDERFELL )
 		{
 			sMyOther += 7;
 		}
-		
+
 		// Manslayer provinces - 10 points - add 7, 3 were added above
 		if (ThisProvRealm == HomeRealm && province[j].Realm == REALM::RHUOBHE )
 		{
 			sMyOther += 7;
 		}
-		
+
 		// Gorgons Crown provinces - 10 points - add 7, 3 were added above
 		if ( ThisProvRealm == HomeRealm
 			&&
@@ -1408,7 +1400,7 @@ End:
 		{
 			sMyOther += 7;
 		}
-		
+
 		// Awnsheghlien allies provinces - 5 points
 		if ( ThisProvRealm == HomeRealm
 			&&
@@ -1549,14 +1541,14 @@ End:
 		advisorFLCs[2].mfInit("UI\\ADVISORS\\HWIZRD01.FLC", 329, 141);
 		advisorFLCs[3].mfInit("UI\\ADVISORS\\HSPYMS01.FLC", 459, 123);
 	}
-	
+
 	SysHideCursor();
 	clear_screen_to (1);		// JPC get rid of junk on the edges
 									// [d3-14-97 JPC] Change clear_screen to
 									// clear_screen_to; solves cursor junk on the
 									// edges problem in the DOS version
 	DrawBitmap(0, 0, ReportBkgndBitm, 0, 0, 999, 999);
-	
+
 	for (i=4; i < 6; i++) // torches
 	{
 		advisorFLCs[i].mfDrawFrame();
@@ -1569,14 +1561,14 @@ End:
 	}
 #if defined(_JUNEDEMO)
 	introPlaying = 5;	// don't play their intros
-#endif		
+#endif
 
 	if (introPlaying < 0)
 		advisortimer[0] = get_time();
 
 	SysShowCursor();
 	update_screen();
-	
+
 	// get the button art
 	iScrollBitm[0] = GetResourceStd("UI\\SCRLBTN1.PCX", FALSE);
 	iScrollBitm[1] = GetResourceStd("UI\\SCRLBTN2.PCX", FALSE);
@@ -1617,7 +1609,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 
 	iCurSubj = 0;
 	iWhichReport = iWhichButton;
-	
+
 	// stop playing intros
 	if (introPlaying >= 0 && introPlaying < 4)
 	{
@@ -1625,7 +1617,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 		advisorFLCs[introPlaying].mfMove(0, -INTRO_MOVE_AMOUNT);
 		introPlaying = 4;
 	}
-	
+
 	SysHideCursor();
 	// do visible click
 	{
@@ -1634,9 +1626,9 @@ void AdvisorButton(LONG iWhichButton, LONG)
 		LONG w = 128;
 		LONG h = 24;
 		SHORT bitmap = iScrollBitm[4];
-	
+
 		init_gfont(FONT_SANS_8PT);
-		
+
 		if (iWhichReport == 12)
 		{
 			x = 268;
@@ -1644,7 +1636,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 			w = 104;
 			bitmap = iDoneBitm;
 		}
-		
+
 		DrawBitmap(x-1, y-1, ReportBkgndBitm, x-1, y-1, w+1, h+1);
 		DrawBitmap(x-1, y-1, bitmap, 0, 0, w, h);
 		print_text_centered(x+(w/2)-1,y+(h/2)-1,STRMGR_GetStr(iAdvButtonStr[iWhichReport]),DKBROWN);
@@ -1656,7 +1648,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 		update_screen();
 	}
 	SysShowCursor();
-	
+
 
 	HideMenu(D_ADVISOR);
 	RunMenus();
@@ -1770,7 +1762,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 						iScrollBitm[i] = fERROR;
 					}
 				}
-				
+
 				for (i=0; i < 6; i++)
 				{
 					advisorFLCs[i].mfDispose();
@@ -1820,7 +1812,7 @@ void AdvisorButton(LONG iWhichButton, LONG)
 	// don't play these sounds here.
 	if (iWhichButton <= 3)
 		return;
-		
+
 #if !defined(_JUNEDEMO)
 	SoundTag = AddSndObj(iWhichSound,0,VOLUME_NINETY);
 #endif
@@ -1857,10 +1849,10 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 	DrawBitmap(0, 0, ReportBkgndBitm, 0, 0, 999, 999);
 	AdvisorReportOn = TRUE;
 
-	
+
 	{
 		LONG i, now = get_time();
-		
+
 		for (i=4; i < 6; i++)
 		{
 			advisorFLCs[i].mfDrawFrame();
@@ -1871,13 +1863,13 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 				advisortimer[i] = now + 1;
 			}
 		}
-		
+
 		if (introPlaying < 4 &&
 			((introPlaying == -1) || (!CheckASound(iWhichSound, SoundTag))))
 		{
-			
+
 			introPlaying++;
-			
+
 			if (introPlaying < 4)
 			{
 				if(iWhichVox == 1)	// elf
@@ -1886,19 +1878,19 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 					iWhichSound = sndDwarf[introPlaying];
 				else	// human
 					iWhichSound = sndHuman[introPlaying];
-		
+
 #if !defined(_JUNEDEMO)
 				SoundTag = AddSndObj(iWhichSound,0,VOLUME_NINETY);
 #endif
 				advisorFLCs[introPlaying].mfMove(0, INTRO_MOVE_AMOUNT); // move "forward"
 			}
-			
+
 			if (introPlaying > 0)
 			{
 				advisorFLCs[introPlaying-1].mfMove(0, -INTRO_MOVE_AMOUNT);  // move back
 			}
 		}
-		
+
 		for (i=0; i < 4; i++)
 		{
 			advisorFLCs[i].mfDrawFrame();
@@ -1910,7 +1902,7 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 				{
 					advisorFLCs[i].mfSetCurFrame(random(advisorFLCs[i].mfTotalFrames()));
 				}
-				
+
 				if (i == introPlaying)  // make this guy fidget more
 					advisortimer[i] = now + 1 + random(3);
 				else
@@ -1919,7 +1911,7 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 		}
 	}
 	NewTutorial(TRUE);
-	
+
 	init_gfont(FONT_SANS_8PT);
 
 	// add each button region, paint the art and the text
@@ -2224,7 +2216,7 @@ static void PaintImmediateReport (LONG MenuCombo, LONG)
 //	LONG Y;
 //	LONG W;
 //	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 //	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -2238,13 +2230,13 @@ static void PaintImmediateReport (LONG MenuCombo, LONG)
 	// draw the bitmap
 	sprintf(szBitm, "ui\\%s.pcx", szAdvisorPort[(iWhichVox * 4) + iWhichFace]);
 	bitm = GetResourceStd (szBitm, FALSE);
- 		
+
 	if (bitm != fERROR)
 	{
 		DrawBitmap (20+xOff, 20+yOff, bitm, 0, 0, 50, 50);
 		SetPurge(bitm);
 	}
-				
+
 	// paint the message
 	init_gfont(FONT_SANS_12PT);
 	//print_textf(90+xOff, 50+yOff, DKBROWN, "^W220%s",n);
@@ -2288,7 +2280,7 @@ void PaintLoyaltyTable (LONG MenuCombo, LONG)
 	LONG y;
 	LONG w;
 	LONG h;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	x = Menus[MenuId].Buttons[0].X;
@@ -2504,7 +2496,7 @@ static void PaintProvinceTable (LONG x, LONG y, LONG w, LONG h)
 	print_textf(x+140, y+39, DKBROWN, "0");
 	print_textf(x+100, y+50, DKBROWN, "^F02%s", STRMGR_GetStr(STR_SCALE));
     color_rect(x+140, y+52, 185, 2, DKBROWN);
-	
+
 	y += 50;
 	// print "score"
 	//GEH print_textf(x+117, y+20, DKBROWN, "^F00%s", STRMGR_GetStr(STR_SCORE));
@@ -2701,20 +2693,20 @@ static SHORT ShowAtWar(REALM::REALM_TYPE me, BOOL hasBeenShown[], LONG x, LONG y
 	SHORT testRealm;
 	char  szRealm[40];
 	UBYTE color;
-	
+
 	if (me == REALM::MONSTERS || me <= REALM::NO_COUNTRY)
 		return 0;
-	
+
 	for (testRealm = REALM::FIRST_REALM; testRealm < LAND_REALM_COUNT; testRealm++)
 	{
 		if (testRealm == REALM::MONSTERS)
 			continue;
-			
+
 		if (ISATWAR(me,testRealm))
 		{
 			if (hasBeenShown[testRealm] && hasBeenShown[me])
 				continue;
-			
+
 			if (!hasBeenShown[me])
 			{
 				y += 5;
@@ -2723,7 +2715,7 @@ static SHORT ShowAtWar(REALM::REALM_TYPE me, BOOL hasBeenShown[], LONG x, LONG y
 				color = ReactionAndStatusColor(HomeRealm, me);
 				print_textf(x+15, y, color, "^F03%s", strupr(szRealm));
 				print_textf(x + CWIDTH - 16, y+9, DKBROWN, "^F10^c%s", STRMGR_GetStr(STR_VERSUS));
-				
+
 				hasBeenShown[me] = TRUE;
 			}
 			DrawShield (x+3+CWIDTH, y, (REALM::REALM_TYPE)testRealm);
@@ -2732,7 +2724,7 @@ static SHORT ShowAtWar(REALM::REALM_TYPE me, BOOL hasBeenShown[], LONG x, LONG y
 			print_textf(x+15+CWIDTH, y, color, "^F03%s", strupr(szRealm));
 			y += 15;
 			count++;
-			
+
 			hasBeenShown[testRealm] = TRUE;
 		}
 	}
@@ -2754,7 +2746,7 @@ static void PaintWarReport (LONG x, LONG y, LONG w, LONG h)
 	int		iSwordDisplay = FALSE;
 	BOOL	warShown[LAND_REALM_COUNT];
 	LONG	i;
-	
+
 	for (i=0; i < LAND_REALM_COUNT; i++)
 	{
 		warShown[i] = FALSE;
@@ -2779,16 +2771,16 @@ static void PaintWarReport (LONG x, LONG y, LONG w, LONG h)
 		if (count > 0)
 		{
 			printed = TRUE;
-			y += count * 15 + 5;	
+			y += count * 15 + 5;
 		}
 	}
-	
+
 	// next, display the realms your allies are at war with
 	for (i=REALM::FIRST_REALM; i < LAND_REALM_COUNT; i++)
 	{
 		if (y > startY + h - 50)
 			break;
-			
+
 		// some realms to not include
 		if (i==HomeRealm || !AREALLIED(HomeRealm, i))
 			continue;
@@ -2796,39 +2788,39 @@ static void PaintWarReport (LONG x, LONG y, LONG w, LONG h)
 			continue;
 		if (warShown[i])
 			continue;
-		
+
 		SHORT count = ShowAtWar((REALM::REALM_TYPE)i, warShown, x, y);
 		if (count > 0)
 		{
 			printed = TRUE;
-			y += count * 15 + 5;	
+			y += count * 15 + 5;
 		}
 	}
-	
+
 	// finally, display the rest of the realms
 	for (i=REALM::FIRST_REALM; i < LAND_REALM_COUNT; i++)
 	{
 		if (y > startY + h - 50)
 			break;
-			
+
 		if (i==REALM::ANUIRE || i==REALM::MIERES || i==REALM::MONSTERS)
 			continue;
 		if (warShown[i])
-			continue;	
-		
+			continue;
+
 		SHORT count = ShowAtWar((REALM::REALM_TYPE)i, warShown, x, y);
 		if (count > 0)
 		{
 			printed = TRUE;
-			y += count * 15 + 5;	
+			y += count * 15 + 5;
 		}
 	}
-	
+
 	if(!printed)
 		print_textf(x+15, y, DKBROWN, "^W310^F02%s", STRMGR_GetStr(STR_REPORT_PEACE_LATELY));
 
 	print_textf(x+5, startY+h-20, DKBROWN, STRMGR_GetStr(STR_REPORT_COLORS));
-}	
+}
 
 /* ========================================================================
    Function    - PaintAllianceReport
@@ -2947,7 +2939,7 @@ static void PaintAllianceReport(LONG x, LONG y, LONG w, LONG h)
 		{
 			column++;
 			y = topY;
-	
+
 			if(column == 2)
 				goto done;
 		}
@@ -3095,4 +3087,3 @@ done:
 }
 
 /* ======================================================================== */
-

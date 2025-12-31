@@ -46,9 +46,6 @@ extern BOOL fQuitting;
 extern SHORT				iSelectedUnit;
 BIRTHRT_SND CalcVoxSndObj(VOX_TYPE Voice, VOX_BLOCK Block);
 
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
-
 
 DEFINE_VECTOR_DATA_S(UNIT_TYPE,units,MAX_UNITS) = {
 /*      DUMMY UNIT               */
@@ -2925,13 +2922,7 @@ void RequestUnitsIndex (LONG *index, BOOL fSend)
 	*index = j;
 #endif
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[100];
-		sprintf ( temp, "   units.cpp RequestUnitsIndex - index:%ld fSend:%ld", j, fSend);
-		RandomLogComment ( temp );
-	}
+	logInfo("   units.cpp RequestUnitsIndex - index:%ld fSend:%ld", j, fSend);
 
 }
 
@@ -3385,4 +3376,3 @@ void MarkUnitsSpotted(PROVINCE prov)
 }
 
 /* ======================================================================== */
-

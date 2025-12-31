@@ -30,13 +30,6 @@
 
 #include ".\winsys\mono_c.h"
 
-#ifdef _WINDOWS
-#ifdef _DEBUG
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
-#endif
-#endif
-
 #define iMPT_SYNC	20
 int FileSyncTable[iMPS_SYNCEND][MAX_PLAYERS];   //---- our inc table
 long FileSyncMsgIDTable[iMPS_SYNCEND][MAX_PLAYERS];   //---- message id table
@@ -49,7 +42,7 @@ const int iRetry = 10;
 typedef struct
 {
    USHORT      usMsgType;	// what is it?
-   BOOL        fMaster;    // from master ? 
+   BOOL        fMaster;    // from master ?
    DWORD       dwFrom;     // from id ( 0  master ? )
 } FBRHeader, *FPBRHeader;
 
@@ -74,8 +67,8 @@ FileXfer::~FileXfer()
 
 
 void FileXfer::SetXferDelay(DWORD dwWait)
-{ 
-	m_dwXferDelay = dwWait ; 
+{
+	m_dwXferDelay = dwWait ;
 } // FileXfer::SetXferDelay
 
 
@@ -84,90 +77,90 @@ void FileXfer::SetXferDelay(DWORD dwWait)
 /* ========================================================================
    Function    - FileXfer
 	Description - Transmit a save game file
-	Returns     - 
+	Returns     -
 	======================================================================== */
 
 BOOL FileXfer::SendFile(DWORD dwTo, char *fname, USHORT filetype, DWORD dwWait)
 {
-	
+
 	// first see if we can open file
-	if ( (m_hFile = CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE) 
+	if ( (m_hFile = CreateFile(fname, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, 0, NULL)) == INVALID_HANDLE_VALUE)
 	{
 		DWORD dwErr = GetLastError();
-		
+
 		#ifdef _MULTIMONO
-		mono_printf ( 0, 3, 
+		mono_printf ( 0, 3,
 			"FileXfer::SendFile Error %d opening file %s",
 			dwErr, fname ) ;
 		#endif
-		
+
 		return FALSE ;
 	}
-	
+
 	m_dwTo = dwTo ;
-	
+
 	// Get permision to start sending data
-	if ( !RequestToSend(dwWait, filetype) ) 
+	if ( !RequestToSend(dwWait, filetype) )
 	{
 		CloseHandle(m_hFile) ;
 		return FALSE ;
 	}
-	
+
 	// Send the Initial block to set up the data transfer
-	if( !StartFileSend(filetype) ) 
+	if( !StartFileSend(filetype) )
 	{
 		CloseHandle(m_hFile) ;
-		
+
 		#ifdef _MULTIMONO
-		mono_printf ( 0, 4, 
+		mono_printf ( 0, 4,
 			"FileXfer::SendFile Error sending Init block" );
 		#endif
-		
+
 		return FALSE ;
 	}
-	
-	
+
+
 	// send all blocks
-	for (unsigned int lcv = 1 ; lcv <= m_sbStartBlock.dwBlockcount ; lcv++) 
+	for (unsigned int lcv = 1 ; lcv <= m_sbStartBlock.dwBlockcount ; lcv++)
 	{
 		// update the progress bar
 		if ( pfnFileProgressFunc != NULL )
 			(pfnFileProgressFunc)( lcv, m_sbStartBlock.dwBlockcount );
-		
+
 		// get a new OKTS every so many blocks
 		// this is to guarantee that we don't flood the SIGS buffers
 		if ( (lcv % XFER_BLOCKS_PER_OKTS) == 0)
 		{
-			if ( !RequestToSend(dwWait, filetype) ) 
+			if ( !RequestToSend(dwWait, filetype) )
 			{
 				CloseHandle(m_hFile) ;
 				return FALSE ;
 			}
-	
+
 		}
-		
-		if( !SendFileBlock(lcv) ) 
+
+		if( !SendFileBlock(lcv) )
 		{
 			CloseHandle(m_hFile) ;
-			
+
 			#ifdef _MULTIMONO
-			mono_printf ( 0, 5, 
+			mono_printf ( 0, 5,
 				"FileXfer::SendFile Error sending a block" );
 			#endif
-			
+
 			return FALSE ;
-			
+
 		}
-		
+
 		// -- allow Windows it's time
 		Sleep(0);
-		
+
 	}
-	
+
 	CloseHandle(m_hFile) ;
-	
+
 	return TRUE ;
-	
+
 }
 
 
@@ -179,7 +172,7 @@ BOOL FileXfer::RequestToSend(DWORD dwWait, USHORT filetype)
 
 	// -- by releasing the receiver from it's sync point, I have
 	// -- already told them I'm ready to send
-   
+
    // wait for permission to send.  Remove extranious ACKs.
    // Abort if another message type is received.
 
@@ -187,64 +180,38 @@ BOOL FileXfer::RequestToSend(DWORD dwWait, USHORT filetype)
    mono_puts ( 0, 7, "FileXfer::Request to send - waiting for OK to send") ;
 #endif
 
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - RequestToSend Looking for OKTS.");
-		RandomLogComment ( temp );
-	}
-#endif
-#endif
+	logDebug("FILEXFER - RequestToSend Looking for OKTS.");
    //GEH dwTimeOut = GetTickCount() + dwWait ;
    dwTimeOut = GetTickCount() + 15000 ;
 
-   do 
+   do
 	{
       Err = ReceiveMessages(0,kPEEKONLY) ;
 
       //---- If error is other than no message or got message then leave
       // -- GEH getting CheckSum errors that arn't
-      if ( (Err != kMessageNotReceived) && (Err != kNoError) ) 
+      if ( (Err != kMessageNotReceived) && (Err != kNoError) )
 		{
-			#ifdef _DEBUG
-			{
-			char temp[200];
-			sprintf ( temp, "FILEXFER - RequestToSend got error %d from ReceiveMessages.",
+			logDebug("FILEXFER - RequestToSend got error %d from ReceiveMessages.",
 				Err );
-			RandomLogComment ( temp );
-			}
-			#endif
 			return FALSE ;
 		}
 
-		//---- If we have a message then do something with it      
+		//---- If we have a message then do something with it
 		if ( Err == kNoError )
 		{
-			#ifdef _DEBUG
-			{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - RequestToSend Found Message %d.",
-					lpGenericMsgBuf->MsgId );
-				RandomLogComment ( temp );
-			}
-			#endif
-			
-			if (lpGenericMsgBuf->MsgId == NETMSGID_OKTS) 
+			logDebug("FILEXFER - RequestToSend Found Message %d.",
+				lpGenericMsgBuf->MsgId );
+
+			if (lpGenericMsgBuf->MsgId == NETMSGID_OKTS)
 			{
 				ReceiveMessages(0,kREMOVEFROMQUE) ;
-				#ifdef _DEBUG
-				{
-					char temp[200];
-					sprintf ( temp, "FILEXFER - RequestToSend FOUND for OKTS.");
-					RandomLogComment ( temp );
-				}
-				#endif
+				logDebug("FILEXFER - RequestToSend FOUND for OKTS.");
 				return TRUE ;
 			}
 			else
 			// -- Handle SYNC messages
-			if (lpGenericMsgBuf->MsgId == iMPT_SYNC) 
+			if (lpGenericMsgBuf->MsgId == iMPT_SYNC)
 			{
 				ReceiveMessages(0,kREMOVEFROMQUE);
 				// -- uses global data to store sync info
@@ -252,33 +219,20 @@ BOOL FileXfer::RequestToSend(DWORD dwWait, USHORT filetype)
 			}
 			else
 			{
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - RequestToSend got unknown message %d.",
+				logDebug("FILEXFER - RequestToSend got unknown message %d.",
 					lpGenericMsgBuf->MsgId );
-				RandomLogComment ( temp );
-				}
-				#endif
 				// -- don't know Jack, kill it
 				ReceiveMessages(0,kREMOVEFROMQUE);
 			}
 		}
-	
+
 		run_timers();
 		Sleep(0);
-		
+
 	} while ( dwTimeOut > GetTickCount() ) ;
-	
-	#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - RequestToSend TIMEDOUT after %d looking for OKTS.",
-			dwWait );
-		RandomLogComment ( temp );
-	}
-	#endif
-	
+
+	logDebug("FILEXFER - RequestToSend TIMEDOUT after %d looking for OKTS.", dwWait );
+
    // -- If you get here, we have failed this attempt
    return FALSE ;
 
@@ -305,14 +259,7 @@ BOOL FileXfer::StartFileSend(USHORT filetype)
                    )
       )
    {
-		#ifdef _DEBUG
-		{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - StartFileSend got error %d.",
-			Err );
-		RandomLogComment ( temp );
-		}
-		#endif
+		logDebug("FILEXFER - StartFileSend got error %d.", Err );
       return FALSE ;
    }
    return TRUE ;
@@ -326,7 +273,7 @@ BOOL FileXfer::SendFileBlock(unsigned int index)
    SetFilePointer(m_hFile,((index-1)*DATABLOCKSIZE),NULL, FILE_BEGIN) ;
 
    // fill the xfer buffer
-   if ( (ReadFile(m_hFile, m_cXferBuf, DATABLOCKSIZE, &dwBytesRead, NULL) != TRUE) || (dwBytesRead == 0) ) 
+   if ( (ReadFile(m_hFile, m_cXferBuf, DATABLOCKSIZE, &dwBytesRead, NULL) != TRUE) || (dwBytesRead == 0) )
 	{
 //      PrintString("From FileXfer::SendFileBlock a ReadFile Error !") ;
 //      MessageBox( NULL, "From FileXfer::SendFileBlock a ReadFile Error !", "FileXfer", MB_OK | MB_ICONEXCLAMATION ) ;
@@ -363,17 +310,11 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
 {
    m_dwTo = dwFrom ;
 
-	#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - ReceiveFile Sending OKTS to master (%d) %d wait and %d retrys.",
-			m_dwTo,
-			dwWait,
-			iRetry );
-		RandomLogComment ( temp );
-	}
-	#endif
-	
+	logDebug("FILEXFER - ReceiveFile Sending OKTS to master (%d) %d wait and %d retrys.",
+		m_dwTo,
+		dwWait,
+		iRetry );
+
    // -- Let the master know that I am ready to receive my data
    if (kNoError != SendMessage(m_dwTo,
                                NETMSGID_OKTS,
@@ -385,18 +326,12 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
                               )
       )
    {
-		#ifdef _DEBUG
-		{
-			char temp[200];
-			sprintf ( temp, "FILEXFER - ReceiveFile FAILED OKTS.");
-			RandomLogComment ( temp );
-		}
-		#endif
+		logDebug("FILEXFER - ReceiveFile FAILED OKTS.");
       return FALSE ;
    }
 
    // Get the file start block.  Fill in m_sbStartBlock.
-   if (!StartFileReceive()) 
+   if (!StartFileReceive())
 	{
 //      PrintString("from FileXfer::ReceiveFile StartFileReceive() failed") ;
       return FALSE ;
@@ -407,15 +342,7 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
 	{
 //      PrintString("from FileXfer::ReceiveFile GetTempFileName() failed") ;
 //      MessageBox( NULL, "from FileXfer::ReceiveFile GetTempFileName() failed", "FileXfer", MB_OK | MB_ICONEXCLAMATION ) ;
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - ReceiveFile GetTempFileName FAILED.");
-		RandomLogComment ( temp );
-	}
-#endif
-#endif
+logDebug("FILEXFER - ReceiveFile GetTempFileName FAILED.");
       return FALSE ;
    }
 
@@ -425,15 +352,7 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
    {
 //      PrintString("from FileXfer::ReceiveFile CreateFile() failed") ;
 //      MessageBox( NULL, "from FileXfer::ReceiveFile CreateFile() failed", "FileXfer", MB_OK | MB_ICONEXCLAMATION ) ;
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - ReceiveFile CreateFile FAILED.");
-		RandomLogComment ( temp );
-	}
-#endif
-#endif
+logDebug("FILEXFER - ReceiveFile CreateFile FAILED.");
       DeleteFile(fname) ;
       fname[0] = '\0' ;
       return FALSE ;
@@ -445,22 +364,14 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
    {
 //      PrintString("from FileXfer::ReceiveFile SetFilePointer() failed") ;
 //      MessageBox( NULL, "from FileXfer::ReceiveFile SetFilePointer() failed", "FileXfer", MB_OK | MB_ICONEXCLAMATION ) ;
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - ReceiveFile SetFilePointer FAILED.");
-		RandomLogComment ( temp );
-	}
-#endif
-#endif
+logDebug("FILEXFER - ReceiveFile SetFilePointer FAILED.");
       CloseHandle(m_hFile) ;
       DeleteFile(fname) ;
       fname[0] = '\0' ;
       return FALSE ;
    }
 
-   if( !SetEndOfFile(m_hFile) ) 
+   if( !SetEndOfFile(m_hFile) )
 	{
 //      PrintString("from FileXfer::ReceiveFile SetEndOfFile() failed") ;
 //      MessageBox( NULL, "from FileXfer::ReceiveFile SetEndOfFile() failed", "FileXfer", MB_OK | MB_ICONEXCLAMATION ) ;
@@ -471,7 +382,7 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
    }
 
    // Get the data blocks
-   for (unsigned int lcv = 1 ; lcv <= m_sbStartBlock.dwBlockcount ; lcv++) 
+   for (unsigned int lcv = 1 ; lcv <= m_sbStartBlock.dwBlockcount ; lcv++)
 	{
 		if ( pfnFileProgressFunc != NULL )
 			(pfnFileProgressFunc)( lcv, m_sbStartBlock.dwBlockcount );
@@ -491,27 +402,15 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
    		                           )
    		   )
    		{
-				#ifdef _DEBUG
-				{
-					char temp[200];
-					sprintf ( temp, "FILEXFER - ReceiveFile FAILED OKTS.");
-					RandomLogComment ( temp );
-				}
-				#endif
+			logDebug("FILEXFER - ReceiveFile FAILED OKTS.");
    		   return FALSE ;
    		}
    	}
-   		
+
 		// get a block
-		if( !ReceiveFileBlock(lcv) ) 
+		if( !ReceiveFileBlock(lcv) )
 		{
-			#ifdef _DEBUG
-			{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - ReceiveFile ReceiveFileBlock FAILED.");
-				RandomLogComment ( temp );
-			}
-			#endif
+			logDebug("FILEXFER - ReceiveFile ReceiveFileBlock FAILED.");
 			CloseHandle(m_hFile) ;
 			DeleteFile(fname) ;
 			fname[0] = '\0' ;
@@ -519,14 +418,8 @@ BOOL FileXfer::ReceiveFile(DWORD dwFrom, char *fname, DWORD dwWait)
 		}
 
    }
-   
-	#ifdef _DEBUG
-	{
-	char temp[200];
-	sprintf ( temp, "FILEXFER - ReceiveFile WAS COOL.");
-	RandomLogComment ( temp );
-	}
-	#endif
+
+	logDebug("FILEXFER - ReceiveFile WAS COOL.");
    CloseHandle(m_hFile) ;
    return TRUE ;
 }
@@ -537,52 +430,33 @@ BOOL FileXfer::StartFileReceive()
 	ErrCode Err ;
 	DWORD dwTimeOut;
 
-	#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - StartFileReceive waiting.");
-		RandomLogComment ( temp );
-	}
-	#endif
+	logDebug("FILEXFER - StartFileReceive waiting.");
 
    //GEH ugly, but I'll fix later
    dwTimeOut = GetTickCount() + 15000 ;
-	do 
+	do
 	{
 		Err = ReceiveMessages(0,kPEEKONLY) ;
 
 		//---- If error is other than no message or got message then leave
-		if ( (Err != kMessageNotReceived) && (Err != kNoError) ) 
+		if ( (Err != kMessageNotReceived) && (Err != kNoError) )
 		{
-			#ifdef _DEBUG
-			{
-			char temp[200];
-			sprintf ( temp, "FILEXFER - StartFileReceive got error %d from ReceiveMessages.",
-				Err );
-			RandomLogComment ( temp );
-			}
-			#endif
+			logDebug("FILEXFER - StartFileReceive got error %d from ReceiveMessages.", Err );
 			return FALSE ;
 		}
 
-		//---- If we have a message then do something with it      
+		//---- If we have a message then do something with it
 		if ( Err == kNoError )
 		{
-			if (lpGenericMsgBuf->MsgId == NETMSGID_FILESTART) 
+			if (lpGenericMsgBuf->MsgId == NETMSGID_FILESTART)
 			{
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - StartFileReceive got NETMSGID_FILESTART.");
-				RandomLogComment ( temp );
-				}
-				#endif
+				logDebug("FILEXFER - StartFileReceive got NETMSGID_FILESTART.");
 				ReceiveMessages(0,kREMOVEFROMQUE);
 				break;
 			}
 			else
 			// -- Handle SYNC messages
-			if (lpGenericMsgBuf->MsgId == iMPT_SYNC) 
+			if (lpGenericMsgBuf->MsgId == iMPT_SYNC)
 			{
 				ReceiveMessages(0,kREMOVEFROMQUE);
 				// -- uses global data to store sync info
@@ -591,21 +465,15 @@ BOOL FileXfer::StartFileReceive()
 			else
 			{
 				// -- don't know Jack, kill it
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - StartFileReceive got message %d from ReceiveMessages, REMOVING.",
+				logDebug("FILEXFER - StartFileReceive got message %d from ReceiveMessages, REMOVING.",
 					lpGenericMsgBuf->MsgId );
-				RandomLogComment ( temp );
-				}
-				#endif
 				ReceiveMessages(0,kREMOVEFROMQUE);
 			}
 		}
       run_timers();
       Sleep(0);
 	} while ( dwTimeOut > GetTickCount() ) ;
-	
+
    memcpy( &m_sbStartBlock, lpGenericMsgBuf->cData, sizeof(XFERSTARTBLOCK) ) ;
    return TRUE ;
 }
@@ -619,36 +487,23 @@ BOOL FileXfer::ReceiveFileBlock(unsigned int index)
 
 	//GEH dwTimeOut = GetTickCount() + (3*m_dwXferDelay) ;
 	dwTimeOut = GetTickCount() + 15000;
-	do 
+	do
 	{
 		Err = ReceiveMessages(0,kPEEKONLY) ;
 
 		//---- If error is other than no message or got message then leave
-		if ( (Err != kMessageNotReceived) && (Err != kNoError) ) 
+		if ( (Err != kMessageNotReceived) && (Err != kNoError) )
 		{
-			#ifdef _DEBUG
-			{
-			char temp[200];
-			sprintf ( temp, "FILEXFER - ReceiveFileBlock got error %d from ReceiveMessages.",
-				Err );
-			RandomLogComment ( temp );
-			}
-			#endif
+			logDebug("FILEXFER - ReceiveFileBlock got error %d from ReceiveMessages.", Err );
 			return FALSE ;
 		}
 
-		//---- If we have a message then do something with it      
+		//---- If we have a message then do something with it
 		if ( Err == kNoError )
 		{
-			if (lpGenericMsgBuf->MsgId == NETMSGID_FILEDATA) 
+			if (lpGenericMsgBuf->MsgId == NETMSGID_FILEDATA)
 			{
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - ReceiveFileBlock got NETMSGID_FILEDATA.");
-				RandomLogComment ( temp );
-				}
-				#endif
+				logDebug("FILEXFER - ReceiveFileBlock got NETMSGID_FILEDATA.");
 				ReceiveMessages(0,kREMOVEFROMQUE);
 				// check for out of missing block
 				if (lpGenericMsgBuf->ulSync > index)
@@ -657,15 +512,9 @@ BOOL FileXfer::ReceiveFileBlock(unsigned int index)
 			}
 			else
 			// -- Handle SYNC messages
-			if (lpGenericMsgBuf->MsgId == iMPT_SYNC) 
+			if (lpGenericMsgBuf->MsgId == iMPT_SYNC)
 			{
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - ReceiveFileBlock got iMPT_SYNC.");
-				RandomLogComment ( temp );
-				}
-				#endif
+				logDebug("FILEXFER - ReceiveFileBlock got iMPT_SYNC.");
 				ReceiveMessages(0,kREMOVEFROMQUE);
 				// -- uses global data to store sync info
 				SetSync();
@@ -673,21 +522,15 @@ BOOL FileXfer::ReceiveFileBlock(unsigned int index)
 			else
 			{
 				// -- don't know Jack, kill it
-				#ifdef _DEBUG
-				{
-				char temp[200];
-				sprintf ( temp, "FILEXFER - ReceiveFileBlock got unknown message %d.",
+				logDebug("FILEXFER - ReceiveFileBlock got unknown message %d.",
 					lpGenericMsgBuf->MsgId );
-				RandomLogComment ( temp );
-				}
-				#endif
 				ReceiveMessages(0,kREMOVEFROMQUE);
 			}
 		}
       run_timers();
       Sleep(0);
 	} while ( dwTimeOut > GetTickCount() ) ;
-	
+
    // if it is not a full block abort, the last block can be small, however.
    if ( (lpGenericMsgBuf->usDataSize != DATABLOCKSIZE) &&
         (index != m_sbStartBlock.dwBlockcount)
@@ -714,12 +557,12 @@ BOOL FileXfer::ReceiveFileBlock(unsigned int index)
 
 
 ErrCode
-FileXfer::GetMessage(LPNETMSG ptheMessage, DWORD dwWait, const char bRemove, 
+FileXfer::GetMessage(LPNETMSG ptheMessage, DWORD dwWait, const char bRemove,
 											BOOL fAck )
 {
 	ErrCode ecError = kNoError;
 
-   do 
+   do
 	{
       ecError = ReceiveMessages( dwWait, bRemove, (fAck ? kACK : kDONTACK) );
 
@@ -727,7 +570,7 @@ FileXfer::GetMessage(LPNETMSG ptheMessage, DWORD dwWait, const char bRemove,
 		{
          return ecError ;
       }
-      if (lpGenericMsgBuf->MsgId == NETMSGID_RTS) 
+      if (lpGenericMsgBuf->MsgId == NETMSGID_RTS)
 	   {
          ecError = (ErrCode) kXferRequestReceived ;
       }
@@ -746,12 +589,12 @@ void FileXfer::SetFileProgressCallback( PFNFILECALLBACK pfnFunc )
 {
 	pfnFileProgressFunc = pfnFunc;
 } // FileXfer::SetFileProgressCallback
-	
+
 
 /* ========================================================================
    Function    - Sync record routines
 	Description - save sync points for later digestion by a higher source
-	Returns     - 
+	Returns     -
 	======================================================================== */
 
 int FileXfer::GetSync( int sync, int index )
@@ -766,8 +609,8 @@ int FileXfer::GetSyncId( int sync, int index )
 
 void FileXfer::SetSync( void )
 {
-	int iSync,i,j; 
-	
+	int iSync,i,j;
+
 	FPBRHeader pBRHead = (FPBRHeader) (&(lpGenericMsgBuf->cData[0]));
 	FPBRSync pSync = (FPBRSync) (&(lpGenericMsgBuf->cData[0]) + sizeof(FBRHeader));
 
@@ -776,23 +619,14 @@ void FileXfer::SetSync( void )
 		if ( dwPlayers[i] == lpGenericMsgBuf->dwPlayerId )
 			break;
 	}
-   
+
 	// -- recognize we are at this sync
 	FileSyncTable[pSync->iSync][i] = 1;
-		
+
 	// -- set the message ID for the message which set the sync
 	FileSyncMsgIDTable[pSync->iSync][i] = lpGenericMsgBuf->ulSync;
-	
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	{
-		char temp[200];
-		sprintf ( temp, "FILEXFER - SetSync sync %d   id %d.",
-			pSync->iSync, i);
-		RandomLogComment ( temp );
-	}
-#endif
-#endif
+
+logDebug("FILEXFER - SetSync sync %d   id %d.", pSync->iSync, i);
 }
 
 void FileXfer::ResetSync( int sync )
@@ -800,7 +634,7 @@ void FileXfer::ResetSync( int sync )
 	int i;
 
 	//---- Reset replies for this sync point
-	
+
 	for ( i = 0; i < MAX_PLAYERS; i++ )
 	{
 		FileSyncTable[sync][i] = 0;
@@ -809,4 +643,3 @@ void FileXfer::ResetSync( int sync )
 }
 
 // FileXfer.cpp
-

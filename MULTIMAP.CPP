@@ -74,9 +74,6 @@ extern "C" {
 void SetRedrawMainMapLevel (void);
 }
 
-extern "C" void RandomLogComment ( char * szString );
-
-
 // void PaintGenericStatement(LONG MenuCombo, LONG);
 void DrawRoads_ (PROVINCE prov, LONG i);
 void CancelRoll (void);
@@ -190,13 +187,7 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 
 				case	MPRLM_REGENCY:
 					realm[lArray_Index].mfSetRegency((unsigned int) lData);
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "   multimap - %s regency:%ld",realm[lArray_Index].mfGetName(),realm[lArray_Index].mfGetRegency());
-						RandomLogComment ( temp );
-					}
+					logInfo("   multimap - %s regency:%ld",realm[lArray_Index].mfGetName(),realm[lArray_Index].mfGetRegency());
 					break;
 
 				case	MPRLM_TREASURY:
@@ -231,39 +222,39 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 				case	MPREG_REALM:
 					regents[lArray_Index].mfSetRealm( (REALM::REALM_TYPE) lData);
 					break;
-				
+
 				case	MPREG_RACE:
 					regents[lArray_Index].mfSetRace((RACE_ENUM) lData);
 					break;
-				
+
 				case	MPREG_CLASS1:
 					regents[lArray_Index].mfSetClass1((CLASS_ENUM) lData);
 					break;
-				
+
 				case	MPREG_LEVEL1:
 					regents[lArray_Index].mfSetLevel1((unsigned int) lData);
 					break;
-				
+
 				case	MPREG_CLASS2:
 					regents[lArray_Index].mfSetClass2((CLASS_ENUM) lData);
 					break;
-				
+
 				case	MPREG_LEVEL2:
 					regents[lArray_Index].mfSetLevel2((unsigned int) lData);
 					break;
-				
+
 				case	MPREG_BL_GRADE:
 					regents[lArray_Index].mfSetBL_grade((BLOOD_GRADE) lData);
 					break;
-				
+
 				case	MPREG_BL_DERIV:
 					regents[lArray_Index].mfSetBL_deriv((BLOOD_DERIV) lData);
 					break;
-				
+
 				case	MPREG_BL_STRENGTH:
 					regents[lArray_Index].mfSetBL_strength((unsigned int) lData);
 					break;
-				
+
 				case	MPREG_UNIT:
 				 	regents[lArray_Index].mfSetunit((SHORT) lData);
 					break;
@@ -312,14 +303,8 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 
 				case	MPPROV_TAXLEVEL:
 					province[lArray_Index].TaxLevel = (unsigned int) lData;
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "   multimap - prov:%ld  set TaxLevel:%ld",
-							lArray_Index, lData);
-						RandomLogComment ( temp );
-					}
+					logInfo("   multimap - prov:%ld  set TaxLevel:%ld",
+						lArray_Index, lData);
 					break;
 
 				case	MPPROV_LOYALTY:
@@ -429,33 +414,33 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 				case	MPPLACE_X:
 					places[lArray_Index].x		  = (SHORT) lData;
 					break;
-				
+
 				case	MPPLACE_Y:
 					places[lArray_Index].y		  = (SHORT) lData;
 					break;
-				
+
 				case	MPPLACE_REALM:
 					places[lArray_Index].Realm	  = (unsigned int) lData;
 					break;
-				
+
 				case	MPPLACE_LEVEL:
 					places[lArray_Index].Level	  = (unsigned int) lData;
 					break;
-				
+
 				case	MPPLACE_ICON:
 					places[lArray_Index].Icon	  = (unsigned int) lData;
 					break;
-				
+
 				case	MPPLACE_IROUTE1:
 					places[lArray_Index].iRoute1	  = (unsigned int) lData;
 					SetRedrawMainMapLevel();
 					break;
-				
+
 				case	MPPLACE_IROUTE2:
 					places[lArray_Index].iRoute2	  = (unsigned int) lData;
 					SetRedrawMainMapLevel();
 					break;
-				
+
 				case	MPPLACE_IROUTE3:
 					places[lArray_Index].iRoute3	  = (unsigned int) lData;
 					SetRedrawMainMapLevel();
@@ -468,7 +453,7 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 				case	MPPLACE_CONTESTED:
 					places[lArray_Index].Contested = (SHORT) lData;
 					break;
-				
+
 				case	MPPLACE_FSITEDISPLAYED:
 					places[lArray_Index].fSiteDisplayed = (SHORT) lData;
 					break;
@@ -476,15 +461,15 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 				case	MPPLACE_INAME:
 					places[lArray_Index].iName	  = (unsigned int) lData;
 					break;
-				
+
 				case	MPPLACE_NEXTPLACE:
 					places[lArray_Index].NextPlace = (SHORT) lData;
 					break;
-				
+
 				case	MPPLACE_SCENE:
 					places[lArray_Index].scene	  = (CSTRPTR) lData;
 					break;
-				
+
 				case	MPPLACE_IICONBITM:
 					sprintf(n,"UI\\%s.PCX",GameIcons[lData]);
 					places[lArray_Index].iIconBitm = GetResourceStd(n, FALSE);
@@ -527,8 +512,8 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 				case	MPUNITS_JOINED:
 					{
 					units[lArray_Index].Joined		 = (unsigned int) lData;
-					
-					// This setting of the spotted flag relies on the NextUnit 
+
+					// This setting of the spotted flag relies on the NextUnit
 					// Value being set first.
 					if (units[lArray_Index].Joined == TRUE)
 					{
@@ -584,58 +569,34 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 
 				case	MPUNITS_DESTPROVINCE:
 					units[lArray_Index].DestProvince = (unsigned int) lData;
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
+					if (lData)
 					{
-						if (lData)
-						{
-							char temp[100];
-							sprintf ( temp, "   multimap - %s unit:%d DestProvince:%d",realm[units[lArray_Index].Realm].mfGetName(),lArray_Index,lData );
-							RandomLogComment ( temp );
-						}
+						logInfo("   multimap - %s unit:%d DestProvince:%d",realm[units[lArray_Index].Realm].mfGetName(),lArray_Index,lData );
 					}
 					SetRedrawMainMapLevel();
 					break;
 
 				case	MPUNITS_DESTPATH1:
 					units[lArray_Index].DestPath1 = (unsigned int) lData;
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
+					if (lData)
 					{
-						if (lData)
-						{
-							char temp[100];
-							sprintf ( temp, "   multimap - DestPath1:%d",lData );
-							RandomLogComment ( temp );
-						}
+						logInfo("   multimap - DestPath1:%d",lData );
 					}
 					break;
 
 				case	MPUNITS_DESTPATH2:
 					units[lArray_Index].DestPath2 = (unsigned int) lData;
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
+					if (lData)
 					{
-						if (lData)
-						{
-							char temp[100];
-							sprintf ( temp, "   multimap - DestPath2:%d",lData );
-							RandomLogComment ( temp );
-						}
+						logInfo("   multimap - DestPath2:%d",lData );
 					}
 					break;
 
 				case	MPUNITS_DESTPATH3:
 					units[lArray_Index].DestPath3 = (unsigned int) lData;
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
+					if (lData)
 					{
-						if (lData)
-						{
-							char temp[100];
-							sprintf ( temp, "   multimap - DestPath3:%d",lData );
-							RandomLogComment ( temp );
-						}
+						logInfo("   multimap - DestPath3:%d",lData );
 					}
 					break;
 
@@ -787,31 +748,31 @@ LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 
 				case	MPREG_REALM:
 					return (LONG)regents[lArray_Index].mfGetRealm();
-				
+
 				case	MPREG_RACE:
 					return (LONG)regents[lArray_Index].mfGetRace();
-				
+
 				case	MPREG_CLASS1:
 					return (LONG)regents[lArray_Index].mfGetClass1();
-				
+
 				case	MPREG_LEVEL1:
 					return (LONG)regents[lArray_Index].mfGetLevel1();
-				
+
 				case	MPREG_CLASS2:
 					return (LONG)regents[lArray_Index].mfGetClass2();
-				
+
 				case	MPREG_LEVEL2:
 					return (LONG)regents[lArray_Index].mfGetLevel2();
-				
+
 				case	MPREG_BL_GRADE:
 					return (LONG)regents[lArray_Index].mfGetBL_grade();
-				
+
 				case	MPREG_BL_DERIV:
 					return (LONG)regents[lArray_Index].mfGetBL_deriv();
-				
+
 				case	MPREG_BL_STRENGTH:
 					return (LONG)regents[lArray_Index].mfGetBL_strength();
-				
+
 				case	MPREG_UNIT:
 				 	return (LONG)regents[lArray_Index].mfGetunit();
 
@@ -928,28 +889,28 @@ LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 			{
 				case	MPPLACE_X:
 					return (LONG)places[lArray_Index].x;
-				
+
 				case	MPPLACE_Y:
 					return (LONG)places[lArray_Index].y;
-				
+
 				case	MPPLACE_REALM:
 					return (LONG)places[lArray_Index].Realm;
-				
+
 				case	MPPLACE_LEVEL:
 					return (LONG)places[lArray_Index].Level;
-				
+
 				case	MPPLACE_ICON:
 					return (LONG)places[lArray_Index].Icon;
-				
+
 				case	MPPLACE_IROUTE1:
 					return (LONG)places[lArray_Index].iRoute1;
-				
+
 				case	MPPLACE_IROUTE2:
 					return (LONG)places[lArray_Index].iRoute2;
-				
+
 				case	MPPLACE_IROUTE3:
 					return (LONG)places[lArray_Index].iRoute3;
-				
+
 				case	MPPLACE_BESIEGED:
 					return (LONG)places[lArray_Index].Besieged;
 
@@ -961,13 +922,13 @@ LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 
 				case	MPPLACE_INAME:
 					return (LONG)places[lArray_Index].iName;
-				
+
 				case	MPPLACE_NEXTPLACE:
 					return (LONG)places[lArray_Index].NextPlace;
-				
+
 				case	MPPLACE_SCENE:
 					return (LONG)places[lArray_Index].scene;
-				
+
 				case	MPPLACE_IICONBITM:
 					return (LONG)places[lArray_Index].iIconBitm;
 
@@ -1093,16 +1054,16 @@ LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 // ------------------------------------------------------------------
 //
 //   SetGameData()
-//		
-//                                                                              
+//
+//
 //   Inputs:
 //
-//       fSend - means send to other players 
+//       fSend - means send to other players
 //
 //   Returns: none
 // ------------------------------------------------------------------
 
-BOOL SetGameData( LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, 
+BOOL SetGameData( LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index,
 				   LONG lData, BOOL fSend )
 {
 #ifdef _WINDOWS
@@ -1120,14 +1081,14 @@ BOOL SetGameData( LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index,
 		// now tell the other players about it, and leave
 
 		if ( fSend )
-		{		
+		{
 			AMultiPlayer.BroadcastSetGameData(lArray_Id, lStruct_Id, lArray_Index, lData);
 		}
 
 
-		//---- Reset the semiphore after sending 
+		//---- Reset the semiphore after sending
 
-		if ( lArray_Id == MP_GAMEDATA && 
+		if ( lArray_Id == MP_GAMEDATA &&
 			 ( lStruct_Id == MPGAMESEMIPHORE_BATTLE_START ||
 			   lStruct_Id == MPGAMESEMIPHORE_BATTLE_START1   )  )
 		{
@@ -1160,10 +1121,10 @@ BOOL SetGameData( LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index,
 // ------------------------------------------------------------------
 //
 //   GetGameData()
-//		
-//                                                                              
+//
+//
 //   Inputs:
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
@@ -1215,7 +1176,7 @@ LONG GetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 /* ========================================================================
    Function    - PaintGenericStatement
    Description - Paint routine for generic statments
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void PaintGenericStatement(LONG MenuCombo, LONG val)
 {
@@ -1230,7 +1191,7 @@ void PaintGenericStatement(LONG MenuCombo, LONG val)
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -1240,7 +1201,7 @@ void PaintGenericStatement(LONG MenuCombo, LONG val)
 
 	xOff = Menus[MenuId].Buttons[0].X;
 	yOff = Menus[MenuId].Buttons[0].Y;
-			
+
 	// get the message to print
 	switch(val)
 	{
@@ -1270,8 +1231,8 @@ void PaintGenericStatement(LONG MenuCombo, LONG val)
 
 /* ========================================================================
    Function    - RequestPlacesCountandIndex
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void RequestPlacesIndex(LONG *index, BOOL fSend)
 {
@@ -1317,7 +1278,7 @@ void RequestPlacesIndex(LONG *index, BOOL fSend)
 /* ========================================================================
    Function    - RequestPlacesCountandIndex
    Description - find the place to put the new holding(the end of places array)
-	Returns     - 
+	Returns     -
    ======================================================================== */
 void RequestPlacesIndex(LONG *index, BOOL fSend)
 {
@@ -1360,9 +1321,9 @@ static LONG iNewResult;
 
 /* ========================================================================
    Function    - SendMyMods
-   Description - the remote computer will call this function to send the 
+   Description - the remote computer will call this function to send the
                  new modified chance
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void SendMyMods(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHold, LONG modRegency)
 {
@@ -1382,13 +1343,7 @@ void SendMyMods(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHold, LONG mo
 
 		// send the final result of the roll to the remote computer
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "SendMyMods: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("SendMyMods: SendEvent");
 	#endif
 
 		AMultiPlayer.SendEvent(iWhichAction, modRegency, 0, 0, FALSE, iWhichRealm);
@@ -1401,10 +1356,10 @@ void SendMyMods(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHold, LONG mo
 
 /* ========================================================================
    Function    - SendResult
-   Description - 
+   Description -
       the computer rolling for success will call this function after the final
       result is computed with success or failure
-   Returns     - 
+   Returns     -
    ======================================================================== */
 void SendResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding, LONG iResult)
 {
@@ -1434,13 +1389,7 @@ void SendResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding, LONG
 
 			// send the final result of the roll to the remote computer
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "SendResult: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("SendResult: SendEvent");
 	#endif
 			AMultiPlayer.SendEvent(iWhichAction, iResult, 0, 0, FALSE, iWhichRealm);
 			AMultiPlayer.InitEvent(0);
@@ -1457,11 +1406,11 @@ void SendResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding, LONG
 
 /* ========================================================================
    Function    - WaitForResult
-   Description - 
+   Description -
       the remote computer will call this function to get the final result
       back from the computer who asked for the action to occur
       returning success or failure
-   Returns     - 
+   Returns     -
    ======================================================================== */
 LONG WaitForResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding)
 {
@@ -1486,7 +1435,7 @@ LONG WaitForResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding)
 			// get the players id
 
 			lPlayerId = lRealmSelectedByPlayer[iWhichRealm];
-	
+
 			// wait for a reply
 			while(TRUE)
 			{
@@ -1499,7 +1448,7 @@ LONG WaitForResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding)
 					AMultiPlayer.InitEvent(0);
 					return iNewResult;
 				}
-	
+
 				// get messages and give time up to the system
 
 				AMultiPlayer.LookForMessages();   //---- Update not specific messages
@@ -1518,7 +1467,7 @@ LONG WaitForResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding)
 				}
 				#endif
 
-				//---- Person disconnected 
+				//---- Person disconnected
 
 				if ( !realm[iWhichRealm].mfIsPlayerCtrl() )
 				{
@@ -1542,11 +1491,11 @@ LONG iGlobRealm;
 
 /* ========================================================================
    Function    - AskAndWaitForTargetPlayer
-   Description - 
+   Description -
       the computer rolling for success will call this function
       it will notify the other computer if controlled by a human
       then return with the new success when the other computer rolls
-   Returns     - 
+   Returns     -
    ======================================================================== */
 #define MDYELLOW					168
 LONG AskAndWaitForTargetPlayer(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding, LONG iSuccess, LONG x, LONG y)
@@ -1583,13 +1532,13 @@ LONG AskAndWaitForTargetPlayer(LONG iWhichAction, LONG iWhichProvince, LONG iWhi
 		if ( IsMultiPlayer() )
 		{
 			// put up a wait cursor
-	
+
 			// get the players id
 			iPlayerId = lRealmSelectedByPlayer[iWhichRealm];
-	
+
 			// add a sound "Waiting for remote player"
 			AddSndObj((BIRTHRT_SND)SND_UI_WAITING_FOR_AN_OPPONENT1,0,VOLUME_NINETY);
-	
+
 			#ifdef _MULTIMONO
 				mono_printf(0,12,"SendInitial to %s              ", realm[iWhichRealm].mfGetName());
 			#endif
@@ -1616,13 +1565,7 @@ LONG AskAndWaitForTargetPlayer(LONG iWhichAction, LONG iWhichProvince, LONG iWhi
 					timer = get_time() + (18*7);		// wait 7 seconds
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "AskAndWaitForTargetPlayer: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("AskAndWaitForTargetPlayer: SendEvent");
 	#endif
 					AMultiPlayer.SendEvent(iWhichAction, iWhichProvince, iWhichHolding, iSuccess, TRUE, iWhichRealm);
 					AMultiPlayer.InitEvent(0);
@@ -1667,7 +1610,7 @@ LONG AskAndWaitForTargetPlayer(LONG iWhichAction, LONG iWhichProvince, LONG iWhi
             }
 				#endif
 
-				//---- Person disconnected 
+				//---- Person disconnected
 				if ( !realm[iWhichRealm].mfIsPlayerCtrl() )
 				{
 					return iNewSuccess;	//@@@@ is this right ????
@@ -1831,8 +1774,8 @@ LONG WaitForSemiphore(LONG iWhichSemiphore)
 
 /* ========================================================================
    Function    - HandleMultiPlayerEvents
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void HandleMultiPlayerEvents (void)
 {
@@ -1859,7 +1802,7 @@ void HandleMultiPlayerEvents (void)
 		}
 		else if ( iEvent )
 		{
-			//@@@@@@ MDB OTHER EVENTS GO HERE 
+			//@@@@@@ MDB OTHER EVENTS GO HERE
 			if (EventReply[0].EventId == iMPE_ADD_ITEM)
 				MultiAddItem(EventTable.data1, EventTable.data2, EventTable.data3);
 			else if (EventReply[0].EventId == iMPE_DROP_ITEM)
@@ -1911,8 +1854,8 @@ ULONG CheckSum (char * p, ULONG l)
 
 /* ========================================================================
    Function    - DoMultiplayerDataIntegrityCheck
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 void DoMultiplayerDataIntegrityCheck ()
 {
@@ -1920,75 +1863,32 @@ void DoMultiplayerDataIntegrityCheck ()
 
 	ULONG		Result = 0;
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "---------------------------------------------------------------");
-		RandomLogComment ( temp );
-	}
+	logInfo("---------------------------------------------------------------");
 
 	//Result += CheckSum ( (char *)units, sizeof(UNIT_TYPE)*MAX_UNITS );
 	Result = CheckSum ( (char *)units, sizeof(UNIT_TYPE)*MAX_UNITS );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "DoMultiplayerDataIntegrityCheck - player #%ld  units result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
-		RandomLogComment ( temp );
-	}
+	logInfo("DoMultiplayerDataIntegrityCheck - player #%ld  units result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
 
 	//Result += CheckSum ( (char *)places, sizeof(PLACE_TYPE)*MAX_PLACES );
 	Result = CheckSum ( (char *)places, sizeof(PLACE_TYPE)*MAX_PLACES );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "DoMultiplayerDataIntegrityCheck - player #%ld  places result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
-		RandomLogComment ( temp );
-	}
+	logInfo("DoMultiplayerDataIntegrityCheck - player #%ld  places result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
 
 	//Result += CheckSum ( (char *)province, sizeof(PROV_TYPE)*MAX_PROVS );
 	Result = CheckSum ( (char *)province, sizeof(PROV_TYPE)*MAX_PROVS );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "DoMultiplayerDataIntegrityCheck - player #%ld  province result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
-		RandomLogComment ( temp );
-	}
+	logInfo("DoMultiplayerDataIntegrityCheck - player #%ld  province result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
 
 	//Result += CheckSum ( (char *)realm, sizeof(REALM_STRUCT)*REALM::REALM_COUNT );
 	Result = CheckSum ( (char *)realm, sizeof(REALM_STRUCT)*REALM::REALM_COUNT );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "DoMultiplayerDataIntegrityCheck - player #%ld  realm result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
-		RandomLogComment ( temp );
-	}
+	logInfo("DoMultiplayerDataIntegrityCheck - player #%ld  realm result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
 
 	//Result += CheckSum ( (char *)regents, sizeof(REGENT)*REGENT_COUNT );
 	Result = CheckSum ( (char *)regents, sizeof(REGENT)*REGENT_COUNT );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "DoMultiplayerDataIntegrityCheck - player #%ld  regent result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
-		RandomLogComment ( temp );
-	}
+	logInfo("DoMultiplayerDataIntegrityCheck - player #%ld  regent result:%ld ------", AMultiPlayer.GetPlayerId(), Result);
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "---------------------------------------------------------------");
-		RandomLogComment ( temp );
-	}
+	logInfo("---------------------------------------------------------------");
 
 #endif
 }
 
 /*	======================================================================== */
 
-

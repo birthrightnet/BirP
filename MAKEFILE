@@ -438,7 +438,6 @@ SYSTEM_OBJ =	&
 	$(OBJD)\findfile.obj &
 	$(OBJD)\assert.obj &
 	$(OBJD)\vdpmi.obj &
-	$(OBJD)\random.obj &
 	$(OBJD)\logger.obj &
 
 MACHINE_OBJ =	&

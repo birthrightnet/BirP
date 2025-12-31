@@ -72,9 +72,6 @@
 #include "winsys\mono_c.h"
 #endif
 
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
-
 /* ------------------------------------------------------------------------
    Defines
    ------------------------------------------------------------------------ */
@@ -1180,12 +1177,7 @@ AddItemStatus const ObjectList::mfAddItem(
 		if (i < CHARACTER_COUNT) // found
 		{
 	#ifdef _WINDOWS
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "AddItem: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("AddItem: SendEvent");
 	#endif
 
 			AMultiPlayer.SendEvent(iMPE_ADD_ITEM, i, (LONG) Type, (LONG) count, TRUE, HomeRealm);
@@ -1799,12 +1791,7 @@ void InventoryItor::mfDropItem(BOOL fSend)
 		if (i < CHARACTER_COUNT) // found
 		{
 	#ifdef _WINDOWS
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "DropItem: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("DropItem: SendEvent");
 	#endif
 			AMultiPlayer.SendEvent(iMPE_DROP_ITEM, i, mfData()->mfType(), 0, TRUE, HomeRealm);
 			AMultiPlayer.InitEvent(0);

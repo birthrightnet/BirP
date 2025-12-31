@@ -192,8 +192,6 @@ extern LONG CountRegions (void);
 extern void dashedline(LONG x0, LONG y0, LONG x1, LONG y1, LONG color1 ,LONG color2);
 }
 extern BOOL RegentDeathTest (void);
-
-extern "C" void RandomLogComment ( char * szString );
 extern "C" void LogFlush ( void );
 extern "C" SHORT print_textf_(LONG x, LONG y, LONG color, const char *format, ...);
 
@@ -2716,20 +2714,14 @@ LONG ProvinceInfo (PROVINCE prov, MAP_ICON holding_type)
 							roll = RollGuildTempleTaxes((SHORT)province[prov].CivLevel,(SHORT)level, mod=0);
 						prov_tax += roll;
 
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[110];
-							sprintf ( temp, "PROVINCE INFO - %s:%s  FINAL gld & tmpl - civ:%d hld:%d mod:%d roll:%d prov_tax:%d",
-								realm[HomeRealm].mfGetName(),
-								province[prov].name,
-								province[prov].CivLevel,
-								level,
-								mod,
-								roll,
-								prov_tax);
-							RandomLogComment ( temp );
-						}
+						logInfo( "PROVINCE INFO - %s:%s  FINAL gld & tmpl - civ:%d hld:%d mod:%d roll:%d prov_tax:%d",
+							realm[HomeRealm].mfGetName(),
+							province[prov].name,
+							province[prov].CivLevel,
+							level,
+							mod,
+							roll,
+							prov_tax);
 
 						//printf("doing rolls fFinalRoll:%d  GuildTempleTax:%ld  sum:%ld\n",fFinalRoll,roll,prov_tax);
 					}
@@ -2781,13 +2773,7 @@ LONG ProvinceInfo (PROVINCE prov, MAP_ICON holding_type)
 					roll = RollProvinceTaxes((SHORT)province[prov].CivLevel, (SHORT)province[prov].TaxLevel, mod=0);
 				prov_tax += roll;
 
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					sprintf ( temp, "PROVINCE INFO - %s:%s  FINAL province - civlvl:%d taxlvl:%d mod:%d roll:%d prov_tax:%d",realm[HomeRealm].mfGetName(),province[prov].name,province[prov].CivLevel,province[prov].TaxLevel,mod,roll,prov_tax);
-					RandomLogComment ( temp );
-				}
+				logInfo( "PROVINCE INFO - %s:%s  FINAL province - civlvl:%d taxlvl:%d mod:%d roll:%d prov_tax:%d",realm[HomeRealm].mfGetName(),province[prov].name,province[prov].CivLevel,province[prov].TaxLevel,mod,roll,prov_tax);
 
 				province_tax[cProvinces] = (SHORT)prov_tax;
 				//printf("Doing tax rolls - fFinalRoll:%d  ProvinceTax:(%d@%d) %ld  sum:%ld\n",fFinalRoll,province[prov].CivLevel,province[prov].TaxLevel,roll,prov_tax);
@@ -2895,13 +2881,7 @@ void UpdatingFortify (void)
 				// not enough gold
 				if (places[i].iRoute3 > realm[places[i].Realm].mfGetTreasury())
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "UpdatingFortify - not enough gold  castle:%d  %d/%d/%d\n", i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
-						RandomLogComment ( temp );
-					}
+					logInfo( "UpdatingFortify - not enough gold  castle:%d  %d/%d/%d\n", i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
 
 					continue;	// Go to the next place. (Might be another's realm.)
 				}
@@ -2917,13 +2897,7 @@ void UpdatingFortify (void)
 				// increase one level
 				if (places[i].iRoute2 >= ((places[i].Level*8)+8))
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "UpdatingFortify - level increased  castle:%d  %d/%d/%d",i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
-						RandomLogComment ( temp );
-					}
+					logInfo( "UpdatingFortify - level increased  castle:%d  %d/%d/%d",i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
 
 					++places[i].Level;
 					SetGameData(MP_PLACES, MPPLACE_LEVEL, i, places[i].Level, TRUE );
@@ -2975,13 +2949,7 @@ void UpdatingFortify (void)
 				}
 				else
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "UpdatingFortify - no increase yet  castle:%d  %d/%d/%d",i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
-						RandomLogComment ( temp );
-					}
+					logInfo( "UpdatingFortify - no increase yet  castle:%d  %d/%d/%d",i,places[i].iRoute1*8,places[i].iRoute2,places[i].iRoute3);
 				}
 
 			}
@@ -3786,14 +3754,8 @@ void AdjTaxLevel (LONG prov, LONG level)
 {
 	if (province[prov].TaxLevel != level)
 	{
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[100];
-			sprintf ( temp, "gamemap.cpp AdjTaxLevel - prov:%ld  level:%ld",
-				prov, level);
-			RandomLogComment ( temp );
-		}
+		logInfo( "gamemap.cpp AdjTaxLevel - prov:%ld  level:%ld",
+			prov, level);
 
 		SetGameData(MP_PROVINCE, MPPROV_TAXLEVEL, prov, level, TRUE );
 		fUpdateDataArea=TRUE;
@@ -4334,13 +4296,7 @@ void DegradeCastles (void)
 						places[j].iRoute2 = 0;
 				}
 
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[100];
-					sprintf ( temp, "CASTLE DEGRADE - %s in %s, new level:%d iRoute2:%ld\n",province[i].name,realm[province[i].Realm].mfGetName(),places[j].Level,places[j].iRoute2);
-					RandomLogComment ( temp );
-				}
+				logInfo( "CASTLE DEGRADE - %s in %s, new level:%d iRoute2:%ld\n",province[i].name,realm[province[i].Realm].mfGetName(),places[j].Level,places[j].iRoute2);
 
 				SetGameData(MP_PLACES, MPPLACE_LEVEL, j, places[j].Level, FALSE);
 				if (places[j].Icon == CASTLE1_ICON)
@@ -5502,17 +5458,9 @@ BOOL UpdateDataArea (void)
 			fclose(fp);
 		}
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[150];
-			sprintf ( temp, "=============================================");
-			RandomLogComment ( temp );
-			sprintf ( temp, "===          START OF TURN %02d           ===",date);
-			RandomLogComment ( temp );
-			sprintf ( temp, "=============================================");
-			RandomLogComment ( temp );
-		}
+		logInfo("=============================================");
+		logInfo("===          START OF TURN %02d           ===",date);
+		logInfo("=============================================");
 	}
 
 	//--------------------------------------------------
@@ -5608,16 +5556,10 @@ BOOL UpdateDataArea (void)
      	   SetGameData( MP_REALM, MPRLM_TREASURY, HomeRealm,
 				realm[HomeRealm].mfGetTreasury(), TRUE );
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[100];
-				sprintf ( temp, "PLAYER FINANCIAL INFO - %s  treasury:%ld  income:%ld",
-					realm[HomeRealm].mfGetName(),
-					realm[HomeRealm].mfGetTreasury(),
-					realm[HomeRealm].mfGetIncome() );
-				RandomLogComment ( temp );
-			}
+			logInfo( "PLAYER FINANCIAL INFO - %s  treasury:%ld  income:%ld",
+				realm[HomeRealm].mfGetName(),
+				realm[HomeRealm].mfGetTreasury(),
+				realm[HomeRealm].mfGetIncome() );
 
 			if (fControlMode & 0x100)		// control mode has changed, set correct stuff
 			{
@@ -6079,13 +6021,7 @@ BOOL UpdateDataArea (void)
 											if ((province[i].Contested || province[i].Pillaged)
 													&& province[i].TaxLevel != 0)
 											{
-												LOGCOMMENTSLEEP
-												if ( fLogComment )
-												{
-													char temp[100];
-													sprintf ( temp, "gamemap.cpp Contest or Pillage Auto Set - prov:%ld  TaxLevel set to 0",i);
-													RandomLogComment ( temp );
-												}
+												logInfo( "gamemap.cpp Contest or Pillage Auto Set - prov:%ld  TaxLevel set to 0",i);
 												SetGameData(MP_PROVINCE, MPPROV_TAXLEVEL, i, 0, TRUE );		 // minimum taxes collected
 											}
 										}
@@ -9807,19 +9743,13 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 #ifdef _WINDOWS
 				//---- Seed random number generator
 				AMultiPlayer.NextSeed(__FILE__,__LINE__);
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					char MovingUnitRealmName[50];
 
-					strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName() );
-					sprintf ( temp, "CheckUnitArrival - mov:%s vs j:%s in prov:%s",
-						MovingUnitRealmName,
-						realm[units[j].Realm].mfGetName(),
-						province[iProvince].name);
-					RandomLogComment ( temp );
-				}
+				char MovingUnitRealmName[50];
+				strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName() );
+				logInfo("CheckUnitArrival - mov:%s vs j:%s in prov:%s",
+					MovingUnitRealmName,
+					realm[units[j].Realm].mfGetName(),
+					province[iProvince].name);
 
 				// ----------------------------------------------
 				// If one player is player controlled but neither is US
@@ -9830,19 +9760,13 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					&& ( realm[units[j].Realm].mfIsPlayerCtrl() ||
 				 		realm[units[iMovingUnit].Realm].mfIsPlayerCtrl() ) )
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[150];
-						char MovingUnitRealmName[50];
-						strcpy(MovingUnitRealmName,realm[units[iMovingUnit].Realm].mfGetName());
-						sprintf ( temp, "CheckUnitArrival - neither is us: Sync %ld - mov:%s vs j:%s in prov:%s",
-							(iMPS_SYNC_INITIATIVE + BattleSync),
-							MovingUnitRealmName,
-							realm[units[j].Realm].mfGetName(),
-							province[iProvince].name);
-						RandomLogComment ( temp );
-					}
+					char MovingUnitRealmName[50];
+					strcpy(MovingUnitRealmName,realm[units[iMovingUnit].Realm].mfGetName());
+					logInfo("CheckUnitArrival - neither is us: Sync %ld - mov:%s vs j:%s in prov:%s",
+						(iMPS_SYNC_INITIATIVE + BattleSync),
+						MovingUnitRealmName,
+						realm[units[j].Realm].mfGetName(),
+						province[iProvince].name);
 
 					WaitSync( iMPS_SYNC6 );		// before the player controlled battle
 
@@ -9860,14 +9784,8 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					StartSync( iMPS_SYNC_INITIATIVE + BattleSync );
 					CheckSync( (iMPS_SYNC_INITIATIVE + BattleSync), TRUE, TRUE );
 
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[150];
-						sprintf ( temp, "CheckUnitArrival - neither is us: done waiting at Sync %ld",
-							(iMPS_SYNC_INITIATIVE + BattleSync));
-						RandomLogComment ( temp );
-					}
+					logInfo("CheckUnitArrival - neither is us: done waiting at Sync %ld",
+						(iMPS_SYNC_INITIATIVE + BattleSync));
 
 					BattleSync = (BattleSync + 1) & 3;
 					rv = fAUTOBATTLE;
@@ -9883,20 +9801,13 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 				{
 					CHAR	cTerrain;
 					CHAR	strTerrain[6];
+					char MovingUnitRealmName[50];
 
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[150];
-						char MovingUnitRealmName[50];
-
-						strcpy(MovingUnitRealmName, realm[units[j].Realm].mfGetName());
-						sprintf ( temp, "CheckUnitArrival - we are one: mov:%s vs j:%s in prov:%s",
-							MovingUnitRealmName,
-							realm[units[j].Realm].mfGetName(),
-							province[iProvince].name);
-						RandomLogComment ( temp );
-					}
+					strcpy(MovingUnitRealmName, realm[units[j].Realm].mfGetName());
+					logInfo("CheckUnitArrival - we are one: mov:%s vs j:%s in prov:%s",
+						MovingUnitRealmName,
+						realm[units[j].Realm].mfGetName(),
+						province[iProvince].name);
 
 					SCENE_MGR::Aggressor = (REALM::REALM_TYPE)units[iMovingUnit].Realm;
 					SCENE_MGR::Victor = 0; // clear the victor index
@@ -9920,13 +9831,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						||	SCENE_MGR::Aggressor == -1
 						)
 					{
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							sprintf ( temp, "CheckUnitArrival - we are one, something was -1");
-							RandomLogComment ( temp );
-						}
+						logInfo("CheckUnitArrival - we are one, something was -1");
 						continue;
 					}
 
@@ -9986,23 +9891,11 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					#ifdef _WINDOWS
 					if (IsMultiPlayer() && realm[AwayRealm].mfIsPlayerCtrl())
 					{
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							sprintf ( temp, "CheckUnitArrival - we are one: send RealmSceneFlags sync");
-							RandomLogComment ( temp );
-						}
+						logInfo("CheckUnitArrival - we are one: send RealmSceneFlags sync");
 
 						SetGameData(MP_REALM, MPRLM_BATTLEQUERY, HomeRealm, result, TRUE);
 
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							sprintf ( temp, "CheckUnitArrival - we are one: start waiting at RealmSceneFlags delay");
-							RandomLogComment ( temp );
-						}
+						logInfo("CheckUnitArrival - we are one: start waiting at RealmSceneFlags delay");
 
 						StartWait(99);
 						while (RealmSceneFlags[AwayRealm] == 99)	// wait for opponent
@@ -10020,13 +9913,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						}
 						EndWait(99);
 
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							sprintf ( temp, "CheckUnitArrival - we are one: done waiting at RealmSceneFlags delay");
-							RandomLogComment ( temp );
-						}
+						logInfo("CheckUnitArrival - we are one: done waiting at RealmSceneFlags delay");
 
 						// if we didn't retreat and opponent said RETREAT, we win
 						if (result != 2 && RealmSceneFlags[AwayRealm] == 2)
@@ -10061,13 +9948,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 									NPCBattleResults(TRUE);
 
 									#ifdef _WINDOWS
-									LOGCOMMENTSLEEP
-									if ( fLogComment )
-   								{
-										char temp[100];
-										sprintf ( temp, "CheckUnitArrival: SendEvent");
-										RandomLogComment ( temp );
-									}
+									logInfo("CheckUnitArrival: SendEvent");
 									#endif
 
 									AMultiPlayer.SendEvent (NPCBATTLE_ACTION,
@@ -10102,13 +9983,8 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 										if ( GetAsyncKeyState( VK_F10 ) & 0x8000 )
 										{
 											AMultiPlayer.Finalize();
-											if ( fLogComment )
-											{
-												char temp[150];
-												sprintf ( temp, "Finalizing NPCBattle - VK_F10=%ld",
-													(LONG)(GetAsyncKeyState( VK_F10 ) & 0x8000) );
-												RandomLogComment ( temp );
-											}
+											logInfo("Finalizing NPCBattle - VK_F10=%ld",
+												(LONG)(GetAsyncKeyState( VK_F10 ) & 0x8000) );
 										}
 										#endif
 
@@ -10166,19 +10042,13 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						DisplayNPCResults();
 						fWasABattle = TRUE;
 
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							char VictorRealmName[50];
+						char VictorRealmName[50];
 
-							strcpy(VictorRealmName, realm[units[SCENE_MGR::Victor].Realm].mfGetName());
-							sprintf ( temp, "CheckUnitArrival - we are one: winner:%s loser:%s in prov:%s",
-								VictorRealmName,
-								realm[units[SCENE_MGR::Loser].Realm].mfGetName(),
-								province[iProvince].name);
-							RandomLogComment ( temp );
-						}
+						strcpy(VictorRealmName, realm[units[SCENE_MGR::Victor].Realm].mfGetName());
+						logInfo("CheckUnitArrival - we are one: winner:%s loser:%s in prov:%s",
+							VictorRealmName,
+							realm[units[SCENE_MGR::Loser].Realm].mfGetName(),
+							province[iProvince].name);
 
 						#ifdef _WINDOWS
 						// in multiplay, units are withdrawn only on the
@@ -10196,14 +10066,8 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						#ifdef _WINDOWS
 						if (IsMultiPlayer())
 						{
-							LOGCOMMENTSLEEP
-							if ( fLogComment )
-							{
-								char temp[150];
-								sprintf ( temp, "CheckUnitArrival - we are one: Sync %ld",
-									(iMPS_SYNC_INITIATIVE + BattleSync));
-								RandomLogComment ( temp );
-							}
+							logInfo("CheckUnitArrival - we are one: Sync %ld",
+								(iMPS_SYNC_INITIATIVE + BattleSync));
 
 							//fSyncPending = TRUE;
 							//ShowSyncWaitWindow( (iMPS_SYNC_INITIATIVE + BattleSync), 0 );
@@ -10218,14 +10082,8 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 							StartSync( iMPS_SYNC_INITIATIVE + BattleSync );
 							CheckSync( (iMPS_SYNC_INITIATIVE + BattleSync), TRUE, TRUE );
 
-							LOGCOMMENTSLEEP
-							if ( fLogComment )
-							{
-								char temp[150];
-								sprintf ( temp, "CheckUnitArrival - we are one: done waiting at Sync %ld",
-									(iMPS_SYNC_INITIATIVE + BattleSync));
-								RandomLogComment ( temp );
-							}
+							logInfo("CheckUnitArrival - we are one: done waiting at Sync %ld",
+								(iMPS_SYNC_INITIATIVE + BattleSync));
 
 							BattleSync = (BattleSync + 1) & 3;
 
@@ -10237,13 +10095,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 					}
 					rv = fAUTOBATTLE;
 
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "After PC vs NPC Battle - cntUnits %ld", cntUnits_() );
-						RandomLogComment ( temp );
-					}
+					logInfo("After PC vs NPC Battle - cntUnits %ld", cntUnits_() );
 				}
 
 				// ----------------------------------------------
@@ -10268,13 +10120,7 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 						||	SCENE_MGR::Aggressor == -1
 						)
 					{
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[150];
-							sprintf ( temp, "CheckUnitArrival - NPC only, something was -1");
-							RandomLogComment ( temp );
-						}
+						logInfo("CheckUnitArrival - NPC only, something was -1");
 						continue;
 					}
 
@@ -10289,29 +10135,16 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 
 					fWasABattle = TRUE;
 
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[150];
-						char MovingUnitRealmName[50];
-
-						strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName());
-						sprintf ( temp, "CheckUnitArrival - NPC only - mov:%s vs j:%s in prov:%s",
-							MovingUnitRealmName,
-							realm[units[j].Realm].mfGetName(),
-							province[iProvince].name);
-						RandomLogComment ( temp );
-					}
+					char MovingUnitRealmName[50];
+					strcpy(MovingUnitRealmName, realm[units[iMovingUnit].Realm].mfGetName());
+					logInfo("CheckUnitArrival - NPC only - mov:%s vs j:%s in prov:%s",
+						MovingUnitRealmName,
+						realm[units[j].Realm].mfGetName(),
+						province[iProvince].name);
 					WithdrawLosingUnit(FALSE);
 					rv = fAUTOBATTLE + fNPCBATTLE;
 
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "After NPC vs NPC Battle - cntUnits %ld", cntUnits_() );
-						RandomLogComment ( temp );
-					}
+					logInfo("After NPC vs NPC Battle - cntUnits %ld", cntUnits_() );
 				}
 
 			}
@@ -10585,41 +10418,23 @@ void WithdrawLosingUnit (BOOL fSend)
 		//printf("	Destroying LosingUnits:\n");
 		while (LosingUnit != -1)
 		{
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[150];
-				sprintf ( temp, "WithdrawLosingUnit - deleting unit:%ld of %s",
-					LosingUnit,
-					realm[units[LosingUnit].Realm].mfGetName());
-				RandomLogComment ( temp );
-			}
+			logInfo("WithdrawLosingUnit - deleting unit:%ld of %s",
+				LosingUnit,
+				realm[units[LosingUnit].Realm].mfGetName());
 
 			// DeleteUnit returns the new next unit in the chain.
 			LosingUnit = DeleteUnit(LosingUnit, fSend );
 			//printf("	Destroy %d\n",i);
 		}
 		fCheckUnitArrival = FALSE;
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[150];
-			sprintf ( temp, "WithdrawLosingUnit - Didn't FoundOne ");
-			RandomLogComment ( temp );
-		}
+		logInfo("WithdrawLosingUnit - Didn't FoundOne ");
 		return;
 
 FoundOne:
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[150];
-			sprintf ( temp, "WithdrawLosingUnit - FoundOne - %s to prov %s",
-				realm[units[LosingUnit].Realm].mfGetName(),
-				province[WithdrawToProv].name);
-			RandomLogComment ( temp );
-		}
+		logInfo("WithdrawLosingUnit - FoundOne - %s to prov %s",
+			realm[units[LosingUnit].Realm].mfGetName(),
+			province[WithdrawToProv].name);
 
 		//printf("	Withdrawing LosingUnit to %s\n",province[WithdrawToProv].name);
 		//units[LosingUnit].DestProvince = WithdrawToProv;
@@ -11569,58 +11384,34 @@ void NPCBattleResults (BOOL fSend)
 	BattleExpPoints( SCENE_MGR::HomeIndex, BTL_EXP_ENGAGE, 0, FALSE );
 	BattleExpPoints( SCENE_MGR::AwayIndex, BTL_EXP_ENGAGE, 0, FALSE );
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[150];
-		sprintf ( temp, "NPCBattleResults - List of %s Home Units:",
-			realm[units[SCENE_MGR::HomeIndex].Realm].mfGetName());
-		RandomLogComment ( temp );
-	}
+	logInfo("NPCBattleResults - List of %s Home Units:",
+		realm[units[SCENE_MGR::HomeIndex].Realm].mfGetName());
 
 	for (UnitIndex = SCENE_MGR::HomeIndex;
 		 UnitIndex != fERROR;
 		 UnitIndex = (SHORT) units[UnitIndex].NextUnit)
 	{
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[150];
-			sprintf ( temp, "       Realm:%s  Index:%03d Unit:%s",
-				realm[units[UnitIndex].Realm].mfGetName(),
-				UnitIndex,
-				UnitName(UnitIndex)
-				);
-			RandomLogComment ( temp );
-		}
+		logInfo("       Realm:%s  Index:%03d Unit:%s",
+			realm[units[UnitIndex].Realm].mfGetName(),
+			UnitIndex,
+			UnitName(UnitIndex)
+			);
 
 		++HomeOrigCount;
 	}
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[150];
-		sprintf ( temp, "NPCBattleResults - List of %s Away Units:",
-			realm[units[SCENE_MGR::AwayIndex].Realm].mfGetName());
-		RandomLogComment ( temp );
-	}
+	logInfo("NPCBattleResults - List of %s Away Units:",
+		realm[units[SCENE_MGR::AwayIndex].Realm].mfGetName());
 
 	for (UnitIndex = SCENE_MGR::AwayIndex;
 		 UnitIndex != fERROR;
 		 UnitIndex = (SHORT) units[UnitIndex].NextUnit)
 	{
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[150];
-			sprintf ( temp, "       Realm:%s  Index:%03d Unit:%s",
-				realm[units[UnitIndex].Realm].mfGetName(),
-				UnitIndex,
-				UnitName(UnitIndex)
-				);
-			RandomLogComment ( temp );
-		}
+		logInfo("       Realm:%s  Index:%03d Unit:%s",
+			realm[units[UnitIndex].Realm].mfGetName(),
+			UnitIndex,
+			UnitName(UnitIndex)
+			);
 
 		++AwayOrigCount;
 	}
@@ -11718,17 +11509,11 @@ void NPCBattleResults (BOOL fSend)
 			// -- check for top of stack before killing
 			if ( units[AwayUnitIndex].Joined == 0)
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					sprintf ( temp, "   Deleting TOS Away Realm:%s  Index:%03d Unit:%s",
-						realm[units[AwayUnitIndex].Realm].mfGetName(),
-						AwayUnitIndex,
-						UnitName(AwayUnitIndex)
-						);
-					RandomLogComment ( temp );
-				}
+				logInfo("   Deleting TOS Away Realm:%s  Index:%03d Unit:%s",
+					realm[units[AwayUnitIndex].Realm].mfGetName(),
+					AwayUnitIndex,
+					UnitName(AwayUnitIndex)
+					);
 
 				// -- delete top of stack and leave
 				DeleteUnit(AwayUnitIndex, fSend);
@@ -11737,17 +11522,11 @@ void NPCBattleResults (BOOL fSend)
 			}
 			else
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					sprintf ( temp, "   Deleting Away Realm:%s  Index:%03d Unit:%s",
-						realm[units[AwayUnitIndex].Realm].mfGetName(),
-						AwayUnitIndex,
-						UnitName(AwayUnitIndex)
-						);
-					RandomLogComment ( temp );
-				}
+				logInfo("   Deleting Away Realm:%s  Index:%03d Unit:%s",
+					realm[units[AwayUnitIndex].Realm].mfGetName(),
+					AwayUnitIndex,
+					UnitName(AwayUnitIndex)
+					);
 
 				// -- otherwise, delete loser and get next dude
 				DeleteUnit(AwayUnitIndex, fSend);
@@ -11784,17 +11563,11 @@ void NPCBattleResults (BOOL fSend)
 			// -- check for top of stack before killing
 			if ( units[HomeUnitIndex].Joined == 0)
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					sprintf ( temp, "   Deleting TOS Home Realm:%s  Index:%03d Unit:%s",
-						realm[units[HomeUnitIndex].Realm].mfGetName(),
-						HomeUnitIndex,
-						UnitName(HomeUnitIndex)
-						);
-					RandomLogComment ( temp );
-				}
+				logInfo("   Deleting TOS Home Realm:%s  Index:%03d Unit:%s",
+					realm[units[HomeUnitIndex].Realm].mfGetName(),
+					HomeUnitIndex,
+					UnitName(HomeUnitIndex)
+					);
 
 				// -- delete top of stack and leave
 				DeleteUnit(HomeUnitIndex, fSend);
@@ -11803,17 +11576,11 @@ void NPCBattleResults (BOOL fSend)
 			}
 			else
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[150];
-					sprintf ( temp, "   Deleting Home Realm:%s  Index:%03d Unit:%s",
-						realm[units[HomeUnitIndex].Realm].mfGetName(),
-						HomeUnitIndex,
-						UnitName(HomeUnitIndex)
-						);
-					RandomLogComment ( temp );
-				}
+				logInfo("   Deleting Home Realm:%s  Index:%03d Unit:%s",
+					realm[units[HomeUnitIndex].Realm].mfGetName(),
+					HomeUnitIndex,
+					UnitName(HomeUnitIndex)
+					);
 
 				// -- otherwise, delete loser and get next dude
 				DeleteUnit(HomeUnitIndex, fSend);

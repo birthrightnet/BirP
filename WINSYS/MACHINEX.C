@@ -440,12 +440,6 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 
 	if(fp != NULL)
 		fclose(fp);
-// 	#ifdef _WINDOWS
-// 	#ifdef _DEBUG
-// 		RandomLogOpen ();
-// 	#endif
-// 	#endif
-
 
 	// start up the redbook player
 	InitRedBook();								// finds the CD
@@ -681,12 +675,6 @@ void AppExit(void)
 #ifdef INET
 	DestroyMenu(hMenuInit);
 #endif
-
-// #ifdef _WINDOWS
-// #ifdef _DEBUG
-// 	RandomLogClose ();
-// #endif
-// #endif
 
 	ReleaseDC(hwndApp, gdcScreen);
 	// close_graph();

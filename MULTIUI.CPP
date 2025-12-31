@@ -33,7 +33,6 @@
 #include "playstat.hxx"
 #include "context.hxx"
 #include "panel.h"
-#include "random.h"
 #include "regents.hxx"
 #include "scene.hxx"
 #include "scnmgr.hxx"
@@ -96,7 +95,7 @@ extern "C" HWND hwndApp;
 #define MENU_NEWNO     7		//---- Number of players
 #define MENU_NEWDONE   8       //---- New done
 
-#define MENU_TYPESEL   9       //---- New/Load 
+#define MENU_TYPESEL   9       //---- New/Load
 #define MENU_COMP      10      //---- Complexity
 
 
@@ -108,14 +107,14 @@ extern "C" HWND hwndApp;
 #define TYPE_NUMBER	3
 
 
-#define MP_SL          3      // scroll lines 
+#define MP_SL          3      // scroll lines
 #define MP_SUP         12     // scroll up button
-#define MP_SDOWN       13     // scroll down button 
+#define MP_SDOWN       13     // scroll down button
 
 
 #define CS_TALK_OFF    50
 #define CS_LISTEN_OFF  30
-   
+
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
@@ -150,9 +149,6 @@ extern CHAR pszGames[MAX_GAMES][24];		// list of game names
 #ifdef _WINDOWS
 extern void ToggleDirectDraw(LONG, LONG);
 #endif
-
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
 
 void DisplayProcess (LONG mode, LONG color, LONG index1, LONG index2);
 
@@ -205,7 +201,7 @@ static DWORD dwWebStart = 0;
 
 
 #if 0 // TEST CODE
-char psG[10][8] = {  
+char psG[10][8] = {
 
 "Line 1",
 "Line 2",
@@ -220,7 +216,7 @@ char psG[10][8] = {
 
  };
 #endif
-           
+
 
 // static int iTransType = iMPFT_REC; //---- Default to receive
 
@@ -246,7 +242,7 @@ int iTTimeLimit = iTT_None;  //---- Turn time limit default None
 BOOL		fSyncPending = FALSE;
 
 LONG       lSaveHighlight;
-    
+
 extern BOOL char_selected;		// from game.cpp
 extern BOOL fDomainTurn;		// from gamemap.cpp
 extern BOOL fInfoOnlyDomainUI;	// from gamemap.cpp
@@ -280,7 +276,7 @@ extern PMENU		Menus;
 /* ========================================================================
 	Function		- SetScreenMode()
 	Description - set screen mode to normal based on flags and whether we are
-					  in DDraw 
+					  in DDraw
 
 	Returns	- void
 	======================================================================== */
@@ -298,7 +294,7 @@ void setScreenMode ( int fExclusive, int fCursor )
 		{
 			if ( fCursor )
 			{
-				ShowCursor(FALSE);	
+				ShowCursor(FALSE);
 			}
 
 			DDSetCooperative ( TRUE );
@@ -326,7 +322,7 @@ void setScreenMode ( int fExclusive, int fCursor )
 
 
 /* ========================================================================
-	Function	- 
+	Function	-
 	Description -
 	Returns	- void
 	======================================================================== */
@@ -344,11 +340,11 @@ static void DrawShield (LONG x, LONG y, LONG rlm)
    Returns     -
    ======================================================================== */
 void DoButtonMove ( LONG MenuCombo )
-{ 
+{
 
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-		
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	fUpdatePanels = TRUE;
@@ -413,7 +409,7 @@ void PaintWebStart( LONG MenuCombo, LONG )
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -445,14 +441,14 @@ void PaintWebStart( LONG MenuCombo, LONG )
 		);
 
 
-   //---- Exit if we have been up 5 secs 
+   //---- Exit if we have been up 5 secs
 
    if ( dwWebStart < GetTickCount() )
    {
        dwWebStart = 0;
 		HideSubMenu( 0, D_QUESTION1 );
 		GAMEToggleMainMenu(TRUE,0);  //---- start up main menu
-       
+
    }
 
 #endif
@@ -471,7 +467,7 @@ void CancelWebStart(LONG , LONG )
 
 
 /* ========================================================================
-   Function    - SetupWebStart 
+   Function    - SetupWebStart
    Description - Setup web start dialog
    Returns     -
    ======================================================================== */
@@ -501,7 +497,7 @@ void SetupWebStart ( void )
 
 /* ========================================================================
    Function    - ShowWebStart
-   Description - Show temp menu for starting web page 
+   Description - Show temp menu for starting web page
    Returns     -
    ======================================================================== */
 void ShowWebStart(LONG, LONG)
@@ -654,13 +650,7 @@ void ShowVoteWaitWindow(LONG, LONG)
 	//---- Send Event
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-   {
-		char temp[100];
-		sprintf ( temp, "ShowVoteWaitWindow: SendEvent");
-		RandomLogComment ( temp );
-	}
+	logInfo("ShowVoteWaitWindow: SendEvent");
 	#endif
 	AMultiPlayer.SendEvent( iMPE_ADVENTURE,	0, 0, 0, 0, 0 );
 
@@ -701,13 +691,7 @@ void ShowSyncWaitWindow( LONG sync, LONG)
 	{
 		AMultiPlayer.LookForMessages();
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-		char temp[200];
-		sprintf ( temp, "ShowSyncWaitWindow - SendSync Failed!");
-		RandomLogComment ( temp );
-		}
+		logInfo("ShowSyncWaitWindow - SendSync Failed!");
 	}
 
 	//---- Pre check if all syncs have come in
@@ -760,7 +744,7 @@ void ShowSyncWaitWindow( LONG sync, LONG)
 
 /* ========================================================================
    Function    - UpdateChatValues
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 
@@ -791,7 +775,7 @@ void UpdateChatValues(void)
 
 /* ========================================================================
    Function    - ToggleChatSend
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void ToggleChatSend( LONG index, LONG old )
@@ -816,7 +800,7 @@ void ToggleChatSend( LONG index, LONG old )
 	    	for ( i = 1; i < MAX_PLAYERS+1; i++ )
 		    {
 			    TempChatSend[i] = 1;				//---- Reset single players
-   		}	
+   		}
 
 	    }
    	else  	//----- Select a single / multiplayers
@@ -830,7 +814,7 @@ void ToggleChatSend( LONG index, LONG old )
 		    	if ( TempChatSend[index] )
 			    {
 				    TempChatSend[index] = 0;
-                   TempChatSend[0] = 0;    
+                   TempChatSend[0] = 0;
    			}
 	    		else
 		    	{
@@ -855,7 +839,7 @@ void ToggleChatSend( LONG index, LONG old )
 	        		break;
    	    	}
            }
-	    }	
+	    }
 
 
 
@@ -880,7 +864,7 @@ void ToggleChatSend( LONG index, LONG old )
 
 /* ========================================================================
    Function    - ToggleChatRec
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void ToggleChatRec( LONG index, LONG old )
@@ -905,7 +889,7 @@ void ToggleChatRec( LONG index, LONG old )
 	    	for ( i = 1; i < MAX_PLAYERS+1; i++ )
 		    {
 			    TempChatRec[i] = 1;				//---- Reset single players
-   		}	
+   		}
 
 	    }
    	else  	//----- Select a single / multiplayers
@@ -919,7 +903,7 @@ void ToggleChatRec( LONG index, LONG old )
 		    	if ( TempChatRec[index] )
 			    {
 				    TempChatRec[index] = 0;
-                   TempChatRec[0] = 0;    
+                   TempChatRec[0] = 0;
    			}
 	    		else
 		    	{
@@ -944,7 +928,7 @@ void ToggleChatRec( LONG index, LONG old )
 	        		break;
    	    	}
            }
-	    }	
+	    }
 
 
    	//---- There are not any single players set so set All Players
@@ -954,7 +938,7 @@ void ToggleChatRec( LONG index, LONG old )
 	    	TempChatRec[0] = 1;
    	}
 
-   
+
    }
 
 #endif
@@ -972,7 +956,7 @@ void ToggleChatRec( LONG index, LONG old )
 
 /* ========================================================================
    Function    - CleanupChatSelectWindow
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 
@@ -1023,7 +1007,7 @@ void ShowChatSelectWindow(LONG, LONG)
 
 #ifdef _WINDOWS
 	int i;
-	
+
 
 	if ( IsMultiPlayer() )
 	{
@@ -1032,7 +1016,7 @@ void ShowChatSelectWindow(LONG, LONG)
 
 		for ( i = 0; i < MAX_PLAYERS+1; i++ )
 		{
-           //---- Fill in the current send receive options 
+           //---- Fill in the current send receive options
 
 		    TempChatSend[i] = AMultiPlayer.GetChat( i );
 		    TempChatRec[i]  = AMultiPlayer.GetChatRec( i );
@@ -1050,7 +1034,7 @@ void ShowChatSelectWindow(LONG, LONG)
 	else
 	{
 	//	ShowPanel(D_CHAT_SELECT);
-	
+
 		ShowMenu(D_CHAT_SELECT);
 	   RunMenus();
 	}
@@ -1072,10 +1056,10 @@ void ShowChatSelectWindow(LONG, LONG)
 
    		GetButtonPosition( D_CHAT_SELECT, i+2, &mx, &my );
 
-           add_region( mx-CS_TALK_OFF, my, 
+           add_region( mx-CS_TALK_OFF, my,
                        10,12,0,ToggleChatSend,i,0,0, STR_NULL);
 
-           add_region( mx-CS_LISTEN_OFF, my, 
+           add_region( mx-CS_LISTEN_OFF, my,
                        10,12,0,ToggleChatRec,i,0,0, STR_NULL);
 
 		}
@@ -1105,7 +1089,7 @@ void DoneChatSelect( LONG MenuCombo, LONG )
    {
 
        chatbuff[strlen(chatbuff)-1] = 0;
-           
+
 
 #ifdef _WINDOWS
   		AMultiPlayer.Chat(chatbuff);
@@ -1141,7 +1125,7 @@ void CancelChatSelect(LONG MenuCombo, LONG )
 
    DoButtonMove ( MenuCombo );
 
-   //---- Reset chat input buffer 
+   //---- Reset chat input buffer
 
    memset(chatbuff, 0, sizeof(chatbuff));
 
@@ -1198,8 +1182,8 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 
 	//---- Reset buffer
 
-	done = PaintInputField( MenuId, chatbuff, 
-                           MAX_INPUT_CHAR+2, 
+	done = PaintInputField( MenuId, chatbuff,
+                           MAX_INPUT_CHAR+2,
                            -1, TRUE, 1, 0, 0 );
 
 
@@ -1220,14 +1204,14 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 
      	if ( done == 2 )
 			cheated++;
-   
+
    }
    else    //---- If pixel is > max or max line length reach the auto send
    {
-       if ( ( gtext_width ( chatbuff ) >= MAX_INPUT_PIXEL ) || 
+       if ( ( gtext_width ( chatbuff ) >= MAX_INPUT_PIXEL ) ||
             ( strlen( chatbuff) >=  MAX_INPUT_CHAR )           )
        {
-           
+
            chatbuff[strlen(chatbuff)-1] = 0;
 
 #ifdef _WINDOWS
@@ -1243,7 +1227,7 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 
 
    //
-   //---- If this is a multiplayer game then write each player out 
+   //---- If this is a multiplayer game then write each player out
    //
 
 #ifdef _WINDOWS
@@ -1261,34 +1245,34 @@ void PaintChatSelect(LONG MenuCombo, LONG)
    		buffer[0] = 0;
 
    		GetButtonPosition( MenuId, i, &mx, &my );
-   
+
 
           	//---- All Players Line
 
    		if ( i == 2 )
    		{
    			sprintf(buffer, "%s", STRMGR_GetStr(STR_CHATSEL_2) );
-   
+
                iMPCheck[0]= GetResourceStd("UI\\DCHECK1.PCX", FALSE);
                iMPCheck[1]= GetResourceStd("UI\\DCHECK2.PCX", FALSE);
-   
-               DrawBitmap( mx-CS_TALK_OFF, my, 
+
+               DrawBitmap( mx-CS_TALK_OFF, my,
                            iMPCheck[TempChatSend[0]],0,0,20,20 );
-   
+
                DrawBitmap( mx-CS_LISTEN_OFF, my,
                            iMPCheck[TempChatRec[0]] ,0,0,20,20 );
 
                if (iMPCheck[0]!=fERROR) SetPurge(iMPCheck[0]);	iMPCheck[0]=fERROR;
                if (iMPCheck[1]!=fERROR) SetPurge(iMPCheck[1]);	iMPCheck[1]=fERROR;
-   
+
    		}
-   		else  //---- Other players 
+   		else  //---- Other players
    		{
-   
+
    			//---- Get Player info ( Name etc )
-   
+
    			dwId = AMultiPlayer.GetAPlayerId ( i - 3 );
-   
+
    			if ( dwId != kNoPlayer )
    			{
    				int rindex;
@@ -1296,22 +1280,22 @@ void PaintChatSelect(LONG MenuCombo, LONG)
    				rindex = AMultiPlayer.GetRealmFromId( dwId  );
 
                    last = i;
-                   
 
-                   //---- Get the check box art 
-   
+
+                   //---- Get the check box art
+
    	            iMPCheck[0]= GetResourceStd("UI\\DCHECK1.PCX", FALSE);
                  	iMPCheck[1]= GetResourceStd("UI\\DCHECK2.PCX", FALSE);
-   
 
-                   //---- Draw the check box 
+
+                   //---- Draw the check box
 
                    DrawBitmap( mx-CS_TALK_OFF, my,
                               iMPCheck[TempChatSend[i-2]],0,0,20,20 );
-   
+
                    DrawBitmap( mx-CS_LISTEN_OFF, my,
                               iMPCheck[TempChatRec[i-2]] ,0,0,20,20 );
-   
+
 
                    //---- release the box art
 
@@ -1319,7 +1303,7 @@ void PaintChatSelect(LONG MenuCombo, LONG)
                 	if (iMPCheck[1]!=fERROR) SetPurge(iMPCheck[1]);	iMPCheck[1]=fERROR;
 
 
-   
+
                    //---- Do the realm thing baby
 
    				if ( rindex < LAND_REALM_COUNT )
@@ -1337,9 +1321,9 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 
               	        if (iMPDCtrlIc!=fERROR) SetPurge(iMPDCtrlIc); iMPDCtrlIc=fERROR;
            	        if (iMPDCtr2Ic!=fERROR) SetPurge(iMPDCtr2Ic); iMPDCtr2Ic=fERROR;
-   
 
-                       //---- Add some descriptive text 
+
+                       //---- Add some descriptive text
 
    					strcpy(cpRealmName, realm[rindex].mfGetName() );
 
@@ -1347,12 +1331,12 @@ void PaintChatSelect(LONG MenuCombo, LONG)
    							 "%s %s",
    							 AMultiPlayer.GetOpponentName(i - 3),
    							 STRMGR_GetStr(STR_CHATSEL_AS) );
-   
+
    					// [d4-09-97 JPC] Modified the following to use the access
    					// function instead of direct access to the obsolete .name member
    					// of the REGENT class.
 
-   					sprintf( &buffer[temp],					
+   					sprintf( &buffer[temp],
    							 " %s%s %s",
    	                	     regents[realm[rindex].mfGetRegent()].mfGetname(),
    							 STRMGR_GetStr(STR_CHATSEL_RO),
@@ -1360,33 +1344,33 @@ void PaintChatSelect(LONG MenuCombo, LONG)
    				}
    				else //---- Not selected yet
    				{
-   
+
    					sprintf( buffer,
    							 "%s %s",
    							 AMultiPlayer.GetOpponentName(i - 3),
    							 STRMGR_GetStr(STR_MULTIWAIT_NOT) );
-   				
+
    				}
    			}
    		}
 
-           //---- Display character info 
+           //---- Display character info
 
    		gprint_text(mx, my, buffer, 200 );
 
    	}
 
 
-       //---- print out talk and listen titles  
+       //---- print out talk and listen titles
 
    	init_gfont(FONT_SANS_6PT);
 
   		GetButtonPosition( MenuId, last, &mx, &my );
 
-       print_textf( mx-30, 
+       print_textf( mx-30,
                     my+25, 200, "^A^L%s", STRMGR_GetStr(STR_TALK) );
 
-       print_textf( mx, 
+       print_textf( mx,
                     my+25, 200, "^A^L%s", STRMGR_GetStr(STR_LISTEN) );
 
    }
@@ -1453,7 +1437,7 @@ void AddInputSpace ( int type )
    			sprintf ( szTempNumber, "%1.1d", AMultiPlayer.GetNumPlayers() );
            }
 
-           
+
 			//---- Last char needs to be diff
 			if ( szTempNumber[(i=strlen(szTempNumber))-1] != ' ' )
 			{
@@ -1520,31 +1504,31 @@ void MultiPlayerNewGame (void)
 {
 	// set the proc to null
 	SetButtonProc  (D_QUESTION2, 0, NULL, 0, 0 );
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION2, QUESTION_TEXT, STR_MAIN1_YN_QUESTION_NEW, BLACK );
-	
+
 	// turn on the first button as YES
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, MultiPlayerStartGame, QUESTION_BTN1, D_KEY_YES );
-	
+
 	// turn on the second button as CANCEL
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_CANCEL, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, MultiPlayerStartGame, QUESTION_BTN2, D_KEY_CANCEL );
-	
+
 	ShowMenu(D_QUESTION2);
 }
 
 /* ========================================================================
    Function    - MultiPlayerStartGame
 	Description - click routine for new game dialog
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void MultiPlayerStartGame( LONG MenuCombo, LONG arg )
 {
 	LONG	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// click the button
 	SetButtonHilight(MenuId, ButtonId, TRUE);
 	RunMenus();
@@ -1561,9 +1545,9 @@ void MultiPlayerStartGame( LONG MenuCombo, LONG arg )
 		gMPStartGame = TRUE;
 	else
 		gMPStartGame = FALSE;
-	
+
 	gMPStartGameLoop = FALSE;
-}	
+}
 
 /* ========================================================================
    Function    - ShowMultiplayerMenu
@@ -1584,7 +1568,7 @@ void ShowMultiPlayerMenu(LONG, LONG)
 
 #ifdef _WINDOWS
 		char pszTemp[MAX_PATH];
-		
+
 		//GEH
 		// if a game already in progress, we must ask if they want
 		// to end the game or go back
@@ -1599,37 +1583,37 @@ void ShowMultiPlayerMenu(LONG, LONG)
 			{
 				MenuLoop();
 			}
-			
+
 			// user choose to bail out and return to his game
 			if (gMPStartGame == FALSE)
 				return;
 			// no going back now...
 			char_selected = FALSE;
 		}
-		
+
 		// no going back now...
 		// MultiResetRealmSelect();
-		
+
 		GAMEToggleMainMenu(FALSE,0);	//---- shutdown main menu
-		
+
 		AMultiPlayer.Finalize(1);
-		
+
 		HidePanel(D_BUILD_ARMY);
 		HidePanel(D_BUILD_ADV);
 		HidePanel(D_ADVENTURE_PREP);
-		
+
 		//---- wait for menu to minimize
 		fUpdatePanels = TRUE;
 		RunPanels();
 		RunMenus();
-		
+
 		//GEH 8/5/97
 		// reload virgin copies of the .ava and .inv files
 		//StatReadAll();
 		//WriteRealmStartData();
 		//GEH 8/25/97
 		// from a multiplayer rlmstart.dat file
-		
+
 		//GEH 7/78/97
 		// release a running scene, calls InitDomainTurn
 		if (fDomainTurn == FALSE)
@@ -1653,27 +1637,27 @@ void ShowMultiPlayerMenu(LONG, LONG)
 
 		SetRedrawMainMapLevel();
 		fFadedOut = -1;
-		
+
 		//GEH if (!fDomainTurn)				// you're in adventure or battle?!
 		//GEH {
 		//GEH 	master_game_type = GAME_NORMAL;
 		//GEH 	dturn_mode = START_NEW_OR_LOAD;
 		//GEH 	SCENE_MGR::mfReleaseSceneToMap(0,0);	// return to map level
 		//GEH }
-		
+
 		fPractice = FALSE;
 		fTutorialSelected = FALSE;
 		fTutorialFirstBattle = FALSE;
-		
+
 		//---- Means no web browser for url types
 		if ( FindExecutable ( "birth.url", NULL, pszTemp ) <= (HANDLE) 32 )
 		{
 			fWeb = FALSE;
 		}
-		
+
 		SetMultiPlayerEnvironment( 0, 0 );
 		ShowMenu(D_MULTIENV);
-		
+
 #else
 		return;    //---- Not in DOS Should never be here in DOS
 #endif
@@ -1767,7 +1751,7 @@ void DispMultiOpts(int fProt, LONG MenuId )
 void SetScrollOff(void )
 {
 
-   //---- Blank scroll buttons off, first 
+   //---- Blank scroll buttons off, first
 
    SetButtonArt ( D_MULTIJOIN, MP_SUP, "UI\\MLTBTNUC.PCX" );
    SetButtonArt ( D_MULTIJOIN, MP_SDOWN, "UI\\MLTBTNDC.PCX" );
@@ -1776,7 +1760,7 @@ void SetScrollOff(void )
 
 /* ========================================================================
    Function    - SetScrollButtons
-   Description - set scroll buttons for joining games 
+   Description - set scroll buttons for joining games
    Returns     -
    ======================================================================== */
 void SetScrollButtons ( void )
@@ -1967,7 +1951,7 @@ void PaintWaitingMenu( LONG MenuCombo, LONG )
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -1994,7 +1978,7 @@ void PaintWaitingMenu( LONG MenuCombo, LONG )
 		//---- wait for menu to minimize
 
   		HideSubMenu( 0, MenuId );
-   
+
 		RunMenus();
 
 		//---- Enumerate Player names
@@ -2027,7 +2011,7 @@ void PaintWaitingMenu( LONG MenuCombo, LONG )
    	SetButtonHilight( MenuId, QUESTION_BTN2, FALSE );
    }
    else
-   {   
+   {
        if ( fStartGame )
            SetButtonLabel( MenuId, QUESTION_BTN2, STR_START1, GREY );  //---- greyed button
    }
@@ -2115,14 +2099,14 @@ void StartWaitingMenu(LONG MenuCombo, LONG)
 	if ( fStartGame && numplayers > 1 )
 	{
 		DoButtonMove ( MenuCombo );
-		
+
 		//----- Do Force Start game HERE
 		AMultiPlayer.ForceStart();
-		
+
 		HideMenu( D_QUESTION2 );
 		//---- wait for menu to minimize
 		RunMenus();
-		
+
 		//---- Enumerate Player names
 		AMultiPlayer.GetPlayers();
 		AMultiPlayer.InitPost();
@@ -2159,7 +2143,7 @@ void PaintWaitingTypeMenu( LONG MenuCombo, LONG )
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -2537,7 +2521,7 @@ void PaintVoteWait(LONG MenuCombo, LONG)
 
            	if ( AMultiPlayer.GetAEventReply( i, &data1, &data2, &data3, &data4 ) )
 				{
-				
+
 				    if ( data1 )
 						tyes++;
 					else
@@ -2550,7 +2534,7 @@ void PaintVoteWait(LONG MenuCombo, LONG)
 
 
 		HideSubMenu(0, D_MULTIWAIT );
-	
+
 		//---- wait for menu to minimize
 
 		RunMenus();
@@ -2571,7 +2555,7 @@ void PaintVoteWait(LONG MenuCombo, LONG)
 
 			AMultiPlayer.ResultsEvent( iMPE_ADVENTURE,
 						        	   0, 0, 0, 0, 0 );
-			
+
 			IncActionTurn();
 
 			if (fLTAction == DURING_LTACTION)	// return to normal action type
@@ -2579,7 +2563,7 @@ void PaintVoteWait(LONG MenuCombo, LONG)
 				ActiveRegent = realm[HomeRealm].mfGetRegent();
 				fLTAction = AFTER_LTACTION;
 			}
-//Thanks			
+//Thanks
 //			action_turn++;		  //---- Will this trigger continue ?
 		}
 
@@ -2727,7 +2711,7 @@ void PaintMPOver( LONG MenuCombo, LONG )
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -2750,18 +2734,18 @@ void PaintMPOver( LONG MenuCombo, LONG )
 
 	LONG XX = X + xOff + (W/2);
 	LONG YY = Y + yOff + (H/3) + 1;
-	
+
    sprintf( textbuf, "%s", STRMGR_GetStr(STR_MP_GAMEOVER) );
 	print_text_centered(
-		XX, 
+		XX,
 		YY,
 		textbuf,
 		Menus[MenuId].Buttons[QUESTION_TEXT].LabelColor
 		);
-   
+
    sprintf( textbuf, "%s", STRMGR_GetStr(STR_MP_KEEPPLAYING) );
 	print_text_centered(
-		XX, 
+		XX,
 		YY + 20,
 		textbuf,
 		Menus[MenuId].Buttons[QUESTION_TEXT].LabelColor
@@ -2866,7 +2850,7 @@ void SetupSyncWait ( int sync )
 
 
 /* ========================================================================
-   Function    - SetupMPOver 
+   Function    - SetupMPOver
    Description - Setup Mulitplayer over dialog
    Returns     -
    ======================================================================== */
@@ -2950,7 +2934,7 @@ BOOL MultiAllRealmsSelected( void )
 		int rindex;
 
 		//---- Get Player info ( Name etc )
-			
+
 		dwId = AMultiPlayer.GetAPlayerId ( i );
 
 
@@ -3039,7 +3023,7 @@ void PaintAdventQuestion(LONG MenuCombo, LONG val)
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -3067,7 +3051,7 @@ void PaintAdventQuestion(LONG MenuCombo, LONG val)
 			sprintf( textbuf, "%s %s",
 					 ptemp,
 					 STRMGR_GetStr(STR_ADVENT) );
-		}				
+		}
 	}
 
 
@@ -3180,7 +3164,7 @@ void PaintMultiQuit(LONG MenuCombo, LONG val)
 	LONG Y;
 	LONG W;
 	LONG H;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -3236,12 +3220,12 @@ void SetupMultiQuestion ( void )
 
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, CheckQuestion, 0, D_KEY_YES );
-	
+
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_NO, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, CheckQuestion, 1, D_KEY_NO );
 
 	fWait = FALSE;
-				
+
 
 
 }
@@ -3267,7 +3251,7 @@ void SetupMultiQuit ( void )
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN1, STR_YES, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN1, CheckQuit, 0, D_KEY_YES );
 
-				
+
 	//---- no
 	SetButtonLabel  (D_QUESTION2, QUESTION_BTN2, STR_NO, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION2, QUESTION_BTN2, CheckQuit, 1, D_KEY_NO );
@@ -3278,7 +3262,7 @@ void SetupMultiQuit ( void )
 /* ========================================================================
    Function    - StartSync
    Description - if player is the master, the sync point is initiated
-   Returns     - 
+   Returns     -
 	======================================================================== */
 void StartSync ( LONG sync )
 {
@@ -3295,13 +3279,7 @@ void StartSync ( LONG sync )
 
 		StartWait( sync + 16 );
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-		char temp[200];
-		sprintf ( temp, "StartSync - start of sync %ld -----------------", sync);
-		RandomLogComment ( temp );
-		}
+		logInfo("StartSync - start of sync %ld -----------------", sync);
 
 		AMultiPlayer.LookForMessages();		//---- Check for messages
 
@@ -3310,14 +3288,8 @@ void StartSync ( LONG sync )
 		{
 			// -- shut off the pinger
 			fStartPinging = FALSE;
-			
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-			char temp[200];
-			sprintf ( temp, "   StartSync - Player %ld, send sync %ld", AMultiPlayer.GetPlayerId(), sync);
-			RandomLogComment ( temp );
-			}
+
+			logInfo("   StartSync - Player %ld, send sync %ld", AMultiPlayer.GetPlayerId(), sync);
 
 			// clear the syncs we will be using
 			AMultiPlayer.ResetSync( iMPS_SYNC_GO );
@@ -3330,22 +3302,16 @@ void StartSync ( LONG sync )
 
 				run_timers();
 				Sleep(100);
-				
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-				char temp[200];
-				sprintf ( temp, "   StartSync - Player %ld, send sync %ld Failed!", AMultiPlayer.GetPlayerId(), sync);
-				RandomLogComment ( temp );
-				}
+
+				logInfo("   StartSync - Player %ld, send sync %ld Failed!", AMultiPlayer.GetPlayerId(), sync);
 
 				// -- Just couldn't sync up
 				AMultiPlayer.Finalize();
-				
+
 				// -- if we get informed of someone leaving game, need
 				// -- to run the menu code to clear the message box
 				RunMenus();
-				
+
 				if ( !IsMultiPlayer() )		//---- The game is over somehow
 					break;
 			}
@@ -3364,17 +3330,11 @@ void StartSync ( LONG sync )
 		{
 			Sleep(0);
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-			char temp[200];
-			sprintf ( temp, "   StartSync - Master, do nothing, sync %ld", sync);
-			RandomLogComment ( temp );
-			}
-			
+			logInfo("   StartSync - Master, do nothing, sync %ld", sync);
+
 			AMultiPlayer.ResetAllSyncTimes();
 			AMultiPlayer.ResetAllSyncCounts();
-			
+
 		}
 
 		EndWait( sync + 16 );
@@ -3395,7 +3355,7 @@ void StartSync ( LONG sync )
 void PaintNumberOverLED ( int k, DWORD id2, LONG number )
 {
 	LONG	newY = NUM_LED_Y + (NUM_LED_INC * k);
-	
+
 	if (id2 != kNoPlayer)
 	{
 		color_rect( NUM_LED_X, newY, NUM_LED_W, NUM_LED_H, RED);
@@ -3450,17 +3410,14 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 		//	RandomLogComment ( temp );
 		//}
 
-
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
+		#ifdef _DEBUG
 			SetRemapTable(RED_GRAD);
 			DrawBitmap (422, 409, iDMapBx, 22, 0, 216, 21);
 			ClearRemapTable();
 			init_gfont(FONT_SANS_8PT);
 			print_textf(422+108, 420, WHITE, "^cStart CheckSync %d",sync);
 			ScreenCopy( 0, 422, 409, 216, 21, SC_DEFAULT_RES);
-		}
+		#endif
 
 
 		AMultiPlayer.LookForMessages();		//---- Check for messages
@@ -3490,7 +3447,7 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 					{
 						// paint ack status
 						PaintAckLED(i, dwId, (BOOL)AMultiPlayer.GetSync(sync, i));
-						
+
 //						DebugMsgOnScreen("^cbefore .GetSync. sync %ld", sync);
 						//---- are they at this sync point
 						if ( !AMultiPlayer.GetSync( sync, i ) )
@@ -3500,7 +3457,7 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 							// -- GEH 7/7/97
 							// -- If we haven't heard from a player in
 							// -- a certain amount of time, assume that
-							// -- they are hung in the wrong sync point and 
+							// -- they are hung in the wrong sync point and
 							// -- try to shake them loose.  If I have seen
 							// -- shook them once already, delete them
 							// -- GEH 7/17/97
@@ -3508,26 +3465,20 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 							// -- ABC 7/21/97
 							// -- put extra GO back in to make restore game
 							// -- multiplayer work
-							
-						 	if ( 0 == AMultiPlayer.GetSyncCount(i)	
+
+						 	if ( 0 == AMultiPlayer.GetSyncCount(i)
 								&& MP_SYNC_TIMEOUT < AMultiPlayer.GetSyncTime(i))
 							{
 								AMultiPlayer.ResetSyncTime(i);
 								AMultiPlayer.IncSyncCount(i);
 								AMultiPlayer.SendSyncTo( iMPS_SYNC_GO, dwId );
-								LOGCOMMENTSLEEP
-								if ( fLogComment )
-								{
-									char temp[200];
-									sprintf ( temp, "CheckSync - sync %ld for id %ld TIMEDOUT, resending...", sync, dwId);
-									RandomLogComment ( temp );
-								}
+								logInfo("CheckSync - sync %ld for id %ld TIMEDOUT, resending...", sync, dwId);
 							}
 							else
 							if ( MP_LEFT_TIMEOUT < AMultiPlayer.GetSyncTime(i) )
-							{  
+							{
 								AMultiPlayer.RemovePlayer( dwId );
-								
+
 								#if 0
 								LOGCOMMENTSLEEP
 								if ( fLogComment )
@@ -3538,7 +3489,7 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 								}
 								#endif
 							}
-							
+
 							cnt++;
 							who = AMultiPlayer.GetRealmFromId( dwId );
 						}
@@ -3633,15 +3584,8 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 
 			fRedrawAll = TRUE;		// prime the pump
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-				sprintf ( temp, "   CheckSync - Master, received all sync %ld", sync);
-				RandomLogComment ( temp );
-				sprintf ( temp, "   CheckSync - Master, send GO for sync %ld", sync);
-				RandomLogComment ( temp );
-			}
+			logInfo("   CheckSync - Master, received all sync %ld", sync);
+			logInfo("   CheckSync - Master, send GO for sync %ld", sync);
 
 			// send the GO message
 			while (!AMultiPlayer.SendSync( iMPS_SYNC_GO ))
@@ -3651,17 +3595,11 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 				// -- if we get informed of someone leaving game, need
 				// -- to run the menu code to clear the message box
 				RunMenus();
-				
+
 				if ( !IsMultiPlayer() )		//---- The game is over somehow
 					break;
-					
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[200];
-					sprintf ( temp, "   CheckSync - Master, send GO for sync %ld Failed!", sync);
-					RandomLogComment ( temp );
-				}
+
+				logInfo("   CheckSync - Master, send GO for sync %ld Failed!", sync);
 			}
 
 			run_timers();
@@ -3679,17 +3617,11 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 				// -- if we get informed of someone leaving game, need
 				// -- to run the menu code to clear the message box
 				RunMenus();
-				
+
 				if ( !IsMultiPlayer() )		//---- The game is over somehow
 					break;
-					
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[200];
-					sprintf ( temp, "   CheckSync - Master, send GO2 for sync %ld Failed!", sync);
-					RandomLogComment ( temp );
-				}
+
+				logInfo("   CheckSync - Master, send GO2 for sync %ld Failed!", sync);
 			}
 
 			#if 0
@@ -3736,7 +3668,7 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 				// -- if we get informed of someone leaving game, need
 				// -- to run the menu code to clear the message box
 				RunMenus();
-				
+
 				if ( !IsMultiPlayer() )		//---- The game is over somehow
 					return 0;
 			}
@@ -3767,17 +3699,11 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 				if ( AMultiPlayer.GetSync( iMPS_SYNC_GO, masterindex )
 					|| AMultiPlayer.GetSync( sync, masterindex ) )
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[200];
-						sprintf ( temp, "   CheckSync - FOUND iMPS_SYNC_GO for masterindex %d.", masterindex);
-						RandomLogComment ( temp );
-					}
-					
+					logInfo("   CheckSync - FOUND iMPS_SYNC_GO for masterindex %d.", masterindex);
+
 					// -- turn my pinger back on
 					fStartPinging = TRUE;
-					
+
 					AMultiPlayer.ResetSync( iMPS_SYNC_GO );
 					AMultiPlayer.ResetSync( sync );
 					break;
@@ -3846,13 +3772,7 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 		}
 
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[200];
-			sprintf ( temp, "CheckSync - End of sync %ld -----------------", sync);
-			RandomLogComment ( temp );
-		}
+		logInfo("CheckSync - End of sync %ld -----------------", sync);
 
 		if (fStay && !fDisplayProcess)
 			EndWait( sync + 16 );
@@ -3869,21 +3789,21 @@ LONG CheckSync ( LONG sync, BOOL fStay, BOOL fDisplayProcess )
 /* ========================================================================
    Function    - SetupMultiPlayerHost
 	Description - init the hilights
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void SetupMultiPlayerHost ( void )
 {
 #ifdef _WINDOWS
 	// -- Host type
 	SetMultiPlayerHostGame( 0 , iMPGT_NEW );
-	
+
 	// -- Time limit
 	SetMultiPlayerHostTime( 0 , iTTimeLimit );
-	
+
 	// detail level
 	//SetMultiPlayerHostDetail( 0 , (fControlMode & 0x0003) );
 	SetMultiPlayerHostDetail( 0 , 2 );	// RC default to expert
-	
+
 	// -- Game difficulty
 	SetMultiPlayerHostDiff( 0 , game_difficulty );
 #endif
@@ -3892,7 +3812,7 @@ void SetupMultiPlayerHost ( void )
 /* ========================================================================
    Function    - SetupMultiPlayerJoin
 	Description - init the variables
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void SetupMultiPlayerJoin ( void )
 {
@@ -3902,23 +3822,23 @@ void SetupMultiPlayerJoin ( void )
 /* ========================================================================
    Function    - SetupMultiPlayerName
 	Description - init the hilights
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void SetupMultiPlayerName ( void )
 {
 #ifdef _WINDOWS
 	SHORT i;
-	
+
 	// -- Name
 	strcpy ( szTempName, AMultiPlayer.GetPlayerName() );
-	
+
 	// -- Last char needs to be diff
 	if ( szTempName[(i = strlen(szTempName))-1] != ' ' )
 	{
 		szTempName[i]   = ' ';
 		szTempName[i+1] = 0;
 	}
-	
+
 	if (strlen(szTempName) == 1)
 	{
 		SetButtonLabelColor(D_MULTINAME, 10, GREY);
@@ -3933,7 +3853,7 @@ void SetupMultiPlayerName ( void )
 		SetButtonLabelColor(D_MULTINAME, 11, BTN_LABEL_COLOR);
 		activate_region (11, TRUE);
 	}
-	
+
 	// -- Protocol
    gProtocol = AMultiPlayer.GetProtocolIndex();
 	SetMultiPlayerProtocol (0 , gProtocol);
@@ -3943,24 +3863,24 @@ void SetupMultiPlayerName ( void )
 /* ========================================================================
    Function    - SetupMultiPlayerCreate
 	Description - init the hilights
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void SetupMultiPlayerCreate ( void )
 {
 #ifdef _WINDOWS
 	SHORT i;
-	
+
 	// -- Name
 	memset ( &szTempName[0], 0, NAME_SIZE+2 );
 	strcpy ( szTempName, AMultiPlayer.GetGameName() );
-	
+
 	// -- Last char needs to be diff
 	if ( szTempName[(i = strlen(szTempName))-1] != ' ' )
 	{
 		szTempName[i]   = ' ';
 		szTempName[i+1] = 0;
 	}
-	
+
 	// -- check to activate buttons
 	if (strlen(szTempName) == 1)
 	{
@@ -3972,8 +3892,8 @@ void SetupMultiPlayerCreate ( void )
 		SetButtonLabelColor(D_MULTICREATE, 11, BTN_LABEL_COLOR);
 		activate_region (11, TRUE);
 	}
-	
-	// -- Number of players	           
+
+	// -- Number of players
 	if ( AMultiPlayer.GetNumPlayers() >= 2 &&
 		AMultiPlayer.GetNumPlayers() <= 8    )
 	{
@@ -3984,7 +3904,7 @@ void SetupMultiPlayerCreate ( void )
 		gNumPlayers = 8;
    	AMultiPlayer.SetNumPlayers(gNumPlayers);
 	}
-	
+
 	// -- hilight the correct button
 	for (i = 2; i < 8; i++)
 	{
@@ -3996,8 +3916,8 @@ void SetupMultiPlayerCreate ( void )
 
 /* ========================================================================
    Function    - PaintMultiPlayerHost
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void PaintMultiPlayerHost ( LONG MenuCombo, LONG )
 {
@@ -4005,9 +3925,9 @@ void PaintMultiPlayerHost ( LONG MenuCombo, LONG )
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
 	CHAR buffer[256];
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// -- Paint Title
 	GetButtonPosition( MenuId, 0, &mx, &my );
 	GetButtonSize( MenuId, 0, &mw, &mh );
@@ -4020,7 +3940,7 @@ void PaintMultiPlayerHost ( LONG MenuCombo, LONG )
 /* ========================================================================
    Function    - SetMultiPlayerHostGame
 	Description - select field for New or Load
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerHostGame( LONG , LONG Index)
 {
@@ -4028,17 +3948,17 @@ void SetMultiPlayerHostGame( LONG , LONG Index)
 	// -- clear hilight
 	SetButtonLabelColor ( D_MULTIHOST, 1, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 2, BTN_LABEL_COLOR );
-	
+
 	// -- save game type
 	gGameType = Index;
-	
+
 	// -- hilight the correct button
 	switch( Index )
 	{
 	case 1:
 		SetButtonLabelColor ( D_MULTIHOST, 1, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 2:
 		SetButtonLabelColor ( D_MULTIHOST, 2, BTN_LABEL_HILITE_COLOR );
 		break;
@@ -4047,9 +3967,9 @@ void SetMultiPlayerHostGame( LONG , LONG Index)
 }
 
 /* ========================================================================
-   Function    - 
-	Description - 
-	Returns     - 
+   Function    -
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerHostTime( LONG , LONG Index)
 {
@@ -4059,25 +3979,25 @@ void SetMultiPlayerHostTime( LONG , LONG Index)
 	SetButtonLabelColor ( D_MULTIHOST, 4, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 5, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 6, BTN_LABEL_COLOR );
-	
+
 	// -- set the time limit variable
 	gTimeLimit = Index;
-	
+
 	// -- hilight the correct button
 	switch ( Index )
 	{
 	case iTT_1Min:
 		SetButtonLabelColor ( D_MULTIHOST, 3, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case iTT_2Min:
 		SetButtonLabelColor ( D_MULTIHOST, 4, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case iTT_5Min:
 		SetButtonLabelColor ( D_MULTIHOST, 5, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case iTT_None:
 		SetButtonLabelColor ( D_MULTIHOST, 6, BTN_LABEL_HILITE_COLOR );
 		break;
@@ -4086,9 +4006,9 @@ void SetMultiPlayerHostTime( LONG , LONG Index)
 }
 
 /* ========================================================================
-   Function    - 
-	Description - 
-	Returns     - 
+   Function    -
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerHostDetail( LONG , LONG Index)
 {
@@ -4097,21 +4017,21 @@ void SetMultiPlayerHostDetail( LONG , LONG Index)
 	SetButtonLabelColor ( D_MULTIHOST, 7, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 8, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 9, BTN_LABEL_COLOR );
-	
+
 	// -- set the time limit variable
 	gDetailLevel = Index;
-	
+
 	// -- hilight the correct button
 	switch ( Index )
 	{
 	case 0:
 		SetButtonLabelColor ( D_MULTIHOST, 7, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 1:
 		SetButtonLabelColor ( D_MULTIHOST, 8, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 2:
 		SetButtonLabelColor ( D_MULTIHOST, 9, BTN_LABEL_HILITE_COLOR );
 		break;
@@ -4120,9 +4040,9 @@ void SetMultiPlayerHostDetail( LONG , LONG Index)
 }
 
 /* ========================================================================
-   Function    - 
-	Description - 
-	Returns     - 
+   Function    -
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerHostDiff( LONG , LONG Index)
 {
@@ -4131,21 +4051,21 @@ void SetMultiPlayerHostDiff( LONG , LONG Index)
 	SetButtonLabelColor ( D_MULTIHOST, 10, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 11, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIHOST, 12, BTN_LABEL_COLOR );
-	
+
 	// -- set the time limit variable
 	gDifficulty = Index;
-	
+
 	// -- hilight the correct button
 	switch ( Index )
 	{
 	case 0:
 		SetButtonLabelColor ( D_MULTIHOST, 10, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 1:
 		SetButtonLabelColor ( D_MULTIHOST, 11, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 2:
 		SetButtonLabelColor ( D_MULTIHOST, 12, BTN_LABEL_HILITE_COLOR );
 		break;
@@ -4155,8 +4075,8 @@ void SetMultiPlayerHostDiff( LONG , LONG Index)
 
 /* ========================================================================
    Function    - CancelMultiPlayerHost
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void CancelMultiPlayerHost( LONG MenuCombo, LONG )
 {
@@ -4172,27 +4092,27 @@ void CancelMultiPlayerHost( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - DoneMultiPlayerHost
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void DoneMultiPlayerHost( LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	HideMenu(D_MULTIHOST);
 	RunMenus();
-	
+
 	// -- Set the Detail level
 	fControlMode = gDetailLevel | 0x100;
-	
+
 	// -- Set the time limit
 	iTTimeLimit = gTimeLimit;
-	
+
 	// -- Set difficulty
 	game_difficulty = (DIFFICULTY) gDifficulty;
-	
+
 	// -- Set the game type
 	if ( gGameType == iMPGT_NEW )
 	{
@@ -4201,7 +4121,7 @@ void DoneMultiPlayerHost( LONG MenuCombo, LONG )
 		AMultiPlayer.SendGameType();
 		AMultiPlayer.InitPost2();
 	}
-	else 
+	else
 	if ( gGameType == iMPGT_LOAD )
 	{
 		AMultiPlayer.SetGameType( iMPGT_LOAD );
@@ -4212,8 +4132,8 @@ void DoneMultiPlayerHost( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - PaintMultiPlayerEnvironment
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void PaintMultiPlayerEnvironment (LONG MenuCombo, LONG )
 {
@@ -4221,9 +4141,9 @@ void PaintMultiPlayerEnvironment (LONG MenuCombo, LONG )
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
 	CHAR buffer[256];
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// -- Paint Title
 	GetButtonPosition( MenuId, 0, &mx, &my );
 	GetButtonSize( MenuId, 0, &mw, &mh );
@@ -4235,8 +4155,8 @@ void PaintMultiPlayerEnvironment (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - SelectMultiPlayerEnvironment
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerEnvironment (LONG , LONG Index)
 {
@@ -4245,21 +4165,21 @@ void SetMultiPlayerEnvironment (LONG , LONG Index)
 	SetButtonLabelColor ( D_MULTIENV, 1, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIENV, 2, BTN_LABEL_COLOR );
 	SetButtonLabelColor ( D_MULTIENV, 3, BTN_LABEL_COLOR );
-	
+
 	// -- set the time limit variable
 	gEnvironment = Index;
-	
+
 	// -- hilight the correct button
 	switch ( Index )
 	{
 	case 0:
 		SetButtonLabelColor ( D_MULTIENV, 1, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 1:
 		SetButtonLabelColor ( D_MULTIENV, 2, BTN_LABEL_HILITE_COLOR );
 		break;
-	
+
 	case 2:
 		SetButtonLabelColor ( D_MULTIENV, 3, BTN_LABEL_HILITE_COLOR );
 		break;
@@ -4269,20 +4189,20 @@ void SetMultiPlayerEnvironment (LONG , LONG Index)
 
 /* ========================================================================
    Function    - CancelMultiPlayerEnvironment
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void CancelMultiPlayerEnvironment (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	AMultiPlayer.Finalize();
-	
+
    HideMenu(D_MULTIENV);
 	RunMenus();
-	
+
 	GAMEToggleMainMenu(TRUE,0);  //---- start up main menu
 #endif
 }
@@ -4290,7 +4210,7 @@ void CancelMultiPlayerEnvironment (LONG MenuCombo, LONG )
 /* ========================================================================
    Function    - StartInSIGS
 	Description - Entry point for SIGS callback
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void StartInSIGS ( void )
 {
@@ -4304,8 +4224,8 @@ void StartInSIGS ( void )
 
 /* ========================================================================
    Function    - DoneMultiPlayerEnvironment
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 {
@@ -4319,31 +4239,31 @@ void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 		{
 		   HideMenu(D_MULTIENV);
 			RunMenus();
-			
+
 
 			setScreenMode ( FALSE, FALSE );
 
 			if ( AMultiPlayer.InitPre(1) )  //---- 1 means sigs
 			{
 				setScreenMode ( FALSE, TRUE );
-				
+
 				if ( StartSIGS() )
 				{
 					setScreenMode( TRUE, TRUE );
-						
-					
+
+
 					//---- Set some connection vars
-					
+
 					AMultiPlayer.InitPost();
-											
+
 					//---- Let master decide what type of game
-					
+
 					if ( AMultiPlayer.IsMaster() )
 					{
-						highlighted_choice = -1;	
-						
+						highlighted_choice = -1;
+
 						m_mode = MENU_TYPESEL;
-						
+
 						SetupMultiPlayerHost();
 						ShowMenu(D_MULTIHOST);
 						RunMenus();
@@ -4363,15 +4283,15 @@ void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 				}
 			}
 			else
-			{	
+			{
 				setScreenMode ( TRUE, TRUE );
-		
+
 				ShowMenu(D_MULTIENV);
 				RunMenus();
 			}
 		}
 		break;
-		
+
 	case 1:	// Lan/modem
 		{
 			if ( AMultiPlayer.InitPre(0) )
@@ -4386,15 +4306,15 @@ void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 			}
 		}
 		break;
-		
+
 	case 2:	// Web
 		{
-			
-			//---- Check URL browsing 
+
+			//---- Check URL browsing
 			if ( CheckURL ( "birth.url" ) )
 			{
 
-				//---- pull them out of Direct draw mode 
+				//---- pull them out of Direct draw mode
 				if (sDrawMode == iDDRAW)
 					ToggleDirectDraw(0, 0);
 
@@ -4406,12 +4326,12 @@ void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 
 
 //			ShellExecute( hwndApp, "open", "birth.url", NULL, NULL, 0 );
-			
+
 			HideMenu( D_MULTIENV );
 			RunMenus();
-           
+
          ShowWebStart(0,0);
-			
+
 //			GAMEToggleMainMenu(TRUE,0);  //---- start up main menu
 		}
 		break;
@@ -4422,7 +4342,7 @@ void DoneMultiPlayerEnvironment (LONG MenuCombo, LONG )
 /* ========================================================================
    Function    - PaintMultiPlayerName
 	Description - get the name and protocol of the game
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void PaintMultiPlayerName (LONG MenuCombo, LONG )
 {
@@ -4431,9 +4351,9 @@ void PaintMultiPlayerName (LONG MenuCombo, LONG )
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
 	CHAR buffer[256];
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// -- Title
 	GetButtonPosition( MenuId, 0, &mx, &my );
 	GetButtonSize( MenuId, 0, &mw, &mh );
@@ -4467,8 +4387,8 @@ void PaintMultiPlayerName (LONG MenuCombo, LONG )
 		SetButtonLabelColor(D_MULTINAME, 11, BTN_LABEL_COLOR);
 		activate_region (11, TRUE);
 	}
-	
-	//---- Ignore Return add space back to end of field    
+
+	//---- Ignore Return add space back to end of field
 	if ( PaintInputField(MenuId, szTempName, NAME_SIZE+2, -1, TRUE, 1, 0, 0 ) )
 	{
 		// ignore return, but put space back at end of szTempName
@@ -4477,11 +4397,11 @@ void PaintMultiPlayerName (LONG MenuCombo, LONG )
 			p = szTempName + strlen(szTempName) - 1;
 		else
 			p = szTempName;
-		
+
 		if (*p != ' ' && *p != '_')
 			strcat(szTempName, " ");
 	}
-	
+
 	//---- max protocols three
 	for ( i = 0; i < 3; i ++ )
 	{
@@ -4498,8 +4418,8 @@ void PaintMultiPlayerName (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - SetMultiPlayerProtocol
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerProtocol (LONG , LONG Index)
 {
@@ -4510,15 +4430,15 @@ void SetMultiPlayerProtocol (LONG , LONG Index)
 
 /* ========================================================================
    Function    - BackMultiPlayerName
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void BackMultiPlayerName (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- Wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	HideMenu( D_MULTINAME );
 	RunMenus();
 	ShowMenu( D_MULTIENV );
@@ -4528,29 +4448,29 @@ void BackMultiPlayerName (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - JoinMultiPlayerName
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void JoinMultiPlayerName (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- Wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	RemoveInputSpace( TYPE_NAME );
 	strcpy ( AMultiPlayer.GetPlayerName(), szTempName );
-	
+
 	AMultiPlayer.SetProtocolIndex( gProtocol );
-	
+
 	//---- This initializes DPLAY it Must be done !!!!!!
 	AMultiPlayer.SelectAProtocol( gProtocol );
-	
+
 	AMultiPlayer.SetSpeed( 1 );
-	
-	
+
+
 	HideMenu(D_MULTINAME);
 	RunMenus();
-	
+
 	fEnumerate = 0;
 	SetupMultiPlayerJoin();
 	ShowMenu(D_MULTIJOIN);
@@ -4561,25 +4481,25 @@ void JoinMultiPlayerName (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - HostMultiPlayerName
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void HostMultiPlayerName (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- Wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	RemoveInputSpace( TYPE_NAME );
 	strcpy ( AMultiPlayer.GetPlayerName(), szTempName );
-	
+
 	AMultiPlayer.SetProtocolIndex( gProtocol );
-	
+
 	//---- This initializes DPLAY it Must be done !!!!!!
 	AMultiPlayer.SelectAProtocol( gProtocol );
-	
+
 	AMultiPlayer.SetSpeed( 1 );
-	
+
 	HideMenu(D_MULTINAME);
 	RunMenus();
 	SetupMultiPlayerCreate();
@@ -4590,20 +4510,20 @@ void HostMultiPlayerName (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - PaintMultiPlayerJoin
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
-{ 
+{
 #ifdef _WINDOWS
 	SHORT i;
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
 	CHAR buffer[256];
 	static LONG WaitTime = 0;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// -- Title
 	GetButtonPosition( MenuId, 0, &mx, &my );
 	init_gfont(FONT_TITL_40PT);
@@ -4611,10 +4531,10 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 	print_textf(mx + 25 + 48, my + 23, 0, buffer);
 
 	init_gfont(FONT_SANS_8PT);
-	
+
 	// setup
 	if ( fEnumerate == 1 )
-	{	
+	{
 		GetButtonPosition( MenuId, 1, &mx, &my );
 		sprintf( buffer, "%s", STRMGR_GetStr(STR_MULTIMENU_SJ1) );
 		gprint_text(mx, my, buffer,  WHITE );
@@ -4638,7 +4558,7 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 		}
 
 	}
-	else 
+	else
 	if ( fEnumerate == 2 )
 	{
 		// -- ping for availible games
@@ -4675,11 +4595,11 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 	if ( fEnumerate == 3 )
 	{
 		int j;
-		
+
 		GetButtonPosition( MenuId, 1, &mx, &my );
 		sprintf( buffer, "%s", STRMGR_GetStr(STR_MULTIMENU_SJ));
 		gprint_text(mx, my, buffer,  WHITE );
-		
+
 		//---- Only print the current MP_SL lines
 		for ( i = iGameTop, j=0; i < ( MP_SL + iGameTop ); i++, j++ )
 		{
@@ -4695,7 +4615,7 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 					float temp;
 					char *pver = ptemp+1;
 					sscanf( pver, "%f", &temp );
-					
+
 					if ( temp != RealmAIVersionNumber )
 					{
 						sprintf ( ptemp, " - N/A" );
@@ -4705,21 +4625,21 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 						*ptemp = 0;
 					}
 				}
-				
+
 				gprint_text(mx, my, buffer,  gJoinGame == j ? BTN_LABEL_HILITE_COLOR : BTN_LABEL_COLOR );
 			}
 		}
 		SetScrollButtons();
-		
+
 		// -- check for more games to join
-		if ( get_time() > WaitTime && 
+		if ( get_time() > WaitTime &&
 			  !AMultiPlayer.IsModemGame()	)
 		{
 			fEnumerate = 1;
 		}
 	}
 	else
-	{					
+	{
 		GetButtonPosition( MenuId, 1, &mx, &my );
 		sprintf( buffer, "%s", STRMGR_GetStr(STR_MULTIMENU_SJ1) );
 		gprint_text(mx, my, buffer,  WHITE );
@@ -4729,8 +4649,8 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - SetMultiPlayerJoin
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerJoin ( LONG , LONG Index )
 {
@@ -4742,8 +4662,8 @@ void SetMultiPlayerJoin ( LONG , LONG Index )
 
 /* ========================================================================
    Function    - BackMultiPlayerJoin
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void BackMultiPlayerJoin ( LONG MenuCombo, LONG )
 {
@@ -4758,8 +4678,8 @@ void BackMultiPlayerJoin ( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - CancelMultiPlayerJoin
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void CancelMultiPlayerJoin ( LONG MenuCombo, LONG )
 {
@@ -4772,22 +4692,22 @@ void CancelMultiPlayerJoin ( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - DoneMultiPlayerJoin
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void DoneMultiPlayerJoin ( LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	if (gJoinGame == -1)
 		return;
-		
+
 	HideMenu( D_MULTIJOIN );
 	RunMenus();
-	
+
 	//---- If modem and direct draw then set normal
 	if ( AMultiPlayer.IsModemGame() )
 	{
-	 	// Modem is special on join enumerate now 
+	 	// Modem is special on join enumerate now
 
 		setScreenMode ( FALSE, TRUE );
 
@@ -4832,8 +4752,8 @@ void DoneMultiPlayerJoin ( LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - PaintMultiPlayerCreate
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 {
@@ -4842,9 +4762,9 @@ void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
 	CHAR buffer[256];
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	// -- Title
 	GetButtonPosition( MenuId, 0, &mx, &my );
 	init_gfont(FONT_TITL_40PT);
@@ -4872,8 +4792,8 @@ void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 		SetButtonLabelColor(D_MULTICREATE, 11, BTN_LABEL_COLOR);
 		activate_region (11, TRUE);
 	}
-	
-	//---- Ignore Return add space back to end of field    
+
+	//---- Ignore Return add space back to end of field
 	if ( PaintInputField(MenuId, szTempName, NAME_SIZE+2, -1, TRUE, 1, 0, 0 ) )
 	{
 		// ignore return, but put space back at end of szTempName
@@ -4882,7 +4802,7 @@ void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 			p = szTempName + strlen(szTempName) - 1;
 		else
 			p = szTempName;
-		
+
 		if (*p != ' ' && *p != '_')
 			strcat(szTempName, " ");
 	}
@@ -4891,8 +4811,8 @@ void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - SetMultiPlayerNumber
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void SetMultiPlayerNumber (LONG , LONG Index)
 {
@@ -4909,15 +4829,15 @@ void SetMultiPlayerNumber (LONG , LONG Index)
 
 /* ========================================================================
    Function    - BackMultiPlayerCreate
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void BackMultiPlayerCreate (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	HideMenu(D_MULTICREATE);
 	RunMenus();
 	SetupMultiPlayerName();
@@ -4928,15 +4848,15 @@ void BackMultiPlayerCreate (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - CancelMultiPlayerCreate
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void CancelMultiPlayerCreate (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
 	HideMenu(D_MULTICREATE);
 	RunMenus();
 	GAMEToggleMainMenu(TRUE,0);  //---- start up main menu
@@ -4945,25 +4865,25 @@ void CancelMultiPlayerCreate (LONG MenuCombo, LONG )
 
 /* ========================================================================
    Function    - HostMultiPlayerCreate
-	Description - 
-	Returns     - 
+	Description -
+	Returns     -
 	======================================================================== */
 void HostMultiPlayerCreate (LONG MenuCombo, LONG )
 {
 #ifdef _WINDOWS
 	// -- wiggle the button
 	DoButtonMove ( MenuCombo );
-	
+
    // -- set number of players
    AMultiPlayer.SetNumPlayers(gNumPlayers);
-   
+
 	// -- set game name
 	RemoveInputSpace( TYPE_NAME );
 	strcpy ( AMultiPlayer.GetGameName(), szTempName );
-	
+
 	HideMenu(D_MULTICREATE);
 	RunMenus();
-	
+
 
 	if ( AMultiPlayer.IsModemGame() )
 	{
@@ -5004,5 +4924,3 @@ void HostMultiPlayerCreate (LONG MenuCombo, LONG )
 //---- End of multiui.cpp
 
 /* ======================================================================== */
-
-

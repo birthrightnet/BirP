@@ -2,16 +2,16 @@
 //
 //	 MulPlay.cpp
 //		MultiPlayer class
-//	 
+//
 //
 //	Who	When			Why
 // ---	---------	-----------------------------------------------
 // CAM             Fps 97
 // dlj 9-12-1996   Make it a Birthright piece of code
-// dlj 9-25-1996   make it multiplayer...  
+// dlj 9-25-1996   make it multiplayer...
 // MDB  4 Oct 96   Stripped out football specific code
 //	CAM	1 OCT 96		Added Net/Modem & SIGS selection screen
-// DLJ 22 Oct 96   borrowed sigs from fb pro 97 
+// DLJ 22 Oct 96   borrowed sigs from fb pro 97
 // dlj 3 Nov 96    finalize our own dialogs version ( not win specific )
 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -65,7 +65,7 @@
 MultiPlayer AMultiPlayer;
 
 
-//---- Extern data  
+//---- Extern data
 
 extern LONG lGameSemiphore[MPGAMESEMIPHORE_MAX_DATA];
 
@@ -74,11 +74,6 @@ extern BOOL gMPStartGame;	// from multiui.cpp
 extern BOOL  fRedrawAll;
 
 extern BOOL	fWonGame;
-
-extern "C" LONG numrands;
-
-extern "C" unsigned long lastrand;
-
 
 extern DIFFICULTY game_difficulty;
 extern DIFFICULTY battle_difficulty;
@@ -113,8 +108,6 @@ extern void ShowMPOver(LONG, LONG);
 extern float RealmAIVersionNumber;
 
 extern "C" void SetRedrawMainMapLevel (void);
-
-extern "C" void RandomLogComment ( char * szString );
 #include "dbstring.cpp"
 
 #ifdef _WINDOWS
@@ -139,7 +132,7 @@ enum
 
 
 
-//---- Global / static data 
+//---- Global / static data
 
 
 static  char  szAppName[]= "Birthright";
@@ -148,10 +141,10 @@ static  char  szAppName[]= "Birthright";
 char pszCfg[] = "MP.cfg";
 
 
-static void		DisplayString	( long lLBId, char* theString, 
+static void		DisplayString	( long lLBId, char* theString,
 									  long theIndex, PNETGAMEINFO pnm );
 
-static void		SaveString	 	( long lLBId, char* theString, 
+static void		SaveString	 	( long lLBId, char* theString,
 									  long theIndex, PNETGAMEINFO pnm );
 
 
@@ -159,7 +152,7 @@ static void		SaveString	 	( long lLBId, char* theString,
 		void		FileProgress	( int iBlock, int iMaxBlock );
 
 
-       BOOL		fStartGame = FALSE;   //---- Startin a game 
+       BOOL		fStartGame = FALSE;   //---- Startin a game
 
 static	BOOL		fSigs      = FALSE;   //---- Using sigs protocol
 
@@ -181,7 +174,7 @@ static BOOL fHaveSeedTable = FALSE;
 
 const int MAX_PROTOCOL = 10;
 
-static CHAR pszProtocol[MAX_PROTOCOL][81];	// list of protocols 
+static CHAR pszProtocol[MAX_PROTOCOL][81];	// list of protocols
 
 static CHAR pszGames[MAX_GAMES][24];		// list of game names
 
@@ -207,7 +200,7 @@ int SyncAction[MAX_PLAYERS];   //---- action sync
 long SyncMsgIDTable[iMPS_SYNCEND][MAX_PLAYERS];   //---- message id table
 
 
-unsigned long ulRseeds[kNumSeeds];  //---- Random table 
+unsigned long ulRseeds[kNumSeeds];  //---- Random table
 
 
 unsigned int fBRealm[MAX_PLAYERS];  //---- Trigger for master to broadcast realm
@@ -252,13 +245,7 @@ MultiPlayer::MultiPlayer( void ) : eStatus( iMPS_NONE )
 MultiPlayer::~MultiPlayer( void )
 {
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "MultiPlayer::MultiPlayer - finalize");
-		RandomLogComment ( temp );
-	}
+	logInfo("MultiPlayer::MultiPlayer - finalize");
 
 	if ( eStatus != iMPS_ENDED )
 		Finalize(1);
@@ -271,13 +258,13 @@ MultiPlayer::~MultiPlayer( void )
 //
 //	 MultiPlayer::GetPlayerName
 //	 Inputs:
-//	 Return: player friendly name 
+//	 Return: player friendly name
 //
 // -----------------------------------------------------------------
 
 PCHAR MultiPlayer::GetPlayerName( void )
-{ 
-	return ( &szName[0] ); 
+{
+	return ( &szName[0] );
 }
 
 
@@ -290,8 +277,8 @@ PCHAR MultiPlayer::GetPlayerName( void )
 // -----------------------------------------------------------------
 
 int MultiPlayer::GetGameType( void )
-{ 
-	return ( iGameType ); 
+{
+	return ( iGameType );
 }
 
 // -----------------------------------------------------------------
@@ -303,7 +290,7 @@ int MultiPlayer::GetGameType( void )
 // -----------------------------------------------------------------
 
 BOOL MultiPlayer::IsModemGame( void )
-{ 
+{
    return ( GenericMultiPlayer::IsModemGame() );
 }
 
@@ -317,7 +304,7 @@ BOOL MultiPlayer::IsModemGame( void )
 // -----------------------------------------------------------------
 
 BOOL MultiPlayer::ForceStart( void )
-{ 
+{
    return ( GenericMultiPlayer::ForceStart() );
 }
 
@@ -331,7 +318,7 @@ BOOL MultiPlayer::ForceStart( void )
 // -----------------------------------------------------------------
 
 void MultiPlayer::DisablePlayers( void )
-{ 
+{
    GenericMultiPlayer::DisablePlayers();
 }
 
@@ -346,8 +333,8 @@ void MultiPlayer::DisablePlayers( void )
 // -----------------------------------------------------------------
 
 short MultiPlayer::GetProtocolIndex( void )
-{ 
-	return ( sProtocol ); 
+{
+	return ( sProtocol );
 }
 
 
@@ -359,9 +346,9 @@ short MultiPlayer::GetProtocolIndex( void )
 //	 Return: returns game name
 //
 // -----------------------------------------------------------------
-PCHAR MultiPlayer::GetGameName( void )	
-{ 
-	return ( &szGame[0] ); 
+PCHAR MultiPlayer::GetGameName( void )
+{
+	return ( &szGame[0] );
 }
 
 
@@ -370,12 +357,12 @@ PCHAR MultiPlayer::GetGameName( void )
 //
 //	 MultiPlayer::GetNumPlayers
 //	 Inputs:
-//	 Return: number of players 
+//	 Return: number of players
 //
 // -----------------------------------------------------------------
-short MultiPlayer::GetNumPlayers( void )	
-{ 
-	return ( sNumPlayers ); 
+short MultiPlayer::GetNumPlayers( void )
+{
+	return ( sNumPlayers );
 }
 
 
@@ -386,9 +373,9 @@ short MultiPlayer::GetNumPlayers( void )
 //	 Return: connection speed ( 0 - modem 1 - network )
 //
 // -----------------------------------------------------------------
-short MultiPlayer::GetSpeed( void )	
-{ 
-	return ( sConnSpeed ); 
+short MultiPlayer::GetSpeed( void )
+{
+	return ( sConnSpeed );
 }
 
 
@@ -425,7 +412,7 @@ DWORD MultiPlayer::GetAPlayerId( int i )
 //
 //	 MultiPlayer::CheckPlayerId
 //	 Inputs:
-//	 Return: TRUE if playerid was found 
+//	 Return: TRUE if playerid was found
 //
 // -----------------------------------------------------------------
 BOOL MultiPlayer::CheckPlayerId( DWORD dwPlayerId )
@@ -474,7 +461,7 @@ LONG MultiPlayer::HowManyPlayers( void )
 //
 //	 MultiPlayer::GetDeletedPlayer
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 int MultiPlayer::GetDeletedPlayer( int i )
@@ -489,13 +476,13 @@ int MultiPlayer::GetDeletedPlayer( int i )
 //
 //	 MultiPlayer::GetChat
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
-int MultiPlayer::GetChat( int index )		
+int MultiPlayer::GetChat( int index )
 {
 	return ( ChatSend[index] );
- 
+
 }
 
 
@@ -503,13 +490,13 @@ int MultiPlayer::GetChat( int index )
 //
 //	 MultiPlayer::GetChatRec
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
-int MultiPlayer::GetChatRec( int index )		
+int MultiPlayer::GetChatRec( int index )
 {
 	return ( ChatRec[index] );
- 
+
 }
 
 
@@ -518,7 +505,7 @@ int MultiPlayer::GetChatRec( int index )
 //
 //	 MultiPlayer::GetRealmFromId
 //	 Inputs: player id
-//	 Return: realm of player id 
+//	 Return: realm of player id
 //
 // -----------------------------------------------------------------
 
@@ -532,7 +519,7 @@ int MultiPlayer::GetRealmFromId( DWORD dwId  )
 		{
 			return i;
 		}
-	} 
+	}
 
 	return i;
 
@@ -558,7 +545,7 @@ PCHAR MultiPlayer::GetRealmNameOfEvent(void)
 		{
 			return realm[i].mfGetName();
 		}
-	} 
+	}
 
 	return NULL;
 
@@ -614,7 +601,7 @@ void MultiPlayer::GetGames(void)
 // -----------------------------------------------------------------
 //
 //	 MultiPlayer::GetAGames
-//		Get a specific game 
+//		Get a specific game
 //
 //	 Inputs:
 //
@@ -629,7 +616,7 @@ PCHAR MultiPlayer::GetAGames(int i)
 		&& pszGames[i][1] == 32
 		&& pszGames[i][2] == 32 )
 		pszGames[i][0] = 0;
-		
+
 	return pszGames[i];
 }
 
@@ -638,7 +625,7 @@ PCHAR MultiPlayer::GetAGames(int i)
 //
 //	 MultiPlayer::GetProtocol
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 PCHAR MultiPlayer::GetProtocol ( void )
@@ -652,7 +639,7 @@ PCHAR MultiPlayer::GetProtocol ( void )
 //
 //	 MultiPlayer::GetAProtocol
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 PCHAR MultiPlayer::GetAProtocol ( int i )
@@ -666,14 +653,14 @@ PCHAR MultiPlayer::GetAProtocol ( int i )
 // -----------------------------------------------------------------
 //
 //	 MultiPlayer::GetOppenentName
-//	 Inputs: which player 
+//	 Inputs: which player
 //	 Return: return friendly name
-//							   
+//
 // -----------------------------------------------------------------
 
-PCHAR MultiPlayer::GetOpponentName( int i )	
-{ 
-	return ( (PCHAR) &szOpponentName[i] ); 
+PCHAR MultiPlayer::GetOpponentName( int i )
+{
+	return ( (PCHAR) &szOpponentName[i] );
 }
 
 
@@ -684,20 +671,20 @@ PCHAR MultiPlayer::GetOpponentName( int i )
 //	 Return: 1- if initialized
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::IsInitialized( void )	
-{ 
-	return ( eStatus >= iMPS_INIT ); 
+BOOL MultiPlayer::IsInitialized( void )
+{
+	return ( eStatus >= iMPS_INIT );
 }
 
 // -----------------------------------------------------------------
 //
 //	 MultiPlayer::IsRunning
 //	 Inputs:
-//	 Return: 1 - if running 
+//	 Return: 1 - if running
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::IsRunning( void )	
-{ 
+BOOL MultiPlayer::IsRunning( void )
+{
 	return ( eStatus >= iMPS_SETUP );
 }
 
@@ -708,9 +695,9 @@ BOOL MultiPlayer::IsRunning( void )
 //	 Return: if started the game
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::IsMaster( void )	
-{ 
-	return ( fMaster ); 
+BOOL MultiPlayer::IsMaster( void )
+{
+	return ( fMaster );
 }
 
 // -----------------------------------------------------------------
@@ -721,8 +708,8 @@ BOOL MultiPlayer::IsMaster( void )
 //
 // -----------------------------------------------------------------
 BOOL MultiPlayer::IsSlave( void )
-{ 
-	return ( !fMaster ); 
+{
+	return ( !fMaster );
 }
 
 
@@ -735,16 +722,16 @@ BOOL MultiPlayer::IsSlave( void )
 //
 //	 MultiPlayer::ResetSync
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
 void  MultiPlayer::ResetSync( int sync )
-{ 
+{
 	int i;
 
 	//---- Reset replies for this sync point
-	
+
 	for ( i = 0; i < MAX_PLAYERS; ++i )
 	{
 		SyncTable[sync][i] = 0;
@@ -756,7 +743,7 @@ void  MultiPlayer::ResetSync( int sync )
 //
 //	 MultiPlayer::GetSync
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -771,29 +758,29 @@ int MultiPlayer::GetSync( int sync, int index )
 //
 //	 MultiPlayer::ResetSyncAction
 //	 Inputs: rlm - which rlm to resync
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
 void  MultiPlayer::ResetSyncAction( int rlm )
-{ 
+{
 	int i;
 
 	if ( IsMultiPlayer() )
 	{
 
-		//---- Find out where this sync is 
+		//---- Find out where this sync is
 
 		for ( i=0; i < MAX_PLAYERS; ++i )
 		{
-			//---- if this is the realm 
-			
+			//---- if this is the realm
+
 			if ( lRealmSelectedByPlayer[rlm] == AMultiPlayer.GetAPlayerId(i) )
 			{
 				SyncAction[i] = 0;
 				break;
 			}
-	
+
 		}
 	}
 
@@ -804,8 +791,8 @@ void  MultiPlayer::ResetSyncAction( int rlm )
 // -----------------------------------------------------------------
 //
 //	 MultiPlayer::GetSyncAction
-//	 Inputs: rlm - get this realms sync 
-//	 Return: 
+//	 Inputs: rlm - get this realms sync
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -818,11 +805,11 @@ int MultiPlayer::GetSyncAction( int rlm )
 	if ( IsMultiPlayer() )
 	{
 
-		//---- Find out where this sync is 
+		//---- Find out where this sync is
 
 		for ( i=0; i < MAX_PLAYERS; ++i )
 		{
-			//---- if this is the realm 
+			//---- if this is the realm
 
 			if ( lRealmSelectedByPlayer[rlm] == AMultiPlayer.GetAPlayerId(i) )
 			{
@@ -836,7 +823,7 @@ int MultiPlayer::GetSyncAction( int rlm )
 	//---- We couldn't find this player so just return that the turn is done
 
 	return 1;
-		
+
 }
 
 
@@ -845,16 +832,16 @@ int MultiPlayer::GetSyncAction( int rlm )
 //
 //	 MultiPlayer::ResetAllSyncTimes
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
 void  MultiPlayer::ResetAllSyncTimes( void )
-{ 
+{
 	int i;
 
 	//---- Reset replies for this sync point
-	
+
 	for ( i = 0; i < MAX_PLAYERS; ++i )
 	{
 		SyncTimeOuts[i] = (long)GetTickCount();
@@ -866,7 +853,7 @@ void  MultiPlayer::ResetAllSyncTimes( void )
 //
 //	 MultiPlayer::GetSyncTime
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -879,7 +866,7 @@ long MultiPlayer::GetSyncTime( int index )
 //
 //	 MultiPlayer::ResetSyncTime
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -892,16 +879,16 @@ void MultiPlayer::ResetSyncTime( int index )
 //
 //	 MultiPlayer::ResetAllSyncCounts
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
 void  MultiPlayer::ResetAllSyncCounts( void )
-{ 
+{
 	int i;
 
 	//---- Reset replies for this sync point
-	
+
 	for ( i = 0; i < MAX_PLAYERS; ++i )
 	{
 		SyncCounts[i] = 0;
@@ -913,7 +900,7 @@ void  MultiPlayer::ResetAllSyncCounts( void )
 //
 //	 MultiPlayer::GetSyncCount
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -926,7 +913,7 @@ long MultiPlayer::GetSyncCount( int index )
 //
 //	 MultiPlayer::IncSyncCount
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -946,7 +933,7 @@ void MultiPlayer::IncSyncCount( int index )
 // -----------------------------------------------------------------
 
 void  MultiPlayer::SetProtocolIndex( int sP )
-{ 
+{
 	sProtocol = sP;
 }
 
@@ -960,7 +947,7 @@ void  MultiPlayer::SetProtocolIndex( int sP )
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::SetNumPlayers( short sNP )
-{ 
+{
 	sNumPlayers = sNP;
 }
 
@@ -972,7 +959,7 @@ void  MultiPlayer::SetNumPlayers( short sNP )
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::SetSpeed( short sCS )
-{ 
+{
 	sConnSpeed = sCS;
 }
 
@@ -987,7 +974,7 @@ void  MultiPlayer::SetSpeed( short sCS )
 // -----------------------------------------------------------------
 
 void MultiPlayer::SetGameType( int iGT )
-{ 
+{
 	iGameType = iGT;
 }
 
@@ -996,14 +983,14 @@ void MultiPlayer::SetGameType( int iGT )
 //
 //	 MultiPlayer::SetMaster
 //	 Inputs: master flag
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
-void  MultiPlayer::SetMaster( BOOL fMstr )		
-{ 
+void  MultiPlayer::SetMaster( BOOL fMstr )
+{
 	fMaster = fMstr;
 
-	
+
 	if ( fSigs ) //---- Sigs starts at 0
 		dwMsgFudge = ( AMultiPlayer.GetPlayerId() % 8 ) * dwMsgMasterFudge;
 	else //--- DPlay starts at 1 not zero
@@ -1031,7 +1018,7 @@ void  MultiPlayer::SetMaster( BOOL fMstr )
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::SetChat( int index, int set )
-{ 
+{
 
 	ChatSend[index] = set;
 
@@ -1045,7 +1032,7 @@ void  MultiPlayer::SetChat( int index, int set )
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::SetChatRec( int index, int set )
-{ 
+{
 
 	ChatRec[index] = set;
 
@@ -1060,7 +1047,7 @@ void  MultiPlayer::SetChatRec( int index, int set )
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::SetControl( int dwId, int control )
-{ 
+{
 	int i;
 
 	for ( i = 0; i < LAND_REALM_COUNT; ++i )
@@ -1072,7 +1059,7 @@ void  MultiPlayer::SetControl( int dwId, int control )
 				#ifdef _MULTIMONO
 			       mono_puts ( 40, 4, "Player Control Already Set!!!!" );
 				#endif
-								
+
 			}
 
 			realm[i].mfSetPlayerCtrl(control);
@@ -1090,11 +1077,11 @@ void  MultiPlayer::SetControl( int dwId, int control )
 //
 //	 MultiPlayer::InitEvent
 //	 Inputs: 0 - all 1-table 2-reply 3-results
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 void  MultiPlayer::InitEvent( int which )
-{ 
+{
 	int i;
 
 
@@ -1107,7 +1094,7 @@ void  MultiPlayer::InitEvent( int which )
 	if ( which == 0 || which == 1 )
 	{
 
-		//---- initialize the event table 
+		//---- initialize the event table
 
 		memset ( &EventTable, 0, sizeof ( REQEVENT ) );
 
@@ -1140,7 +1127,7 @@ void  MultiPlayer::InitEvent( int which )
 	}
 
 
-}	//---- MultiPlayer::InitEvent() 
+}	//---- MultiPlayer::InitEvent()
 
 
 
@@ -1148,11 +1135,11 @@ void  MultiPlayer::InitEvent( int which )
 //
 //	 MultiPlayer::InitChat
 //	 Inputs:
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
-void  MultiPlayer::InitChat( void )		
-{ 
+void  MultiPlayer::InitChat( void )
+{
 	int i;
 
 //	ChatSend[0] = 1; //---- All Players
@@ -1189,12 +1176,12 @@ BOOL MultiPlayer::GetAEventReply( int which, int * data1, int * data2, int * dat
 	*data4 = 0;
 
 
-	//---- is the event set 
+	//---- is the event set
 
 	if ( EventTable.EventId != iMPE_NONE )
 	{
 
-		//---- They have replied 
+		//---- They have replied
 
 		if ( EventTable.replied[which] )
 		{
@@ -1209,7 +1196,7 @@ BOOL MultiPlayer::GetAEventReply( int which, int * data1, int * data2, int * dat
 		}
 		else
 		{
-			return FALSE; 
+			return FALSE;
 		}
 
 	}
@@ -1227,11 +1214,11 @@ BOOL MultiPlayer::GetAEventReply( int which, int * data1, int * data2, int * dat
 //
 //	 MultiPlayer::HaveEvent
 //
-//		 Check if an event has come in for us 
+//		 Check if an event has come in for us
 //
-//	 Inputs: 
+//	 Inputs:
 //
-//	 Return: 0 not >0 we have an event 
+//	 Return: 0 not >0 we have an event
 //
 // -----------------------------------------------------------------
 int MultiPlayer::HaveEvent( void )
@@ -1250,9 +1237,9 @@ int MultiPlayer::HaveEvent( void )
 //
 //		 Check if results have come in
 //
-//	 Inputs: 
+//	 Inputs:
 //
-//	 Return: 0 not >0 we have an event 
+//	 Return: 0 not >0 we have an event
 //
 // -----------------------------------------------------------------
 int MultiPlayer::HaveResults( void )
@@ -1272,7 +1259,7 @@ int MultiPlayer::HaveResults( void )
 //
 //		 Check if everyone has left
 //
-//	 Inputs: 
+//	 Inputs:
 //
 //	 Return: 0 not > 0 no other players are in the game
 //
@@ -1292,7 +1279,7 @@ int MultiPlayer::CheckForPlayers( void )
 		{
 
 		#ifdef _MULTIMONO
-			mono_printf ( 0, 14, "Connect Status %d", 	
+			mono_printf ( 0, 14, "Connect Status %d",
 						  GenericMultiPlayer::CheckConnectStatus() );
 		#endif
 
@@ -1304,7 +1291,7 @@ int MultiPlayer::CheckForPlayers( void )
 #endif
 
 
-	
+
 	for ( x = 0; x < MAX_PLAYERS; ++x )
 	{
 		if ( GetAPlayerId(x) != kNoPlayer )
@@ -1328,7 +1315,7 @@ int MultiPlayer::CheckForPlayers( void )
 //
 //		 Check status of the event
 //
-//	 Inputs: 
+//	 Inputs:
 //
 //	 Return: FALSE still waiting TRUE if all replies have come in
 //
@@ -1337,11 +1324,11 @@ BOOL MultiPlayer::CheckEvent( void )
 {
 	BOOL fOk = TRUE;
 
-	//---- is the event set 
+	//---- is the event set
 
 	if ( EventTable.EventId != iMPE_NONE )
 	{
-		// ok which one is it 
+		// ok which one is it
 
  		if ( EventTable.EventId == iMPE_ADVENTURE ||
  			 EventTable.EventId == iMPE_ADD_ITEM ||
@@ -1359,7 +1346,7 @@ BOOL MultiPlayer::CheckEvent( void )
 					}
 				}
 			}
-			
+
 			return fOk;
 
 		}
@@ -1367,7 +1354,7 @@ BOOL MultiPlayer::CheckEvent( void )
 		{
 			if ( EventTable.replied[0] )
 			{
-				return TRUE; 
+				return TRUE;
 			}
 		}
 
@@ -1383,14 +1370,14 @@ BOOL MultiPlayer::CheckEvent( void )
 //
 //	 MultiPlayer::SendEvent
 //
-//		 Send an event message 
+//		 Send an event message
 //
-//	 Inputs: realm to send to 
+//	 Inputs: realm to send to
 //
 //	 Return: results of send
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::SendEvent( int EventId, 
+BOOL MultiPlayer::SendEvent( int EventId,
 					    	  int data1, int data2, int data3, int data4, int rlm )
 {
 	short sSize = 0;
@@ -1401,7 +1388,7 @@ BOOL MultiPlayer::SendEvent( int EventId,
 	if ( AMultiPlayer.IsRunning() )
 	{
 
-		//---- Initialize the event tables 
+		//---- Initialize the event tables
 
 		AMultiPlayer.InitEvent();
 
@@ -1420,7 +1407,7 @@ BOOL MultiPlayer::SendEvent( int EventId,
 		((PBREvent) pMsg)->data4   = data4;
 
 
-		//---- Set the event 
+		//---- Set the event
 
 		EventTable.data1   = data1;
 		EventTable.data2   = data2;
@@ -1433,7 +1420,7 @@ BOOL MultiPlayer::SendEvent( int EventId,
 
 		StartWait( iMPM_SEND );
 
-		//---- Everyone replies on the the adventure messages 
+		//---- Everyone replies on the the adventure messages
 
 		if ( EventId == iMPE_ADVENTURE ||
 			 EventId == iMPE_GAIN_EXP ||
@@ -1579,7 +1566,7 @@ BOOL MultiPlayer::SendSyncAction( void )
 //
 //	 MultiPlayer::ReplyEvent
 //
-//		 Reply to an event message 
+//		 Reply to an event message
 //
 //	 Inputs:
 //
@@ -1629,14 +1616,14 @@ BOOL MultiPlayer::ReplyEvent( int EventId,
 //
 //	 MultiPlayer::ResultsEvent
 //
-//		 Results of an event message 
+//		 Results of an event message
 //
 //	 Inputs:
 //
 //	 Return: results of send
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::ResultsEvent( int EventId, 
+BOOL MultiPlayer::ResultsEvent( int EventId,
 					        	 int data1, int data2, int data3, int data4, int rlm )
 {
 	short sSize = 0;
@@ -1662,7 +1649,7 @@ BOOL MultiPlayer::ResultsEvent( int EventId,
 		StartWait( iMPM_SEND );
 
 
-		//---- Everyone gets the results in adventures 
+		//---- Everyone gets the results in adventures
 
 		if ( EventId == iMPE_ADVENTURE ||
 			 EventId == iMPE_GAIN_EXP ||
@@ -1697,10 +1684,10 @@ BOOL MultiPlayer::ResultsEvent( int EventId,
 //
 //	 MultiPlayer::SendCtrl
 //
-//		 Send player control. Used for telling the master you want 
+//		 Send player control. Used for telling the master you want
 //      AI control or not.
 //
-//	 Inputs: TRUE - control FALSE - AI 
+//	 Inputs: TRUE - control FALSE - AI
 //
 //	 Return: results of send
 //
@@ -1752,9 +1739,9 @@ BOOL MultiPlayer::SendControl( int control )
 //
 //	 MultiPlayer::SendWonGame
 //
-//		 Broadcast that this machine won the game. 
+//		 Broadcast that this machine won the game.
 //
-//	 Inputs: Homerealm - realm of winner 
+//	 Inputs: Homerealm - realm of winner
 //
 //	 Return: results of send
 //
@@ -1767,7 +1754,7 @@ BOOL MultiPlayer::SendWonGame( SHORT HomeRealm )
 	fSent = FALSE;
 
 
-	if ( AMultiPlayer.IsRunning() ) 
+	if ( AMultiPlayer.IsRunning() )
 	{
 
 		if ( eStatus == iMPS_SETUP )
@@ -1783,7 +1770,7 @@ BOOL MultiPlayer::SendWonGame( SHORT HomeRealm )
 
 			StartWait( iMPM_SEND );
 
-   	    //---- To broadcast or not to broadcast .... 
+   	    //---- To broadcast or not to broadcast ....
 
 		    fSent = SendBroadcastMessage( sSize, TRUE );
 
@@ -1833,7 +1820,7 @@ BOOL MultiPlayer::BroadcastAdventOver( void )
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
 	    fSent = SendBroadcastMessage( sSize, TRUE );
 
@@ -1892,7 +1879,7 @@ BOOL MultiPlayer::BroadcastRealmInfo( SHORT WhichRealm, DWORD WhichId, LONG lWhi
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
 	    fSent = SendBroadcastMessage( sSize, TRUE );
 
@@ -1998,13 +1985,13 @@ BOOL MultiPlayer::BroadcastSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lAr
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
 		if ( dwToWhom != kBroadcast )
 		{
 			fSent = SendDirectMessage( dwToWhom, sSize, TRUE );
 			#ifdef _MULTIMONO
-	       	mono_printf ( 0, 3, "-> Game Data index %d      id%lu", 
+	       	mono_printf ( 0, 3, "-> Game Data index %d      id%lu",
 						  lData,
 						  dwToWhom );
 			#endif
@@ -2012,10 +1999,10 @@ BOOL MultiPlayer::BroadcastSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lAr
 		else
 		{
 			#ifdef _MULTIMONO
-	    	mono_printf ( 0, 3, "B-> Game Data A%d S%d AI%d D%d", 
+	    	mono_printf ( 0, 3, "B-> Game Data A%d S%d AI%d D%d",
 						  lArray_Id,
 						  lStruct_Id,
-						  lArray_Index,	
+						  lArray_Index,
 						  lData );
 			#endif
 
@@ -2076,7 +2063,7 @@ BOOL MultiPlayer::RequestSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArra
 	       mono_printf ( 0, 2, "RM-> index %d      ", lData );
 		#endif
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
   		fSent = SendDirectMessage( lMasterId, sSize, TRUE );
 
@@ -2129,7 +2116,7 @@ BOOL MultiPlayer::BroadcastGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lAr
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
 	    fSent = SendBroadcastMessage( sSize, TRUE );
 
@@ -2181,7 +2168,7 @@ BOOL MultiPlayer::RequestGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArra
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... 
+       //---- To broadcast or not to broadcast ....
 
 		fSent = SendDirectMessage( lMasterId, sSize, TRUE );
 
@@ -2200,11 +2187,11 @@ BOOL MultiPlayer::RequestGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArra
 //
 //	 MultiPlayer::Chat
 //
-//		 Send a chat message to ChatSend list 
+//		 Send a chat message to ChatSend list
 //
 //	 Inputs:
 //		szMsg		- the message, including the name
-//		force       - forces broadcast to everyone 
+//		force       - forces broadcast to everyone
 //	 Return: results of send
 //
 // -----------------------------------------------------------------
@@ -2279,7 +2266,7 @@ BOOL MultiPlayer::Chat( char * pszMsg, int force )
 				}
 			}
 
-           //---- Put this in the chat list 
+           //---- Put this in the chat list
 
 	    	ChatLineAdd ( &szText2[0], YELLOW );
 
@@ -2304,12 +2291,12 @@ BOOL MultiPlayer::Chat( char * pszMsg, int force )
 //
 //		 Sends a test message.
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //     GEH Not anymore 7/7/97
 //
 //	 Inputs:
-//		lData		- Data to ping with 
-//     dwToWhom    - who do you want to send it to default = broadcast 
+//		lData		- Data to ping with
+//     dwToWhom    - who do you want to send it to default = broadcast
 //
 //	 Return: results of send
 //
@@ -2336,7 +2323,7 @@ BOOL MultiPlayer::Ping( long lData, DWORD dwToWhom )
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... with no ACKing 
+       //---- To broadcast or not to broadcast .... with no ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2379,7 +2366,7 @@ BOOL MultiPlayer::Setup( void )
 
 	if ( !IsMaster() )
 	{
-		return TRUE;	
+		return TRUE;
 	}
 
 
@@ -2397,14 +2384,14 @@ BOOL MultiPlayer::Setup( void )
 		((PBRSetup) pMsg)->lMasterId  = GetPlayerId();
 
 
-		//---- Setup our random table to be used by everyone 
+		//---- Setup our random table to be used by everyone
 
 		for ( x = 0; x < kNumSeeds; ++x )
 		{
 			((PBRSetup) pMsg)->ulRseeds[x] = GetTickCount () + rand();
 		}
 
-		memcpy ( &ulRseeds[0], &((PBRSetup) pMsg)->ulRseeds[0], 
+		memcpy ( &ulRseeds[0], &((PBRSetup) pMsg)->ulRseeds[0],
 				 sizeof( unsigned long ) * kNumSeeds );
 
 
@@ -2415,7 +2402,7 @@ BOOL MultiPlayer::Setup( void )
        ((PBRSetup)pMsg)->realmAIver        = RealmAIVersionNumber;
        ((PBRSetup)pMsg)->DetailLevel        = fControlMode;
 
-		//---- Signal we have the seed table 
+		//---- Signal we have the seed table
 
 		fHaveSeedTable = TRUE;
 
@@ -2443,18 +2430,18 @@ BOOL MultiPlayer::Setup( void )
 //
 //	 MultiPlayer::Battle
 //
-//     Send a Battle message / either broadcast or directed 
+//     Send a Battle message / either broadcast or directed
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //
 //	 Inputs:
-//     lvalue1-5   - 5 longs used for battle info 
-//     dwToWhom    - who do you want to send it to default = broadcast 
+//     lvalue1-5   - 5 longs used for battle info
+//     dwToWhom    - who do you want to send it to default = broadcast
 //
 //	 Return: results of send
 //
 // -----------------------------------------------------------------
-BOOL MultiPlayer::Battle( LONG lvalue1, LONG lvalue2, LONG lvalue3, 
+BOOL MultiPlayer::Battle( LONG lvalue1, LONG lvalue2, LONG lvalue3,
                           LONG lvalue4, LONG lvalue5, DWORD dwToWhom )
 {
 	short sSize = 0;
@@ -2485,7 +2472,7 @@ BOOL MultiPlayer::Battle( LONG lvalue1, LONG lvalue2, LONG lvalue3,
 		StartWait( iMPM_SEND );
 
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2513,9 +2500,9 @@ BOOL MultiPlayer::Battle( LONG lvalue1, LONG lvalue2, LONG lvalue3,
 //
 //	 MultiPlayer::UnitMessage
 //
-//     Send a unit create / either broadcast or directed 
+//     Send a unit create / either broadcast or directed
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //
 //	 Inputs:
 //		unit index
@@ -2545,26 +2532,18 @@ BOOL MultiPlayer::UnitMessage( DWORD UnitIndex, UBYTE *UnitData, char *szWhy, DW
 		StartWait( iMPM_SEND );
 
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
+		if (units[UnitIndex].Realm == REALM::NO_COUNTRY)
 		{
-			if (units[UnitIndex].Realm == REALM::NO_COUNTRY)
-			{
-				char temp[100];
-				sprintf ( temp, "   mulplay.cpp UnitMessage - unit:%d is being deleted, [%s]", UnitIndex, szWhy);
-				RandomLogComment ( temp );
-			}
-			else
-			{
-				char temp[100];
-				sprintf ( temp, "   mulplay.cpp UnitMessage - %s unit:%d is being %s, province:%d DestProvince:%d",
-					debug_realm_names[units[UnitIndex].Realm], UnitIndex, szWhy, units[UnitIndex].province, units[UnitIndex].DestProvince );
-				RandomLogComment ( temp );
-			}
+			logInfo("   mulplay.cpp UnitMessage - unit:%d is being deleted, [%s]", UnitIndex, szWhy);
+		}
+		else
+		{
+			logInfo("   mulplay.cpp UnitMessage - %s unit:%d is being %s, province:%d DestProvince:%d",
+				debug_realm_names[units[UnitIndex].Realm], UnitIndex, szWhy, units[UnitIndex].province, units[UnitIndex].DestProvince );
 		}
 
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2587,9 +2566,9 @@ BOOL MultiPlayer::UnitMessage( DWORD UnitIndex, UBYTE *UnitData, char *szWhy, DW
 //
 //	 MultiPlayer::PlacesMessage
 //
-//     Send a places create / either broadcast or directed 
+//     Send a places create / either broadcast or directed
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //
 //	 Inputs:
 //		places index
@@ -2618,7 +2597,7 @@ BOOL MultiPlayer::PlacesMessage( DWORD PlacesIndex, UBYTE *PlacesData, DWORD dwT
 
 		StartWait( iMPM_SEND );
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2663,7 +2642,7 @@ BOOL MultiPlayer::GainExpMessage( LONG RegentIndex, LONG Amount, BOOL GainLevel,
 
 		StartWait( iMPM_SEND );
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2686,9 +2665,9 @@ BOOL MultiPlayer::GainExpMessage( LONG RegentIndex, LONG Amount, BOOL GainLevel,
 //
 //	 MultiPlayer::AdminMessage
 //
-//     Send a admin create / either broadcast or directed 
+//     Send a admin create / either broadcast or directed
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //
 //	 Inputs:
 //		realm gold and regency data
@@ -2716,7 +2695,7 @@ BOOL MultiPlayer::AdminMessage( UBYTE *GoldData, UBYTE *RegencyData, char *szWhy
 
 		StartWait( iMPM_SEND );
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2738,12 +2717,12 @@ BOOL MultiPlayer::AdminMessage( UBYTE *GoldData, UBYTE *RegencyData, char *szWhy
 //
 //	 MultiPlayer::AlliedMessage
 //
-//     Send a admin create / either broadcast or directed 
+//     Send a admin create / either broadcast or directed
 //
-//     !! Requires ACK 
+//     !! Requires ACK
 //
 //	 Inputs:
-//		realm 
+//		realm
 //		realm Allience list
 //
 //	 Return: results of send
@@ -2770,7 +2749,7 @@ BOOL MultiPlayer::AlliedMessage( DWORD Realm, UBYTE *Reaction, UBYTE *Status, ch
 
 		StartWait( iMPM_SEND );
 
-       //---- To broadcast or not to broadcast .... with ACKing 
+       //---- To broadcast or not to broadcast .... with ACKing
 
        if ( dwToWhom != kBroadcast )
        {
@@ -2806,36 +2785,24 @@ BOOL MultiPlayer::Finalize( int type )
    int iFlag = 0;
    BOOL fFoundMaster = FALSE;
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "MultiPlayer::Finalize - player left the game");
-		RandomLogComment ( temp );
-	}
+	logInfo("MultiPlayer::Finalize - player left the game");
 
 	if ( IsRunning() )
 	{
 		// -- Look for the master
-		
+
 		// -- If I'm not the master, see if he still exists
 		if ( AMultiPlayer.GetPlayerId() != lMasterId )
 		{
 			for ( x=0; x < MAX_PLAYERS; ++x )
 			{
-				//---- Only tell everyone else if master is there 
+				//---- Only tell everyone else if master is there
 				if ( AMultiPlayer.GetAPlayerId(x) == lMasterId )
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[200];
-						sprintf ( temp, "MultiPlayer::Finalize - Found master ID %ld (I'm ID %ld)",
-							AMultiPlayer.GetAPlayerId(x),
-							AMultiPlayer.GetPlayerId() 
-							);
-						RandomLogComment ( temp );
-					}
+					logInfo("MultiPlayer::Finalize - Found master ID %ld (I'm ID %ld)",
+						AMultiPlayer.GetAPlayerId(x),
+						AMultiPlayer.GetPlayerId()
+						);
 
 					fFoundMaster = TRUE;
 					break;
@@ -2844,26 +2811,20 @@ BOOL MultiPlayer::Finalize( int type )
 		}
 		else
 			fFoundMaster = FALSE; // because I'm the master
-		
+
 		//---- If anyone is out there Tell everyone we left
 		// if ( !fFoundMaster || AMultiPlayer.CheckForPlayers() == TRUE )
 		{
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-				sprintf ( temp, "MultiPlayer::Finalize - StopTheGame (I'm ID %ld)",
-					AMultiPlayer.GetPlayerId() 
-					);
-				RandomLogComment ( temp );
-			}
-			
-			
-		   //---- Reset our status flag 
+			logInfo("MultiPlayer::Finalize - StopTheGame (I'm ID %ld)",
+				AMultiPlayer.GetPlayerId()
+				);
+
+
+		   //---- Reset our status flag
 			eStatus = iMPS_ENDED;
-		
+
 			AMultiPlayer.StopTheGame();
-			iFlag = 1;   // put up the MP over menu 
+			iFlag = 1;   // put up the MP over menu
 		}
 	}
 
@@ -2871,7 +2832,7 @@ BOOL MultiPlayer::Finalize( int type )
    	mono_puts(0, 0, "Birthright - Finalizing a Multiplayer game" );
    #endif
 
-   //---- Reset our status flag 
+   //---- Reset our status flag
 	eStatus = iMPS_ENDED;
 
 	// -- Reset stuff
@@ -2882,11 +2843,11 @@ BOOL MultiPlayer::Finalize( int type )
 
  	WriteCfg();
 
-   //---- Destroy the Direct Play stuff 
+   //---- Destroy the Direct Play stuff
 
 	GenericMultiPlayer::Finalize();
 
-   //---- cleanup the chat stuff 
+   //---- cleanup the chat stuff
 
    ChatLineClear();
 
@@ -2895,7 +2856,7 @@ BOOL MultiPlayer::Finalize( int type )
    if (!type)
 	   HideChatDisplayWindow(0, 0);
 
-   //---- Display the MP Over menu    
+   //---- Display the MP Over menu
 
    if ( iFlag && !type )
    {
@@ -2907,7 +2868,7 @@ BOOL MultiPlayer::Finalize( int type )
 }  //---- MultiPlayer::Finalize
 
 
- 
+
 
 // -----------------------------------------------------------------
 //
@@ -2924,7 +2885,7 @@ int MultiPlayer::InitPre ( int doSigs )
 	BOOL fOK = TRUE;
    ErrCode err = kNoError;
 
-	if ( (eStatus == iMPS_NONE) || 
+	if ( (eStatus == iMPS_NONE) ||
 		 (eStatus == iMPS_ENDED)   )
 	{
 
@@ -2956,7 +2917,7 @@ int MultiPlayer::InitPre ( int doSigs )
 			if (sDrawMode == iDDRAW)
 			{
 //				ToggleDirectDraw(0, 0);
-//               DDSetCooperative ( FALSE ); 
+//               DDSetCooperative ( FALSE );
 //               ShowCursor(TRUE);
 				WindowsMessages();
 			}
@@ -2993,13 +2954,7 @@ int MultiPlayer::InitPre ( int doSigs )
 
 		if ( !fOK )
 		{
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-				sprintf ( temp, "MultiPlayer::InitPre - finalize");
-				RandomLogComment ( temp );
-			}
+			logInfo("MultiPlayer::InitPre - finalize");
 
 			GenericMultiPlayer::Finalize();   //---- Error
 	 		return 0;
@@ -3011,11 +2966,11 @@ int MultiPlayer::InitPre ( int doSigs )
 	}
 
 
-	return 0;	
+	return 0;
 
 
 
-}	//---- End MultiPlayer::InitPre() 
+}	//---- End MultiPlayer::InitPre()
 
 
 
@@ -3049,7 +3004,7 @@ void MultiPlayer::InitPost ( void )
 	SetMaster( fStartGame );
 
 
-   //---- Don't allow anyone to join the game 
+   //---- Don't allow anyone to join the game
 
    DisablePlayers();
 
@@ -3057,17 +3012,17 @@ void MultiPlayer::InitPost ( void )
 
    if ( fSigs )
 	{
-      SetWaitTimes( 15 ) ; // 15 old 
+      SetWaitTimes( 15 ) ; // 15 old
 	}
    else if ( GenericMultiPlayer::IsModemGame() ||   //---- Direct Modem
              !AMultiPlayer.GetSpeed()             ) //---- Low speed connection
 	{
-      SetWaitTimes( 3 );  // 8 old 
+      SetWaitTimes( 3 );  // 8 old
 	}
 
 	GetNetModule()->SetFileProgressCallback( FileProgress );
 
-	eStatus = iMPS_SETUP;   
+	eStatus = iMPS_SETUP;
 
 
 	for(int i=0; i<MPGAMESEMIPHORE_MAX_DATA; ++i)
@@ -3079,7 +3034,7 @@ void MultiPlayer::InitPost ( void )
 
    ShowChatDisplayWindow(0, 0);
 
-   //---- Help text for f3 and f4 
+   //---- Help text for f3 and f4
 
    ChatLineAdd( STRMGR_GetStr(STR_F3TEXT), WHITE );
    ChatLineAdd( STRMGR_GetStr(STR_F4TEXT), WHITE );
@@ -3088,7 +3043,7 @@ void MultiPlayer::InitPost ( void )
 
 //	if ( IsMaster() )
 //	{
-//		Setup();      //---- Send Setup message to everyone not the master 
+//		Setup();      //---- Send Setup message to everyone not the master
 //	}
    //---- Now that we are connected go out and initialize the game
 //   DomainNewGame ( 0, 7777 );
@@ -3123,7 +3078,7 @@ void MultiPlayer::InitPost2 ( void )
 	else
 	{
 		Sleep(5000);	// -- GEH adjust this value???
-		
+
 	}
 
 	//---- Lets wait and make sure everyone is with us at this point
@@ -3151,39 +3106,27 @@ void MultiPlayer::InitPost2 ( void )
 		{
 
 			//---- Exchange the saved game
- 
+
 			if ( AMultiPlayer.ExchangeSavedGame() )
 			{
-				LoadGameDoMulti();			//---- load in the game 
-				
+				LoadGameDoMulti();			//---- load in the game
+
 				StartSync( iMPS_SYNC4 );	//---- synchronize everyone
 				CheckSync( iMPS_SYNC4, TRUE, FALSE );
-				
+
 				NewGameConfirmed2(TRUE);	//---- Char select screen
 			}
 			else  //---- exchange failed
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[200];
-					sprintf ( temp, "MultiPlayer::InitPost2 - finalize 1");
-					RandomLogComment ( temp );
-				}
+				logInfo("MultiPlayer::InitPost2 - finalize 1");
 
 				AMultiPlayer.Finalize();
 			}
 
 		}
-		else  //---- Battle ???????? 
+		else  //---- Battle ????????
 		{
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-				sprintf ( temp, "MultiPlayer::InitPost2 - finalize 2");
-				RandomLogComment ( temp );
-			}
+			logInfo("MultiPlayer::InitPost2 - finalize 2");
 
 			AMultiPlayer.Finalize();
 		}
@@ -3219,7 +3162,7 @@ BOOL MultiPlayer::SendGameType( void )
 
 	if ( !IsMaster() )
 	{
-		return TRUE;	
+		return TRUE;
 	}
 
 
@@ -3259,12 +3202,12 @@ BOOL MultiPlayer::SendGameType( void )
 //
 //	 MultiPlayer::UpdateDeletedPlayers()
 //
-//		Check for deleted players and doing things 
+//		Check for deleted players and doing things
 //
 //	 Inputs:
 //		none
 //
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 
@@ -3273,12 +3216,12 @@ void MultiPlayer::UpdateDeletedPlayers( void )
 	int i;
 	int x;
 
-	//---- Check deleted player flags 
+	//---- Check deleted player flags
 
 	for ( x = 0; x < MAX_PLAYERS; ++x )
 	{
 
-		//---- If we have found a deleted player 
+		//---- If we have found a deleted player
 
 		if ( AMultiPlayer.GetDeletedPlayer(x) )
 		{
@@ -3288,29 +3231,29 @@ void MultiPlayer::UpdateDeletedPlayers( void )
 			for ( i = 0; i < LAND_REALM_COUNT; ++i )
 			{
 
-				//---- Is this a player 
+				//---- Is this a player
 
 				if ( lRealmSelectedByPlayer[i] != -1 )
 				{
 
-					//---- This is the one 
+					//---- This is the one
 
 					if ( AMultiPlayer.GetDeletedPlayerId( x ) == lRealmSelectedByPlayer[i] )
 					{
 
 						#ifdef _MULTIMONO
-							mono_printf ( 40,18, "Player Left id%d realm%d", 
+							mono_printf ( 40,18, "Player Left id%d realm%d",
 										  lRealmSelectedByPlayer[i],
 										  i );
 						#endif
 
-                           
+
                        //---- Display chat that this player has left
 
        				if ( i < LAND_REALM_COUNT )
        				{
 		        			int temp;
-                           char buffer[100]; 
+                           char buffer[100];
 				        	char cpRealmName[80];
 
        					strcpy(cpRealmName, realm[i].mfGetName() );
@@ -3320,7 +3263,7 @@ void MultiPlayer::UpdateDeletedPlayers( void )
 			 		            		    AMultiPlayer.GetOpponentName(x),
              							    STRMGR_GetStr(STR_MP_LEAVING1) );
 
-       					temp = sprintf( &buffer[temp],					
+       					temp = sprintf( &buffer[temp],
 		        				         	" %s %s",
        							        cpRealmName,
                                            STRMGR_GetStr(STR_MP_LEAVING2) );
@@ -3336,7 +3279,7 @@ void MultiPlayer::UpdateDeletedPlayers( void )
                        // If realms are not selected then dump game if
                        // master leaves otherwise the game should be OK
 
-//                     if ( !MultiAllRealmsSelected() && 
+//                     if ( !MultiAllRealmsSelected() &&
 //      					 AMultiPlayer.GetDeletedPlayerId (x) == lMasterId )
 //	    				{
 
@@ -3355,9 +3298,9 @@ void MultiPlayer::UpdateDeletedPlayers( void )
 		    			{
 			    			lRealmSelectedByPlayer[i] = -1;
 				    		realm[i].mfSetPlayerCtrl( FALSE);  //---- Not player controlled
-						
+
 					    	AMultiPlayer.ResetDeletedPlayer ( x );
-                           
+
 						}
 
 					}
@@ -3416,13 +3359,7 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 			//---- Is anyone out there ( if not finalize multiplayer )
 			if ( CheckForPlayers() )
 			{
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
-				{
-					char temp[200];
-					sprintf ( temp, "MultiPlayer::LookForMessages - finalize 1");
-					RandomLogComment ( temp );
-				}
+				logInfo("MultiPlayer::LookForMessages - finalize 1");
 
 			   if ( eStatus != iMPS_ENDED )
 					Finalize();
@@ -3433,12 +3370,12 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 			++i;
 
 			#ifdef _MULTIMONO
-			    mono_printf ( 30,24, "Look %d i %u # %lu last %lu", 
-							  i, 
+			    mono_printf ( 30,24, "Look %d i %u # %lu last %lu",
+							  i,
 							  iOnSeed,
-							  numrands,
-							  lastrand  );
-			#endif 
+							  0,
+							  0  );
+			#endif
 
 
 			//---- Do we need to broadcast realm ?? Kludge
@@ -3451,7 +3388,7 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 					{
 						DWORD dwId;
 
-						//----- Broadcast this realm now 
+						//----- Broadcast this realm now
 						dwId = AMultiPlayer.GetAPlayerId(x);
 						AMultiPlayer.BroadcastRealmInfo( AMultiPlayer.GetRealmFromId( dwId ),
 														 dwId,
@@ -3472,13 +3409,7 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 				//---- Is anyone out there ( if not finalize multiplayer )
 				if ( CheckForPlayers() )
 				{
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[200];
-						sprintf ( temp, "MultiPlayer::LookForMessages - finalize 2");
-						RandomLogComment ( temp );
-					}
+					logInfo("MultiPlayer::LookForMessages - finalize 2");
 
 				   if ( eStatus != iMPS_ENDED )
 						Finalize();
@@ -3488,12 +3419,12 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 				++i;
 
 				#ifdef _MULTIMONO
-				    mono_printf ( 30,24, "Look %d i %u # %lu last %lu", 
-								  i, 
+				    mono_printf ( 30,24, "Look %d i %u # %lu last %lu",
+								  i,
 								  iOnSeed,
-								  numrands,
-								  lastrand  );
-				#endif 
+								  0,
+								  0  );
+				#endif
 
 				switch ( nm.MsgId )
 				{
@@ -3524,57 +3455,35 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 					case iMPT_SYNCACTION:
 					case iMPT_GAMETYPE:
 
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
+						if ( nm.MsgId == iMPT_SYNC )
 						{
-							if ( nm.MsgId == iMPT_SYNC )
-							{
-								char temp[200];
-								sprintf ( temp, "MulPlay::LookForMessages - receiving SYNC message.  OurID:%ld  FromID:%ld  MsgNum:%lx", GetPlayerId(), nm.dwPlayerId, nm.ulSync);
-								RandomLogComment ( temp );
-							}
+							logInfo("MulPlay::LookForMessages - receiving SYNC message.  OurID:%ld  FromID:%ld  MsgNum:%lx", GetPlayerId(), nm.dwPlayerId, nm.ulSync);
+						}
 
-							if ( nm.MsgId == iMPT_UNIT )
-							{
-								char temp[200];
-								sprintf ( temp, "MulPlay::LookForMessages - receiving UNIT message.  OurID:%ld  FromID:%ld  MsgNum:%lx", GetPlayerId(), nm.dwPlayerId, nm.ulSync);
-								RandomLogComment ( temp );
-							}
+						if ( nm.MsgId == iMPT_UNIT )
+						{
+							logInfo("MulPlay::LookForMessages - receiving UNIT message.  OurID:%ld  FromID:%ld  MsgNum:%lx", GetPlayerId(), nm.dwPlayerId, nm.ulSync);
 						}
 
 						if ( ReceiveMessage( nm.MsgId, dwMsgWaitR, TRUE ) )
 						{
-							LOGCOMMENTSLEEP
-							if ( fLogComment )
+							if ( nm.MsgId == iMPT_SYNC)
 							{
-								if ( nm.MsgId == iMPT_SYNC)
-								{
-									char temp[200];
-										sprintf ( temp, "MulPlay::LookForMessages - callin HandleSpecialMessages with a SYNC message.  FromID:%ld/%ld  MsgNum:%lx",
-											nm.dwPlayerId, ((PBRHeader)cRcvBuf)->dwFrom, nm.ulSync);
-									RandomLogComment ( temp );
-								}
+								logInfo("MulPlay::LookForMessages - callin HandleSpecialMessages with a SYNC message.  FromID:%ld/%ld  MsgNum:%lx",
+									nm.dwPlayerId, ((PBRHeader)cRcvBuf)->dwFrom, nm.ulSync);
+							}
 
-								if ( nm.MsgId == iMPT_UNIT)
-								{
-									char temp[200];
-										sprintf ( temp, "MulPlay::LookForMessages - callin HandleSpecialMessages with a UNIT message.  FromID:%ld/%ld  MsgNum:%lx",
-											nm.dwPlayerId, ((PBRHeader)cRcvBuf)->dwFrom, nm.ulSync);
-									RandomLogComment ( temp );
-								}
+							if ( nm.MsgId == iMPT_UNIT)
+							{
+								logInfo("MulPlay::LookForMessages - callin HandleSpecialMessages with a UNIT message.  FromID:%ld/%ld  MsgNum:%lx",
+									nm.dwPlayerId, ((PBRHeader)cRcvBuf)->dwFrom, nm.ulSync);
 							}
 
 							HandleSpecialMessages( nm.MsgId, nm.ulSync );
 						}
 						else
 						{
-							LOGCOMMENTSLEEP
-							if ( fLogComment )
-							{
-								char temp[200];
-								sprintf ( temp, "MulPlay::LookForMessages - After Peeking Msg, ReceiveMessage %s Failed!",((nm.MsgId==iMPT_SYNC)?"SYNC":((nm.MsgId==iMPT_UNIT)?"UNIT":"non-unit & non-sync")) );
-								RandomLogComment ( temp );
-							}
+							logInfo("MulPlay::LookForMessages - After Peeking Msg, ReceiveMessage %s Failed!",((nm.MsgId==iMPT_SYNC)?"SYNC":((nm.MsgId==iMPT_UNIT)?"UNIT":"non-unit & non-sync")) );
 						}
 
 						break;
@@ -3595,14 +3504,14 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 					}
 
 				}
-				
+
 				// breath...
 				Sleep(0);
 			}
-			
+
 			if ( kNoError != GetErrorNum() )
 				HandleNetworkErrors( GetErrorNum() );
-			
+
 		}
 	}
 
@@ -3613,19 +3522,13 @@ BOOL MultiPlayer::LookForMessages( int fMulPlay )
 /* ========================================================================
    Function    - HandleNetworkErrors
 	Description - deal with network error messages
-	Returns     - 
+	Returns     -
 	======================================================================== */
 void HandleNetworkErrors ( PNET_ERRCODE_TYPE ErrorVal )
 {
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "MulPlay::HandleNetworkErrors - !!!!!!!! ErrorNum:%ld Reported !!!!!!!!", (long)ErrorVal);
-		RandomLogComment ( temp );
-	}
-	
-	
+	logInfo("MulPlay::HandleNetworkErrors - !!!!!!!! ErrorNum:%ld Reported !!!!!!!!", (long)ErrorVal);
+
+
 	switch ( ErrorVal )
 	{
    // -- lost connection, game, player, or mind - punt
@@ -3635,7 +3538,7 @@ void HandleNetworkErrors ( PNET_ERRCODE_TYPE ErrorVal )
    case kMessageNotReceived:
    	AMultiPlayer.Finalize();
    	break;
-   
+
 	case kPlayerDisconnected:
    case kNetworkingNotInstalled:
    case kNetworkingSetupError:
@@ -3670,7 +3573,7 @@ void HandleNetworkErrors ( PNET_ERRCODE_TYPE ErrorVal )
 //	 Inputs:
 //		none
 //
-//	 Return: status 
+//	 Return: status
 //
 // -----------------------------------------------------------------
 BOOL LookMessages(void)
@@ -3747,29 +3650,29 @@ BOOL MultiPlayer::RemovePlayer( DWORD dwId )
 
 		// tell myself
 		GenericMultiPlayer::DeletePlayer( dwId );
-		
+
 		if (IsMultiPlayer())
 		{
 			// -- make the message
-	
+
 			sSize = DoHeader( iMPT_TARGETPLAYERLEFTGAME, &pMsg );
-	
+
 			((PBRLeftGame)pMsg)->dwId = dwId;
-			
+
 			fSent = SendBroadcastMessage( sSize, TRUE );
 		}
-	
+
 		#ifdef _MULTIMONO
-	
+
 		if ( fSent )
 			mono_puts( 0, 15, "Remove Player from game message" );
-	
+
 		#endif
-	
+
 	}
-	
+
 	return ( fSent );
-	
+
 } // MultiPlayer::StopTheGame
 
 
@@ -3921,7 +3824,7 @@ short MultiPlayer::DoHeader( MsgType usType, PCHAR *ppMsg )
 
 	PCHAR	pMsg = *ppMsg;
 
-	pMsg = &cSndBuf[0];	
+	pMsg = &cSndBuf[0];
 
 	memset( pMsg, 0, MAX_NETBUFF );
 
@@ -3931,7 +3834,7 @@ short MultiPlayer::DoHeader( MsgType usType, PCHAR *ppMsg )
 	((PBRHeader) pMsg)->usMsgType = usType;
 	((PBRHeader) pMsg)->fMaster   = fMaster;
 
-   //---- Our unique (DPLAY) player id 
+   //---- Our unique (DPLAY) player id
 
    ((PBRHeader) pMsg)->dwFrom    = GetPlayerId();
 
@@ -3978,7 +3881,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			fWonGame = TRUE;  //---- Set this so we can't win also
 
            #ifdef _MULTIMONO
-               mono_printf ( 40, 23, "<- Won Game %d", ((PBRWonGame)pMsg)->HomeRealm ); 
+               mono_printf ( 40, 23, "<- Won Game %d", ((PBRWonGame)pMsg)->HomeRealm );
            #endif
 
 			PlayFinale(((PBRWonGame)pMsg)->HomeRealm, 0 );
@@ -3991,7 +3894,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			iAdventOver = TRUE;         //---- Flag for adventure over
 
            #ifdef _MULTIMONO
-               mono_puts ( 40, 23, "<- Adventure Over" ); 
+               mono_puts ( 40, 23, "<- Adventure Over" );
            #endif
 
 			break;
@@ -4008,10 +3911,10 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
            #ifdef _MULTIMONO
 
-               mono_printf ( 40, 8, "<- Player Control id %d flag %d", 
+               mono_printf ( 40, 8, "<- Player Control id %d flag %d",
     						  ((PBRHeader)cRcvBuf)->dwFrom,
 						 	  ((PBRControl)pMsg)->control   );
-  
+
            #endif
 
 			break;
@@ -4023,7 +3926,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
 			if ( EventTable.EventId == iMPE_NONE )
-			{			
+			{
 				int i;
 
 				for ( i = 0; i < MAX_PLAYERS; ++i )
@@ -4044,9 +3947,9 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			}
 			else  //---- We already have this event
-			{   
+			{
 				#ifdef _MULTIMONO
-   	            mono_puts ( 40, 17, "Already have EVENT !!!!!!" ); 
+   	            mono_puts ( 40, 17, "Already have EVENT !!!!!!" );
            	#endif
 
 			}
@@ -4068,13 +3971,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 					//--- Check for and ignore rebroadcast sync messages
 					if (lMsgNum == SyncMsgIDTable[((PBRSync)pMsg)->iSync][i])
 					{
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[200];
-							sprintf ( temp, "MulPlay::HandleSpecialMessage - NOT recording DUPLICATE sync message.  OurID:%ld  FromID:%ld  SyncNum:%ld  MsgNum:%lx", GetPlayerId(), GetAPlayerId(i), ((PBRSync)pMsg)->iSync, lMsgNum);
-							RandomLogComment ( temp );
-						}
+						logInfo("MulPlay::HandleSpecialMessage - NOT recording DUPLICATE sync message.  OurID:%ld  FromID:%ld  SyncNum:%ld  MsgNum:%lx", GetPlayerId(), GetAPlayerId(i), ((PBRSync)pMsg)->iSync, lMsgNum);
 					}
 					else
 					{
@@ -4083,44 +3980,32 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 						//--- set the message ID for the message which set the sync
 						SyncMsgIDTable[((PBRSync)pMsg)->iSync][i] = lMsgNum;
-						LOGCOMMENTSLEEP
-						if ( fLogComment )
-						{
-							char temp[200];
-							sprintf ( temp, "MulPlay::HandleSpecialMessage - recording sync message.  OurID:%ld  FromID:%ld  SyncNum:%ld  MsgNum:%lx", GetPlayerId(), GetAPlayerId(i), ((PBRSync)pMsg)->iSync, lMsgNum);
-							RandomLogComment ( temp );
-						}
+						logInfo("MulPlay::HandleSpecialMessage - recording sync message.  OurID:%ld  FromID:%ld  SyncNum:%ld  MsgNum:%lx", GetPlayerId(), GetAPlayerId(i), ((PBRSync)pMsg)->iSync, lMsgNum);
 					}
 					break;
 				}
 
 			}
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment && i == MAX_PLAYERS)
-			{
-				char temp[200];
-				sprintf ( temp, "MulPlay::HandleSpecialMessage - PlayerId %ld not found!", ((PBRHeader)cRcvBuf)->dwFrom );
-				RandomLogComment ( temp );
-			}
+			logInfo("MulPlay::HandleSpecialMessage - PlayerId %ld not found!", ((PBRHeader)cRcvBuf)->dwFrom );
 
 			break;
 		}
 
 
 
-		case iMPT_SYNCACTION: 		//---- Player is done 
+		case iMPT_SYNCACTION: 		//---- Player is done
 		{
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
 			int i;
-			
+
 			for ( i = 0; i < MAX_PLAYERS; ++i )
 			{
 				if ( GetAPlayerId(i) == ((PBRHeader)cRcvBuf)->dwFrom )
 				{
 					//---- Set this player is done
- 
+
  					SyncAction[i] = 1;
 
 					fRedrawAll = TRUE;
@@ -4139,7 +4024,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
-			
+
 			if ( EventTable.EventId == iMPE_ADVENTURE ||
 				 EventTable.EventId == iMPE_ADD_ITEM ||
 				 EventTable.EventId == iMPE_DROP_ITEM )
@@ -4177,7 +4062,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			break;
 
 
-			
+
 		case iMPT_RESEVENT:    	// event results
 
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
@@ -4213,7 +4098,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 				#ifdef _MULTIMONO
 					mono_printf ( 40,9, "BREALM rlm %d regent %d id %d",
 								  ((PBRRealm)pMsg)->iWhichRealm,
-                                 ((PBRRealm)pMsg)->lWhichRegent,  
+                                 ((PBRRealm)pMsg)->lWhichRegent,
 								  ((PBRRealm)pMsg)->lPlayerId	 );
 				#endif
 
@@ -4241,12 +4126,12 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
                    realm[((PBRRealm)pMsg)->iWhichRealm].mfSetRegent(((PBRRealm)pMsg)->lWhichRegent); // set the regent also
 
-					//---- Flag for broadcast later 
+					//---- Flag for broadcast later
 
 					for ( i=0; i < MAX_PLAYERS; ++i )
 					{
-						//---- Set flag for broadcast later 
-				
+						//---- Set flag for broadcast later
+
 						if ( ((PBRRealm)pMsg)->lPlayerId == AMultiPlayer.GetAPlayerId(i) )
 						{
 							fBRealm[i] = 1;
@@ -4255,8 +4140,8 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 					}
 
 
-					//----- Set flag for broadcast later 
-//					AMultiPlayer.BroadcastRealmInfo( ((PBRRealm)pMsg)->iWhichRealm, 
+					//----- Set flag for broadcast later
+//					AMultiPlayer.BroadcastRealmInfo( ((PBRRealm)pMsg)->iWhichRealm,
 //													 ((PBRRealm)pMsg)->lPlayerId );
 
 					fRedrawAll = TRUE;
@@ -4274,10 +4159,10 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			// -- Retrieve our stuff
 
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-	
+
 
 			int i;
-			
+
 			for ( i = 0; i < MAX_PLAYERS; ++i )
 			{
 				if ( GetAPlayerId(i) == ((PBRHeader)cRcvBuf)->dwFrom )
@@ -4287,7 +4172,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			}
 
 
-           
+
            if ( !AMultiPlayer.GetChatRec(0) &&
                 !AMultiPlayer.GetChatRec(i+1)    )
            {
@@ -4295,10 +4180,10 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
               if ( mono_getExist() )
                {
                    mono_printf ( 0, 14, "<- Chat %s Not Rec", ((PBRChat) pMsg)->szMsg );
-               } 
+               }
            #endif
                break;
-           }           
+           }
 
 
            //---- Broadcast WHITE
@@ -4307,12 +4192,12 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
            {
                color = WHITE;
            }
-           else    // direct yellow 
+           else    // direct yellow
            {
                color = YELLOW;
            }
 
-           
+
 
 
 			ChatLineAdd( ((PBRChat) pMsg)->szMsg, color );
@@ -4322,7 +4207,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
               if ( mono_getExist() )
                {
                    mono_printf ( 0, 14, "<- Chat %s", ((PBRChat) pMsg)->szMsg );
-               } 
+               }
            #endif
 
 			break;
@@ -4333,7 +4218,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			// -- Retrieve our stuff
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-			
+
 			// reset time since last ping
 			for ( i = 0; i < MAX_PLAYERS; ++i )
 			{
@@ -4344,21 +4229,21 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 					AMultiPlayer.ResetSyncTime(i);
 				}
 			}
-		
+
 			break;
 
 
 
 		case iMPT_INDEXSEND:
 
-			//--- Master sent an index update 
+			//--- Master sent an index update
 			// -- Retrieve our stuff
 
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
-			DoSetGameData( ((PBRIndexS)pMsg)->lArray_Id, 
-							((PBRIndexS)pMsg)->lStruct_Id, 
-							((PBRIndexS)pMsg)->lArray_Index, 
+			DoSetGameData( ((PBRIndexS)pMsg)->lArray_Id,
+							((PBRIndexS)pMsg)->lStruct_Id,
+							((PBRIndexS)pMsg)->lArray_Index,
 							((PBRIndexS)pMsg)->lData );
 
            #ifdef _MULTIMONO
@@ -4366,8 +4251,8 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
               if ( mono_getExist() )
                {
                    mono_printf ( 40, 1, "<- Index %d      ",  ((PBRIndexS)pMsg)->lData );
-               } 
-   
+               }
+
            #endif
 
 			break;
@@ -4387,21 +4272,21 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 				pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
 
-				DoSetGameData( ((PBRIndexS)pMsg)->lArray_Id, 
+				DoSetGameData( ((PBRIndexS)pMsg)->lArray_Id,
 								((PBRIndexS)pMsg)->lStruct_Id,
-								 ((PBRIndexS)pMsg)->lArray_Index, 
+								 ((PBRIndexS)pMsg)->lArray_Index,
 								  ((PBRIndexS)pMsg)->lData );
 
 				BroadcastSetGameData( ((PBRIndexS)pMsg)->lArray_Id,
 									   ((PBRIndexS)pMsg)->lStruct_Id,
-									   ((PBRIndexS)pMsg)->lArray_Index, 
+									   ((PBRIndexS)pMsg)->lArray_Index,
 									   ((PBRIndexS)pMsg)->lData);
 
            	#ifdef _MULTIMONO
               		if ( mono_getExist() )
                	{
                    	mono_printf ( 0, 1, " Sending Index %d      ",  ((PBRIndexS)pMsg)->lData);
-             		 } 
+             		 }
            	#endif
 
 
@@ -4411,13 +4296,13 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 		case iMPT_DATASEND:
 
-			//--- Master sent an index update 
+			//--- Master sent an index update
 			// -- Retrieve our stuff
 
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
-			iGameData = DoGetGameData( ((PBRIndexR)pMsg)->lArray_Id, 
-										((PBRIndexR)pMsg)->lStruct_Id, 
+			iGameData = DoGetGameData( ((PBRIndexR)pMsg)->lArray_Id,
+										((PBRIndexR)pMsg)->lStruct_Id,
 										((PBRIndexR)pMsg)->lArray_Index);
 			break;
 
@@ -4436,12 +4321,12 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 				pMsg = &cRcvBuf[0] + sizeof(BRHeader);
 
-				iGameData = DoGetGameData( ((PBRIndexR)pMsg)->lArray_Id, 
+				iGameData = DoGetGameData( ((PBRIndexR)pMsg)->lArray_Id,
 											((PBRIndexR)pMsg)->lStruct_Id,
 											 ((PBRIndexR)pMsg)->lArray_Index);
 
-				BroadcastSetGameData( ((PBRIndexR)pMsg)->lArray_Id, 
-									  ((PBRIndexR)pMsg)->lStruct_Id, 
+				BroadcastSetGameData( ((PBRIndexR)pMsg)->lArray_Id,
+									  ((PBRIndexR)pMsg)->lStruct_Id,
 									  ((PBRIndexR)pMsg)->lArray_Index,
 									  iGameData, playerId );
 			}
@@ -4462,59 +4347,45 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 		case iMPT_UNIT:	// update a unit on our machine from xmitted unit data
 			{
 				pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-				
+
 				LONG index = (LONG)((PBRUnitMessage)pMsg)->UnitIndex;
 				UNIT_TYPE *pData = (UNIT_TYPE *)((PBRUnitMessage)pMsg)->UnitData;
-				
+
 				// -- Can't memcopy, some data cannot be set to xmitted values
-				// memcpy((UBYTE *)&units[index], pData , SIZEOF_MULTIUNIT); 
-				
-				
-				LOGCOMMENTSLEEP
-				if ( fLogComment )
+				// memcpy((UBYTE *)&units[index], pData , SIZEOF_MULTIUNIT);
+
+
+				if (pData->Realm == REALM::NO_COUNTRY && units[index].Realm != REALM::NO_COUNTRY)
 				{
-					if (pData->Realm == REALM::NO_COUNTRY && units[index].Realm != REALM::NO_COUNTRY)
-					{
-						char temp[100];
-						sprintf ( temp, "   mulplay.cpp UnitReceive - %s unit:%d is being deleted",
-							debug_realm_names[units[index].Realm], index);
-						RandomLogComment ( temp );
-					}
-					else if (pData->Realm != REALM::NO_COUNTRY && units[index].Realm == REALM::NO_COUNTRY)
-					{
-						char temp[100];
-						sprintf ( temp, "   mulplay.cpp UnitReceive - %s unit:%d is being created in %d",
-							debug_realm_names[pData->Realm], index, pData->province );
-						RandomLogComment ( temp );
-					}
-					else if (pData->province != NO_PROVINCE && units[index].province == NO_PROVINCE)
-					{
-						char temp[100];
-						sprintf ( temp, "   mulplay.cpp UnitReceive - %s unit:%d is being made leader in %d",
-							debug_realm_names[pData->Realm], index, pData->province );
-						RandomLogComment ( temp );
-					}
-					else if (units[index].DestProvince != pData->DestProvince
-							&& pData->Realm != NO_PROVINCE)
-					{
-						char temp[100];
-						sprintf ( temp, "   mulplay.cpp UnitReceive - %s unit:%d is moving, DestProvince:%d",
-							debug_realm_names[units[index].Realm], index, pData->DestProvince );
-						RandomLogComment ( temp );
-					}
-					else
-					{
-						char temp[100];
-						sprintf ( temp, "   mulplay.cpp UnitReceive - %s unit:%d info sent, don't know why. prov:%d",
-							debug_realm_names[pData->Realm], index, pData->province );
-						RandomLogComment ( temp );
-					}
+					logInfo("   mulplay.cpp UnitReceive - %s unit:%d is being deleted",
+						debug_realm_names[units[index].Realm], index);
 				}
-				
+				else if (pData->Realm != REALM::NO_COUNTRY && units[index].Realm == REALM::NO_COUNTRY)
+				{
+					logInfo("   mulplay.cpp UnitReceive - %s unit:%d is being created in %d",
+						debug_realm_names[pData->Realm], index, pData->province );
+				}
+				else if (pData->province != NO_PROVINCE && units[index].province == NO_PROVINCE)
+				{
+					logInfo("   mulplay.cpp UnitReceive - %s unit:%d is being made leader in %d",
+						debug_realm_names[pData->Realm], index, pData->province );
+				}
+				else if (units[index].DestProvince != pData->DestProvince
+						&& pData->Realm != NO_PROVINCE)
+				{
+					logInfo("   mulplay.cpp UnitReceive - %s unit:%d is moving, DestProvince:%d",
+						debug_realm_names[units[index].Realm], index, pData->DestProvince );
+				}
+				else
+				{
+					logInfo("   mulplay.cpp UnitReceive - %s unit:%d info sent, don't know why. prov:%d",
+						debug_realm_names[pData->Realm], index, pData->province );
+				}
+
 				// new units start as NotSpotted = TRUE
 				if (pData->Realm != NO_PROVINCE && units[index].province == NO_PROVINCE)
 					units[index].NotSpotted = TRUE;
-				
+
 				// -- update the unit
 				units[index].province		= pData->province;
 				units[index].Realm			= pData->Realm;
@@ -4535,8 +4406,8 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 				units[index].DestPath3		= pData->DestPath3;
 				units[index].id				= pData->id;
 				units[index].NextUnit		= pData->NextUnit;
-				
-				
+
+
 				// if we are deleting the unit, don't do the following
 				if (units[index].province != NO_PROVINCE)
 				{
@@ -4549,17 +4420,17 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 						sprintf(n,"UI\\%s.PCX",GameIcons[pData->Icon]);
 						units[index].iIconBitm = GetResourceStd(n, FALSE);
 					}
-					
+
 					//-- Can't use the xmitted NotSpotted flag, different on each machine
 					// units[index].NotSpotted		= pData->NotSpotted;
-					
+
 					//-- Check whether anyone is already in this province and can see
 					//   the new unit.
 					if (CanISeeAnyoneInThisProv(HomeRealm, (PROVINCE)pData->province))
 					{
 						units[index].NotSpotted = FALSE;
 					}
-					
+
 					//-- We spot any anybody in the prov if a vassal or liege lord's
 					//   unit is in the prov.
 					if (ISVASSAL(pData->Realm,HomeRealm)
@@ -4567,7 +4438,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 					{
 						MarkUnitsSpotted((PROVINCE)pData->province);
 					}
-					
+
 					//-- If we join a group which is spotted, then so are we.
 					if (units[index].Joined == TRUE)
 					{
@@ -4587,9 +4458,9 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 							}
 						}
 					}
-				
+
 				}	// if not deleting
-				
+
 				SetRedrawMainMapLevel();
 			}
 			break;
@@ -4599,13 +4470,13 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			// -- Retrieve our stuff
 			{
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-			
+
 			LONG index = (LONG)((PBRPlacesMessage)pMsg)->PlacesIndex;
 			UBYTE *pData = (UBYTE *)((PBRPlacesMessage)pMsg)->PlacesData;
 			char n[80];
-			
-			memcpy((UBYTE *)&places[index], pData , SIZEOF_MULTIPLACES); 
-			
+
+			memcpy((UBYTE *)&places[index], pData , SIZEOF_MULTIPLACES);
+
 			LONG lData;
 			// Get the correct map resource icon.
 			switch (places[index].Icon)
@@ -4636,7 +4507,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			}
 			break;
-		
+
  		case iMPT_GAINEXP:
  			{
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
@@ -4647,20 +4518,20 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 				FALSE);						// fsend
 	 		}
 	 		break;
-	 		
+
 		case iMPT_ADMIN:
 			// -- Retrieve our stuff
 			{
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-			
+
 			// -- get gold pointer
 			UBYTE *pGoldData = (UBYTE *)((PBRAdminMessage)pMsg)->GoldData;
-			
+
 			// -- get gold regency
 			UBYTE *pRegencyData = (UBYTE *)((PBRAdminMessage)pMsg)->RegencyData;
-			
+
 			// -- decode data array
-			
+
 			}
 			break;
 
@@ -4668,16 +4539,16 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			// -- Retrieve our stuff
 			{
 			pMsg = &cRcvBuf[0] + sizeof(BRHeader);
-			
+
 			// -- get data pointer
 			LONG index = (LONG)((PBRAlliedMessage)pMsg)->Realm;
 			UBYTE *pReaction = (UBYTE *)((PBRAlliedMessage)pMsg)->Reaction;
 			UBYTE *pStatus = (UBYTE *)((PBRAlliedMessage)pMsg)->Status;
-			
+
 			// -- decode data array
-			memcpy((UBYTE *)&RealmReaction[index][0], pReaction , SIZEOF_MULTIALLIED); 
-			memcpy((UBYTE *)&RealmStatus[index][0], pStatus , SIZEOF_MULTIALLIED); 
-			
+			memcpy((UBYTE *)&RealmReaction[index][0], pReaction , SIZEOF_MULTIALLIED);
+			memcpy((UBYTE *)&RealmStatus[index][0], pStatus , SIZEOF_MULTIALLIED);
+
 			}
 			break;
 
@@ -4689,16 +4560,10 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			GenericMultiPlayer::DeletePlayer  ( ((PBRHeader)cRcvBuf)->dwFrom );
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[100];
-				sprintf ( temp, "Player ID:%d, has left the game.", ((PBRHeader)cRcvBuf)->dwFrom );
-				RandomLogComment ( temp );
-			}
+			logInfo("Player ID:%d, has left the game.", ((PBRHeader)cRcvBuf)->dwFrom );
 
 
-			//----- Refresh just in case gamemap is running 
+			//----- Refresh just in case gamemap is running
 
 			fRedrawAll = TRUE;
 
@@ -4714,16 +4579,10 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			GenericMultiPlayer::DeletePlayer( ((PBRLeftGame)pMsg)->dwId );
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[100];
-				sprintf ( temp, "Player ID:%d, was told to leave the game.", ((PBRLeftGame)pMsg)->dwId );
-				RandomLogComment ( temp );
-			}
+			logInfo("Player ID:%d, was told to leave the game.", ((PBRLeftGame)pMsg)->dwId );
 
 
-			//----- Refresh just in case gamemap is running 
+			//----- Refresh just in case gamemap is running
 
 			fRedrawAll = TRUE;
 
@@ -4734,7 +4593,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 			pMsg      = &cRcvBuf[0] + sizeof(BRHeader);
 
-			//---- Set Game Type from master 
+			//---- Set Game Type from master
 
 			SetGameType(((PBRGameType)pMsg)->iGameType);
 
@@ -4755,7 +4614,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 			lMasterId = ((PBRSetup)pMsg)->lMasterId;
 
 
-			memcpy ( &ulRseeds[0], &((PBRSetup) pMsg)->ulRseeds[0], 
+			memcpy ( &ulRseeds[0], &((PBRSetup) pMsg)->ulRseeds[0],
 					 sizeof( unsigned long ) * kNumSeeds );
 
 			iOnSeed = 0;
@@ -4773,7 +4632,7 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 
 
-			//---- Signal we have the seed table 
+			//---- Signal we have the seed table
 
 			fHaveSeedTable = TRUE;
 
@@ -4788,22 +4647,16 @@ BOOL MultiPlayer::HandleSpecialMessages( UCHAR ucMsgId, long lMsgNum )
 
 		default:
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-				sprintf ( temp, "MulPlay::HandleSpecialMessage - Unknown message usType:%ld", ucMsgId );
-				RandomLogComment ( temp );
-			}
-			
-			
+			logInfo("MulPlay::HandleSpecialMessage - Unknown message usType:%ld", ucMsgId );
+
+
            #ifdef _MULTIMONO
 
               if ( mono_getExist() )
                {
                    mono_puts ( 0, 15, "HandleSpecial Unknown message" );
-               } 
-   
+               }
+
            #endif
 			break;
 
@@ -4841,12 +4694,12 @@ void MultiPlayer::InitGoop( void )
    Init_MessQue ( );      //---- Initialize message que ( clear it )
 
 
-	//---- Init our chat sending list 
+	//---- Init our chat sending list
 
 	InitChat();
 
 
-	//---- Init the event table 
+	//---- Init the event table
 
 	InitEvent();
 
@@ -4864,7 +4717,7 @@ void MultiPlayer::InitGoop( void )
 		lRegent[i] = 0;
 	}
 
-	
+
 	for(i=0; i<REALM::REALM_COUNT; ++i)
 	{
 
@@ -4875,11 +4728,11 @@ void MultiPlayer::InitGoop( void )
 			realm[i].mfSetPlayerCtrl(FALSE);	 //---- Player controlled realm
 		}
 
-	} 
+	}
 
 
 
-	//---- Yes there are better ways  Reset sync table 
+	//---- Yes there are better ways  Reset sync table
 
 	for ( i=0; i < iMPS_SYNCEND; ++i )
 	{
@@ -4891,7 +4744,7 @@ void MultiPlayer::InitGoop( void )
 	}
 
 
-	//---- Reset Sync Action table 
+	//---- Reset Sync Action table
 
 	for ( i=0; i < MAX_PLAYERS; ++i )
 	{
@@ -4899,7 +4752,7 @@ void MultiPlayer::InitGoop( void )
 	}
 
 
-	//---- Reset master id 
+	//---- Reset master id
 
 	lMasterId = -1;
 
@@ -5012,25 +4865,17 @@ BOOL MultiPlayer::ReceiveFile( PSZ pNew )
 	// -- We must wait our turn to receive a file transfer
 	StartSync( iMPS_SYNC5 );	//---- synchronize everyone
 	CheckSync( iMPS_SYNC5, TRUE, FALSE );
-	
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-	    char temp[200];
-	    sprintf ( temp, "Start Receive File (lMasterId = %d)", lMasterId );
-	    RandomLogComment(temp);
-	}
+
+	logInfo("Start Receive File (lMasterId = %d)", lMasterId );
 
 
 	AddSndObj( SND_BATTLE_HORN1, 0, VOLUME_EIGHTY);
-	
+
 	fRes = GenericMultiPlayer::ReceiveFile( lMasterId, pNew );
 
 	EndWait( iMPM_RCVFILE );
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-		RandomLogComment ( "End Receive File" );
+	logInfo( "End Receive File" );
 
 	return ( fRes );
 
@@ -5093,7 +4938,7 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 		return ( FALSE );
 
 	fSent = FALSE;
-	
+
 	// -- Make a fully-qualified file name
 
 // for now
@@ -5112,15 +4957,15 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 	StartWait( iMPM_SENDFILE );
 	// -- sync all of us to same point
 	StartSync( iMPS_SYNC5 );
-	
+
 	// -- clear temp sync arrays
 	pnmGame.ResetSync(iMPS_SYNC4);
-	
+
 	// -- Loop unconditionally. Break when we have received all syncs
 	while ( TRUE )
 	{
 		LONG	cnt,i;
-		
+
 		AMultiPlayer.LookForMessages();	//---- Check for messages
 
 		//---- Check if all syncs have come in
@@ -5137,20 +4982,20 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 				}
 			}
 		}
-		
+
 		if ( cnt == 0 )	//---- Everyone has synced
 		{
 			AMultiPlayer.ResetSync( iMPS_SYNC4 );
 			break;
 		}
-		
+
 		if ( !IsMultiPlayer() )		//---- The game is over somehow
 			break;
 
 		Sleep(0);
 	}
-	
-	
+
+
 	// Set a fake sync 4 for everyone but the last one
 	for (p_index=0; p_index < MAX_PLAYERS; ++p_index)
 	{
@@ -5162,12 +5007,12 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 		}
 	}
 	SyncTable[iMPS_SYNC4][j] = 0;
-	
-	
+
+
 	for (p_index=0; p_index < MAX_PLAYERS; ++p_index)
 	{
 		sprintf( szFName, ".\\%s", pszFile );
-		
+
 		// -- Now, for each possible player, release each one, one
 		// -- at a time, and send them the file.
 		if ((idNext = GetAPlayerId(p_index)) != kNoPlayer &&
@@ -5176,27 +5021,22 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 			// -- Why 10, you ask?
 			i = 10;
 			c = 0;
-			
+
 			AMultiPlayer.SendSyncTo( iMPS_SYNC_GO, idNext );
-			
+
 			// -- if we didn't time/loop out, then send the file
 			fSent = (i>0) && GenericMultiPlayer::SendFile( szFName, p_index );
-			
+
 			// forget this one and try the next
 			if (!fSent)
 			{
 				RemovePlayer( idNext );
 
-				if ( fLogComment )
-				{
-					char temp[200];
-					sprintf ( temp, "MultiPlayer::SendFile - used to remove player. idNext: %ld", idNext);
-					RandomLogComment ( temp );
-				}
+				logInfo("MultiPlayer::SendFile - used to remove player. idNext: %ld", idNext);
 
 				continue;
 			}
-			
+
 			// ABC remove 7/21/97
 			// -- take care of any SYNC4's that occured during file xfer
 			//for ( j = 0; j < MAX_PLAYERS; ++j )
@@ -5209,7 +5049,7 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 			//		SyncMsgIDTable[iMPS_SYNC4][j] = pnmGame.GetSyncId(iMPS_SYNC4, j);
 			//	}
 			//}
-			
+
 			//GEH 7/18/97  keep sending
 			//GEH if (!fSent)
 			//GEH	break;	// -- We're hosed if anyone fails
@@ -5222,10 +5062,10 @@ BOOL MultiPlayer::SendFile( PSZ pszPath, PCHAR pszFile )
 		run_timers();
 		Sleep(0);
 	}
-	
+
 	// -- clear temp sync arrays
 	//pnmGame.ResetSync(iMPS_SYNC4);
-	
+
 	// -- end wait
 	EndWait( iMPM_SENDFILE );
 
@@ -5251,33 +5091,27 @@ BOOL MultiPlayer::SendBroadcastMessage( short sSize, BOOL fAck )
 {
 
 	BOOL	RetVal;
-	
+
 	// -- Check for a valid object
 
 	if ( !IsInitialized() )
 		return ( FALSE );
 
 //@@@@@@@@@@@@@@@@@@@@@@@@@
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf ( temp, "MultiPlayer::SendBroadcastMessage - usMsgType:%ld %s%s",
-			 (LONG)(((PBRHeader)&cSndBuf[0])->usMsgType), (((PBRHeader)&cSndBuf[0])->usMsgType==iMPT_UNIT)?"iMPT_UNIT":" ", (((PBRHeader)&cSndBuf[0])->usMsgType==iMPT_PING)?"iMPT_PING":" " );
-		//RandomLogComment ( temp );
-	}
+	//logInfo("MultiPlayer::SendBroadcastMessage - usMsgType:%ld %s%s",
+	//	(LONG)(((PBRHeader)&cSndBuf[0])->usMsgType), (((PBRHeader)&cSndBuf[0])->usMsgType==iMPT_UNIT)?"iMPT_UNIT":" ", (((PBRHeader)&cSndBuf[0])->usMsgType==iMPT_PING)?"iMPT_PING":" " );
 
 
 	RetVal = ( GenericMultiPlayer::SendBroadcastMessage(
-		   (( (PBRHeader) &cSndBuf[0])->usMsgType), 
+		   (( (PBRHeader) &cSndBuf[0])->usMsgType),
 		    						sSize, fAck ) );
 
 	// -- clean up
 	if ( kNoError != GetErrorNum() )
 		HandleNetworkErrors( GetErrorNum() );
-					
+
 	return RetVal;
-	
+
 } // MultiPlayer::SendBroadcastMessage()
 
 
@@ -5286,10 +5120,10 @@ BOOL MultiPlayer::SendBroadcastMessage( short sSize, BOOL fAck )
 //
 //	 MultiPlayer::SendDirectMessage
 //
-//		Send the message.   
+//		Send the message.
 //
 //	 Inputs:
-//     dwToWhom    - Id of person to whom the message is going 
+//     dwToWhom    - Id of person to whom the message is going
 //		sSize		- actual size of the message
 //		fAck		- do we want acking?
 //
@@ -5308,7 +5142,7 @@ BOOL MultiPlayer::SendDirectMessage( DWORD dwToWhom, short sSize, BOOL fAck )
 
 	RetVal = ( GenericMultiPlayer::SendDirectMessage(
            dwToWhom,
-		   (( (PBRHeader) &cSndBuf[0])->usMsgType), 
+		   (( (PBRHeader) &cSndBuf[0])->usMsgType),
 		    						sSize, fAck ) );
 
 	// -- clean up
@@ -5316,7 +5150,7 @@ BOOL MultiPlayer::SendDirectMessage( DWORD dwToWhom, short sSize, BOOL fAck )
 		HandleNetworkErrors( GetErrorNum() );
 
 	return RetVal;
-	
+
 } // MultiPlayer::SendDirectMessage()
 
 
@@ -5368,10 +5202,10 @@ void MultiPlayer::WriteCfg( void )
 //
 //   MultiPlayer::StartNewGame ( )
 //
-//   Start a new direct play game                                                                
-//                                                                              
-//   Returns: 1 - worked 0 - failure                                                                  
-//                                                                             
+//   Start a new direct play game
+//
+//   Returns: 1 - worked 0 - failure
+//
 // ----------------------------------------------------------------------
 
 BOOL MultiPlayer::StartNewGame ( void )
@@ -5408,12 +5242,12 @@ BOOL MultiPlayer::StartNewGame ( void )
 //
 //   MultiPlayer::JoinGame
 //
-//       Join a direct play game 
+//       Join a direct play game
 //
-//   Arguments: index of game                                                                
-//                                                                              
-//   Returns: 1 - worked 0 - failure                                                                  
-//                                                                             
+//   Arguments: index of game
+//
+//   Returns: 1 - worked 0 - failure
+//
 // ----------------------------------------------------------------------
 
 BOOL MultiPlayer::JoinGame ( int index )
@@ -5424,7 +5258,7 @@ BOOL MultiPlayer::JoinGame ( int index )
 	fStartGame = FALSE;
 
 
-	fOK = AMultiPlayer.JoinAGame( index, 
+	fOK = AMultiPlayer.JoinAGame( index,
 								  AMultiPlayer.GetPlayerName() );
 
 
@@ -5451,9 +5285,9 @@ BOOL MultiPlayer::JoinGame ( int index )
 //       Update all the players names
 //
 //   Arguments:
-//                                                                              
+//
 //   Returns:
-//                                                                             
+//
 // ----------------------------------------------------------------------
 
 BOOL MultiPlayer::GetPlayers ( void )
@@ -5473,12 +5307,12 @@ BOOL MultiPlayer::GetPlayers ( void )
 //
 //   MultiPlayer::WaitForPlayers()
 //
-//       
+//
 //
 //   Arguments:
-//                                                                              
-//   Returns: kHaveAll is done waiting else number of players 
-//                                                                             
+//
+//   Returns: kHaveAll is done waiting else number of players
+//
 // ----------------------------------------------------------------------
 
 int MultiPlayer::WaitForPlayers ( void )
@@ -5491,12 +5325,12 @@ int MultiPlayer::WaitForPlayers ( void )
 //
 //   MultiPlayer::DisplayNetStatus()
 //
-//   Display network status     
+//   Display network status
 //
 //   Arguments:
-//                                                                              
-//   Returns:  
-//                                                                             
+//
+//   Returns:
+//
 // ----------------------------------------------------------------------
 
 void MultiPlayer::DisplayNetStatus ( LONG mx, LONG my )
@@ -5528,7 +5362,7 @@ void MultiPlayer::DisplayNetStatus ( LONG mx, LONG my )
 		}
 	}
 
-}	
+}
 
 
 
@@ -5540,7 +5374,7 @@ void MultiPlayer::DisplayNetStatus ( LONG mx, LONG my )
 //
 //	 Inputs:
 //
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 void MultiPlayer::StartSeed( void )
@@ -5554,9 +5388,7 @@ void MultiPlayer::StartSeed( void )
 
 			iOnSeed = 0;
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-				RandomLogComment ( "Start Rand Seed" );
+			logInfo("Start Rand Seed" );
 
 			srand ( ulRseeds[0] );
 
@@ -5582,7 +5414,7 @@ void MultiPlayer::StartSeed( void )
 //
 //	 Inputs:
 //
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 void MultiPlayer::InitSeedTable( void )
@@ -5611,11 +5443,11 @@ void MultiPlayer::InitSeedTable( void )
 //
 //	 MultiPlayer::NextSeed
 //
-//		advance to next seed  
+//		advance to next seed
 //
 //	 Inputs:
 //
-//	 Return: 
+//	 Return:
 //
 // -----------------------------------------------------------------
 void MultiPlayer::NextSeed( char * szFileName, int iLineNumber )
@@ -5634,16 +5466,10 @@ void MultiPlayer::NextSeed( char * szFileName, int iLineNumber )
 				iOnSeed = 0;
 			}
 
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[200];
-			  	sprintf ( temp, "Next Seed %d in %12.12s line %04d",
-							iOnSeed,
-							szFileName,
-							iLineNumber );
-				RandomLogComment ( temp );
-			}
+			logInfo("Next Seed %d in %12.12s line %04d",
+				iOnSeed,
+				szFileName,
+				iLineNumber );
 
 			srand ( ulRseeds[iOnSeed] );
 
@@ -5666,12 +5492,12 @@ void MultiPlayer::NextSeed( char * szFileName, int iLineNumber )
 //   StartSIGS
 //
 //		Start up a Sierra internet games system game
-//                                                                              
+//
 //   Inputs:
 //		none
-//                                                                              
+//
 //   Returns: TRUE if the connection was made, else FALSE
-//                                                                             
+//
 // ------------------------------------------------------------------
 BOOL StartSIGS( void )
 {
@@ -5744,24 +5570,24 @@ BOOL StartSIGS( void )
 //
 //   DisplayString
 //		Enumeration callback for lists of protocols and games.
-//                                                                              
+//
 //   Inputs:
 //			lContext	- 0 - emun player 1 - enum games
 //			theString	- enumerated name
 //			theIndex	- index of the item (used in selecting the item)
-//			pnm			- NETGAMINFO structure - only valid when 
+//			pnm			- NETGAMINFO structure - only valid when
 //								enumerating games!, otherwise will be NULL
-//                                                                              
+//
 //   Returns: none
-//                                                                             
+//
 // ------------------------------------------------------------------
-static void DisplayString( long lContext, char* theString, 
+static void DisplayString( long lContext, char* theString,
 											long theIndex, PNETGAMEINFO pnm )
 {
 	int i;
 
 
-	//---- Enumerating Players 
+	//---- Enumerating Players
 
 	if ( lContext == 0 )
 	{
@@ -5777,7 +5603,7 @@ static void DisplayString( long lContext, char* theString,
 					strcpy( AMultiPlayer.GetOpponentName(i), theString );
 
 					#ifdef _MULTIMONO
-			        mono_printf ( 0, 7, "Have player %s id %d index %d", 
+			        mono_printf ( 0, 7, "Have player %s id %d index %d",
                  			      theString,
 								  theIndex,
                         		  i );
@@ -5789,11 +5615,11 @@ static void DisplayString( long lContext, char* theString,
 	}
 	else
 	{
-       //---- Enumerating Games 
+       //---- Enumerating Games
 
 		strcpy( &pszGames[theIndex][0], theString );
 
-		//---- Terminate the string 
+		//---- Terminate the string
 
 		pszGames[theIndex][23] = 0;
 
@@ -5809,29 +5635,21 @@ static void DisplayString( long lContext, char* theString,
 //
 //   EndWait
 //		Destroy the waiting window.
-//                                                                              
+//
 //   Inputs:
 //			none
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 void EndWait( USHORT usTypeOfWait )
 {
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
+	if (usTypeOfWait >= 16 && usTypeOfWait < 64)
 	{
-		if (usTypeOfWait >= 16 && usTypeOfWait < 64)
-		{
-			char temp[200];
-			sprintf ( temp, "MultiPlayer::EndWait - Sync Point %u", usTypeOfWait - 16);
-			RandomLogComment ( temp );
-		}
-		else if (usTypeOfWait == 99)
-		{
-			char temp[200];
-			sprintf ( temp, "MultiPlayer::EndWait - User wait message");
-			RandomLogComment ( temp );
-		}
+		logInfo("MultiPlayer::EndWait - Sync Point %u", usTypeOfWait - 16);
+	}
+	else if (usTypeOfWait == 99)
+	{
+		logInfo("MultiPlayer::EndWait - User wait message");
 	}
 
    #ifdef _MULTIMONO
@@ -5839,7 +5657,7 @@ void EndWait( USHORT usTypeOfWait )
    #endif
 
 	init_mouse("DAGGER",CURSOR_HOTSPOT_UL);
-	
+
 } //---- EndWait()
 
 
@@ -5849,18 +5667,18 @@ void EndWait( USHORT usTypeOfWait )
 //
 //   SaveString
 //		Enumeration callback for lists of protocols.
-//                                                                              
+//
 //   Inputs:
 //			lContext	- extra parameter sent in enumeration
 //			theString	- enumerated name
 //			theIndex	- index of the item (used in selecting the item)
-//			pnm			- NETGAMINFO structure - only valid when 
+//			pnm			- NETGAMINFO structure - only valid when
 //								enumerating games!, otherwise will be NULL
-//                                                                              
+//
 //   Returns: none
-//                                                                             
+//
 // ------------------------------------------------------------------
-static void SaveString( long lContext, char* theString, 
+static void SaveString( long lContext, char* theString,
  						 long theIndex, PNETGAMEINFO pnm )
 {
 	int len;
@@ -5899,55 +5717,48 @@ static void SaveString( long lContext, char* theString,
 //
 //   StartWait
 //		Display the waiting window.
-//                                                                              
+//
 //   Inputs:
 //			usType	- type of wait
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 void StartWait( USHORT usType )
 {
+	CHAR *szMsg[] = {
+		"Sending a message",
+		"Waiting for a message",
+		"Waiting for joiners",
+		"Waiting for a file",
+		"Sending a file",
+	};
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
+	CHAR szText[MAX_PATH] = "";
+
+   //---- Need Something on the screen to tell that we are waiting
+
+	if (usType <= 4)
 	{
-		CHAR *szMsg[] = {
-			"Sending a message",
-			"Waiting for a message",
-			"Waiting for joiners",
-			"Waiting for a file",
-			"Sending a file",
-		};
-
-		CHAR szText[MAX_PATH] = "";
-
-	   //---- Need Something on the screen to tell that we are waiting
-
-		if (usType <= 4)
-		{
-			sprintf( szText, "%s - %s", szAppName, szMsg[usType] );
+		sprintf( szText, "%s - %s", szAppName, szMsg[usType] );
 #ifdef _MULTIMONO
-			mono_puts ( 0, 0, szText );
+		mono_puts ( 0, 0, szText );
 #endif
-			RandomLogComment ( szText );
-		}
+		logInfo( szText );
+	}
 
-		else
+	else
+	{
+		char temp[200];
+
+		// sync point value + 16
+		if (usType == 99)
 		{
-			char temp[200];
-		
-			// sync point value + 16
-			if (usType == 99)
-			{
-				sprintf ( temp, "MultiPlayer::StartWait - User Sync message");
-				RandomLogComment ( temp );
-			}
-			else
-			if (usType >= 16 )
-			{
-				sprintf ( temp, "MultiPlayer::StartWait - Sync Point %d", usType - 16);
-				RandomLogComment ( temp );
-			}
+			logInfo("MultiPlayer::StartWait - User Sync message");
+		}
+		else
+		if (usType >= 16 )
+		{
+			logInfo("MultiPlayer::StartWait - Sync Point %d", usType - 16);
 		}
 	}
 
@@ -5960,10 +5771,10 @@ void StartWait( USHORT usType )
 // ------------------------------------------------------------------
 //
 //   IsMultiPlayer()
-//		
-//                                                                              
+//
+//
 //   Inputs:
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
@@ -5971,7 +5782,7 @@ extern "C" {
 BOOL IsMultiPlayer(void)
 {
 	long i;
-	
+
 	// -- GWP 7/10/97
 	// -- check to see if this player was deleted
 	for ( i = 0; i < MAX_PLAYERS; ++i)
@@ -5980,7 +5791,7 @@ BOOL IsMultiPlayer(void)
 			&& AMultiPlayer.GetDeletedPlayer( i ) )
 			return FALSE;
 	}
-	
+
 	if ( AMultiPlayer.IsRunning()
 		&& AMultiPlayer.CheckForPlayers() == FALSE )
 	{
@@ -5996,17 +5807,17 @@ BOOL IsMultiPlayer(void)
 // ------------------------------------------------------------------
 //
 //   IsMultiPlayerMaster()
-//		
-//                                                                              
-//   Inputs: Multiplayer and master 
-//                                                                              
+//
+//
+//   Inputs: Multiplayer and master
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
 BOOL IsMultiPlayerMaster(void)
 {
 	long i;
-	
+
 	// -- GEH 7/9/97
 	// -- check to see if this player was deleted
 	for ( i = 0; i < MAX_PLAYERS; ++i)
@@ -6015,7 +5826,7 @@ BOOL IsMultiPlayerMaster(void)
 			&& AMultiPlayer.GetDeletedPlayer( i ) )
 			return FALSE;
 	}
-	
+
 	if ( AMultiPlayer.IsRunning() &&
 		 AMultiPlayer.IsMaster()     )
 	{
@@ -6031,10 +5842,10 @@ BOOL IsMultiPlayerMaster(void)
 // ------------------------------------------------------------------
 //
 //   HowManyPlayers()
-//		
-//                                                                              
-//   Inputs: 
-//                                                                              
+//
+//
+//   Inputs:
+//
 //   Returns: count of players
 // ------------------------------------------------------------------
 
@@ -6050,7 +5861,7 @@ void MDisplayInfo (CSTRPTR szFrame, int iformat, ...)
 	va_list argp;
 	SHORT		iBkgnd, w, h, x, y;
 	char		*format;
-	
+
 	if ((iBkgnd = GetResourceStd(szFrame, FALSE)) == fERROR)
 		return;
 
@@ -6082,13 +5893,13 @@ void MDisplayInfo (CSTRPTR szFrame, int iformat, ...)
 //
 //   FileProgress
 //		Do the File progress dialog.
-//                                                                              
+//
 //   Inputs:
 //		iBlock		- currently copying block
 //		iMaxBlock	- max blocks to copy
-//                                                                              
+//
 //   Returns: none
-//                                                                      
+//
 // ------------------------------------------------------------------
 // -- This routine is only used by file transfer, so I
 // -- will use better art - GEH
@@ -6109,8 +5920,8 @@ void FileProgress( int iBlock, int iMaxBlock )
 
 
 //	#ifdef _MULTIMONO
-//        mono_printf ( 0, 14, "File transfer %d%% %d %d", 
-//      			       (( iBlock * 1000 ) / iMaxBlock) / 10, 
+//        mono_printf ( 0, 14, "File transfer %d%% %d %d",
+//      			       (( iBlock * 1000 ) / iMaxBlock) / 10,
 //					   iBlock, iMaxBlock );
 //	#endif
 
@@ -6119,27 +5930,27 @@ void FileProgress( int iBlock, int iMaxBlock )
 	{
 		SHORT	bitm,iBkgnd;
 		SHORT w,h,x,y;
-		
+
 		if ((iBkgnd = GetResourceStd("UI\\HELP_SM.PCX", FALSE)) == fERROR)
 			return;
-		
+
 		w = ((BITMPTR)BLKPTR(iBkgnd))->w;
 		h = ((BITMPTR)BLKPTR(iBkgnd))->h;
 		x = (SHORT)(320-(w/2));
 		y = (SHORT)(240-(h/2));
-		
+
 		SysHideCursor();
-		
+
 		DrawBitmap(x, y, iBkgnd, 0, 0, w, h);
-		
+
 		init_gfont(FONT_SANS_12PT);
 		print_text_centered(x+10+(w/2),y+10+(h/4),STRMGR_GetStr(iFormat), DKBROWN);
-		
+
 		// paint greyed sword
 		bitm = GetResourceStd ("ui\\SWORDD.PCX", FALSE);
 		DrawBitmap (x+SWORD_X, y+SWORD_Y, bitm, 0, 0, SWORD_W, SWORD_H);
 		SetPurge(bitm);
-		
+
 		// paint percentage bright sword
 		bitm = GetResourceStd ("ui\\SWORDB.PCX", FALSE);
 		DrawBitmap (
@@ -6148,15 +5959,15 @@ void FileProgress( int iBlock, int iMaxBlock )
 			bitm, 0, 0,
 			iPercent*SWORD_W/100,
 			SWORD_H);
-			
+
 		SetPurge(bitm);
 		SetPurge(iBkgnd);
-		
+
 		SysShowCursor();
-		
+
 		// - old methode
 		//MDisplayInfo( "UI\\help_sm.PCX", iFormat, iPercent );
-		
+
 		update_screen();
 	}
 
@@ -6168,13 +5979,13 @@ void FileProgress( int iBlock, int iMaxBlock )
 // ------------------------------------------------------------------
 //
 //   IsMultiPlayerandRealm()
-//     If this realm is a remote player and Multiplayer is still 
-//     running. 		
+//     If this realm is a remote player and Multiplayer is still
+//     running.
 //
-//     NOTE: Still returns TRUE if our realm 
+//     NOTE: Still returns TRUE if our realm
 //
 //   Inputs: realm ( not REALM::REALM_TYPE because the *.h are !@#!@ )
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
@@ -6198,10 +6009,10 @@ BOOL MultiPlayer::IsMultiPlayerandRealm( int realm )
 // ------------------------------------------------------------------
 //
 //   DoMultiRealmStuff()
-//		
-//                                                                              
+//
+//
 //   Inputs:
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
@@ -6233,17 +6044,11 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
 
 		realm[HomeRealm].mfSetPlayerCtrl(TRUE);	 //---- Player controlled realm
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[200];
-			sprintf ( temp, "MultiPlayer::DoMultiRealmStuff - Master player:%ld  requesting:%s",AMultiPlayer.GetPlayerId(), debug_realm_names[HomeRealm] );
-			RandomLogComment ( temp );
-		}
+		logInfo("MultiPlayer::DoMultiRealmStuff - Master player:%ld  requesting:%s",AMultiPlayer.GetPlayerId(), debug_realm_names[HomeRealm] );
 
 
 		// then tell all other players about it
-		AMultiPlayer.BroadcastRealmInfo( HomeRealm, 
+		AMultiPlayer.BroadcastRealmInfo( HomeRealm,
                                         AMultiPlayer.GetPlayerId(),
                                         ((HomeRealm * 2) + iWhichRegent - 2) );
 		ok = TRUE;
@@ -6254,16 +6059,10 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
 		// request this data be set by the master
 		// send request for realm
 
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[200];
-			sprintf ( temp, "MultiPlayer::DoMultiRealmStuff - non-master player:%ld  requesting:%s",AMultiPlayer.GetPlayerId(), debug_realm_names[HomeRealm] );
-			RandomLogComment ( temp );
-		}
+		logInfo("MultiPlayer::DoMultiRealmStuff - non-master player:%ld  requesting:%s",AMultiPlayer.GetPlayerId(), debug_realm_names[HomeRealm] );
 
 
-		AMultiPlayer.RequestRealm( HomeRealm, 
+		AMultiPlayer.RequestRealm( HomeRealm,
                                   AMultiPlayer.GetPlayerId(),
                                   ((HomeRealm * 2) + iWhichRegent - 2) );
 
@@ -6292,8 +6091,8 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
            #ifdef _DEBUG
            if ( GetAsyncKeyState( VK_F10 ) & 0x8000 )
            {
-              AMultiPlayer.Finalize();    
-              break; 
+              AMultiPlayer.Finalize();
+              break;
            }
            #endif
 
@@ -6301,12 +6100,12 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
 
 
 		//---- We timed out and no one else grabbed this realm set it ourself
-		//---- Master must have disappeared 
+		//---- Master must have disappeared
 
 //		if ( ok == FALSE &&
 //			 lRealmSelectedByPlayer[HomeRealm] != -1 )
 //		{
-//			
+//
 //		}
 
 	}
@@ -6320,11 +6119,11 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
 // ------------------------------------------------------------------
 //
 //   ExchangeSavedGame()
-//		
-//		Exchange saved games 
-//                                                                              
+//
+//		Exchange saved games
+//
 //   Inputs:
-//                                                                              
+//
 //   Returns: none
 // ------------------------------------------------------------------
 
@@ -6373,32 +6172,26 @@ BOOL MultiPlayer::ExchangeSavedGame( void )
 /* ========================================================================
    Function    - PingMyMaster
 	Description - Send a 'I'm alive' ping to the master
-	Returns     - 
+	Returns     -
 	======================================================================== */
 extern "C" {
 void PingMyMaster (void)
 {
 #ifdef _WINDOWS
 	static LONG lLastPing = 0;
-	
+
 	if ( lLastPing > (LONG)GetTickCount() )
 	{
 		return;
 	}
-	
+
 	lLastPing = GetTickCount() + MP_PING_FREQ ;
-	
+
 	if (fStartPinging && IsMultiPlayer())
 	{
-			
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[200];
-			sprintf ( temp, "Mulplay::PingMyMaster - Sending iMPT_PING.");
-			RandomLogComment ( temp );
-		}
-	
+
+		logInfo("Mulplay::PingMyMaster - Sending iMPT_PING.");
+
 		AMultiPlayer.Ping( AMultiPlayer.GetPlayerId(), AMultiPlayer.lMasterId );
 	}
 #endif
@@ -6406,4 +6199,3 @@ void PingMyMaster (void)
 }
 
 //----- End of MulPlay.cpp
-

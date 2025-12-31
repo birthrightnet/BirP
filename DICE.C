@@ -4,12 +4,12 @@
    ========================================================================
    Filename: DICE.c  - Handle Dice rolling.
    Author:   Gary Powell
-   
+
    ========================================================================
-   
+
    Contains the following general functions:
 	RollDice - Rolls a AD&D Die, ie 2d7+2
-   
+
    ======================================================================== */
 
 /* ------------------------------------------------------------------------
@@ -32,8 +32,6 @@
 /* ------------------------------------------------------------------------
    Prototypes
    ------------------------------------------------------------------------ */
-void RandomLogPrefix ( char * szString );
-
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
@@ -58,12 +56,6 @@ SHORT RollDice( DICE const * const pDiceInfo)
 		SHORT sRoll;
 
 		// Generate a random number between 1 and the Number of sides on the dice.
-#if defined (_WINDOWS) && defined(_DEBUG)
-//		char temp[100];
-//		sprintf(temp, "%12.12s%@%d", FileName, LineNum);
-//		RandomLogPrefix(temp);
-#endif
-
 		sRoll = random(pDiceInfo->sbNumberOfSides)+1;
 
 		sResult += sRoll;
@@ -100,6 +92,3 @@ SHORT AveDice( DICE const * const pDiceInfo)
 }
 
 /* ======================================================================= */
-
-
-

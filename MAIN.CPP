@@ -979,12 +979,6 @@ void GameMain(void)
 	// load font
 	init_gfont(FONT_SANS_5PT);
 
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	InitRandomLog();
-#endif
-#endif
-
 	SetupAdvsitePlaces();
 
 	/* function keys */

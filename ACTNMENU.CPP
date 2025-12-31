@@ -53,7 +53,7 @@
 #include "itemutil.hxx"
 
 #ifdef _WINDOWS
-#include "winsys\mulplay.hxx"	
+#include "winsys\mulplay.hxx"
 #endif
 
 /* ------------------------------------------------------------------------
@@ -120,8 +120,6 @@ extern void GainRealmExp(LONG RegentIndex, const LONG ExpAmount,
 
 extern "C" void DrawLittleButton (LONG x, LONG y, LONG w, LONG h, LONG pushFlag);
 extern "C" void ResumeTimeLimit (void);
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
 extern "C" void SetRedrawMainMapLevel (void);
 
 /* ------------------------------------------------------------------------
@@ -158,16 +156,16 @@ LONG				modOpponent = 0;
 static LONG			modLevel = 0;
 static LONG			reportFlag = 0;
 static LONG			iNewScreen = 0;
-static LONG			iCancel = 1; 
+static LONG			iCancel = 1;
 static LONG			additionalamt = 0;
 static LONG			startPlace = 0;
 static PROVINCE 	iSelectedProvince = NO_PROVINCE;
 static LONG 		iSelectedOneHolding = 99;
 static LONG 		iSelectedUnit = 0;
 
-LONG				fOtherDipMP = FALSE;  //---- Multiplayer diplomacy sync flag 
+LONG				fOtherDipMP = FALSE;  //---- Multiplayer diplomacy sync flag
 										  //---- should be true when called from mapai.cpp
-										  //---- Sync point #5 should be done	
+										  //---- Sync point #5 should be done
 
 extern USHORT	TargetPlace;
 extern SHORT	iProvMap;
@@ -226,7 +224,7 @@ static LONG 		yRollLocation;
 static UBYTE		fRollResult[128];
 static UBYTE		success_roll;
 
-DEFINE_STATIC_VECTOR_DATA(UBYTE,expertHolding)={1, 6, 4, 5, 1}; 
+DEFINE_STATIC_VECTOR_DATA(UBYTE,expertHolding)={1, 6, 4, 5, 1};
 DEFINE_VECTOR_CLASS(UBYTE, expertHolding);
 
 DEFINE_STATIC_VECTOR_DATA(UBYTE,expertise) = {
@@ -371,7 +369,7 @@ static LONG RealmExpPoints[NUM_OF_EXP_TYPES][NUM_OF_EXP_CLASSES] = {
 
 
 /* ========================================================================
-   Function    - 
+   Function    -
    Description - Vassal of another realm?
    Returns     -
    ======================================================================== */
@@ -381,7 +379,7 @@ BOOL CheckVassal ( REALM::REALM_TYPE rlm )
 
 	for (i=REALM::FIRST_REALM; i < LAND_REALM_COUNT; i = (REALM::REALM_TYPE)(i + 1))
    {
-       if ( ISVASSAL(rlm, i) ) 
+       if ( ISVASSAL(rlm, i) )
        {
            return TRUE;
        }
@@ -393,7 +391,7 @@ BOOL CheckVassal ( REALM::REALM_TYPE rlm )
 
 
 /* ========================================================================
-   Function    - 
+   Function    -
    Description - reconstruct the map
    Returns     -
    ======================================================================== */
@@ -474,8 +472,8 @@ void ReconstructMap (void)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void NextPrev (LONG val, LONG);
@@ -510,7 +508,7 @@ BOOL DoPageProvince(LONG *startCount, LONG provCount, LONG countToPrint, LONG co
 
 /* ========================================================================
    Function    - Functions to determine success
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 #define CHECK_ONLY		 1
@@ -550,7 +548,7 @@ static BOOL ProcessGoldAndReg (LONG mode)
 		// Handle the Diplomacy case upon success.
 		if ((iCurAction == REALM_SPELL & iSelectedOneHolding == ITEM_SPELL_ALCHEMY)
 			&& GoldGained > 0)
-		{	
+		{
 			realm[HomeRealm].mfAddTreasury(GoldGained * 10);
 			GoldGained = 0;
 		}
@@ -558,13 +556,7 @@ static BOOL ProcessGoldAndReg (LONG mode)
 		realm[HomeRealm].mfAddTreasury(-(GoldBar * 10));
 
 	   // YOU HAVE TO SEND THIS IN MULTIPLAYER
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[100];
-			sprintf ( temp, "ProcessGoldAndRegency - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency());
-			RandomLogComment ( temp );
-		}
+		logInfo( "ProcessGoldAndRegency - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency() );
 		SetGameData(MP_REALM, MPRLM_TREASURY, HomeRealm, realm[HomeRealm].mfGetTreasury(), TRUE);
 		SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, realm[HomeRealm].mfGetRegency(), TRUE);
 	}
@@ -574,7 +566,7 @@ static BOOL ProcessGoldAndReg (LONG mode)
 
 /* ========================================================================
    Function    - Functions to determine success
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void CancelRoll (void)
@@ -588,7 +580,7 @@ void CancelRoll (void)
 
 /* ========================================================================
    Function    - Functions to determine success
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 static UBYTE RollSuccess (UBYTE Chance, LONG x, LONG y, LONG lPrint)
@@ -658,7 +650,7 @@ static UBYTE RollSuccess (UBYTE Chance, LONG x, LONG y, LONG lPrint)
 	{
 		xRollLocation = x;
 		yRollLocation = y;
-		DispSuccess(); 
+		DispSuccess();
 		success_roll = random(20)+1;
 		if (success_roll >= Chance || fTutorialSelected)
 		{
@@ -667,7 +659,7 @@ static UBYTE RollSuccess (UBYTE Chance, LONG x, LONG y, LONG lPrint)
 			{
 				if (iThisRoll == 0)
 					AddSndObj((BIRTHRT_SND)SND_UI_DELAY_SUCCEEDED,0,VOLUME_NINETY);
-				else	
+				else
 					AddSndObj((BIRTHRT_SND)SND_UI_SUCCEEDED,0,VOLUME_NINETY);
 			}
 		}
@@ -716,7 +708,7 @@ static void DispSuccess (void)
 	}
 	// wait to advance
 	if (waittime>get_time())
-	{ 
+	{
 		lAskedTargetWhichRoll = 99;
 		fAllowDoneButton = FALSE;
 		return;
@@ -731,7 +723,7 @@ static void DispSuccess (void)
 
 /* ========================================================================
    Function    - Various utility functions
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void SelectRealm (LONG realm_, LONG)
@@ -790,7 +782,7 @@ void SelectProvince (LONG prov, LONG)
 
 	if (iCurAction!=REALM_SPELL && iCurAction!=TRADE_ROUTE && iCurAction != FORGE_LEY_LINE)
 	{
-		
+
 		for(i=0; i<PROVINCE_COUNT; ++i)
 	   		for(j=0; j<4; ++j)
 	   		{
@@ -881,16 +873,16 @@ void SelectMulProvince (LONG prov, LONG level)
 
   		}
 		additionalamt = count;
-		
+
   		if (count < (level-baseLevel)/rate)
   		{
 			checkGoldReg = 0;
-  			
+
 			iSelectedMulProvince[prov]=1;
   			++fAllowRollButton ;
 			++additionalamt;
   		}
-		
+
   	}
   	modRegency = modGoldBars = 0;
 
@@ -959,14 +951,14 @@ void SelectMulUnits (LONG unitid, LONG index)
   		fAllowRollButton --;
   		iSelectedMulUnits[index] = 0;
   	}
-  	else 
+  	else
   	{
   		for(i = 0; i<20; ++i)
   		{
 			if(iSelectedMulUnits[i]!= 0)
   				++count;
-  		} 
-  		if(count < modLevel-1)   
+  		}
+  		if(count < modLevel-1)
   		{
 			checkGoldReg = 0;
   			iSelectedMulUnits[index]=unitid;
@@ -980,7 +972,7 @@ void SelectMulUnits (LONG unitid, LONG index)
   			++count;
   	}
 	if(count == 0)
-		iSelectedUnit = 0; 
+		iSelectedUnit = 0;
   	modRegency = modGoldBars = 0;
 
 }
@@ -1125,8 +1117,8 @@ BOOL find_path(LONG cur_prov, LONG to_prov, LONG * countPt)
 #endif
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 // terminate the list here
@@ -1186,8 +1178,8 @@ void CheckAndFixPlaces (PROVINCE prov)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void CheckAndFixSourceLevels (PROVINCE iProv)
@@ -1222,8 +1214,8 @@ RetestSourceLevels:
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void DeleteHolding (PROVINCE iProv, LONG iHold, BOOL fSend )
@@ -1327,12 +1319,12 @@ void DeleteHolding (PROVINCE iProv, LONG iHold, BOOL fSend )
 	if (fSend && IsMultiPlayer())
 		AMultiPlayer.PlacesMessage(iHold, (UBYTE *)&places[iHold]);
 	#endif
-	
+
 	cntHolds--;
 }
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 BOOL CreateHolding (LONG type, LONG route1, LONG route2, PROVINCE prov, REALM::REALM_TYPE realm, BOOL fSend )
@@ -1428,7 +1420,7 @@ BOOL CreateHolding (LONG type, LONG route1, LONG route2, PROVINCE prov, REALM::R
 	if (fSend && IsMultiPlayer())
 		AMultiPlayer.PlacesMessage(tmp, (UBYTE *)&places[tmp]);
 	#endif
-	
+
 	// GWP szHoldType overflows its bounds
 	// WRC szHoldType was changed to gsHoldType, it has string enums instead of strings now
 	// GWP printf("Create holding %d - link:%d prov:%s type:%s iRoute1:%d iRoute2:%d\n", tmp, prevPlace, province[prov].name, STRMGR_GetStr(gsHoldType[type]), places[tmp].iRoute1, places[tmp].iRoute2);
@@ -1441,8 +1433,8 @@ BOOL CreateHolding (LONG type, LONG route1, LONG route2, PROVINCE prov, REALM::R
 
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void SyncRegencySpentInOpposition (REALM::REALM_TYPE TargetRealm)
@@ -1455,36 +1447,24 @@ static void SyncRegencySpentInOpposition (REALM::REALM_TYPE TargetRealm)
 		#endif
 		return;
 	}
-	
+
 	if (HomeRealm != TargetRealm)
 	{
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[100];
-			sprintf ( temp, "SyncRegencySpentInOpposition - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency());
-			RandomLogComment ( temp );
-		}
+		logInfo( "SyncRegencySpentInOpposition - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency() );
 		SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, realm[HomeRealm].mfGetRegency(), TRUE);
 
 		// player's regency is xmited in  RollOthersAction
 		if (!realm[TargetRealm].mfIsPlayerCtrl())
 		{
-			LOGCOMMENTSLEEP
-			if ( fLogComment )
-			{
-				char temp[100];
-				sprintf ( temp, "SyncRegencySpentInOpposition - TargetRealm:%s  regency:%04d",realm[TargetRealm].mfGetName(),realm[TargetRealm].mfGetRegency());
-				RandomLogComment ( temp );
-			}
+			logInfo( "SyncRegencySpentInOpposition - TargetRealm:%s  regency:%04d",realm[TargetRealm].mfGetName(),realm[TargetRealm].mfGetRegency() );
 			SetGameData(MP_REALM, MPRLM_REGENCY, TargetRealm, realm[TargetRealm].mfGetRegency(), TRUE);
 		}
 	}
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static LONG			MaxSourceLevel = 0;
@@ -1546,8 +1526,8 @@ FollowLeyLine:
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 #define xPROVWIDTH			(135)
@@ -1633,7 +1613,7 @@ void PaintForgeLeyLine (LONG x, LONG y, LONG h)
 					gprint_text(x+14, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 					y+=16;
 
-					// print prev, next buttons if provinces are more that 13		
+					// print prev, next buttons if provinces are more that 13
 					if(DoPageProvince(&startProvCount, provCount, 13, counter, x, y))
 						break;
 				}
@@ -1678,7 +1658,7 @@ void PaintForgeLeyLine (LONG x, LONG y, LONG h)
 						gprint_text(x+xSECONDPROV+14, y, province[i].name, StatusColor[(RealmStatus[HomeRealm][province[i].Realm])&0x0F]);
 						y+=16;
 
-						// print prev, next buttons if provinces are more than 13		
+						// print prev, next buttons if provinces are more than 13
 						if(DoPageProvince(&startProvCount1, provCount, 13, counter, x+xSECONDPROV, y))
 							break;
 					}
@@ -1780,8 +1760,8 @@ void PaintForgeLeyLine (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintBuildRoad (LONG x, LONG y, LONG h)
@@ -1823,7 +1803,7 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 					gprint_text(x+14, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 					y+=16;
 
-					// print prev, next buttons if provinces are more than 13		
+					// print prev, next buttons if provinces are more than 13
 					if(DoPageProvince(&startProvCount, provCount, 13, counter, x, y))
 						break;
 				}
@@ -1858,7 +1838,7 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 						++counter;
 						if(counter < startProvCount1)
 							continue;
-	
+
 						DrawLittleButton(x+xSECONDPROV, y, xPROVWIDTH+14, 10, (iSelectedProvince==i));
 						add_region(x+xSECONDPROV, y, xPROVWIDTH+14, 10, 0, SelectProvince,i,0,0, -1);
 						DrawShield(x+xSECONDPROV+2, y, (REALM::REALM_TYPE)province[i].Realm);
@@ -1869,7 +1849,7 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 						   gprint_text(x+xSECONDPROV+16, y, province[i].name, DKBROWN);
 						y+=16;
 
-						// print prev, next buttons if provinces are more than 12		
+						// print prev, next buttons if provinces are more than 12
 						if(DoPageProvince(&startProvCount1, provCount, 12, counter, x+xSECONDPROV, y))
 							break;
 					}
@@ -1897,10 +1877,10 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 			strcpy(temp2, STRMGR_GetStr(gsTerrain[province[iSelectedRealm].Terrain]));
 			strcpy(temp3, STRMGR_GetStr(gsTerrain[province[iSelectedProvince].Terrain]));
 			print_textf(x, y-12, DKBROWN,
-				temp1, 
-				temp2, 
+				temp1,
+				temp2,
 				TerrainCost[province[iSelectedRealm].Terrain],
-				temp3, 
+				temp3,
 				TerrainCost[province[iSelectedProvince].Terrain],
 				modGoldBars);
 		}
@@ -1910,11 +1890,11 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 			strcpy(temp1, STRMGR_GetStr(STR_ACTNMENU_ROAD_GB_COST_FMT));
 			strcpy(temp2, STRMGR_GetStr(gsTerrain[province[iSelectedRealm].Terrain]));
 			strcpy(temp3, STRMGR_GetStr(gsTerrain[province[iSelectedProvince].Terrain]));
-			print_textf(x, y-12, DKBROWN, 
-				temp1, 
-				temp2, 
+			print_textf(x, y-12, DKBROWN,
+				temp1,
+				temp2,
 				TerrainCost[province[iSelectedRealm].Terrain],
-				temp3, 
+				temp3,
 				TerrainCost[province[iSelectedProvince].Terrain],
 				modGoldBars);
 		}
@@ -1932,10 +1912,10 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 			strcpy(temp2, STRMGR_GetStr(gsTerrain[province[iSelectedRealm].Terrain]));
 			strcpy(temp3, STRMGR_GetStr(gsTerrain[province[iSelectedProvince].Terrain]));
 			print_textf(x, y-12, DKBROWN,
-				temp1, 
-				temp2, 
+				temp1,
+				temp2,
 				TerrainCost[province[iSelectedRealm].Terrain],
-				temp3, 
+				temp3,
 				TerrainCost[province[iSelectedProvince].Terrain],
 				modGoldBars);
 		}
@@ -1953,8 +1933,8 @@ void PaintBuildRoad (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static BOOL RecursiveRoadFollower_sub (PROVINCE prov)
@@ -2125,7 +2105,7 @@ void PaintTradeRoute (LONG x, LONG y, LONG h)
 					gprint_text(x+2, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 					y+=16;
 
-					// print prev, next buttons if provinces are more than 13		
+					// print prev, next buttons if provinces are more than 13
 					if(DoPageProvince(&startProvCount, provCount, 13, counter, x, y))
 						break;
 				}
@@ -2168,7 +2148,7 @@ void PaintTradeRoute (LONG x, LONG y, LONG h)
 						gprint_text(x+xSECONDPROV+16, y, province[i].name, StatusColor[(RealmStatus[HomeRealm][province[i].Realm])&0x0F]);
 						y+=16;
 
-						// print prev, next buttons if provinces are more than 13		
+						// print prev, next buttons if provinces are more than 13
 						if(DoPageProvince(&startProvCount1, provCount, 13, counter, x+xSECONDPROV, y))
 							break;
 					}
@@ -2183,7 +2163,7 @@ void PaintTradeRoute (LONG x, LONG y, LONG h)
 	// print success and allow modification
 	if(!iSelectedRealm || !iSelectedProvince)
 		fAllowRollButton = FALSE;
-	
+
 	if (iSelectedRealm && iSelectedProvince)
 	{
 		fAllowRollButton = TRUE;
@@ -2195,14 +2175,14 @@ void PaintTradeRoute (LONG x, LONG y, LONG h)
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 		else
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-		
+
 		//if(fAllowRollButton) // Need to be able to modify this.
 		{
 			place = iSelectedHolding[iSelectedRealm][0] + (iSelectedHolding[iSelectedRealm][1]*256);
 	//printf("Start Province:%s  guild:%d  num_of_routes:%d\n",province[iSelectedRealm].name,place,iSelectedHolding[iSelectedRealm][2]);
-	
+
 			success = 10 - places[place].Level - modRegency + modOpponent;
-	
+
 			print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_F02_SUCCESS));
 			print_textf(x+66, y+6, DKBROWN, "^F02^c%d%c", D20TOPERCENT(success),PERCENTCHAR);
 			if (fLTAction != DURING_LTACTION)
@@ -2279,8 +2259,8 @@ void PaintTradeRoute (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 //#define xPROVWIDTH			(125)			see above
@@ -2313,7 +2293,7 @@ void PaintMuster (LONG x, LONG y, LONG h)
 	hStat = LoadStats(regents[ActiveRegent].mfGetid(), -1);
 	if(hStat == fERROR)
 		 return;
-	
+
 	DumbAutoLockPtr< PLAYER_STATS > const pStat(hStat);
 	InventoryItor itor(pStat->Inventory);
 	LONG IHaveTheChalice = itor.mfFind(ITEM_CHALICE_OF_THE_DEAD);
@@ -2366,9 +2346,9 @@ void PaintMuster (LONG x, LONG y, LONG h)
 			  			||(province[iSelectedProvince].ElfPop && i>=E_INF_UNIT_ICON && i<=E_CAV_UNIT_ICON)
 			  			||(province[iSelectedProvince].DwarfPop && i>=D_INF_UNIT_ICON && i<=D_BOW_UNIT_ICON)
 			  			||(province[iSelectedProvince].GoblinPop && i>=G_INF_UNIT_ICON && i<=G_CAV_UNIT_ICON)
-			  			||(i>=M_INF_UNIT_ICON && i<=M_CAV_UNIT_ICON) 
+			  			||(i>=M_INF_UNIT_ICON && i<=M_CAV_UNIT_ICON)
 						|| (IHaveTheChalice && i==C_SKL_UNIT_ICON))
-			  			&& (province[iSelectedProvince].CivLevel >= LevelUnitReqt[i]) 
+			  			&& (province[iSelectedProvince].CivLevel >= LevelUnitReqt[i])
 			  			&& ((cntUnits_() + troops) < (MAX_UNITS - 10))
 			  		)
 				{
@@ -2390,7 +2370,7 @@ void PaintMuster (LONG x, LONG y, LONG h)
 						//if(iSelectedHolding[i][1])
 						//	done = TRUE;
 						//fAllowRollButton = done;
-						// print prev, next buttons if provinces are more than 13		
+						// print prev, next buttons if provinces are more than 13
 						if(DoPageProvince(&startProvCount1, provCount1, 13, counter1, x+xUNITTYPES, y))
 							break;
 					}
@@ -2405,7 +2385,7 @@ void PaintMuster (LONG x, LONG y, LONG h)
 							modGoldBars += iSelectedHolding[i][1] * UnitMusterCost[i];
 						fAllowRollButton = done;
 						++provCount1;
-		
+
 					}
 				}
 			}
@@ -2432,8 +2412,8 @@ void PaintMuster (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 #define xLOYALTY		104
@@ -2482,24 +2462,24 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 				j = 0;
 				max_holding = -1;						// our highest level holding in prov
 				rulers_law = 0;						// level of ruler's law holding
-		
+
 				CheckAndFixPlaces((PROVINCE)i);
 				tmpIndex = j = province[i].FirstPlace;
 				while(j != 0)
 				{
-		
+
 					// our highest level holding in prov
 					if (places[tmpIndex].Realm == HomeRealm && (LONG)places[tmpIndex].Level > max_holding)
 						max_holding = places[tmpIndex].Level;
-		
+
 					// level of ruler's law holding
 					if (places[tmpIndex].Realm == province[i].Realm && places[tmpIndex].Icon == LAW1_ICON)
 						rulers_law = (province[i].Realm == HomeRealm) ? -places[tmpIndex].Level :	places[tmpIndex].Level;
-		
+
 					j = places[tmpIndex].NextPlace;	// next place in province
 					tmpIndex = province[i].FirstPlace + j;
 				}
-		
+
 				// if we have a holding in prov
 				if ( (!q && province[i].Realm == HomeRealm && province[i].Honest == 0) || (q && max_holding > -1 && province[i].Honest == 0 && province[i].Realm != HomeRealm))
 				{
@@ -2510,7 +2490,7 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 							lPrint = FALSE;
 						else
 							lPrint = TRUE;
-	
+
 						if(lPrint)
 						{
 							init_gfont((strlen(province[i].name)>15)?21:FONT_SANS_8PT);
@@ -2519,10 +2499,10 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 							   gprint_text(x+10, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 							else
 							   gprint_text(x+10, y, province[i].name, DKBROWN);
-			
-							print_textf(x+xLOYALTY, y+2, DKBROWN, "^F01^B%s", 
+
+							print_textf(x+xLOYALTY, y+2, DKBROWN, "^F01^B%s",
 								STRMGR_GetStr(gsLoyaltyUC[province[i].Loyalty+(iSelectedHolding[i][0]==2)-(iSelectedHolding[i][0]==3)]));
-			
+
 							if (province[i].Loyalty < 3)
 							{
 								DrawLittleButton(x+xRAISE, y+1, 25, 8, (iSelectedHolding[i][0]==2 || iSelectedHolding[i][0]==4));
@@ -2531,7 +2511,7 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 							else
 								color_rect(x+xLOWER, y+1, 25, 8, LTTAN-4);
 							print_textf(x+xRAISE+13, y+6, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_cRAISE));
-			
+
 							if (province[i].Loyalty>0)
 							{
 								DrawLittleButton(x+xLOWER, y+1, 25, 8, (iSelectedHolding[i][0]==3 || iSelectedHolding[i][0]==5));
@@ -2541,7 +2521,7 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 								color_rect(x+xLOWER, y+1, 25, 8, LTTAN-4);
 							print_textf(x+xLOWER+13, y+6, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_cLOWER));
 						}
-			
+
 						// success number
 						success = 10 + province[i].CivLevel - max_holding + rulers_law - iSelectedHolding[i][1] - iSelectedHolding[i][2]+modOpponent;
 						if (playerstats[ActiveRegent] != fERROR)
@@ -2551,7 +2531,7 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 						}
 						if(lPrint)
 							print_textf(x+xcSUCCESS, y+6, DKBROWN, (iSelectedHolding[i][0])?"^F02^c%d%c":"^F02^T2^c%d%c", D20TOPERCENT(success),PERCENTCHAR);
-			
+
 						if (iSelectedHolding[i][0])	// selected raise or lower
 						{
 							// Gold Bars to modify
@@ -2566,14 +2546,14 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 									SetupMod(x+284, y, &iSelectedHolding[i][2], 0, (9+province[i].CivLevel-max_holding+rulers_law-iSelectedHolding[i][1]+modOpponent), 1);
 								RegencePoint += iSelectedHolding[i][2] + (iSelectedHolding[i][0]!=0);
 							}
-			
+
 							// check for success roll
 							if (iSelectedHolding[i][0])
 							{
 								// multi-player and AI support
 								if(lAskedTargetWhichRoll == iThisRoll + 1)
 									success = AskAndWaitForTargetPlayer(AGITATE, i, 0, success, x+xcSUCCESS, y);
-	
+
 								result = RollSuccess(success, x+xcSUCCESS, y, lPrint);
 								if (result == 1)	// success
 								{
@@ -2609,11 +2589,11 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 								print_textf(x+284+15, y+6, DKBROWN, "^F02^c-");
 							}
 						}
-	
-						if(lPrint)		
+
+						if(lPrint)
 							y+= 15;
-			
-						// print prev, next buttons if provinces are more than 15		
+
+						// print prev, next buttons if provinces are more than 15
 						if(lPrint)
 						{
 							if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
@@ -2633,15 +2613,15 @@ void PaintAgitate (LONG x, LONG y, LONG h)
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	else
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 	print_textf(x, startY+h-60, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_COST_FMT), GoldBar, RegencePoint);
 	print_textf(x, startY+h-45, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_ANY_NUM_PROVS));
 	if (fAllowDoneButton)
 		DeleteActnMenuRegions();
 }
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -   pass in a place index, return the province index
 					if return zero, the place index is illegal.
    ======================================================================== */
@@ -2650,7 +2630,7 @@ static PROVINCE FindProvForPlace(LONG place)
  	PROVINCE i;
  	LONG j, k;
 	for(i = FIRST_PROVINCE; i<PROVINCE_COUNT; i = (PROVINCE)(i + 1))
-	{	
+	{
 		CheckAndFixPlaces(i);
 		j = k = province[i].FirstPlace;
 		while(j != 0)
@@ -2662,10 +2642,10 @@ static PROVINCE FindProvForPlace(LONG place)
 		}
 	}
 	return NO_PROVINCE;
-}	
+}
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void CheckHoldingConflict(LONG place1, LONG	place2, BOOL fSend)
@@ -2690,18 +2670,18 @@ static void CheckHoldingConflict(LONG place1, LONG	place2, BOOL fSend)
 						flag=TRUE;
 					break;
 				}
-				else if((j==place1 || j==place2) && prov==0)   
+				else if((j==place1 || j==place2) && prov==0)
 					prov=i;
 			  	m=places[j].NextPlace;
 				j=province[i].FirstPlace+m;
 			}
 			if(m!=0)
 				break;
-		}   	
+		}
 	}
 	if(flag)
 	{
-		tmpRealm = places[place1].Realm; 
+		tmpRealm = places[place1].Realm;
 		SetGameData(MP_PLACES, MPPLACE_REALM, place1, places[place2].Realm, fSend );
 		SetGameData(MP_PLACES, MPPLACE_REALM, place2, tmpRealm, fSend );
 	}
@@ -2711,20 +2691,20 @@ static void CheckHoldingConflict(LONG place1, LONG	place2, BOOL fSend)
 		CheckHolding(place1, (REALM::REALM_TYPE)places[place2].Realm, fSend);
 		CheckHolding(place2, (REALM::REALM_TYPE)tmpRealm, fSend);
 	}
-}		
+}
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void CheckHolding(LONG place, REALM::REALM_TYPE realm_, BOOL fSend)
 {
 	LONG i;
 	PROVINCE prov;
-	
+
 	prov = FindProvForPlace(place);
-		
+
 	for (i=0; i<MAX_PLACES; ++i)
 	{
 		if(places[i].Realm == realm_
@@ -2735,7 +2715,7 @@ void CheckHolding(LONG place, REALM::REALM_TYPE realm_, BOOL fSend)
 				places[i].Level = (places[i].Level > 0) ? (places[place].Level + 1) : places[place].Level;
 		 	else
 				places[i].Level = (places[place].Level > 0) ? (places[i].Level + 1)	: places[i].Level;
-		
+
 			DeleteHolding (prov, place, fSend);
 			SetGameData(MP_PLACES, MPPLACE_LEVEL, i, places[i].Level, fSend );
 			SetGameData(MP_PLACES, MPPLACE_IICONBITM, i, places[i].Icon+(((places[i].Level<8)?places[i].Level:7)/2), fSend );
@@ -2748,8 +2728,8 @@ void CheckHolding(LONG place, REALM::REALM_TYPE realm_, BOOL fSend)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 //CSTRPTR	szDiplomacySubj[] = {
@@ -2803,7 +2783,7 @@ DEFINE_MATRIX_DATA_S(UBYTE,align,10,10)={
  				  /*CG*/   {0,  0, 90,  70,  10,   0,  80,  15,   5,  85},
  				  /*CN*/   {0, 90,  0,  90,   0,  10,   0,   5,  15,   5},
  				  /*CE*/   {0, 70, 90,   0,  80,   0,  10,  85,   5,  15}};
- // if the alignment is negative, add 100 to it. If the number is -5, in align 
+ // if the alignment is negative, add 100 to it. If the number is -5, in align
  // array, the value is 95.
 DEFINE_MATRIX_CLASS_S(UBYTE, align, 10, 10);
 
@@ -2848,16 +2828,16 @@ UBYTE ReactionAndStatusColor(LONG Realm1, LONG Realm2)
 }
 
 
-/* ======================================================================== 
+/* ========================================================================
    calculate the value of all the units in prov belongs to realm_
-   ========================================================================*/ 
+   ========================================================================*/
 static LONG CalcMultUnitsValue(PROVINCE prov, REALM::REALM_TYPE realm_)
 {
  	LONG j, iUnit, sum=0;
 	for(j = 1; j<MAX_UNITS; ++j)
 	{
-	   	if (units[j].province == prov 
-		   	&& units[j].Realm == realm_ 
+	   	if (units[j].province == prov
+		   	&& units[j].Realm == realm_
 		   	&& units[j].Joined == 0)
 	   	{
 		   if(units[j].Icon < FIRST_CHARACTER_TYPE )
@@ -2868,13 +2848,13 @@ static LONG CalcMultUnitsValue(PROVINCE prov, REALM::REALM_TYPE realm_)
 		   else if(units[j].Icon >= FIRST_CHARACTER_TYPE )
 			{
 		 		for(iUnit = j; iUnit > 0; iUnit = units[iUnit].NextUnit)
-		   			if(units[iUnit].Icon < FIRST_CHARACTER_TYPE) 
+		   			if(units[iUnit].Icon < FIRST_CHARACTER_TYPE)
 			 			sum += UnitMusterCost[units[iUnit].Icon];
 			}
 		}
 	}
-	return sum;	
-}	
+	return sum;
+}
 
 /* ======================================================================== */
 static LONG	FullNeeds (REALM::REALM_TYPE _realm)
@@ -2934,7 +2914,7 @@ void PaintDiplomacy (LONG x, LONG y, LONG h)
 	LONG	answer, alignMod;
 	LONG	investor, victim, target_province;
  	PTR_PLAYER_STATS pYourStat;
- 	LONG	myAlign=0; 
+ 	LONG	myAlign=0;
  	LONG	yourAlign=0;
  	LONG	relicMod=0;
  	LONG	modifyMod=0;
@@ -2950,7 +2930,7 @@ void PaintDiplomacy (LONG x, LONG y, LONG h)
 		DumbAutoLockPtr< PLAYER_STATS > const pPS(playerstats[ActiveRegent]);
 		InventoryItor itor(pPS->Inventory);
  		myAlign = pPS->mfGetAlignment();
-		
+
 		for (itor.mfAdvance(IC_BLOODAB);
 			 itor != pPS->Inventory.end();
 			 itor.mfAdvanceToNext(IC_BLOODAB))
@@ -3050,9 +3030,9 @@ DiplomacyRestart:
 
 		DrawLittleButton(x, y-1, 145, 12, FALSE);
 		DrawShield(x+2, y, (REALM::REALM_TYPE)iSelectedRealm);
- 		
+
  		SHORT theirRegent = realm[iSelectedRealm].mfGetRegent();
- 		
+
  		if (theirRegent > 0 && playerstats[theirRegent] != fERROR)
  		{
 			DumbAutoLockPtr< PLAYER_STATS > const pPS(playerstats[realm[iSelectedRealm].mfGetRegent()]);
@@ -3102,7 +3082,7 @@ DiplomacyRestart:
 			 			|| (((fControlMode & 0xFF) == 0) && (i == 9 || i == 6) )
 					);
 				print_textf(x+30, y, (f)?DKTAN-4:DKBROWN, STRMGR_GetStr(gsDiplomacySubj[(typAlliance==3&&i==9)?22:i*2]));
-				
+
 				// no tribute in simple games
 			 	if ( (((fControlMode & 0xFF) != 0) || (i != 9 && i != 6))
 				 	  && ( (cntUnits_() < (MAX_UNITS-10)) || i != 2)	)
@@ -3176,7 +3156,7 @@ DiplomacyRestart:
 								tmp = 0;
 								while (index != 0)
 								{
-									if((places[j].Realm == iSelectedRealm && i == 4) 
+									if((places[j].Realm == iSelectedRealm && i == 4)
 									  || (places[j].Realm == HomeRealm && i == 7))
 									{
 										if(places[j].Icon == WIZTOWER_ICON || places[j].Icon == PORT_ICON || places[j].Icon == SEAPORT_ICON )
@@ -3195,7 +3175,7 @@ DiplomacyRestart:
 									troopValue = CalcMultUnitsValue((PROVINCE)iSelection[i], (REALM::REALM_TYPE)iSelectedRealm);
 									modifyMod -= troopValue * 2 + province[iSelection[i]].CivLevel * 10;
 								}
-								else 
+								else
 								{
 									troopValue = CalcMultUnitsValue((PROVINCE)iSelection[i], HomeRealm);
 									modifyMod += troopValue * 1 + province[iSelection[i]].CivLevel * 5;
@@ -3309,13 +3289,13 @@ DiplomacyRestart:
 				del_region(Selection, 0);
 //				DeleteActnMenuRegions();
 //				add_region(x, y, 145, 10, 0, SelectRealm,iSelectedRealm,0,0, -1);
-				
+
 				{
 					char RegentName[80];
 					if (realm[iSelectedRealm].mfGetRegent() > 0)
 						strcpy(RegentName, regents[realm[iSelectedRealm].mfGetRegent()].mfGetname());
 					else
-						strcpy(RegentName, realm[iSelectedRealm].mfGetName());	
+						strcpy(RegentName, realm[iSelectedRealm].mfGetName());
 					print_textf(x, y, DKBLUE,STRMGR_GetStr(STR_ACTNMENU_AMBASSADOR_IN_BAG_FMT) ,
 						RegentName, reaction,'%',alignMod,'%');
 				}
@@ -3329,13 +3309,13 @@ DiplomacyRestart:
 				strcpy(ReactionBuf, (rmod < 0) ?
 					STRMGR_GetStr(STR_ACTN_IMPROVES) :
 					STRMGR_GetStr(STR_ACTN_REDUCES)    );
-				rmod = ABS(rmod);	
-				
+				rmod = ABS(rmod);
+
 				strcpy(FormatBuf, STRMGR_GetStr(STR_ACTNMENU_MODIFIED_REACTION_FMT));
-				
+
 				if (realm[iSelectedRealm].mfGetRegent() > 0)
 					strcpy(RegentName,regents[realm[iSelectedRealm].mfGetRegent()].mfGetname());
-				else	
+				else
 					strcpy(RegentName,realm[iSelectedRealm].mfGetName());
 				print_textf(x, y, DKBLUE, FormatBuf,
 					RegentName,
@@ -3345,7 +3325,7 @@ DiplomacyRestart:
 					(mundane_descriptions ? rmod * 5 : rmod),
 					PERCENTCHAR );
 			}
-			
+
 			y+=54;
 			// if the two realms are at war, the curreact must be at least higher than their original reaction to each other before it can roll
 			if((ISATWAR(iSelectedRealm, HomeRealm)||ISATWAR(HomeRealm, iSelectedRealm))
@@ -3355,8 +3335,8 @@ DiplomacyRestart:
 				fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	   	else
 				fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
-			
+
+
 			if (curReact < minReact && !fAllowDoneButton && tmp >= 10
 #ifdef _WINDOWS
 			   && !(IsMultiPlayer() && realm[iSelectedRealm].mfIsPlayerCtrl())
@@ -3373,11 +3353,11 @@ DiplomacyRestart:
 				#endif
 				crease(x, y, 310, 1);
 				y+=2;
-				
+
 				success = 20 - (curReact/5) - modRegency + CourtEffect[realm[HomeRealm].mfGetCourt()] + modOpponent;
 				if (success > 20) success = 21;
 				if (success < 1) success = 1;
-				
+
 				print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_F02_SUCCESS_FMT), D20TOPERCENT(success),PERCENTCHAR);
 				print_textf(x+150, y-1, DKBROWN, STRMGR_GetStr(STR_MAPAI_MODIFY_SUCCESS));
 				print_textf(x+150, y+5, DKBROWN, STRMGR_GetStr(STR_MAPAI_USING_REGENCY));
@@ -3534,29 +3514,22 @@ DiplomacyRestart:
 				{
 					LONG goldGiven    = GoldBar - 1;
 					LONG goldReceived = GoldGained;
-					
+
 					GoldBar = 1;
 					GoldGained = 0;
-					
+
 					SyncRegencySpentInOpposition((REALM::REALM_TYPE)iGlobRealm);
 
 					// we have already "given" the gold in another place
 					realm[HomeRealm].mfAddTreasury ((goldReceived) * 10);
 					realm[iGlobRealm].mfAddTreasury((goldGiven - goldReceived) * 10);
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[200];
-						char HomeRealmName[50];
-						
-						strcpy(HomeRealmName, realm[HomeRealm].mfGetName());
-						sprintf ( temp, "PaintDiplomacy - HomeRealm:%s  newtreasury: %04d\nTargetRealm:%s  newtreasury: %04d",
-									HomeRealmName, 
-									realm[HomeRealm].mfGetTreasury(),
-									realm[iGlobRealm].mfGetName(),
-									realm[iGlobRealm].mfGetTreasury());
-						RandomLogComment ( temp );
-					}
+					char HomeRealmName[50];
+					strcpy(HomeRealmName, realm[HomeRealm].mfGetName());
+					logInfo( "PaintDiplomacy - HomeRealm:%s  newtreasury: %04d\nTargetRealm:%s  newtreasury: %04d",
+								HomeRealmName,
+								realm[HomeRealm].mfGetTreasury(),
+								realm[iGlobRealm].mfGetName(),
+								realm[iGlobRealm].mfGetTreasury());
 					SetGameData(MP_REALM, MPRLM_TREASURY, HomeRealm, realm[HomeRealm].mfGetTreasury(), TRUE);
 					SetGameData(MP_REALM, MPRLM_TREASURY, iGlobRealm, realm[iGlobRealm].mfGetTreasury(), TRUE);
 
@@ -3567,8 +3540,8 @@ DiplomacyRestart:
 					{
 						for (j = 1; j < MAX_UNITS; ++j)
 						{
-							if (units[j].Icon < FIRST_CHARACTER_TYPE 
-									&& units[j].province == iSelection[4] 
+							if (units[j].Icon < FIRST_CHARACTER_TYPE
+									&& units[j].province == iSelection[4]
 									&& units[j].Realm == province[iSelection[4]].Realm
 									&& units[j].Joined == 0)
 							{
@@ -3581,7 +3554,7 @@ DiplomacyRestart:
 
 							// units leader is a lieutenant.
 							else if (units[j].Icon >= FIRST_CHARACTER_TYPE
-									&& units[j].province == iSelection[4] 
+									&& units[j].province == iSelection[4]
 									&& units[j].Realm == province[iSelection[4]].Realm
 									&& units[j].Joined == 0)
 							{
@@ -3610,9 +3583,9 @@ DiplomacyRestart:
 					{
 						for(j = 1; j < MAX_UNITS; ++j)
 						{
-							if (units[j].Icon < FIRST_CHARACTER_TYPE 
-								&& units[j].province == iSelection[7] 
-								&& units[j].Realm == HomeRealm 
+							if (units[j].Icon < FIRST_CHARACTER_TYPE
+								&& units[j].province == iSelection[7]
+								&& units[j].Realm == HomeRealm
 								&& units[j].Joined == 0)
 							{
 								for (iUnit = j; iUnit > 0; iUnit = units[iUnit].NextUnit)
@@ -3624,7 +3597,7 @@ DiplomacyRestart:
 
 							// units leader is a lieutenant.
 							else if (units[j].Icon >= FIRST_CHARACTER_TYPE
-									&& units[j].province == iSelection[7] 
+									&& units[j].province == iSelection[7]
 									&& units[j].Realm == HomeRealm
 									&& units[j].Joined == 0)
 							{
@@ -3658,10 +3631,10 @@ DiplomacyRestart:
 							//SetGameData(MP_PLACES, MPPLACE_REALM, province[iSelection[5]].FirstPlace, HomeRealm, TRUE );
 							if(iSelection[6])
 								if(iSelection[6]==iSelection[8])
-									CheckHoldingConflict(province[iSelection[5]].FirstPlace, province[iSelection[8]].FirstPlace, TRUE);	 
+									CheckHoldingConflict(province[iSelection[5]].FirstPlace, province[iSelection[8]].FirstPlace, TRUE);
 								else
-									CheckHoldingConflict(province[iSelection[5]].FirstPlace, province[iSelection[8]].FirstPlace+iSelection[6], TRUE);	 
-							else		  
+									CheckHoldingConflict(province[iSelection[5]].FirstPlace, province[iSelection[8]].FirstPlace+iSelection[6], TRUE);
+							else
 								CheckHolding(province[iSelection[5]].FirstPlace, HomeRealm, TRUE);
 						}
 						else
@@ -3670,10 +3643,10 @@ DiplomacyRestart:
 							//SetGameData(MP_PLACES, MPPLACE_REALM, province[iSelection[5]].FirstPlace+iSelection[3], HomeRealm, TRUE );
 			   				if(iSelection[6])
 								if(iSelection[6]==iSelection[8])
-									CheckHoldingConflict(province[iSelection[5]].FirstPlace+iSelection[3], province[iSelection[8]].FirstPlace, TRUE);	 
+									CheckHoldingConflict(province[iSelection[5]].FirstPlace+iSelection[3], province[iSelection[8]].FirstPlace, TRUE);
 								else
-									CheckHoldingConflict(province[iSelection[5]].FirstPlace+iSelection[3], province[iSelection[8]].FirstPlace+iSelection[6], TRUE);	 
-							else		  
+									CheckHoldingConflict(province[iSelection[5]].FirstPlace+iSelection[3], province[iSelection[8]].FirstPlace+iSelection[6], TRUE);
+							else
 								CheckHolding((province[iSelection[5]].FirstPlace+iSelection[3]), HomeRealm, TRUE);
 						}
 					}
@@ -3750,7 +3723,7 @@ DiplomacyRestart:
 								}
 							}
 						}
-						
+
 						if (iSelectedRealm<LAND_REALM_COUNT)
 						{
 							RealmStatus[HomeRealm][iSelectedRealm] = STATUS_FULL_ALLIANCE;
@@ -3873,17 +3846,11 @@ DiplomacyRestart:
 				{
 					LONG goldRefunded = GoldBar - 1;
 					realm[HomeRealm].mfAddTreasury ((goldRefunded) * 10);
-					LOGCOMMENTSLEEP
-					if ( fLogComment )
-					{
-						char temp[100];
-						sprintf ( temp, "PaintDiplomacy - failed HomeRealm:%s  newtreasury: %04d\n",
-									realm[HomeRealm].mfGetName(), 
-									realm[HomeRealm].mfGetTreasury());
-						RandomLogComment ( temp );
-					}
+					logInfo( "PaintDiplomacy - failed HomeRealm:%s  newtreasury: %04d\n",
+								realm[HomeRealm].mfGetName(),
+								realm[HomeRealm].mfGetTreasury());
 					SetGameData(MP_REALM, MPRLM_TREASURY, HomeRealm, realm[HomeRealm].mfGetTreasury(), TRUE);
-					
+
 					// multi-player support
 					SyncRegencySpentInOpposition((REALM::REALM_TYPE)iGlobRealm);
 				}
@@ -3894,7 +3861,7 @@ DiplomacyRestart:
 					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_HELP_20_SIDED));
 				}
 			}
-	
+
 			print_textf(x, startY+h-45, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_COST_FMT), GoldBar-GoldGained, RegencePoint);
 			print_textf(x, startY+h-33, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_SELECT_ACTION));
 		}
@@ -3916,13 +3883,13 @@ DiplomacyRestart:
 			{
 				for(i = FIRST_PROVINCE; i<PROVINCE_COUNT; ++i)
 				{
-					// check for castle 
+					// check for castle
 					CheckAndFixPlaces((PROVINCE)i);
 					j = index = province[i].FirstPlace;
 					tmp = 0;
 					while (index != 0)
 					{
-						if(((places[j].Realm == iSelectedRealm && iNewScreen == 4) 
+						if(((places[j].Realm == iSelectedRealm && iNewScreen == 4)
 						  || (places[j].Realm == HomeRealm && iNewScreen ==	7))&& places[j].Icon == CASTLE1_ICON)
 							break;
 						index = places[j].NextPlace;
@@ -3946,7 +3913,7 @@ DiplomacyRestart:
 								DrawLittleButton(x, y-1, 145, 10, FALSE);
 								DrawShield(x+2, y, (REALM::REALM_TYPE)province[i].Realm);
 								gprint_text(x+16, y,province[i].name, LoyaltyColor[province[i].Loyalty]);
-								if(iNewScreen == 4) 
+								if(iNewScreen == 4)
 								{
 									troopValue = CalcMultUnitsValue((PROVINCE)i, (REALM::REALM_TYPE)iSelectedRealm);
 									modMod  = Modifiers[iNewScreen] - troopValue * 2 - province[i].CivLevel * 10;
@@ -3962,7 +3929,7 @@ DiplomacyRestart:
 								add_region(x, y, 145, 10, 0, Selection,i,iNewScreen,0, -1);
 								y+= 18;
 
-								// print prev, next buttons if provinces are more than 8		
+								// print prev, next buttons if provinces are more than 8
 								if(DoPageProvince(&startProvCount, provCount, 8, counter, x, y))
 								{
 									lPrint = FALSE;
@@ -4032,7 +3999,7 @@ DiplomacyRestart:
 												add_region(x, y, 145, 10, 0, Selection,tmpIndex,iNewScreen-2,0, -1);
 												y+= 18;
 											}
-					
+
 										}
 										tmpIndex = places[j].NextPlace;
 								  		j = province[i].FirstPlace + tmpIndex;
@@ -4047,9 +4014,9 @@ DiplomacyRestart:
 								DrawShield(x+2, y, (REALM::REALM_TYPE)province[i].Realm);
 								gprint_text(x+16, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 								add_region(x, y, 145, 10, 0, Selection,i,iNewScreen,0, -1);
-								y+= 18;	
+								y+= 18;
 
-								// print prev, next buttons if provinces are more than 8		
+								// print prev, next buttons if provinces are more than 8
 								if(DoPageProvince(&startProvCount1, provCount1, 8, counter1, x, y))
 								{
 									lPrint1 = FALSE;
@@ -4075,8 +4042,8 @@ DiplomacyRestart:
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintEspionage (LONG x, LONG y, LONG h)
@@ -4169,17 +4136,17 @@ void PaintEspionage (LONG x, LONG y, LONG h)
 						++counter;
 						if(counter < startProvCount)
 							continue;
-	
+
 						DrawLittleButton(x, y-1, 145, 10, (iSelectedProvince==i));
 						if (i==iSelectedProvince)
 							gprint_text(x+16, y, province[i].name, RED);
 						else
 							gprint_text(x+16, y, province[i].name, DKBROWN);
-		
+
 						add_region(x, y, 145, 10, 0, SelectProvince, i, 0, 0, -1);
 						y += 15;
 
-						// print prev, next buttons if provinces are more than 15		
+						// print prev, next buttons if provinces are more than 15
 						if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
 							break;
 					}
@@ -4274,13 +4241,13 @@ void PaintEspionage (LONG x, LONG y, LONG h)
 								&& units[i].Icon <= REG_GOB_FTR_UNIT_ICON
 								&& realm[units[i].Realm].mfIsPlayerCtrl())
 								continue;
-								
+
 							if (h1)
 							{
 								++counter1;
 								if(counter1 < startProvCount1)
 									continue;
-		
+
 								if(iSelectedUnit == iUnit)
 								 	DrawLittleButton(x, y-1, 145, 10, TRUE);
 								else
@@ -4289,7 +4256,7 @@ void PaintEspionage (LONG x, LONG y, LONG h)
 							 	print_textf(x+16, y, DKBROWN, "%s", UnitName(iUnit));
 				 				add_region(x, y, 145, 12, 0, SelectUnit, iUnit,0,0, -1);
 								y += 15;
-	
+
 								// print prev, next buttons if number of units are more than 10
 								if(DoPageProvince(&startProvCount1, provCount1, 10, counter1, x, y))
 									goto assexit;
@@ -4322,7 +4289,7 @@ assexit:   ;
 					}
 				}
 			}
-			else		
+			else
 			{
 				t_level = UnitMusterCost[units[iSelectedUnit].Icon]+1;
 			}
@@ -4347,7 +4314,7 @@ assexit:   ;
       || (iSelectedOneHolding==1 && iSelectedUnit != 0))
    {
 		fAllowRollButton = TRUE;
-		
+
 		y += 10;
 		success = 20-province[iSelectedProvince].CivLevel-level - modRegency + modOpponent;
 		RegencePoint = modRegency;
@@ -4356,8 +4323,8 @@ assexit:   ;
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 		else
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
-		
+
+
 		if (iSelectedOneHolding == 1)
 		{
 			print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_LOCATE_ASSASSIN));
@@ -4404,8 +4371,8 @@ assexit:   ;
 				{
 					for(i = 1; i<MAX_UNITS; ++i)
 					{
-						if(units[i].province == iSelectedProvince 
-						   && units[i].Realm != HomeRealm 
+						if(units[i].province == iSelectedProvince
+						   && units[i].Realm != HomeRealm
 							&& realm[units[i].Realm].mfExists()
 						   && units[j].DestProvince == NO_PROVINCE	// Not moving.
 						   && units[i].Joined == 0)
@@ -4418,7 +4385,7 @@ assexit:   ;
 									++counter1;
 									if(counter1 < startProvCount1)
 										continue;
-		
+
 									DrawShield(x+2, y, (REALM::REALM_TYPE)units[iUnit].Realm);
 									print_textf(x+16, y, DKBROWN, "%s", UnitName(iUnit) );
 									units[iUnit].NotSpotted = FALSE;
@@ -4426,7 +4393,7 @@ assexit:   ;
 									//SetGameData(MP_UNITS, MPUNITS_NOTSPOTTED, iUnit, FALSE, TRUE );
 									y += 18;
 									++j;
-	
+
 									// print prev, next buttons if number of units are more than 10
 									if(DoPageProvince(&startProvCount1, provCount1, 10, counter1, x, y))
 										goto spyexit;
@@ -4510,7 +4477,7 @@ spyexit:	;
 							ActionExpPoints(ActiveRegent, RLM_EXP_ESPIONAGE_ASSASSINATE, 0, TRUE );
 							REALM::REALM_TYPE const whichRealm = (REALM::REALM_TYPE)units[iSelectedUnit].Realm;
 							PROVINCE const whichProv = (PROVINCE) units[GetUnitLeader(iSelectedUnit)].province;
-							
+
 							AddSndObj((BIRTHRT_SND)SND_UI_SUCCEEDED,0,VOLUME_NINETY);
 							if (whichProv > NO_PROVINCE && whichProv < NO_PROVINCE2)
 								SendReportTo(whichRealm, IMMEDIATE_NPC_ASSASSIN, HomeRealm, whichProv, 0);
@@ -4560,7 +4527,7 @@ spyexit:	;
 	{
 		GoldBar = 1;
 		RegencePoint = modRegency;
-		x = startX+160; 
+		x = startX+160;
 		y = startY+h-85;
 		print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_GB_COST_FMT), GoldBar);
 		y += 13;
@@ -4577,8 +4544,8 @@ spyexit:	;
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintDeclareWar (LONG x, LONG y, LONG h)
@@ -4614,8 +4581,8 @@ void PaintDeclareWar (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 #define xFIRSTBTN			(104)
@@ -4670,13 +4637,13 @@ void PaintRule (LONG x, LONG y, LONG h)
 			for (i=FIRST_PROVINCE; i<PROVINCE_COUNT; ++i)
 			{
 				if ( (!q && province[i].Realm == HomeRealm)
-					|| (q && province[i].Realm != HomeRealm 
+					|| (q && province[i].Realm != HomeRealm
 					       && province[i].CastleSptd) )			// HACK This means you have a holding in this province.
 					ProvinceInfo((PROVINCE)i, CASTLE1_ICON);
 
 				if ((!q && province[i].Realm == HomeRealm)
-					|| (q && (prov_law>=0 || prov_temple>=0 || prov_guild>=0 || prov_source>=0) 
-					      && province[i].Realm!=HomeRealm 
+					|| (q && (prov_law>=0 || prov_temple>=0 || prov_guild>=0 || prov_source>=0)
+					      && province[i].Realm!=HomeRealm
 					      && province[i].CastleSptd) )			// HACK This means you have holding in this province.
 				{
 //					if (h1)
@@ -4695,7 +4662,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 							else
 								gprint_text(x, y, province[i].name, DKBROWN);
 						}
-			
+
 						if (province[i].Realm == HomeRealm)
 						{
 							// ------------------------------------------
@@ -4742,7 +4709,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 								}
 
 								// check for success roll
-								iSelectedOneHolding = 4; 
+								iSelectedOneHolding = 4;
 
 								// multi-player and AI support
 								if(lAskedTargetWhichRoll == iThisRoll + 1)
@@ -4755,7 +4722,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 									// multi-player support
 									SendResult(RULE, i, 0, result);
 									SyncRegencySpentInOpposition((REALM::REALM_TYPE)province[i].Realm);
-									
+
 									if (province[i].Contested)
 									{
 										province[i].Contested = FALSE;
@@ -4855,7 +4822,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 											 	print_textf(xx+17, y, DKBROWN, "^F02%d%c", D20TOPERCENT(success),PERCENTCHAR);
 										}
 
-										iSelectedOneHolding = j; 
+										iSelectedOneHolding = j;
 
 										// multi-player and AI support
 										if(lAskedTargetWhichRoll == iThisRoll + 1)
@@ -4889,7 +4856,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 											case GUILD4_ICON:
 												ActionExpPoints(ActiveRegent, RLM_EXP_RULE_GUILD, places[index].Level, TRUE );
 												break;
-											
+
 											// law
 											case LAW1_ICON:
 											case LAW2_ICON:
@@ -4897,7 +4864,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 											case LAW4_ICON:
 												ActionExpPoints(ActiveRegent, RLM_EXP_RULE_LAW, places[index].Level, TRUE );
 												break;
-											
+
 											// source
 											case SOURCE1_ICON:
 											case SOURCE2_ICON:
@@ -4905,7 +4872,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 											case SOURCE4_ICON:
 												ActionExpPoints(ActiveRegent, RLM_EXP_RULE_SOURCE, places[index].Level, TRUE );
 												break;
-											
+
 											// temples
 											case TEMPLE1_ICON:
 											case TEMPLE2_ICON:
@@ -4913,14 +4880,14 @@ void PaintRule (LONG x, LONG y, LONG h)
 											case TEMPLE4_ICON:
 												ActionExpPoints(ActiveRegent, RLM_EXP_RULE_TEMPLE, places[index].Level, TRUE );
 												break;
-											
+
 											// castles and others
 											case WIZTOWER_ICON:
 											case CASTLE1_ICON:
 											case CASTLE2_ICON:
 											case CASTLE3_ICON:
 											case CASTLE4_ICON:
-											
+
 											case VILLAGE_ICON:
 											case SEAPORT_ICON:
 											case SEAPORT2_ICON:
@@ -4962,7 +4929,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 						if(lPrint)
 							y += 15;
 
-						// print prev, next buttons if provinces are more than 15		
+						// print prev, next buttons if provinces are more than 15
 						if(lPrint)
 						{
 							if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
@@ -4982,7 +4949,7 @@ void PaintRule (LONG x, LONG y, LONG h)
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	else
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 
 	y = startY+h-67;
 	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_COST_FMT), GoldBar, RegencePoint);
@@ -5014,8 +4981,8 @@ void PaintRule (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintCreateHolding (LONG x, LONG y, LONG h)
@@ -5084,17 +5051,17 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 						++counter;
 						if(counter < startProvCount)
 							continue;
-	
+
 						DrawLittleButton(x, y-1, 145, 10, (iSelectedProvince==i));
 						if (i==iSelectedProvince)
 							gprint_text(x+16, y, province[i].name, RED);
 						else
 							gprint_text(x+16, y, province[i].name, DKBROWN);
-		
+
 						add_region(x, y, 145, 10, 0, SelectProvince, i, 0, 0, -1);
 						y += 15;
 
-						// print prev, next buttons if provinces are more than 17		
+						// print prev, next buttons if provinces are more than 17
 						if(DoPageProvince(&startProvCount, provCount, 17, counter, x, y))
 							break;
 					}
@@ -5116,9 +5083,9 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 
 		CheckAndFixPlaces(iSelectedProvince);
 		i = k = province[iSelectedProvince].FirstPlace;
-		
+
 		assert(i < MAX_PLACES);	// GEH chasing a bug
-		
+
 		while (k != 0)
 		{
 			if (places[i].Realm == HomeRealm)
@@ -5147,14 +5114,14 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 		if (iSelectedOneHolding != 99)
 		{
 			GoldBar = 1;
-			RegencePoint = modRegency; 
+			RegencePoint = modRegency;
 
 			fAllowRollButton = TRUE;
   			if(checkGoldReg)
 				fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	   	else
 				fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 
 			success = 10 + ((province[iSelectedProvince].Realm==HomeRealm)?-province[iSelectedProvince].CivLevel:province[iSelectedProvince].CivLevel) - modRegency + modOpponent;
 			if(success < 1)
@@ -5187,7 +5154,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 				case GUILD4_ICON:
 					ActionExpPoints(ActiveRegent, RLM_EXP_CREATE_GUILD, 0, TRUE );
 					break;
-				
+
 				// law
 				case LAW1_ICON:
 				case LAW2_ICON:
@@ -5195,7 +5162,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 				case LAW4_ICON:
 					ActionExpPoints(ActiveRegent, RLM_EXP_CREATE_LAW, 0, TRUE );
 					break;
-				
+
 				// source
 				case SOURCE1_ICON:
 				case SOURCE2_ICON:
@@ -5203,7 +5170,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 				case SOURCE4_ICON:
 					ActionExpPoints(ActiveRegent, RLM_EXP_CREATE_SOURCE, 0, TRUE );
 					break;
-				
+
 				// temples
 				case TEMPLE1_ICON:
 				case TEMPLE2_ICON:
@@ -5211,14 +5178,14 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 				case TEMPLE4_ICON:
 					ActionExpPoints(ActiveRegent, RLM_EXP_CREATE_TEMPLE, 0, TRUE );
 					break;
-				
+
 				// castles and others
 				case WIZTOWER_ICON:
 				case CASTLE1_ICON:
 				case CASTLE2_ICON:
 				case CASTLE3_ICON:
 				case CASTLE4_ICON:
-				
+
 				case VILLAGE_ICON:
 				case SEAPORT_ICON:
 				case SEAPORT2_ICON:
@@ -5233,7 +5200,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 				SendResult(CREATE_HOLDING, iSelectedProvince, 0, result);
 				SyncRegencySpentInOpposition((REALM::REALM_TYPE)province[iSelectedProvince].Realm);
 				CreateHolding(iSelectedOneHolding, 0, 0, iSelectedProvince, HomeRealm, TRUE );
-				
+
 				// GWP I'd like to reduce his liking of you here no matter what
 				//     you do. But only set the screw bit if you violate the treaty.
 				//     You can do anything to a vassal
@@ -5279,7 +5246,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 		print_textf(x+63, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_REGENCY_FMT), RegencePoint);
 		y+=15;
 		print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_SELECT_REALM_B1));
-		y+=30;					   
+		y+=30;
 		print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_SELECT_REALM_B2));
 
 		#else
@@ -5289,7 +5256,7 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 		print_textf(x+63, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_REGENCY_FMT), RegencePoint);
 		y+=15;
 		print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_SELECT_REALM_B1));
-		y+=20;					   
+		y+=20;
 		print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_SELECT_REALM_B2));
 		#endif
 	}
@@ -5301,8 +5268,8 @@ void PaintCreateHolding (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 #define FORT_FIRST_COL		120
@@ -5382,11 +5349,11 @@ void PaintFortify (LONG x, LONG y, LONG h)
 
 					if(!iSelectedHolding[i][1])
 						iSelectedHolding[i][1]=random(6)+1;		 // use iSelectedHolding[i][1] to hold the gold bars got to be spent this turn
-		
+
 					iSelectedHolding[i][0]+=dLevel;
 
 					if(lPrint)
-					{		
+					{
 						if (!newCastle && !MaxLevel
 							&& !ForeignUnitsHere((PROVINCE)i, HomeRealm) )
 						{
@@ -5397,7 +5364,7 @@ void PaintFortify (LONG x, LONG y, LONG h)
 							print_textf(x+FORT_SECND_COL, y, DKBROWN, "%d", newCastle);
 						}
 					}
-		
+
 					iSelectedHolding[i][0]-=dLevel;
 					init_gfont(FONT_SANS_8PT);
 					if(iSelectedHolding[i][0])
@@ -5415,7 +5382,7 @@ void PaintFortify (LONG x, LONG y, LONG h)
 					if(lPrint)
 						y += 15;
 
-					// print prev, next buttons if provinces are more than 15		
+					// print prev, next buttons if provinces are more than 15
 					if(lPrint)
 					{
 						if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
@@ -5434,7 +5401,7 @@ void PaintFortify (LONG x, LONG y, LONG h)
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	else
 		fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 
 	print_textf(x, startY+h-65, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_COST_FMT), GoldBar, RegencePoint);
 	print_textf(x, startY+h-50, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_FORTIFY_HELP));
@@ -5445,8 +5412,8 @@ void PaintFortify (LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintContest (LONG x, LONG y, LONG h)
@@ -5491,20 +5458,20 @@ void PaintContest (LONG x, LONG y, LONG h)
 					k = places[j].NextPlace;
 					j = province[i].FirstPlace + k;
 				}
-	
+
 				// if we have a holding in prov
 				if ( (!q&&province[i].Realm == HomeRealm) || (q && k != 0 && province[i].Realm != HomeRealm))
 				{
 					if (h1)
 					{
 						LONG lPrint;
-						
+
 						++counter;
 						if(counter < startProvCount || lPageDone)
 							lPrint = FALSE;
 						else
 							lPrint = TRUE;
-	
+
 						if(lPrint)
 						{
 							DrawLittleButton(x, y-1, xPROVWIDTH, 10, (iSelectedProvince == i));
@@ -5512,8 +5479,8 @@ void PaintContest (LONG x, LONG y, LONG h)
 							gprint_text(x+16, y, province[i].name, LoyaltyColor[province[i].Loyalty]);
 							add_region(x, y, 120, 15, 0, SelectProvince ,i,0,0, -1);
 							y+=16;
-	
-							// print prev, next buttons if provinces are more than 15		
+
+							// print prev, next buttons if provinces are more than 15
 							if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
 							{
 								lPrint = FALSE;
@@ -5531,7 +5498,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 	// buttons for all holdings (which are not ours) in the province
 	if (iSelectedProvince != 0)
 	{
-		
+
 		y = startY + 3;
 		x += 145;
 		print_textf(x, y, DKBROWN, "^F00%s",STRMGR_GetStr(STR_ACTNMENU_HOLDINGS));
@@ -5541,7 +5508,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 		{
 			LONG tmpIndex;
 			LONG i;
-			
+
 			CheckAndFixPlaces(iSelectedProvince);
 			tmpIndex = i = province[iSelectedProvince].FirstPlace;
 			//	i = places[tmpIndex].NextPlace;
@@ -5549,11 +5516,11 @@ void PaintContest (LONG x, LONG y, LONG h)
 						 tmpIndex = province[iSelectedProvince].FirstPlace + i)
 			{
 				LONG j;
-				
+
 				for(j=0; j<4; ++j)								// find the type of it
 					if (places[tmpIndex].Icon == InfoReqType[j])
 						break;
-		
+
 				// if the holding is one of the law, guild, sourse, or temple,
 				// and it's not my own holding, add a button.
 				if (places[tmpIndex].Realm != HomeRealm && j<4)
@@ -5568,7 +5535,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 						}
 						DrawLittleButton(x, y-1, xPROVWIDTH+35, 10, (iSelectedOneHolding == tmpIndex));
 						add_region(x, y, xPROVWIDTH+35, 10, 0, SelectOneHolding, tmpIndex, 0, 0, -1);
-			
+
 						print_textf(x+5, y, DKBROWN, "^F02%s", STRMGR_GetStr(gsHoldType[j]));
 						sprintf(n, realm[places[tmpIndex].Realm].mfGetName());
 						if (places[tmpIndex].Realm < LAND_REALM_COUNT)
@@ -5579,21 +5546,21 @@ void PaintContest (LONG x, LONG y, LONG h)
 						else
 							print_textf(x+60, y, DKBROWN, "^F01%s", strupr(n));
 						y+=16;
-						// print prev, next buttons if provinces are more than 8		
+						// print prev, next buttons if provinces are more than 8
 						if(DoPageProvince(&startProvCount1, provCount1, 8, counter1, x, y))
 							break;
 					}
 					else
 						++provCount1;
 				}
-		
+
 				// find the highest level of the holdings I own in this province
 				if (province[iSelectedProvince].Realm == HomeRealm)
 					max_holding = province[iSelectedProvince].CivLevel;
 				else
 					if (places[tmpIndex].Realm == HomeRealm && (LONG)places[tmpIndex].Level > max_holding)
 						max_holding = places[tmpIndex].Level;
-		
+
 			}
 		}
 
@@ -5602,12 +5569,12 @@ void PaintContest (LONG x, LONG y, LONG h)
 	if (iSelectedOneHolding != 99)		// holding has been chosen
 	{
 		LONG	success;
-		
+
   		if(checkGoldReg)
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 		else
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 		// calculate and print the success number
 		succ = 10 + places[iSelectedOneHolding].Level - max_holding + modOpponent;
 		if (playerstats[ActiveRegent] != fERROR)
@@ -5646,7 +5613,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 			case GUILD4_ICON:
 				ActionExpPoints(ActiveRegent, RLM_EXP_CONTEST_GUILD, 0, TRUE );
 				break;
-			
+
 			// law
 			case LAW1_ICON:
 			case LAW2_ICON:
@@ -5654,7 +5621,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 			case LAW4_ICON:
 				ActionExpPoints(ActiveRegent, RLM_EXP_CONTEST_LAW, 0, TRUE );
 				break;
-			
+
 			// source
 			case SOURCE1_ICON:
 			case SOURCE2_ICON:
@@ -5662,7 +5629,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 			case SOURCE4_ICON:
 				ActionExpPoints(ActiveRegent, RLM_EXP_CONTEST_SOURCE, 0, TRUE );
 				break;
-			
+
 			// temples
 			case TEMPLE1_ICON:
 			case TEMPLE2_ICON:
@@ -5670,14 +5637,14 @@ void PaintContest (LONG x, LONG y, LONG h)
 			case TEMPLE4_ICON:
 				ActionExpPoints(ActiveRegent, RLM_EXP_CONTEST_TEMPLE, 0, TRUE );
 				break;
-			
+
 			// castles and others
 			case WIZTOWER_ICON:
 			case CASTLE1_ICON:
 			case CASTLE2_ICON:
 			case CASTLE3_ICON:
 			case CASTLE4_ICON:
-			
+
 			case VILLAGE_ICON:
 			case SEAPORT_ICON:
 			case SEAPORT2_ICON:
@@ -5688,7 +5655,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 			case SPECIAL3_ICON:
 				break;
 			}
-			
+
 			// multi-player support
 			SendResult(CONTEST, 0, iSelectedOneHolding, result);
 			SyncRegencySpentInOpposition((REALM::REALM_TYPE)places[iSelectedOneHolding].Realm);
@@ -5701,12 +5668,12 @@ void PaintContest (LONG x, LONG y, LONG h)
 			   || places[iSelectedOneHolding].Contested == TRUE)
 			{
 				DeleteHolding(iSelectedProvince,iSelectedOneHolding, TRUE );
-				AddReport(IMMEDIATE_CONTEST_DESTROYED, iSelectedProvince, 0, 0); 
+				AddReport(IMMEDIATE_CONTEST_DESTROYED, iSelectedProvince, 0, 0);
 			}
 			else
 			{
 				LONG j;
-				
+
 				places[iSelectedOneHolding].Contested = TRUE;
 				SetGameData(MP_PLACES, MPPLACE_CONTESTED, iSelectedOneHolding, TRUE, TRUE );
 
@@ -5729,7 +5696,7 @@ void PaintContest (LONG x, LONG y, LONG h)
 	y = startY + h - 80;
 
 	RegencePoint = modRegency + 1;
-	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_REG_COST_FMT), RegencePoint); 
+	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_TOTAL_REG_COST_FMT), RegencePoint);
 	y+=15;
 	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_CONTEST_HELP));
 
@@ -5773,7 +5740,7 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 	 {
 		DumbAutoLockPtr< PLAYER_STATS > const pPS(hStat);
 		charisma = pPS->mfGetChr();
-		myAlign = pPS->mfGetAlignment(); 
+		myAlign = pPS->mfGetAlignment();
 	 }
 
 	// count the number of lieutenants you already have.
@@ -5795,7 +5762,7 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 		CHAR temp1[80];
 		CHAR temp2[80];
 		LONG count;
-		
+
 		print_textf(x, y, DKBROWN, 	   STRMGR_GetStr(STR_ACTNMENU_F00_AVAILABLE_LIEUTENANTS));
 		print_textf(x+155, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_CLASS_AND_LEVEL));
 
@@ -5812,7 +5779,7 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 		count = 0;
 		if (reportFlag == 0)		// all slots are empty
 		{
-		 	
+
 			LONG i;
 			for (i=69; i<CHARACTER_COUNT; ++i)			// scan all regents
 			{
@@ -5822,10 +5789,10 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 					DumbAutoLockPtr< PLAYER_STATS > const pPS(playerstats[i]);
 		 		  		yourAlign = pPS->mfGetAlignment();
 		 		}
-				
+
 				alignMod[i] = ((align[yourAlign][myAlign]>50)?(align[yourAlign][myAlign]-100):align[yourAlign][myAlign]);
 				alignMod[i]	= alignMod[i]/2;
-							
+
 				SHORT tmpId = regents[i].mfGetid();
 				// GEH the 1999 test is a validity check
 				if(  ((tmpId > 1000 && tmpId < 1999) || (tmpId >= 2000 && tmpId < 3000))
@@ -5852,7 +5819,7 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 		else		// subsequent frames (after first)
 		{
 		 	LONG k;
-		 	
+
 		 	for (count=0; count < 8; ++count)
 			{
 				k = iLieutenants[count];
@@ -5919,11 +5886,11 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 				if(regents[k].mfGetClass2() != NO_CLASS)
 				{
 					strcpy(temp1, STRMGR_GetStr(gsClass[regents[k].mfGetClass1()]));
-					strcpy(temp2, STRMGR_GetStr(gsClass[regents[k].mfGetClass2()])); 
-					print_textf(x+165, y, DKBROWN, "%s %d / %s %d", 
-						temp1, 
-						regents[k].mfGetLevel1(), 
-						temp2, 
+					strcpy(temp2, STRMGR_GetStr(gsClass[regents[k].mfGetClass2()]));
+					print_textf(x+165, y, DKBROWN, "%s %d / %s %d",
+						temp1,
+						regents[k].mfGetLevel1(),
+						temp2,
 						regents[k].mfGetLevel2());
 				}
 				else
@@ -5950,15 +5917,15 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 		fAllowDoneButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowDoneButton:0;
 	else
 		fAllowDoneButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowDoneButton:0;
-	
-	
+
+
 	if (IsMenuActive(D_AVATAR_ATTRIBUTES) || IsMenuActive(D_AVATAR_INVENTORY))
 		DeleteActnMenuRegions();
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintHoldAction(LONG MenuCombo, LONG)
@@ -6003,8 +5970,8 @@ void PaintHoldAction(LONG MenuCombo, LONG)
 
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintInvestiture(LONG x, LONG y, LONG h)
@@ -6054,7 +6021,7 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 					y += 16;
 					++count;
 
-					// print prev, next buttons if provinces are more than 15		
+					// print prev, next buttons if provinces are more than 15
 					if(DoPageProvince(&startProvCount, provCount, 15, counter, x, y))
 						break;
 				}
@@ -6074,10 +6041,10 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 		{
 			for(j=0;j!=CHARACTER_COUNT&&type!=PRIEST;++j)
 			{
-				if(regents[j].mfGetRealm() == HomeRealm && 
+				if(regents[j].mfGetRealm() == HomeRealm &&
 				   regents[j].mfGetid() != regents[me].mfGetid())
 				{
-					type = regents[j].mfGetClass1();	
+					type = regents[j].mfGetClass1();
 					if(type != PRIEST)
 					{
 						type = regents[me].mfGetClass2();
@@ -6090,13 +6057,13 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 			GoldBar = 4;
 		else
 			GoldBar = 1;
-		
+
 		fAllowRollButton = TRUE;
   		if(checkGoldReg)
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_QUITE))?fAllowRollButton:0;
 	   	else
 			fAllowRollButton = (ProcessGoldAndReg(CHECK_ONLY))?fAllowRollButton:0;
-	
+
 		success = 10 - modRegency + modOpponent;
 		if (playerstats[ActiveRegent] != fERROR)
 		{
@@ -6106,7 +6073,7 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 			if (success < 1)
 				success=1;
 		}
-	
+
 		if(success <= 1)
 			success = 1;
 		if(success >= 20)
@@ -6151,7 +6118,7 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 			//CheckRealmStatus(HomeRealm, province[iSelectedProvince].Realm, TRUE );
 			SetGameData(MP_PROVINCE, MPPROV_INVESTED, HomeRealm, victim, TRUE );
 
-//			AddReport(IMMEDIATE_INVESTITURE, iSelectedProvince, 0, 0);	
+//			AddReport(IMMEDIATE_INVESTITURE, iSelectedProvince, 0, 0);
 		}
 
 		if (result == 2)	// failure
@@ -6159,11 +6126,11 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 			// multi-player support
 			SendResult(INVESTITURE, iSelectedProvince, 0, result);
 			SyncRegencySpentInOpposition((REALM::REALM_TYPE)province[iSelectedProvince].Realm);
-//			AddReport(IMMEDIATE_INVESTITURE_FAIL, 0, 0, 0);	
+//			AddReport(IMMEDIATE_INVESTITURE_FAIL, 0, 0, 0);
 		}
 
 	}
-	
+
 	y = startY + 19;
 	if(GoldBar == 0 && count == 0 && !fAllowDoneButton)
 	{
@@ -6180,8 +6147,8 @@ void PaintInvestiture(LONG x, LONG y, LONG h)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintRealmSpell(LONG x, LONG y, LONG h)
@@ -6225,14 +6192,14 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 		level = regents[currentRegent].mfGetLevel2();
 	}
 	id = regents[currentRegent].mfGetid();
-	
+
 	if(type != WIZARD && type != PRIEST && type != BARD)
 		return;
-		
+
 	hStat = LoadStats(id, -1);
 	if(hStat == fERROR)
 		 return;
-	
+
 	DumbAutoLockPtr< PLAYER_STATS > const pStat(hStat);
 
 	// select a realm
@@ -6333,7 +6300,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 			for (i=FIRST_PROVINCE; i<PROVINCE_COUNT; ++i)
 			{
 				tmpIndex = iSelectedHolding[i][1] + (iSelectedHolding[i][2]*256);
-				
+
 				if (province[i].Realm==iSelectedRealm&&tmpIndex!=0)
 				{
 					if (h1)
@@ -6341,7 +6308,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 						++counter;
 						if(counter < startProvCount)
 							continue;
-	
+
 						DrawLittleButton(x, y-1, 145, 12, FALSE);
 						DrawShield(x, y, (REALM::REALM_TYPE)province[i].Realm);
 						init_gfont(FONT_SANS_8PT);
@@ -6358,7 +6325,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 						add_region(x, y, 145, 12, 0, SelectProvince,i,0,0, -1);
 						y+=18;
 
-						// print prev, next buttons if provinces are more than 13		
+						// print prev, next buttons if provinces are more than 13
 						if(DoPageProvince(&startProvCount, provCount, 13, counter, x, y))
 							break;
 					}
@@ -6392,7 +6359,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 			if (province[iSelectedProvince].Dispel > 0)
 			{
 				print_textf(x+210, y+3,DKBROWN, "^F00%s: ^F02%d", STRMGR_GetStr(STR_ACTN_DISPELL), province[iSelectedProvince].DispelLvl);
-				print_textf(startX+160, startY+h-71, DKBROWN, STRMGR_GetStr(STR_ACTN_DISPELL_FORMAT), province[iSelectedProvince].name, province[iSelectedProvince].DispelLvl); 
+				print_textf(startX+160, startY+h-71, DKBROWN, STRMGR_GetStr(STR_ACTN_DISPELL_FORMAT), province[iSelectedProvince].name, province[iSelectedProvince].DispelLvl);
 			}
 		}
 		y+=18;
@@ -6430,7 +6397,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 				((REALM_SPELL_INFO::TYPE) spellindex == REALM_SPELL_INFO::TRANSPORT &&
 				pStat->StatsMod.mfGetMod(STATSMOD::TRANSPORT_MOD) > 0))
 			{
-				if(!(province[iSelectedProvince].CivLevel == 0 && item == ITEM_SPELL_DEATH_PLAGUE)) 
+				if(!(province[iSelectedProvince].CivLevel == 0 && item == ITEM_SPELL_DEATH_PLAGUE))
 			 	{
 					if(iSelectedOneHolding==item)
 				 		DrawLittleButton(x, y-1, 145, 12, TRUE);
@@ -6467,14 +6434,14 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 //		// GWP while(!pStat->Inventory.mfEndOfList())
 //
 //		InventoryItor itor(pStat->Inventory);
-//		
+//
 //		for (itor.mfAdvance(IC_REALM_SPELL);
 //		     itor != pStat->Inventory.end();
 //		     itor.mfAdvanceToNext(IC_REALM_SPELL))
 //		{
 //			// GWP InventoryNode& dataIndex = pStat->Inventory.mfData();
 //			// GWP item = dataIndex.mfType();
-//			
+//
 //			item = (*itor)->mfType();
 //
 //			if((SHORT)item == iSelectedOneHolding)
@@ -6557,7 +6524,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 							RegencePoint += province[tmpIndex].CivLevel;
 							DrawLittleButton(x, y-1, 145, 12, TRUE);
 							if(province[tmpIndex].Dispel>0)
-								RegencePoint += province[tmpIndex].DispelLvl+1;	
+								RegencePoint += province[tmpIndex].DispelLvl+1;
 						}
 						else
 							DrawLittleButton(x, y-1, 145, 12, FALSE);
@@ -6572,8 +6539,8 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 					y+=18;
 				}
 				init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_AN_ADDITIONAL_PROV), maxamt-additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_AN_ADDITIONAL_PROV), maxamt-additionalamt);
 				break;
 
 			case ITEM_SPELL_DEMAGOGUE:
@@ -6598,7 +6565,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 						}
 						print_textf(x+200+13, y+6, DKBROWN, "^F00^c%s", STRMGR_GetStr(STR_ACTN_RAISE));
 						if(province[tmpIndex].Dispel>0)
-							RegencePoint += province[tmpIndex].DispelLvl+1;	
+							RegencePoint += province[tmpIndex].DispelLvl+1;
 						if(province[tmpIndex].Loyalty > 0)
 						{
 							DrawLittleButton(x+250, y+1, 25, 8, (iSelectedHolding[count][0]==3 || iSelectedHolding[count][0]==5));
@@ -6643,8 +6610,8 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 				}
 				if(RegencePoint != 0) GoldBar +=1;
 				init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_AN_ADDITIONAL_PROV), maxamt- additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_AN_ADDITIONAL_PROV), maxamt- additionalamt);
 
 				break;
 
@@ -6658,13 +6625,13 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 
 			case ITEM_SPELL_MASS_DESTRUCTION:
 				count = 0;
-				y = startY; 
+				y = startY;
 				x = startX + 160;
 				print_textf(x, y, DKBROWN, "^F00%s", STRMGR_GetStr(STR_ACTN_UNITS));
 				y += 15;
 				maxamt = (level+3-baseLevel)/rate;
 	 			for (h1=0; h1<2; ++h1)
-				{		
+				{
 					for (i = 1; i < MAX_UNITS && count < 12; ++i)
 					{
 						if(units[i].province == iSelectedProvince
@@ -6679,7 +6646,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 									++counter1;
 									if(counter1 < startProvCount1)
 										continue;
-				
+
 									if(iSelectedMulProvince[count])
 									{
 										DrawLittleButton(x, y-1, 145, 12, TRUE);
@@ -6688,15 +6655,15 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 									}
 									else
 										DrawLittleButton(x, y-1, 145, 12, FALSE);
-				
+
 									DrawShield(x+2, y, (REALM::REALM_TYPE)units[iUnit].Realm);
 									init_gfont(FONT_SANS_8PT);
 									print_textf(x+16, y, DKBROWN, "%s", UnitName(iUnit));
-									add_region(x, y, 145, 12,0, SelectMulProvince, count, level+3, 0, -1);	
+									add_region(x, y, 145, 12,0, SelectMulProvince, count, level+3, 0, -1);
 									++count;
-									
+
 									y += 15;
-			
+
 									// print prev, next buttons if number of units are more than 10
 									if(DoPageProvince(&startProvCount1, provCount1, 8, counter1, x, y))
 										goto md_exit;
@@ -6707,10 +6674,10 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 						}
 					}
 				}
-				
+
 md_exit: 		init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_ADDITIONAL_UNITS), maxamt- additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_ADDITIONAL_UNITS), maxamt- additionalamt);
 
 				break;
 
@@ -6790,9 +6757,9 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 								units[i].NotSpotted = FALSE;
 								if( y > (startY + h - 70) && x == startX)
 								{
-									y = startY; 
+									y = startY;
 									x += 160;
- 								}	
+ 								}
 								if(count < 17)
 								{
 									iSelectedMulUnits[count]=i;
@@ -6809,7 +6776,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 						}
 					}
 					modLevel = count;
-					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_HAVE_SPOTTED), count); 
+					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_HAVE_SPOTTED), count);
 					y+=12;
 					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_HIDDEN_UNITS));
 					GoldBar = 5;
@@ -6825,16 +6792,16 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 						{
 							if( y > (startY + h - 70) && x == startX)
 							{
-								y = startY; 
+								y = startY;
 								x += 160;
- 							}	
+ 							}
 							DrawShield(x+2, y, (REALM::REALM_TYPE)units[iSelectedMulUnits[i]].Realm);
 							print_textf(x+16, y, DKBROWN, "%s", UnitName(iSelectedMulUnits[i]) );
 							print_textf(x+40, y+12, DKBROWN, "%s", province[units[iSelectedMulUnits[i]].province].name);
 							y += 24;
-						}	
+						}
 					}
-					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_HAVE_SPOTTED), modLevel); 
+					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_HAVE_SPOTTED), modLevel);
 					y+=12;
 					print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_HIDDEN_UNITS));
 					GoldBar = 5;
@@ -6871,10 +6838,10 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 						{
 							if(!MaxLevel)
 								DrawLittleButton(x+25, y-1, 50, 12, FALSE);
-						}	
+						}
 						print_textf(x+25, y, DKBROWN, "^F00%s", STRMGR_GetStr(STR_ACTN_RAISE));
 			   			if(!MaxLevel)
-							add_region(x+25, y, 50, 12,0, SelectMulProvince, 0, 5, 0, -1); // iSelectedMulProvince[0] for improve an old tower	
+							add_region(x+25, y, 50, 12,0, SelectMulProvince, 0, 5, 0, -1); // iSelectedMulProvince[0] for improve an old tower
 						y += 18;
 						break;
 					}
@@ -6903,9 +6870,9 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 			case ITEM_SPELL_SUMMONING:
 				print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTN_SUMMON_MONSTER_UNITS));
 				y += 20;
-				
+
 				for(i = 0; i<=(level-1)/3; ++i)
-				{	
+				{
 					if(i>3)
 						break;
 					if(iSelectedMulProvince[i])
@@ -6919,7 +6886,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 
 					switch(i)
 					{
-						case 0:	
+						case 0:
 							print_textf(x+2, y, DKBROWN, "^F02%s", STRMGR_GetStr(STR_UNIT_NAME_GOB));
 							break;
 						case 1:
@@ -6932,15 +6899,15 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 							print_textf(x+2, y, DKBROWN, "^F02%s", STRMGR_GetStr(STR_UNIT_NAME_SKEL));
 							break;
 					}
-					add_region(x, y, 145, 12,0, SelectMulProvince, i, 10, 0, -1);	
+					add_region(x, y, 145, 12,0, SelectMulProvince, i, 10, 0, -1);
 					y += 18;
 				}
 				maxamt = (level-1)/3;
 				if(maxamt > 3)
 					maxamt = 3;
 				init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_ADDITIONAL_UNITS), maxamt+1-additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTN_YOU_CAN_CHOOSE));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTN_ADDITIONAL_UNITS), maxamt+1-additionalamt);
 
 				break;
 
@@ -6960,7 +6927,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 					count = 0;
 				 	for(i = 1; i<MAX_UNITS; ++i)
 					{
-						if(count >= 19) 
+						if(count >= 19)
 							continue;
 						if (units[i].province == iSelectedProvince
 							&& realm[units[i].Realm].mfExists()
@@ -6975,19 +6942,19 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 
 									if(counter1 < startProvCount1 || count >= 20)
 										continue;
-		
-									if(iSelectedMulUnits[count]!=0)	
+
+									if(iSelectedMulUnits[count]!=0)
 									{
 										DrawLittleButton(x, y-1, 145, 12, TRUE);
 									}
 									else
 										DrawLittleButton(x, y-1, 145, 12, FALSE);
-			
+
 									DrawShield(x+2, y, (REALM::REALM_TYPE)units[iUnit].Realm);
 					 	 			print_textf(x+16, y, DKBROWN, "%s", UnitName(iUnit));
 									add_region(x, y, 145, 12, 0, SelectMulUnits,iUnit,count,0, -1);
 									y+=18;
-				
+
 									// print prev, next buttons if number of units are more than 10
 									if(DoPageProvince(&startProvCount1, provCount1, 8, counter1, x, y))
 										goto trans_exit;
@@ -6997,7 +6964,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 									if(provCount1 < 19)
 									{
 										++provCount1;
-										if( iSelectedMulUnits[provCount1]!=0)	
+										if( iSelectedMulUnits[provCount1]!=0)
 										{
 											++flag;
 											if (pStat->StatsMod.mfGetMod(STATSMOD::TRANSPORT_MOD) > 0)
@@ -7013,7 +6980,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 						}
 					}
 			    }
-trans_exit:   
+trans_exit:
 				if (flag != 0)
 				{
 					y = startY + 33;
@@ -7039,7 +7006,7 @@ trans_exit:
 								}
 								if (j != 0)
 								{
-									
+
 									slevel = ProvDist(iSelectedProvince, count, 0, TRUE);
 									if (slevel < level)
 									{
@@ -7048,7 +7015,7 @@ trans_exit:
 											++counter2;
 											if(counter2 < startProvCount2)
 												continue;
-			
+
 											if(iSelectedUnit == count)
 												DrawLittleButton(x, y-1, 145, 12, TRUE);
 											else
@@ -7058,7 +7025,7 @@ trans_exit:
 											print_textf(x+125, y, LoyaltyColor[province[count].Loyalty], "%d", slevel);
 											add_region(x, y, 145, 12, 0, SelectUnit,count,0,0, -1);
 											y+=18;
-											// print prev, next buttons if provinces are more that 10		
+											// print prev, next buttons if provinces are more that 10
 											if(DoPageProvince(&startProvCount2, provCount2, 10, counter2, x, y))
 												break;
 										}
@@ -7089,12 +7056,12 @@ trans_exit:
 					++count )
 				{
 					tmpIndex=province[iSelectedProvince].Border[count].Province;
-					
+
 					if(iSelectedMulProvince[count])
 					{
 						DrawLittleButton(x, y-1, 145, 12, TRUE);
 						if(province[tmpIndex].Dispel>0)
-							RegencePoint += province[tmpIndex].DispelLvl+1;	
+							RegencePoint += province[tmpIndex].DispelLvl+1;
 						if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_HONEST_DEALING)
 						{
 							RegencePoint += province[tmpIndex].CivLevel * 3;
@@ -7154,25 +7121,25 @@ trans_exit:
 						RegencePoint = 1;
 					if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_BLESS_LAND)
 						GoldBar = 1;
-					else if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_BLIGHT 
+					else if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_BLIGHT
 							||(ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_HONEST_DEALING)
 						GoldBar = 2;
 				}
 				init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER1)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER2), maxamt- additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER1));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER2), maxamt- additionalamt);
 
 				break;
 
 		    case ITEM_SPELL_BLESS_ARMY:
 				count = 0;
-				y = startY; 
+				y = startY;
 				x = startX + 160;
 				print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_F00_UNITS));
 				y += 15;
-				for(i = 1; i < MAX_UNITS && count < 12; ++i)	
+				for(i = 1; i < MAX_UNITS && count < 12; ++i)
 				{
-					if(units[i].province == iSelectedProvince 
+					if(units[i].province == iSelectedProvince
 					   && units[i].Realm == HomeRealm
 					   && units[i].Joined == 0)
 					{
@@ -7188,19 +7155,19 @@ trans_exit:
 							}
 							else
 								DrawLittleButton(x, y-1, 145, 12, FALSE);
-	
+
 							DrawShield(x+2, y, (REALM::REALM_TYPE)units[iUnit].Realm);
 							init_gfont(FONT_SANS_8PT);
 							print_textf(x+16, y, DKBROWN, "%s", UnitName(iUnit));
-							add_region(x, y, 145, 12,0, SelectMulProvince, count, level, 0, -1);	
+							add_region(x, y, 145, 12,0, SelectMulProvince, count, level, 0, -1);
 							++count;
 							y += 15;
 						}
 					}
 				}
 				init_gfont(FONT_SANS_8PT);
-				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER1)); 
-				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER3), level - additionalamt); 
+				print_textf(startX + 160, startY + h - 73, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER1));
+				print_textf(startX + 160, startY + h - 60, DKBROWN, STRMGR_GetStr(STR_ACTNMENU_U_CAN_CHOOSE_ANOTHER3), level - additionalamt);
 
 				break;
 
@@ -7223,7 +7190,7 @@ trans_exit:
 		}
 
 //			}
-//		 	++i; 
+//		 	++i;
 //			// GWP pStat->Inventory.mfAdvance(IC_REALM_SPELL);
 //	   }
 
@@ -7256,7 +7223,7 @@ trans_exit:
 
 /* ========================================================================
    Function    - PaintLieutenatAction
-   Description - Paint the select a lieutenant from your realm to do the 
+   Description - Paint the select a lieutenant from your realm to do the
                  next action.
    Returns     -
    ======================================================================== */
@@ -7277,11 +7244,11 @@ void PaintLieutenantAction(LONG x, LONG y, LONG h)
 	for (int h1=0; h1<2; ++h1)
 	{
 		LONG i;
-		
+
 		for (i = 0; i<CHARACTER_COUNT; ++i)
 		{
-			if(regents[i].mfGetRealm() == HomeRealm 
-			   && i != realm[HomeRealm].mfGetRegent() 
+			if(regents[i].mfGetRealm() == HomeRealm
+			   && i != realm[HomeRealm].mfGetRegent()
 			   && regents[i].mfGetunit() > 0 		// -1 is dead, 0 unused.
 			   )
 			{
@@ -7291,7 +7258,7 @@ void PaintLieutenantAction(LONG x, LONG y, LONG h)
 					if(counter < startProvCount)
 						continue;
 
-					if(iSelectedRealm == i) 
+					if(iSelectedRealm == i)
 						DrawLittleButton(x, y-1, 130, 12, TRUE);
 					else
 						DrawLittleButton(x, y-1, 130, 12, FALSE);
@@ -7301,10 +7268,10 @@ void PaintLieutenantAction(LONG x, LONG y, LONG h)
 						//String Manager can't be used twice in the same function call
 						char buffer[100];
 						strcpy(buffer, STRMGR_GetStr(gsClass[regents[i].mfGetClass2()]));
-						print_textf(x+150, y, DKBROWN, "%s %d / %s %d", 
-							STRMGR_GetStr(gsClass[regents[i].mfGetClass1()]), 
+						print_textf(x+150, y, DKBROWN, "%s %d / %s %d",
+							STRMGR_GetStr(gsClass[regents[i].mfGetClass1()]),
 							regents[i].mfGetLevel1(),
-							buffer, 
+							buffer,
 							regents[i].mfGetLevel2());
 					}
 					else if (regents[i].mfGetClass1() != NO_CLASS)
@@ -7313,20 +7280,20 @@ void PaintLieutenantAction(LONG x, LONG y, LONG h)
 						strcpy(buffer, STRMGR_GetStr(gsClass[regents[i].mfGetClass1()]));
 						print_textf(x+150, y, DKBROWN, "%s %d", buffer, regents[i].mfGetLevel1());
 					}
-			
+
 					add_region(x, y, 130, 12, 0, SelectRealm,i,0,0, -1);
 					y+=20;
 
-					// print prev, next buttons if number of Lieutenants are more than 10		
+					// print prev, next buttons if number of Lieutenants are more than 10
 					if(DoPageProvince(&startProvCount, LieutenantCount, 10, counter, x, y))
 						break;
 
 				}
 				else
-					++LieutenantCount;	
+					++LieutenantCount;
 			}
 		}
-		
+
 	}
 	y = startY + h - 45;
 	print_textf(x, y, DKBROWN,STRMGR_GetStr(STR_ACTNMENU_LIEUT_ACTN_HELP));
@@ -7338,8 +7305,8 @@ void PaintLieutenantAction(LONG x, LONG y, LONG h)
 
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void DeleteActnMenuRegions (void)
@@ -7375,18 +7342,16 @@ void CleanupAfterActnMenu (void)
 
 void LogAction( LONG iAction )
 {
-   char temp[100];
-   char ActionTitleString[50];
-   strcpy(ActionTitleString, Action[iAction&0xFF].mfGetTitle());
-	sprintf ( temp, "actnmenu.cpp - Player %s is doing %s", 
-		realm[CurrentRealm].mfGetName(), 
+	char ActionTitleString[50];
+	strcpy(ActionTitleString, Action[iAction&0xFF].mfGetTitle());
+	logInfo( "actnmenu.cpp - Player %s is doing %s",
+		realm[CurrentRealm].mfGetName(),
 		ActionTitleString);
-   RandomLogComment ( temp );
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 static void InitActionGlobals (void)
@@ -7426,8 +7391,8 @@ static void InitActionGlobals (void)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
 void PaintDomainAction (LONG MenuCombo, LONG iAction)
@@ -7568,7 +7533,7 @@ void PaintDomainAction (LONG MenuCombo, LONG iAction)
 
 /* ========================================================================
    Function    - Increment the action turn number if appropriate
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void IncActionTurn (void)
@@ -7602,7 +7567,7 @@ void IncActionTurn (void)
 				AddReport(IMMEDIATE_USED_FREEACTION, 0, 0, 0);
 				++usedFreeSpy;
 			}
-			else if (iCurAction != HOLD_ACTION && usedFreeAction < pPS->StatsMod.mfGetMod(STATSMOD::FREEACTION_MOD))	
+			else if (iCurAction != HOLD_ACTION && usedFreeAction < pPS->StatsMod.mfGetMod(STATSMOD::FREEACTION_MOD))
 			{
 				AddReport(IMMEDIATE_USED_FREEACTION, 0, 0, 0);
 				++usedFreeAction;
@@ -7696,8 +7661,8 @@ void AdjustHoldingLevel (PROVINCE prov, BOOL fSend)
 }
 
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
  void CancelHoldAction(LONG, LONG)
@@ -7709,8 +7674,8 @@ void AdjustHoldingLevel (PROVINCE prov, BOOL fSend)
 	fUpdateDataArea=TRUE;
  }
 /* ========================================================================
-   Function    - 
-   Description - 
+   Function    -
+   Description -
    Returns     -
    ======================================================================== */
  void DoneHoldAction(LONG, LONG)
@@ -7735,7 +7700,7 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 
 	if (fSend || onWhom == HomeRealm)
 		SendReportTo(onWhom, IMMEDIATE_NPC_DECLARE_WAR, who, 0, 0);
-	
+
 	// count the number of allies who will declare with us
 	num_allies = 0;
 	for (rlm = REALM::FIRST_REALM; rlm < LAND_REALM_COUNT; rlm = (REALM::REALM_TYPE)(rlm + 1))
@@ -7753,7 +7718,7 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 	{
 		SendReportTo(who, IMMEDIATE_ALLIES_JOIN_WAR, onWhom, 0, 0);
 	}
-	
+
 	// "who" and full+ allies declare war on "onWhom"
 	for (rlm = REALM::FIRST_REALM; rlm < LAND_REALM_COUNT; rlm = (REALM::REALM_TYPE)(rlm + 1))
 	{
@@ -7779,8 +7744,8 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 		else if (AREALLIED(who, rlm))
 			temp = 1;
 		else
-			temp = 0;	
-			
+			temp = 0;
+
 		// other players don't auto-decalre-war, but notify them
 		if ((realm[rlm].mfIsPlayerCtrl() && rlm != who))
 		{
@@ -7794,7 +7759,7 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 			}
 			continue;
 		}
-					
+
 		// cancel tributes
 //		Tribute[rlm][onWhom] = 0;
 //		Tribute[onWhom][rlm] = 0;
@@ -7810,18 +7775,18 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 			else
 				SendReportTo(who, IMMEDIATE_ALLY_DECLARE_WAR, temp, rlm, onWhom);
 		}
-		
+
 		if (onWhom == HomeRealm && rlm != who &&
 			((RealmStatus[rlm][onWhom])&0x0F) != STATUS_AT_WAR)
 		{
 			SendReportTo(onWhom, IMMEDIATE_NPC_DECLARE_WAR_ALONE, rlm, 0, 0);
 		}
-		
+
 		// set to AT_WAR and set them neutral to us if not at war
 		LONG warStatus = (TestAdjacent(rlm, onWhom))?
 			STATUS_AT_WAR_ADJ : STATUS_AT_WAR;
 		SetGameData(MP_REALMSTATUS, rlm, onWhom, warStatus, fSend);
-							
+
 		// if they're at war with us already, no further political harm...
 		if (((RealmStatus[onWhom][rlm])&0x0F) != STATUS_AT_WAR)
 		{
@@ -7832,22 +7797,22 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 			tmp = RealmReaction[onWhom][rlm]
 				- (5 + random(10) + (Tribute[rlm][onWhom] * 5));
 			if (tmp < 0)
-				tmp = 0;	
+				tmp = 0;
 			SetGameData(MP_REALMREACTION, onWhom, rlm, tmp, fSend);
 			SetGameData(MP_REALMSTATUS, onWhom, rlm, STATUS_NEUTRAL, fSend );
 		}
 	}
-	
+
 	// player-controlled realms have to declare war back.
 	if (realm[onWhom].mfIsPlayerCtrl())
 		return;
-		
+
 	if (who == HomeRealm &&
 		((RealmStatus[onWhom][who])&0x0F) != STATUS_AT_WAR)
 	{
 		SendReportTo(who, IMMEDIATE_NPC_DECLARE_WAR, onWhom, 0, 0);
 	}
-	
+
 	// now in the reverse direction
 	for (rlm = REALM::FIRST_REALM; rlm < LAND_REALM_COUNT; rlm = (REALM::REALM_TYPE)(rlm + 1))
 	{
@@ -7875,8 +7840,8 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 			else if (AREALLIED(onWhom, rlm))
 				temp = 1;
 			else
-				temp = 0;	
-			
+				temp = 0;
+
 			if (temp > 0)
 				SendReportTo(rlm, IMMEDIATE_NPC_DECLARE_WAR_ALLY, who, temp, onWhom);
 		}
@@ -7890,33 +7855,33 @@ void WarDeclared(REALM::REALM_TYPE who, REALM::REALM_TYPE onWhom, BOOL fSend)
 		{
 			SendReportTo(who, IMMEDIATE_NPC_DECLARE_WAR_ALONE, rlm, 0, 0);
 		}
-		
+
 		// set to AT_WAR and set them neutral to us if not at war
 		LONG warStatus = (TestAdjacent(rlm, who))?
 			STATUS_AT_WAR_ADJ : STATUS_AT_WAR;
 		SetGameData(MP_REALMSTATUS, rlm, who, warStatus, fSend);
-							
+
 		LONG tmp = RealmReaction[rlm][who] - (Tribute[who][rlm] * 5);
 		if (tmp < 0)
 			tmp = 0;
 		SetGameData(MP_REALMREACTION, rlm, who, tmp, fSend);
-		
+
 		tmp = RealmReaction[who][rlm]
 			- (5 + random(10) + (Tribute[rlm][who] * 5));
 		if (tmp < 0)
-			tmp = 0;	
+			tmp = 0;
 		SetGameData(MP_REALMREACTION, who, rlm, tmp, fSend);
-		
+
 		// cancel tributes
 //		Tribute[rlm][who] = 0;
 //		Tribute[who][rlm] = 0;
 		SetGameData(MP_TRIBUTE, rlm, who, 0, TRUE);
 		SetGameData(MP_TRIBUTE, who, rlm, 0, TRUE);
-		
+
 		if (((RealmStatus[who][rlm])&0x0F) != STATUS_AT_WAR)
 			SetGameData(MP_REALMSTATUS, who, rlm, STATUS_NEUTRAL, fSend );
 	}
-	
+
 }
 
 /* ========================================================================
@@ -7936,9 +7901,9 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 
 	if (!fAllowDoneButton)
 		return;
-	
+
 	WaitingWhen += 60;	// time limit will NOT run out while processing DONE
-	
+
 	// click the button
 	if (mouse_button)
 	{
@@ -7957,7 +7922,7 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 		RunMenus();
 		update_screen();
 	}
-	
+
 
 	iCancel = 0;
 
@@ -7997,13 +7962,13 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 		case DECLARE_WAR:			// Declare War
 
 //			fPlayerNeverDeclaredWar = FALSE;
-			SetGameData( MP_GAMEDATA, MPGAMESEMIPHORE_DECLAREDWAR, 
+			SetGameData( MP_GAMEDATA, MPGAMESEMIPHORE_DECLAREDWAR,
 						 0, FALSE, TRUE );
 
 //	this now happens in WarDeclared
 //			// the receipient of the declaration should know about it
 //			SendReportTo(iSelectedRealm, IMMEDIATE_NPC_DECLARE_WAR, HomeRealm, 0, 0);
-			
+
 			// if you declare war on an ally you are SCUM and should suffer!!
 			if (AREALLIED(HomeRealm, iSelectedRealm))
 			{
@@ -8017,14 +7982,14 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 					}
 				}
 			}
-			
+
 			// give experience points
 			ActionExpPoints(ActiveRegent, RLM_EXP_DECLARE_WAR, 0, TRUE);
-			
+
 			// new function to handle stuff commented out below, better
 			WarDeclared(HomeRealm, (REALM::REALM_TYPE)iSelectedRealm, TRUE);
-			
-#if 0			
+
+#if 0
 			// for you and everyone you are full allies with
 			for (i=1; i<LAND_REALM_COUNT; ++i)
 			{
@@ -8045,7 +8010,7 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 								AddReport(IMMEDIATE_ALLY_DECLARE_WAR, 3, i, j);
 							else if (j == iSelectedRealm && i!=HomeRealm && AREFULLALLIES(i, HomeRealm))
 						 		AddReport(IMMEDIATE_ALLY_DECLARE_WAR, 2, i, j);
-							
+
 							k = RealmReaction[i][j] - (Tribute[j][i] * 5);
 							RealmReaction[i][j] = (k>0)?k:0;
 							SetGameData(MP_REALMREACTION, i, j, RealmReaction[i][j], TRUE);
@@ -8190,7 +8155,7 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 						}
 					}
 				}
-				
+
 				// sieze the lieutenant
 			 	j = CreateUnit(iSelectedProvince, regents[index].mfGeticon(), iSelectedRealm, HomeRealm, TRUE );
 				CheckLeader (GetUnitLeader(j), TRUE );
@@ -8248,9 +8213,9 @@ CantHire:
 			// give experience points
 			ActionExpPoints(
 				ActiveRegent,
-				RLM_EXP_REALM_SPELL, 
+				RLM_EXP_REALM_SPELL,
 				RlmSpellLevel((ITEMTYPE)iSelectedOneHolding), TRUE);
-			
+
  			switch((ITEMTYPE)iSelectedOneHolding)		 // death plague
  			{
  			case ITEM_SPELL_DEATH_PLAGUE:
@@ -8269,7 +8234,7 @@ CantHire:
 						AdjustHoldingLevel((PROVINCE)province[iSelectedProvince].Border[i].Province, TRUE);
  					}
  				}
- 				AddReport(SUBJ_DEATH_PLAGUE, 1, iSelectedProvince, province[iSelectedProvince].CivLevel);	
+ 				AddReport(SUBJ_DEATH_PLAGUE, 1, iSelectedProvince, province[iSelectedProvince].CivLevel);
 				break;
 
 			case ITEM_SPELL_DEMAGOGUE:
@@ -8290,7 +8255,7 @@ CantHire:
 							SetScrewed((REALM::REALM_TYPE)province[tmpIndex].Realm, HomeRealm, TRUE );
 						province[tmpIndex].Loyalty += (iSelectedHolding[i][0]==2) - (iSelectedHolding[i][0]==3);
 						SetGameData(MP_PROVINCE, MPPROV_LOYALTY, tmpIndex, province[tmpIndex].Loyalty, TRUE );
-					}  
+					}
 				}
  				AddReport(SUBJ_DEMAGOGUE, iSelectedHolding[7][0]==3, iSelectedProvince, province[iSelectedProvince].Loyalty);
 				break;
@@ -8298,11 +8263,11 @@ CantHire:
 			case ITEM_SPELL_LEGION_OF_DEAD:
 				{
 				//GEH added setup and loop on 8/18/97 as part of patch 1
-				PLAYER_CLASS_INFO::TYPE MagicType; 
+				PLAYER_CLASS_INFO::TYPE MagicType;
 				LONG MagicLevel;
 				SHORT const hPlayerStats = LoadStats(regents[ActiveRegent].mfGetid(), fERROR);
 				DumbHandlePtr<PLAYER_STATS> const dhPlayerStats(hPlayerStats);
-			
+
 				// get the casters wizard level and for each level above 7,
 				// generate one more skeleton.  Other code allows only WIZARDS
 				// to cast this, so we assume that we only have to check
@@ -8352,20 +8317,20 @@ CantHire:
 								{
 									iUnit = units[iUnit].NextUnit;
 								}
-								else	
+								else
 								{
 									// DeleteUnit returns the new next unit.
 									iUnit = DeleteUnit(iUnit, TRUE);
 			 		  				++j;
 								}
-							}	
+							}
 							else
 							{
 								iUnit = units[iUnit].NextUnit;
 							}
 							++count;
 						}
-						
+
 					}
 				}
  				AddReport(SUBJ_MASS_DESTRUCTION, j, iSelectedProvince, 0);
@@ -8443,10 +8408,10 @@ CantHire:
 				break;
 
  			case ITEM_SPELL_SUMMONING:
- 				j=0; 
+ 				j=0;
 				for(i = 0; i<4; ++i)
  				 {
- 				 	if(iSelectedMulProvince[i]) 
+ 				 	if(iSelectedMulProvince[i])
  					{
 						if (!AREALLIED((REALM::REALM_TYPE)iSelectedRealm, HomeRealm))
 						{
@@ -8456,7 +8421,7 @@ CantHire:
 						++j;
 					}
  				 }
- 		   		AddReport(SUBJ_SUMMONING, j, iSelectedProvince, 0);	
+ 		   		AddReport(SUBJ_SUMMONING, j, iSelectedProvince, 0);
 				break;
 
 			case ITEM_SPELL_TRANSPORT:
@@ -8469,7 +8434,7 @@ CantHire:
 						TransportUnit(iSelectedMulUnits[i], (PROVINCE)iSelectedUnit, TRUE);
 					}
 				}
- 				AddReport(SUBJ_TRANSPORT, iSelectedProvince, iSelectedUnit, 0);	
+ 				AddReport(SUBJ_TRANSPORT, iSelectedProvince, iSelectedUnit, 0);
 				break;
 
 			case ITEM_SPELL_BLESS_LAND:
@@ -8481,7 +8446,7 @@ CantHire:
 					++count )
 				{
 					tmpIndex=province[iSelectedProvince].Border[count].Province;
-					
+
 					if(iSelectedMulProvince[count])
 					{
 						if((ITEMTYPE)iSelectedOneHolding==ITEM_SPELL_BLESS_LAND)
@@ -8505,7 +8470,7 @@ CantHire:
 							SetScrewed((REALM::REALM_TYPE)province[tmpIndex].Realm, HomeRealm, TRUE );
 						}
 						else if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_WARDING)
-						{	
+						{
 							//province[tmpIndex].Warded = 2;
 							SetGameData(MP_PROVINCE, MPPROV_WARDED, tmpIndex, 2, TRUE );
 							SetGameData(MP_PROVINCE, MPPROV_DISPELLVL, tmpIndex, HomeRealm, TRUE );
@@ -8527,8 +8492,8 @@ CantHire:
 						SetGameData(MP_PROVINCE, MPPROV_BLIGHTED, iSelectedProvince, 0, TRUE );
 					SetHelped((REALM::REALM_TYPE)iSelectedRealm, HomeRealm, TRUE );
 
- 					AddReport(SUBJ_BLESS_LAND, iSelectedProvince, 0, 0);	
-					
+ 					AddReport(SUBJ_BLESS_LAND, iSelectedProvince, 0, 0);
+
 				}
 				else if((ITEMTYPE)iSelectedOneHolding == ITEM_SPELL_BLIGHT)
 				{
@@ -8600,7 +8565,7 @@ CantHire:
 
 /* ========================================================================
    Function    - CancelDomainAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void CancelDomainAction (LONG MenuCombo, LONG)
@@ -8609,7 +8574,7 @@ void CancelDomainAction (LONG MenuCombo, LONG)
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	if (!fAllowCancelButton)
 		return;
-	
+
 	// click the button
 	if (mouse_button)
 	{
@@ -8631,7 +8596,7 @@ void CancelDomainAction (LONG MenuCombo, LONG)
 		if (OldNPCRegency != -1 && OldNPCRealm > 0 && OldNPCRealm < REALM::REALM_COUNT)
 			SetGameData(MP_REALM, MPRLM_REGENCY, OldNPCRealm, OldNPCRegency, TRUE);
 	}
-	
+
 
 	if(iCurAction == LIEUTANANT)
 		++iCancel;
@@ -8649,7 +8614,7 @@ void CancelDomainAction (LONG MenuCombo, LONG)
 
 /* ========================================================================
    Function    - AbortDomainAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void AbortDomainAction (void)
@@ -8678,7 +8643,7 @@ void AbortDomainAction (void)
 
 /* ========================================================================
    Function    - RollDomainAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void RollDomainAction (LONG MenuCombo, LONG)
@@ -8689,7 +8654,7 @@ void RollDomainAction (LONG MenuCombo, LONG)
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	if (!fAllowRollButton)
 		return;
-	
+
 	// click the button
 	if (mouse_button)
 	{
@@ -8764,7 +8729,7 @@ void RollDomainAction (LONG MenuCombo, LONG)
 
 		// give experience points
 		ActionExpPoints(ActiveRegent, RLM_EXP_BUILD_ROAD, 0, TRUE);
-		
+
 		for (i=0; i<7; ++i)		// set border one direction
 			if (province[iSelectedRealm].Border[i].Province == iSelectedProvince)
 				//province[iSelectedRealm].Border[i].MoveCost = PLAINS_ROAD;
@@ -8864,7 +8829,7 @@ DEFINE_STATIC_VECTOR_CLASS(GAME_STRING, gsWhichAction);
 
 /* ========================================================================
    Function    - DoneOthersAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void DoneOthersAction (LONG, LONG)
@@ -8884,7 +8849,7 @@ void DoneOthersAction (LONG, LONG)
 
 /* ========================================================================
    Function    - RollOthersAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void RollOthersAction (LONG, LONG)
@@ -8893,19 +8858,13 @@ void RollOthersAction (LONG, LONG)
 	response[curResponse].lResult = WaitForResult(response[curResponse].lWhichAction, response[curResponse].lWhichProvince, response[curResponse].lWhichHold);
 
 	realm[HomeRealm].mfAddRegency( -response[curResponse].modRegency );
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[100];
-		sprintf ( temp, "RollOthersAction - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency());
-		RandomLogComment ( temp );
-	}
+	logInfo( "RollOthersAction - HomeRealm:%s  regency:%04d",realm[HomeRealm].mfGetName(),realm[HomeRealm].mfGetRegency());
 	SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, realm[HomeRealm].mfGetRegency(), TRUE);
 }
 
 /* ========================================================================
    Function    - PaintOthersAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void PaintOthersAction (LONG MenuCombo, LONG)
@@ -9018,7 +8977,7 @@ void PaintOthersAction (LONG MenuCombo, LONG)
 	   response[menuResponse].lResult = 4;
 	}
 
-	//---- Now we can print the data 
+	//---- Now we can print the data
 	init_gfont(FONT_SANS_8PT);
 
 	if ( response[menuResponse].lResult == 3 )
@@ -9065,7 +9024,7 @@ void PaintOthersAction (LONG MenuCombo, LONG)
 
 /* ========================================================================
    Function    - DisplayOthersAction
-   Description - 
+   Description -
    Returns     -
    ======================================================================== */
 void DisplayOthersAction ( LONG iFromId, LONG lAction, LONG lProv, LONG lHold, LONG success)
@@ -9181,7 +9140,7 @@ BOOL NPCResult(SHORT flag)
 		{
 			SetGameData(MP_REALMSTATUS, HomeRealm, dData.d1.iWhoFrom, STATUS_PERMISSIVE_ALLIANCE, TRUE );
 			SetGameData(MP_REALMREACTION, HomeRealm, dData.d1.iWhoFrom, 75, TRUE);
-	
+
 			SetGameData(MP_REALMREACTION, dData.d1.iWhoFrom, HomeRealm, 75, TRUE);
 			SetGameData(MP_REALMSTATUS, dData.d1.iWhoFrom, HomeRealm, STATUS_PERMISSIVE_ALLIANCE, TRUE );
 			if(dData.d1.iOffHold)
@@ -9207,7 +9166,7 @@ BOOL NPCResult(SHORT flag)
 			if(dData.d1.iReqHold)
 				//SetGameData(MP_PLACES, MPPLACE_REALM, dData.d1.iReqHold, CurrentRealm, TRUE);
 				CheckHolding(dData.d1.iReqHold, (REALM::REALM_TYPE)dData.d1.iWhoFrom, TRUE);
-			
+
 			Tribute[dData.d1.iWhoFrom][HomeRealm] += dData.d1.iOffTrib;
 			SetGameData(MP_TRIBUTE,dData.d1.iWhoFrom, HomeRealm, Tribute[dData.d1.iWhoFrom][HomeRealm], TRUE);
 		}
@@ -9270,13 +9229,7 @@ BOOL NPCResult(SHORT flag)
 		SetGameData(MP_REALM, MPRLM_TREASURY, HomeRealm, realm[HomeRealm].mfGetTreasury(), TRUE);
 
 		realm[dData.d1.iWhoFrom].mfAddRegency( -dData.d1.iOffRegy);
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[100];
-			sprintf ( temp, "NPCResult - Realm:%s  regency:%04d",realm[dData.d1.iWhoFrom].mfGetName(),realm[dData.d1.iWhoFrom].mfGetRegency());
-			RandomLogComment ( temp );
-		}
+		logInfo( "NPCResult - Realm:%s  regency:%04d",realm[dData.d1.iWhoFrom].mfGetName(),realm[dData.d1.iWhoFrom].mfGetRegency());
 		SetGameData(MP_REALM, MPRLM_REGENCY, dData.d1.iWhoFrom, realm[dData.d1.iWhoFrom].mfGetRegency(), TRUE);
 
 		realm[dData.d1.iWhoFrom].mfAddTreasury( -(dData.d1.iOffGold * 10));
@@ -9422,7 +9375,7 @@ void YesOthersDiplomacy(LONG, LONG)
 
 	// take any regency offered
 	//realm[HomeRealm].regency += dData.d1.iOffRegy;
-	
+
 	// update tributes
 	Tribute[dData.d1.iWhoFrom][HomeRealm] += dData.d1.iOffTrib;
 	SetGameData(MP_TRIBUTE,dData.d1.iWhoFrom,HomeRealm, Tribute[dData.d1.iWhoFrom][HomeRealm], TRUE);
@@ -9487,7 +9440,7 @@ void NoOthersDiplomacy(LONG, LONG)
 	if ( fOtherDipMP || realm[dData.d1.iWhoFrom].mfIsPlayerCtrl())
 		return;
 #endif
-	
+
 	// send make other offer only if against other remote !!
 #ifdef _WINDOWS
 	if ( !fOtherDipMP )
@@ -9511,7 +9464,7 @@ void NoOthersDiplomacy(LONG, LONG)
 
 
 	//----- Need to sync with other players that are waiting
-	//----- NoFlag means Diplomacy is back up 
+	//----- NoFlag means Diplomacy is back up
 
 #ifdef _WINDOWS
 	if ( NoFlag == FALSE )
@@ -9673,16 +9626,16 @@ void PaintOthersDiplomacy (LONG MenuCombo, LONG)
 	{
 	char RegentName[80];
 	char RealmName[80];
-	
+
 	strcpy (RealmName, realm[dData.d1.iWhoFrom].mfGetName());
 	if (realm[dData.d1.iWhoFrom].mfGetRegent() > 0)
 		strcpy (RegentName, regents[realm[dData.d1.iWhoFrom].mfGetRegent()].mfGetname());
 	else
 		strcpy(RegentName, RealmName);
 
-	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_DIPLOMACY_HELP_FMT), 
-								RealmName, 
-								RegentName, 
+	print_textf(x, y, DKBROWN, STRMGR_GetStr(STR_DIPLOMACY_HELP_FMT),
+								RealmName,
+								RegentName,
 								RealmName);
 	}
 
@@ -9706,15 +9659,15 @@ void PaintOthersDiplomacy (LONG MenuCombo, LONG)
 		{
 			case 2: button_text = STR_GO_AWAY;
 					break;
-			
+
 			case 3: button_text = STR_ACCEPT;
 					break;
-			
+
 			case 4: button_text = STR_IMPROVE;
 					if (realm[dData.d1.iWhoFrom].mfIsPlayerCtrl())
 						color = GREY;
 					break;
-			
+
 			default: break;
 		}
 		print_text_centered(x, y, STRMGR_GetStr(button_text), color);
@@ -9726,9 +9679,9 @@ void PaintDealMenu(LONG MenuCombo, LONG iRealm)
 {
 	LONG	x,y,mx,my;
 	LONG	MenuId, ButtonId;
-	
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	if( GetButtonPosition( MenuId, 0, &mx, &my ) == fERROR)
 		return;
 
@@ -9741,7 +9694,7 @@ void PaintDealMenu(LONG MenuCombo, LONG iRealm)
 		    strcpy(RegentName, regents[realm[iRealm].mfGetRegent()].mfGetname());
 	    else
 		    strcpy(RegentName, realm[iRealm].mfGetName());
-    
+
 	    print_textf(x+40, y+50, DKBROWN, STRMGR_GetStr(STR_DIPLOMACY_WANTS_BETTER_DEAL), RegentName);
 	}
 }
@@ -9751,14 +9704,14 @@ static void DoDealMenu(LONG iRealm)
 {
 	// set the proc to null
 	SetButtonProc  (D_QUESTION1, 0, PaintDealMenu, iRealm, 0 );
-	
+
 	// set the question text
 	SetButtonLabel  (D_QUESTION1, QUESTION_TEXT, -1, BLACK );
-	
+
 	// turn on the middle button as OK
 	SetButtonLabel  (D_QUESTION1, QUESTION_BTN1, STR_OK, BTN_LABEL_COLOR );
 	SetButtonProc   (D_QUESTION1, QUESTION_BTN1, HideSubMenuWithClick, D_QUESTION1, NO_KEY );
-	
+
 	ShowMenu(D_QUESTION1);
 }
 
@@ -9768,16 +9721,16 @@ static void DoDealMenu(LONG iRealm)
 	Returns     - number of points
 	======================================================================== */
 LONG ActionExpPoints(
-	LONG RegentIndex, 
-	ACTION_EXPTYPE ActionType, 
+	LONG RegentIndex,
+	ACTION_EXPTYPE ActionType,
 	LONG Modifier,
 	BOOL fSend )
 {
 	LONG	Amount, A1, A2, Class1, Class2;
-	
+
 	// simple default answer
 	Amount = 0;
-	
+
 	// don't advance Chaos
 	if ( RegentIndex == UNKNOWN1 ||
 		RegentIndex == UNKNOWN9 ||
@@ -9789,13 +9742,13 @@ LONG ActionExpPoints(
 		RegentIndex == UNKNOWN7 ||
 		RegentIndex == UNKNOWN8 )
 		return 0;
-		
+
 	if (playerstats[RegentIndex] != fERROR)
 	{
 		// collect primary/secondary class types
-		Class1 = regents[RegentIndex].mfGetClass1(); 
-		Class2 = regents[RegentIndex].mfGetClass2(); 
-		
+		Class1 = regents[RegentIndex].mfGetClass1();
+		Class2 = regents[RegentIndex].mfGetClass2();
+
 		// convert classes to table lookup values
 		switch ( Class1 )
 		{
@@ -9814,7 +9767,7 @@ LONG ActionExpPoints(
 		case WIZARD:
 			Class1 = 3;
 			break;
-		
+
 		case NO_CLASS:
 		default:
 			// an error, just bail out
@@ -9837,13 +9790,13 @@ LONG ActionExpPoints(
 		case WIZARD:
 			Class2 = 3;
 			break;
-		
+
 		case NO_CLASS:
 		default:
 			// this character is no second class shmuck
 			break;
 		}
-		
+
 		// give them highest value of their two possible classes
 		A1 = RealmExpPoints[ActionType][Class1];
 		if ( Class2 != NO_CLASS )
@@ -9855,7 +9808,7 @@ LONG ActionExpPoints(
 		{
 			Amount = A1;
 		}
-			
+
 		// check amount modifiers
 		switch ( ActionType )
 		{
@@ -9868,7 +9821,7 @@ LONG ActionExpPoints(
 			Amount *= Modifier;
 			break;
 		}
-		
+
 		GainRealmExp(RegentIndex, Amount, TRUE, fSend);
 	}
 
@@ -9876,6 +9829,3 @@ LONG ActionExpPoints(
 }
 
 /* ======================================================================== */
-
-
-

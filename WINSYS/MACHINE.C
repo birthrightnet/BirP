@@ -423,11 +423,6 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 		fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
 		if(fileResult != EOF)
 		{
-			if(strcmp(cpBuffer,"[LOGCOMMENT]") == 0)
-			{
-				fLogComment = TRUE;
-			}
-			else
 			if(strcmp(cpBuffer,"[INSTALL_TYPE]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
@@ -462,11 +457,6 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	strcpy(InstallPath,".\\");
 
 	fclose(fp);
-	#ifdef _WINDOWS
-	#ifdef _DEBUG
-		RandomLogOpen ();
-	#endif
-	#endif
 
 
 	// start up the redbook player
@@ -726,12 +716,6 @@ void quit_sys(LONG arg)
 
 void AppExit(void)
 {
-#ifdef _WINDOWS
-#ifdef _DEBUG
-	RandomLogClose ();
-#endif
-#endif
-
 	ReleaseDC(hwndApp, gdcScreen);
 	close_graph();
 	close_statistics();

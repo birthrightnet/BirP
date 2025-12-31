@@ -165,8 +165,6 @@ extern void AdjustName (LONG _realm);
 
 extern "C" {
 	void SetRedrawMainMapLevel (void);
-
-	void RandomLogComment ( char * szString );
 }
 
 /* ------------------------------------------------------------------------
@@ -214,13 +212,7 @@ void SaveGameFiles(FILE *fp)
     fwrite(&HomeRealm,			sizeof(SHORT),			1, fp);
     fwrite(&date,				sizeof(LONG),			1, fp);
 
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf (temp, "Saved game on turn %d.", date);
-		RandomLogComment (temp);
-	}
+	logInfo("Saved game on turn %d.", date);
     fwrite(&action_turn[HomeRealm],	sizeof(LONG),			1, fp);
     fwrite(&iGorgonPlot,		sizeof(LONG),			1, fp);
     fwrite(&iGorgonAlly,		sizeof(LONG),			1, fp);
@@ -1457,23 +1449,11 @@ void LoadGameDoMulti( void )
 	if (fDomainTurn)
 	{
 		InitDomainTurn(0);
-		LOGCOMMENTSLEEP
-		if ( fLogComment )
-		{
-			char temp[200];
-			sprintf (temp, "LoadSaveDoMulti: Leaving domain turn");
-			RandomLogComment (temp);
-		}
+		logInfo("LoadSaveDoMulti: Leaving domain turn");
 	}
 
 	dturn_mode = START_NEW_OR_LOAD;
-	LOGCOMMENTSLEEP
-	if ( fLogComment )
-	{
-		char temp[200];
-		sprintf (temp, "LoadSaveDoMulti: Entering domain turn");
-		RandomLogComment (temp);
-	}
+	logInfo("LoadSaveDoMulti: Entering domain turn");
 	InitDomainTurn(0);  /* restore the rest of the stuff */
 
 

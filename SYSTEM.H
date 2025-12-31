@@ -53,10 +53,6 @@
 #include "fopen.h"
 #endif
 
-#if defined(_WINDOWS) && !defined(_RANDOM_H)			//---- random override for logging
-#include "random.h"
-#endif
-
 #if !defined(_LOGGER_H)
 #include "logger.h"
 #endif
@@ -345,9 +341,6 @@ void * D32DosMemAlloc ( ULONG size );
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
-// for comment logging
-extern BOOL fLogComment;
-
 // for critical errors due to CD removed
 extern BOOL fGraphInitialized;	// main.cpp
 extern BOOL fIsFadedOut;

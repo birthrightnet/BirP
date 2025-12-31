@@ -123,11 +123,6 @@ extern "C" {
 extern void SysForceCursor (void);
 }
 
-extern "C" void RandomLogComment ( char * szString );
-extern "C" void RandomLogPrefix ( char * szString );
-
-
-
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
@@ -225,16 +220,7 @@ extern SHORT		iDMapBx;
 void logreroll( SHORT LineNum )
 {
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-   FLOGCOMMENT
-   {
-		char temp[100];
-		sprintf ( temp, "DoNPCAction - Reroll  line:%06d", LineNum);
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("DoNPCAction - Reroll  line:%06d", LineNum);
 	#endif
 }
 
@@ -297,20 +283,11 @@ void DoNPCAdmin (void)
 			{
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "DoNPCAdmin %d - %s  starting regency:%04d  treasury:%06d",
-							1,
-							realm[rlm].mfGetName(),
-							realm[rlm].mfGetRegency(),
-							realm[rlm].mfGetTreasury());
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("DoNPCAdmin %d - %s  starting regency:%04d  treasury:%06d",
+						1,
+						realm[rlm].mfGetName(),
+						realm[rlm].mfGetRegency(),
+						realm[rlm].mfGetTreasury());
 				#endif
 
 				HomeRealm = (REALM::REALM_TYPE)rlm;
@@ -365,22 +342,13 @@ void DoNPCAdmin (void)
 						}
 
 						#ifdef _WINDOWS
-						LOGCOMMENTSLEEP
-						FLOGCOMMENT
-						{
-							char temp[100];
-							sprintf ( temp, "DoNPCAdmin %d - %s:%s  prov_tax:%04d  prov_trade:%04d  prov_reg:%04d",
-								2,
-								realm[rlm].mfGetName(),
-								province[i].name,
-								prov_tax,
-								prov_trade,
-								prov_reg);
-							if ( fLogComment )
-								RandomLogComment ( temp );
-							else
-								Sleep(0);
-						}
+						logInfo("DoNPCAdmin %d - %s:%s  prov_tax:%04d  prov_trade:%04d  prov_reg:%04d",
+							2,
+							realm[rlm].mfGetName(),
+							province[i].name,
+							prov_tax,
+							prov_trade,
+							prov_reg);
 						#endif
 					}
 
@@ -433,30 +401,17 @@ void DoNPCAdmin (void)
 				//printf("  Treas - total:%d  oldTreasury:%d  +realmTax:%d  +trade:%d  -payroll:%d  -maint:%d\n",new_treasury,realm[rlm].mfGetTreasury(),realm_tax*10,trade_routes*10,payroll*10,domain_maint*10);
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "DoNPCAdmin %d - %s  realm_tax:%04d  trade:%04d  payroll:%04d  maint:%04d  Income:%04",
-						3,
-						realm[rlm].mfGetName(),
-						realm_tax,
-						trade_routes,
-						payroll,
-						domain_maint,
-						realm[rlm].mfGetIncome() );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
+				logInfo("DoNPCAdmin %d - %s  realm_tax:%04d  trade:%04d  payroll:%04d  maint:%04d  Income:%04",
+					3,
+					realm[rlm].mfGetName(),
+					realm_tax,
+					trade_routes,
+					payroll,
+					domain_maint,
+					realm[rlm].mfGetIncome() );
 
-					sprintf ( temp, "                    HoldingsMaintCost[%ld]:%04d  castles:%04d  OccupPr:%04d  court:%04d",
-						cProvHolds,MaintCost[cProvHolds],cCastles,cOccupiedProv,CourtCost[realm[rlm].mfGetCourt()] );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("                    HoldingsMaintCost[%ld]:%04d  castles:%04d  OccupPr:%04d  court:%04d",
+					cProvHolds,MaintCost[cProvHolds],cCastles,cOccupiedProv,CourtCost[realm[rlm].mfGetCourt()] );
 				#endif
 
 				// if we are low on GB (due most likely to troops)
@@ -482,17 +437,8 @@ void DoNPCAdmin (void)
 							DeleteUnit(i,FALSE);
 
 							#ifdef _WINDOWS
-							LOGCOMMENTSLEEP
-							FLOGCOMMENT
-							{
-								char temp[100];
-								sprintf ( temp, "NPC Disbanding unit - %s  unit:%ld",
-									realm[rlm].mfGetName(), i);
-								if ( fLogComment )
-									RandomLogComment ( temp );
-								else
-									Sleep(0);
-							}
+							logInfo("NPC Disbanding unit - %s  unit:%ld",
+								realm[rlm].mfGetName(), i);
 							#endif
 
 						}
@@ -522,20 +468,11 @@ void DoNPCAdmin (void)
 				//printf("NPC ADMIN - %s regency:%d  treasury:%d\n",realm[rlm].name,realm[rlm].regency,realm[rlm].treasury);
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "DoNPCAdmin %d - %s  regency:%04d  treasury:%06d",
-							4,
-							realm[rlm].mfGetName(),
-							realm[rlm].mfGetRegency(),
-							realm[rlm].mfGetTreasury());
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("DoNPCAdmin %d - %s  regency:%04d  treasury:%06d",
+						4,
+						realm[rlm].mfGetName(),
+						realm[rlm].mfGetRegency(),
+						realm[rlm].mfGetTreasury());
 				#endif
 
 			}
@@ -547,19 +484,10 @@ void DoNPCAdmin (void)
 				RealmOrder[roll] = rlm;
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "DoNPCAdmin %d - %s is realm #%ld in the realm order\n",
-						5,
-						realm[rlm].mfGetName(),
-						roll);
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("DoNPCAdmin %d - %s is realm #%ld in the realm order\n",
+					5,
+					realm[rlm].mfGetName(),
+					roll);
 				#endif
 			}
 
@@ -567,28 +495,15 @@ void DoNPCAdmin (void)
 	}	// for all realms
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "DoNPCAdmin %d - Order for new turn:  ", 6);
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
+	logInfo("DoNPCAdmin %d - Order for new turn:  ", 6);
 
-		for (i=0; i<LAND_REALM_COUNT; ++i)
-		{
-			j = RealmOrder[i];
-			if (j >= 0 && j < LAND_REALM_COUNT)
-				sprintf ( temp, "             #%ld - %s",i,realm[RealmOrder[i]].mfGetName() );
-			else
-				sprintf ( temp, "             #%ld - %s",i,"unused" );
-			if ( fLogComment )
-				RandomLogComment ( temp );
-			else
-				Sleep(0);
-		}
+	for (i=0; i<LAND_REALM_COUNT; ++i)
+	{
+		j = RealmOrder[i];
+		if (j >= 0 && j < LAND_REALM_COUNT)
+			logInfo( "             #%ld - %s",i,realm[RealmOrder[i]].mfGetName() );
+		else
+			logInfo( "             #%ld - %s",i,"unused" );
 	}
 	#endif
 
@@ -634,20 +549,11 @@ LONG SpendNPCRegency (LONG realm_, LONG rp, BOOL fSend)
 	SetGameData(MP_REALM, MPRLM_REGENCY, realm_, realm[realm_].mfGetRegency(), fSend);
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   SpendNPCRegency - %d %s spent:%d now:%d",
-			7,
-			realm[realm_].mfGetName(),
-			rp,
-			realm[realm_].mfGetRegency());
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   SpendNPCRegency - %d %s spent:%d now:%d",
+		7,
+		realm[realm_].mfGetName(),
+		rp,
+		realm[realm_].mfGetRegency());
 	#endif
 
 	return rv;
@@ -674,20 +580,11 @@ void DoneNPCAction (LONG, LONG)
 	//SetGameData(MP_REALM, MPRLM_REGENCY, HomeRealm, realm[HomeRealm].mfGetRegency(), TRUE);
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   DoneNPCAction - %d %s   Reg spent:%d   Reg now:%d",
-			8,
-			realm[HomeRealm].mfGetName(),
-			RegencePoint,
-			realm[HomeRealm].mfGetRegency());
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   DoneNPCAction - %d %s   Reg spent:%d   Reg now:%d",
+		8,
+		realm[HomeRealm].mfGetName(),
+		RegencePoint,
+		realm[HomeRealm].mfGetRegency());
 	#endif
 
 	del_region(RollNPCAction, 0);
@@ -1146,19 +1043,10 @@ LONG UnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm)
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   UnitsHere - prov:%s  realm:%s  cUnits:%ld  cGroups:%ld  str:%ld",
-			province[prov].name,
-			realm[_realm].mfGetName(),
-			cUnits, cGroups, strTargetProvince);
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   UnitsHere - prov:%s  realm:%s  cUnits:%ld  cGroups:%ld  str:%ld",
+		province[prov].name,
+		realm[_realm].mfGetName(),
+		cUnits, cGroups, strTargetProvince);
 	#endif
 
 	return cUnits;
@@ -1765,22 +1653,13 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 #endif
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
+				if (province[i].Realm == CurrentRealm)
 				{
-					if (province[i].Realm == CurrentRealm)
-					{
-						char temp[100];
-						sprintf ( temp, "   FindProv, Muster - prov:%ld  %d<%d  %d  %d>=%d",
-							i,
-							province[i].LevyMustered, province[i].CivLevel,
-							UnitsHere((PROVINCE)i,CurrentRealm),
-							province[i].CivLevel, LevelUnitReqt[t] );
-						if ( fLogComment )
-							RandomLogComment ( temp );
-						else
-							Sleep(0);
-					}
+					logInfo("   FindProv, Muster - prov:%ld  %d<%d  %d  %d>=%d",
+						i,
+						province[i].LevyMustered, province[i].CivLevel,
+						UnitsHere((PROVINCE)i,CurrentRealm),
+						province[i].CivLevel, LevelUnitReqt[t] );
 				}
 				#endif
 
@@ -1910,16 +1789,7 @@ if (province[i].LevyMustered >= province[i].CivLevel)
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   FindProvince %d - Failed", 9 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   FindProvince %d - Failed", 9 );
 	#endif
 
 	return FALSE;
@@ -2402,16 +2272,7 @@ BOOL FindUnit (REALM::REALM_TYPE realm_, LONG action)
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   FindUnit %d - Failed", 10 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   FindUnit %d - Failed", 10 );
 	#endif
 
 	return FALSE;
@@ -2448,18 +2309,9 @@ static BOOL FindNotHolding (
 				*inProv = (PROVINCE)i;
 
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   FindNotHolding %d - succeeded; found province(k)=%d, limiter(c)=%d, j=%d, province(i)=%d",
-						11,
-						k,c,j,i );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   FindNotHolding %d - succeeded; found province(k)=%d, limiter(c)=%d, j=%d, province(i)=%d",
+					11,
+					k,c,j,i );
 				#endif
 
 				return TRUE;
@@ -2468,18 +2320,9 @@ static BOOL FindNotHolding (
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   FindNotHolding %d - failed; found province(k)=%d, limiter(c)=%d, j=%d, province(i)=%d",
-			12,
-			k,c,j,i );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   FindNotHolding %d - failed; found province(k)=%d, limiter(c)=%d, j=%d, province(i)=%d",
+		12,
+		k,c,j,i );
 	#endif
 
 	return FALSE;
@@ -2522,16 +2365,7 @@ static BOOL DoIHavePlace (PROVINCE prov, REALM::REALM_TYPE placerealm, MAP_ICON 
 	FoundOne = FALSE;
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   DoIHaveHolding %d - Failed",13 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   DoIHaveHolding %d - Failed",13 );
 	#endif
 
 foundone:
@@ -2608,16 +2442,7 @@ static BOOL FindHolding (REALM::REALM_TYPE provrealm, REALM::REALM_TYPE placerea
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   FindHolding %d - Failed",13 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   FindHolding %d - Failed",13 );
 	#endif
 
 	return FALSE;
@@ -2649,18 +2474,9 @@ BOOL CheckHoldLevels (PROVINCE prov, LONG icon)
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
+	if (lvl >= maxlvls);
 	{
-		if (lvl >= maxlvls);
-		{
-			char temp[100];
-			sprintf ( temp, "   	CheckHoldLevels %d - Failed", 14 );
-			if ( fLogComment )
-				RandomLogComment ( temp );
-			else
-				Sleep(0);
-		}
+		logInfo("   	CheckHoldLevels %d - Failed", 14 );
 	}
 	#endif
 
@@ -3197,18 +3013,9 @@ BOOL CanAfford (LONG costGBNow, LONG costRegNow, LONG costGBPerTurn, REALM::REAL
 					&& costRegNow <= realm[realm_].mfGetRegency());
 
 		#ifdef _WINDOWS
-		LOGCOMMENTSLEEP
-		FLOGCOMMENT
+		if (!rv)
 		{
-			if (!rv)
-			{
-				char temp[100];
-				sprintf ( temp, "   CanAfford %d - Failed1", 18 );
-				if ( fLogComment )
-					RandomLogComment ( temp );
-				else
-					Sleep(0);
-			}
+			logInfo("   CanAfford %d - Failed1", 18 );
 		}
 		#endif
 
@@ -3220,18 +3027,9 @@ BOOL CanAfford (LONG costGBNow, LONG costRegNow, LONG costGBPerTurn, REALM::REAL
 					&& costGBPerTurn <= (realm[realm_].mfGetSurplusIncome()/10));
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
+	if (!rv)
 	{
-		if (!rv)
-		{
-			char temp[100];
-			sprintf ( temp, "   CanAfford %d - Failed2", 19 );
-			if ( fLogComment )
-				RandomLogComment ( temp );
-			else
-				Sleep(0);
-		}
+		logInfo("   CanAfford %d - Failed2", 19 );
 	}
 	#endif
 
@@ -3258,22 +3056,13 @@ static void PayForIt (REALM::REALM_TYPE ThisRealm, LONG payGB, LONG payRegency, 
 	//SetGameData(MP_REALM, MPRLM_REGENCY, ThisRealm, realm[ThisRealm].regency, TRUE);
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   PayForIt %d - %s  GB spent:%d  GB now (x10):%d   Reg spent:%d  Reg now:%d",
-					20,
-					realm[ThisRealm].mfGetName(),
-					payGB,
-					realm[ThisRealm].mfGetTreasury(),
-					payRegency,
-					realm[ThisRealm].mfGetRegency());
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   PayForIt %d - %s  GB spent:%d  GB now (x10):%d   Reg spent:%d  Reg now:%d",
+				20,
+				realm[ThisRealm].mfGetName(),
+				payGB,
+				realm[ThisRealm].mfGetTreasury(),
+				payRegency,
+				realm[ThisRealm].mfGetRegency());
 	#endif
 
 	if (realm[ThisRealm].mfGetSurplusIncome() < (AllocateSurplus*10))
@@ -3416,20 +3205,11 @@ BOOL npc_move_ (PROVINCE cur_prov)
 			if (fSend) reqSound = SND_UI_NOT_ENOUGH_GOLD;
 
 			#ifdef _WINDOWS
-			LOGCOMMENTSLEEP
-			FLOGCOMMENT
-			{
-				char temp[100];
-				sprintf ( temp, "   npc_move %d - Failed, could not afford  border:%d cnt:%d treas:%d",
-					21,
-					border_cost,
-					cnt,
-					realm[CurrentRealm].mfGetTreasury());
-				if ( fLogComment )
-					RandomLogComment ( temp );
-				else
-					Sleep(0);
-			}
+			logInfo("   npc_move %d - Failed, could not afford  border:%d cnt:%d treas:%d",
+				21,
+				border_cost,
+				cnt,
+				realm[CurrentRealm].mfGetTreasury());
 			#endif
 
 			return FALSE;
@@ -3450,16 +3230,7 @@ BOOL npc_move_ (PROVINCE cur_prov)
 		else
 		{
 			#ifdef _WINDOWS
-			LOGCOMMENTSLEEP
-			FLOGCOMMENT
-			{
-				char temp[100];
-				sprintf ( temp, "   npc_move %d - Ran out of path slots", 22 );
-				if ( fLogComment )
-					RandomLogComment ( temp );
-				else
-					Sleep(0);
-			}
+			logInfo("   npc_move %d - Ran out of path slots", 22 );
 			#endif
 			rv = FALSE;		// [abc] 9/4 this may be the proper return value
 		}
@@ -3479,30 +3250,14 @@ BOOL npc_move_ (PROVINCE cur_prov)
 			return (units[TargetUnit].DestProvince != 0);  // true if any move
 
 		#ifdef _WINDOWS
-		LOGCOMMENTSLEEP
-		FLOGCOMMENT
-		if (rv == FALSE)
-		{
-			char temp[100];
-			sprintf ( temp, "   npc_move - Failed, next step returned FALSE" );
-			RandomLogComment ( temp );
-		}
+		logInfo("   npc_move - Failed, next step returned FALSE" );
 		#endif
 
 		return rv;
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   npc_move %d - Failed, no acceptable border", 22 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   npc_move %d - Failed, no acceptable border", 22 );
 	#endif
 
 	return FALSE;
@@ -3520,28 +3275,19 @@ BOOL npc_move (PROVINCE cur_prov)
 		cur_prov = (PROVINCE) UnitFinalProvince(TargetUnit);
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[120];
-		if (fSend)
-			sprintf ( temp, "npc_move %d - Player %s Move - TargetUnit:%d cur_prov:%s TargetProvince:%s",
-				23,
-				realm[CurrentRealm].mfGetName(),
-				TargetUnit,
-				province[cur_prov].name,
-				province[TargetProvince].name);
-		else
-			sprintf ( temp, "   npc_move %d - TargetUnit:%d cur_prov:%s TargetProvince:%s",
-				23,
-				TargetUnit,
-				province[cur_prov].name,
-				province[TargetProvince].name);
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	if (fSend)
+		logInfo( "npc_move %d - Player %s Move - TargetUnit:%d cur_prov:%s TargetProvince:%s",
+			23,
+			realm[CurrentRealm].mfGetName(),
+			TargetUnit,
+			province[cur_prov].name,
+			province[TargetProvince].name);
+	else
+		logInfo( "   npc_move %d - TargetUnit:%d cur_prov:%s TargetProvince:%s",
+			23,
+			TargetUnit,
+			province[cur_prov].name,
+			province[TargetProvince].name);
 	#endif
 
 	// check for able to actually enter final province
@@ -3696,16 +3442,7 @@ BOOL npc_traderoute (LONG place)
 	}
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "   npc_traderoute %d - Failed", 24 );
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("   npc_traderoute %d - Failed", 24 );
 	#endif
 
 	return FALSE;
@@ -4180,13 +3917,7 @@ BOOL FindRealm ()
 		TargetRealm = REALM::NO_COUNTRY;
 
 		#ifdef _WINDOWS
-		LOGCOMMENTSLEEP
-		FLOGCOMMENT
-		{
-			char temp[100];
-	  		sprintf(temp, "FindRealm %d - Failed", 33);
-			RandomLogComment(temp);
-		}
+		logInfo("FindRealm %d - Failed", 33);
 		#endif
 
 		return FALSE;
@@ -4564,15 +4295,7 @@ BOOL DoNPCAction (void)
 				// Share master's version of NPC treasury and regency
 				if ( AMultiPlayer.IsMaster() )
 				{
-					FLOGCOMMENT
-					{
-						char temp[100];
-						sprintf ( temp, "mapai DoNPCAction - Master send all treas and reg");
-						if ( fLogComment )
-							RandomLogComment ( temp );
-						else
-							Sleep(0);
-					}
+					logInfo("mapai DoNPCAction - Master send all treas and reg");
 
 					for (i=1; i<LAND_REALM_COUNT; ++i)
 					{
@@ -4586,12 +4309,7 @@ BOOL DoNPCAction (void)
 				}
 				else
 				{
-					char temp[100];
-					sprintf ( temp, "mapai DoNPCAction - non-master receive all treas and reg");
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
+					logInfo("mapai DoNPCAction - non-master receive all treas and reg");
 				}
 
 				//---- Sync after data xfer
@@ -4795,21 +4513,12 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 	#endif
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "--------    %d #%d: start of %s turn (GB:%d R:%d)    --------",
-			34,
-			iCurrentRealmIndex,
-			realm[rlm].mfGetName(),
-			realm[rlm].mfGetTreasury(),
-			realm[rlm].mfGetRegency());
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
+	logInfo("--------    %d #%d: start of %s turn (GB:%d R:%d)    --------",
+		34,
+		iCurrentRealmIndex,
+		realm[rlm].mfGetName(),
+		realm[rlm].mfGetTreasury(),
+		realm[rlm].mfGetRegency());
 	#endif
 
 	//----- Seed the number generator
@@ -4868,19 +4577,10 @@ NewMode:
 
 
 				#ifdef _WINDOWS
-	       	LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "DoNPCAction %d - ModeChange: %s changing to %s",
-						35,
-						realm[rlm].mfGetName(),
-						szAIMode[npc_ai[rlm].CurrentMode]);
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("DoNPCAction %d - ModeChange: %s changing to %s",
+					35,
+					realm[rlm].mfGetName(),
+					szAIMode[npc_ai[rlm].CurrentMode]);
 				#endif
 
 				break;
@@ -4919,24 +4619,15 @@ NewMode:
 				}
 
 				#ifdef _WINDOWS
-		     	LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					char temp1[100];
-					char temp2[100];
-					strcpy(temp1, realm[rlm].mfGetName());
-					strcpy(temp2, realm[TriggeredTargetRealm].mfGetName());
-					sprintf ( temp, "DoNPCAction %d - %s  triggered action:%s  target realm:%s",
-						36,
-						temp1,
-						szAIMode[npc_ai[rlm].CurrentMode],
-						temp2);
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				char temp1[100];
+				char temp2[100];
+				strcpy(temp1, realm[rlm].mfGetName());
+				strcpy(temp2, realm[TriggeredTargetRealm].mfGetName());
+				logInfo("DoNPCAction %d - %s  triggered action:%s  target realm:%s",
+					36,
+					temp1,
+					szAIMode[npc_ai[rlm].CurrentMode],
+					temp2);
 				#endif
 
 			}
@@ -4978,35 +4669,26 @@ Another:
 	// during a multiplayer game.
 
 	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
+	char temp2[100];
+	char temp3[100];
+	char temp4[100];
+	if (TriggeredTargetRealm != REALM::NO_COUNTRY
+		&& TriggeredTargetRealm!=rlm
+		&& TriggeredTargetRealm < LAND_REALM_COUNT)
 	{
-		char temp[100];
-		char temp2[100];
-		char temp3[100];
-		char temp4[100];
-		if (TriggeredTargetRealm != REALM::NO_COUNTRY
-			&& TriggeredTargetRealm!=rlm
-			&& TriggeredTargetRealm < LAND_REALM_COUNT)
-		{
-			strcpy(temp2,realm[rlm].mfGetName());
-			strcpy(temp3,szAIAction[action].mfGetStr() );
-			strcpy(temp4,realm[TriggeredTargetRealm].mfGetName());
+		strcpy(temp2,realm[rlm].mfGetName());
+		strcpy(temp3,szAIAction[action].mfGetStr() );
+		strcpy(temp4,realm[TriggeredTargetRealm].mfGetName());
 
-			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s (maybe on %s)",
-				37, temp2, action, temp3, temp4);
-		}
-		else
-		{
-			strcpy(temp2, realm[rlm].mfGetName());
-			strcpy(temp3, szAIAction[action].mfGetStr());
-			sprintf ( temp, "DoNPCAction %d - %s  doing action:%ld %s",
-				37, temp2, action, temp3);
-		}
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
+		logInfo("DoNPCAction %d - %s  doing action:%ld %s (maybe on %s)",
+			37, temp2, action, temp3, temp4);
+	}
+	else
+	{
+		strcpy(temp2, realm[rlm].mfGetName());
+		strcpy(temp3, szAIAction[action].mfGetStr());
+		logInfo("DoNPCAction %d - %s  doing action:%ld %s",
+			37, temp2, action, temp3);
 	}
 	#endif
 
@@ -5231,17 +4913,8 @@ CreateHldng:
 			ActionExpType = RLM_EXP_DECLARE_WAR;
 			ActionExpModifier = 0;
 			#ifdef _WINDOWS
-			LOGCOMMENTSLEEP
-			FLOGCOMMENT
-			{
-				char temp[200];
-				sprintf ( temp, "Declare War - action_turn:%d  fPlayerNeverDelaredWar:%ld game_difficulty:%ld",
-					action_turn[HomeRealm], fPlayerNeverDeclaredWar, game_difficulty );
-				if ( fLogComment )
-					RandomLogComment ( temp );
-				else
-					Sleep(0);
-			}
+			logInfo("Declare War - action_turn:%d  fPlayerNeverDelaredWar:%ld game_difficulty:%ld",
+				action_turn[HomeRealm], fPlayerNeverDeclaredWar, game_difficulty );
 			#endif
 
 			#ifdef _WINDOWS
@@ -6276,16 +5949,7 @@ actmovelbl:
 			if (cntUnits_() > maxNPCUnits())
 			{
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   muster unit %d - Failed1: cntUnits %ld", 38, cntUnits_() );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   muster unit %d - Failed1: cntUnits %ld", 38, cntUnits_() );
 				#endif
 
 #if MUSTERINFO
@@ -6309,16 +5973,7 @@ actmovelbl:
 							rlm))
 			{
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   muster unit %d - Failed2: CanAfford", 39 );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   muster unit %d - Failed2: CanAfford", 39 );
 				#endif
 
 #if MUSTERINFO
@@ -6329,16 +5984,7 @@ actmovelbl:
 			if (!FindProv(action))
 			{
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   muster unit %d - Failed3: FindProv", 40 );
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   muster unit %d - Failed3: FindProv", 40 );
 				#endif
 
 				{logreroll(__LINE__); goto ReRoll_;}
@@ -6350,20 +5996,11 @@ actmovelbl:
 			if (i > 0)
 			{
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   MusterUnit %d - %s  in %s, index #%ld",
-						41,
-						realm[rlm].mfGetName(),
-						province[TargetProvince].name,
-						i);
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   MusterUnit %d - %s  in %s, index #%ld",
+					41,
+					realm[rlm].mfGetName(),
+					province[TargetProvince].name,
+					i);
 				#endif
 
 				PayForIt(CurrentRealm, UnitMusterCost[action-ACTION_MUSTER_INF+1],0,UnitMaintCost[action-ACTION_MUSTER_INF+1]);
@@ -6373,16 +6010,7 @@ actmovelbl:
 			}
 
 			#ifdef _WINDOWS
-			LOGCOMMENTSLEEP
-			FLOGCOMMENT
-			{
-				char temp[100];
-				sprintf ( temp, "   muster unit %d - Failed4: CreateUnit", 42 );
-				if ( fLogComment )
-					RandomLogComment ( temp );
-				else
-					Sleep(0);
-			}
+			logInfo("   muster unit %d - Failed4: CreateUnit", 42 );
 			#endif
 
 #if MUSTERINFO
@@ -6711,19 +6339,10 @@ actmovelbl:
 			{
 				PayForIt(rlm, 1, 4, 0);
 				#ifdef _WINDOWS
-				LOGCOMMENTSLEEP
-				FLOGCOMMENT
-				{
-					char temp[100];
-					sprintf ( temp, "   LegionOfDead - %s  in %s, index #%ld",
-						realm[rlm].mfGetName(),
-						province[TargetProvince].name,
-						iUnit);
-					if ( fLogComment )
-						RandomLogComment ( temp );
-					else
-						Sleep(0);
-				}
+				logInfo("   LegionOfDead - %s  in %s, index #%ld",
+					realm[rlm].mfGetName(),
+					province[TargetProvince].name,
+					iUnit);
 				#endif
 
 	 			if(province[TargetProvince].Realm == HomeRealm)
@@ -6957,22 +6576,11 @@ ActionDone:
 	}
 	#endif
 
-	#ifdef _WINDOWS
-	LOGCOMMENTSLEEP
-	FLOGCOMMENT
-	{
-		char temp[100];
-		sprintf ( temp, "--------    %d end of %s turn (GB:%d R:%d)    --------",
-			43,
-			realm[rlm].mfGetName(),
-			realm[rlm].mfGetTreasury(),
-			realm[rlm].mfGetRegency());
-		if ( fLogComment )
-			RandomLogComment ( temp );
-		else
-			Sleep(0);
-	}
-	#endif
+	logInfo( "--------    %d end of %s turn (GB:%d R:%d)    --------",
+		43,
+		realm[rlm].mfGetName(),
+		realm[rlm].mfGetTreasury(),
+		realm[rlm].mfGetRegency());
 
 	fRedrawAll = TRUE;
 	return FALSE;
@@ -7054,4 +6662,3 @@ void BroadcastAllienceTable ( void )
 }
 #endif
 /* ======================================================================== */
-

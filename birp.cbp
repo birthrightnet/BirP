@@ -1005,8 +1005,14 @@
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
-		<Unit filename="LOGGER.CPP" />
-		<Unit filename="LOGGER.H" />
+		<Unit filename="LOGGER.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="LOGGER.H">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
 		<Unit filename="MACHINE.H">
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
@@ -1301,15 +1307,6 @@
 			<Option target="Release WIN95" />
 		</Unit>
 		<Unit filename="PVERSION.HXX">
-			<Option target="Debug WIN95" />
-			<Option target="Release WIN95" />
-		</Unit>
-		<Unit filename="RANDOM.C">
-			<Option compilerVar="CC" />
-			<Option target="Debug WIN95" />
-			<Option target="Release WIN95" />
-		</Unit>
-		<Unit filename="RANDOM.H">
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
