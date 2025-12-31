@@ -8,6 +8,29 @@ Before you install the Birthright Preservation Patch, make sure you have Birthri
 
 To install the Birthright Preservation Patch, download the latest ZIP archive from the [ModDB][moddb-birp] page and extract the files into your installation folder.
 
+## Logging
+
+When you encounter an error and are ready to submit a bug report, please review your log files for any relevant messages.
+
+The following log messages are created at the beginning of each session:
+
+* `DOS.LOG` - The DOS version of the game.
+* `WINBR.LOG` - The Windows version of the game.
+* `CHARED.LOG` - The Character Editor.
+
+When trying to gather information on a reproducible bug, it can be useful to increase the game's logging. This can be done by opening `BRSETUP.CFG` and adding the following lines:
+
+    [LOG_LEVEL]
+    TRACE
+
+The available logging levels are listed below. Each logging level will log messages at the specified level and below (i.e. DEBUG will include DEBUG, INFO, WARN, and FATAL messages).
+
+* `TRACE`: Log all messages.
+* `DEBUG`: Resource information, networking status calls, or more verbose messages useful for basic troubleshooting.
+* `INFO`: General information on what the game is doing (i.e. actions, adventures, battles, etc).
+* `WARN`: Errors or things that didn't go as expected, but aren't a major problem.
+* `FATAL`: Errors that break the game and will cause a crash.
+
 ## Changelog
 
 Once we have our first build, this section will include a summary of the more significant changes. For the full list of changes, please see the [Changelog](./CHANGELOG.md).
@@ -39,7 +62,7 @@ DOS will also compile (on versions of Windows up to Windows ME), but currently h
 
 ### Updating Version Numbers
 
-Internal version numbers are set in `VERSION.CPP`, while the version number for the Windows executable is set in `NOVA95.RC`.
+Internal version numbers are set in `VERSION.CPP`. These should only be updated when functionality changes might cause issues in multiplayer. The patch version numbers are set in `PVERSION.H`
 
 ## Contributing
 

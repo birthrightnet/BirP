@@ -10,13 +10,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - Descriptive [README](README.md) and this CHANGELOG.
-- Patch the Character Editor (`CHARED.EXE`)
 
 ### Changed
 
-- Allow calling all files form game directory instead of CD. (#2)
+- Allow calling all files form game directory instead of CD (game and `CHARED.EXE`). (#2)  
   (All files must be copied from the CD to the game directory before launching with this option.)
 - Replace timestamps with build numbers for more reproducible builds. (#7)
+- Replace the two existing logging mechanisms with something more robust. (#8)
 
 ### Fixed
 
