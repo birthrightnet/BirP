@@ -10,6 +10,8 @@
 #include "logger.h"
 
 FILE *logFile;
+char *logFileName = "debug.log";
+size_t logFileNameLength = strlen("debug.log");
 LogLevel currentLogLevel;
 #if defined(_DEBUG)
 LogLevel defaultLogLevel = LogDebug;
@@ -17,21 +19,37 @@ LogLevel defaultLogLevel = LogDebug;
 LogLevel defaultLogLevel = LogWarn;
 #endif // defined
 
-int initializeLogging(const char *filename)
+void initializeLogging(const char *filename)
 {
-    setLogLevel(defaultLogLevel);
-	logFile = fopen(filename, "w");
+	delete[] logFileName;
+	if (filename == NULL) {
+		logFileName = "debug.log";
+		logFileNameLength = strlen("debug.log");
+	} else {
+		logFileNameLength = strlen(filename);
+		logFileName = new char[logFileNameLength+1];
+		strcpy(logFileName, filename);
+	}
+
+	logFile = fopen(logFileName, "w");
+	closeLogging();
+
+	setLogLevel(defaultLogLevel);
+	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
+}
+
+int openLogging()
+{
+	logFile = fopen(logFileName, "a");
 	if (logFile == NULL) {
 		perror("Unable to initialize logging.");
 		abort();
 	}
-	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
 	return logFile != NULL;
 }
 
 int closeLogging()
 {
-	logMeta("Closing logging.");
 	if (logFile != NULL) {
 		fclose(logFile);
 		return 1;
@@ -53,25 +71,26 @@ void setLogLevel(LogLevel level)
 
 void logMessage(LogLevel level, const char *message)
 {
-	// Should this message be logged?
+	if (!openLogging()) {
+		return;
+	}
+
 	if (level < currentLogLevel)
 	{
 		return;
 	}
 	if (logFile)
 	{
-		// Get the current time
+		// Get and format the current time
 		time_t now = time(NULL);
 		struct tm *localTime = localtime(&now);
 		char datetime[100];
 		strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M:%S", localTime);
 
 		fprintf(logFile, "[%s] %s: %s\n", datetime, logLevelToString(level), message);
+		fflush(logFile);
 	}
-	else
-	{
-		fprintf(stderr, "Log file is not open!\n");
-	}
+	closeLogging();
 }
 
 void logTrace(const char *message, ...) {

@@ -27,7 +27,8 @@ void logError(const char *message, ...);
 void logFatal(const char *message, ...);
 void logMeta(const char *message, ...);
 
-int initializeLogging(const char *filename);
+void initializeLogging(const char *filename);
+int openLogging();
 int closeLogging();
 void setLogLevelFromString(const char *level);
 void setLogLevel(LogLevel level);
