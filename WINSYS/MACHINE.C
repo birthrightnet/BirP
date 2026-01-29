@@ -441,12 +441,19 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
-				BypassCD = (atoi(cpBuffer) != 0) ? TRUE : FALSE;
+				BypassCD = (atoi(cpBuffer) == 1) ? TRUE : FALSE;
 			}
 			else if(strcmp(cpBuffer,"[LOG_LEVEL]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
 				setLogLevelFromString(cpBuffer);
+			}
+			else if(strcmp(cpBuffer,"[DISABLE_LOG_BUFFER]") == 0)
+			{
+				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
+				if(atoi(cpBuffer) == 1) {
+					disableLogBuffer();
+				}
 			}
 		}
 	}while(fileResult != EOF);

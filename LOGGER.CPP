@@ -6,17 +6,18 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <time.h>
-#include <string.h>
+#include <windows.h>
 #include "logger.h"
 
+BOOL logBufferingStarted = FALSE;
+BOOL logBufferingDisabled = FALSE;
 FILE *logFile;
 char *logFileName = "debug.log";
 size_t logFileNameLength = strlen("debug.log");
-LogLevel currentLogLevel;
 #if defined(_DEBUG)
-LogLevel defaultLogLevel = LogDebug;
+LogLevel currentLogLevel = LogDebug;
 #else
-LogLevel defaultLogLevel = LogWarn;
+LogLevel currentLogLevel = LogWarn;
 #endif // defined
 
 void initializeLogging(const char *filename)
@@ -34,12 +35,14 @@ void initializeLogging(const char *filename)
 	logFile = fopen(logFileName, "w");
 	closeLogging();
 
-	setLogLevel(defaultLogLevel);
 	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
 }
 
 int openLogging()
 {
+	if (logBufferingStarted) {
+		return 1;
+	}
 	logFile = fopen(logFileName, "a");
 	if (logFile == NULL) {
 		perror("Unable to initialize logging.");
@@ -50,11 +53,39 @@ int openLogging()
 
 int closeLogging()
 {
+	if (logBufferingStarted) {
+		return 1;
+	}
 	if (logFile != NULL) {
+		fflush(logFile);
 		fclose(logFile);
 		return 1;
 	}
 	return 0;
+}
+
+void startLogBuffer()
+{
+	if(logBufferingDisabled) {
+		return;
+	}
+	openLogging();
+	logBufferingStarted = TRUE;
+}
+
+void stopLogBuffer()
+{
+	if(logBufferingDisabled) {
+		return;
+	}
+	logBufferingStarted = FALSE;
+	closeLogging();
+}
+
+void disableLogBuffer()
+{
+	logBufferingDisabled = TRUE;
+	stopLogBuffer();
 }
 
 void setLogLevelFromString(const char *level)
@@ -71,14 +102,14 @@ void setLogLevel(LogLevel level)
 
 void logMessage(LogLevel level, const char *message)
 {
-	if (!openLogging()) {
-		return;
-	}
-
 	if (level < currentLogLevel)
 	{
 		return;
 	}
+	if (!openLogging()) {
+		return;
+	}
+
 	if (logFile)
 	{
 		// Get and format the current time
@@ -88,12 +119,15 @@ void logMessage(LogLevel level, const char *message)
 		strftime(datetime, sizeof(datetime), "%Y-%m-%d %H:%M:%S", localTime);
 
 		fprintf(logFile, "[%s] %s: %s\n", datetime, logLevelToString(level), message);
-		fflush(logFile);
 	}
 	closeLogging();
 }
 
 void logTrace(const char *message, ...) {
+	if (LogTrace < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -103,6 +137,10 @@ void logTrace(const char *message, ...) {
 }
 
 void logDebug(const char *message, ...) {
+	if (LogDebug < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -112,6 +150,10 @@ void logDebug(const char *message, ...) {
 }
 
 void logInfo(const char *message, ...) {
+	if (LogInfo < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -121,6 +163,10 @@ void logInfo(const char *message, ...) {
 }
 
 void logWarn(const char *message, ...) {
+	if (LogWarn < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -130,6 +176,10 @@ void logWarn(const char *message, ...) {
 }
 
 void logError(const char *message, ...) {
+	if (LogError < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -139,6 +189,10 @@ void logError(const char *message, ...) {
 }
 
 void logFatal(const char *message, ...) {
+	if (LogFatal < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -148,6 +202,10 @@ void logFatal(const char *message, ...) {
 }
 
 void logMeta(const char *message, ...) {
+	if (LogMeta < currentLogLevel)
+	{
+		return;
+	}
 	char buffer[256];
 	va_list args;
 	va_start(args, message);
@@ -174,7 +232,7 @@ LogLevel logLevelToEnum(const char *level)
 {
 	if (level == NULL)
 	{
-		return defaultLogLevel;
+		return LogInfo;
 	}
 
 	if (strcmp(level, "TRACE") == 0) return LogTrace;
@@ -184,5 +242,5 @@ LogLevel logLevelToEnum(const char *level)
 	else if (strcmp(level, "ERROR") == 0) return LogError;
 	else if (strcmp(level, "FATAL") == 0) return LogFatal;
 
-	return defaultLogLevel;
+	return LogInfo;
 }

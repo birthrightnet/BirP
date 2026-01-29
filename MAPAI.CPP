@@ -283,6 +283,7 @@ void DoNPCAdmin (void)
 			{
 
 				#ifdef _WINDOWS
+				startLogBuffer();
 				logInfo("DoNPCAdmin %d - %s  starting regency:%04d  treasury:%06d",
 						1,
 						realm[rlm].mfGetName(),
@@ -505,6 +506,7 @@ void DoNPCAdmin (void)
 		else
 			logInfo( "             #%ld - %s",i,"unused" );
 	}
+	stopLogBuffer();
 	#endif
 
 	#ifdef _WINDOWS

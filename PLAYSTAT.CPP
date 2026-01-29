@@ -522,10 +522,11 @@ void PurgePS(LONG count)
 void StatReadFromAVA(BOOL SaveAfter)
 {
     LONG 		i;
-	 MAP_ICON 	oldIcon, newIcon;		// [d5-30-97 JPC]
+	MAP_ICON 	oldIcon, newIcon;		// [d5-30-97 JPC]
     int        icref;               // [d5-30-97 JPC]
 
-    logInfo("loading stats from AVA files.");
+	startLogBuffer();
+	logInfo("loading stats from AVA files.");
 
 
     for (i=1; i < CHARACTER_COUNT; i++)
@@ -629,6 +630,7 @@ void StatReadFromAVA(BOOL SaveAfter)
 			regents[i].mfSetBL_strength (gBloodInfo.BL_strength);
 		}
     }
+	stopLogBuffer();
 
 #if 0
 	if (SaveAfter)
