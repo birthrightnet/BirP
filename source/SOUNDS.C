@@ -200,4 +200,4 @@ void PlayTempSound(
 	hS = SetTempSound( ptrSound, sndLens[i], sndRates[i] );
 	if( NULL != hS )
 		SoundStart( hS );
-}
+}

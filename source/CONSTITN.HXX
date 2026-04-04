@@ -64,4 +64,4 @@ inline const SBYTE CONSTITUTION::mfGetPoisonSave( const SBYTE sbConsititution )
 	return pConstitutionTable[sbConsititution].sbPoisonSave;
 }
 
-#endif // _CONSTITN_HXX
+#endif // _CONSTITN_HXX

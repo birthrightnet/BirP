@@ -27,4 +27,4 @@
 
 void About(LONG, LONG);
 
-#endif // _VERSION_HXX
+#endif // _VERSION_HXX

@@ -963,4 +963,4 @@ void PaintOptionMenu (LONG MenuCombo, LONG LoadSave)
 	default:
 	    break;
 	}
-}
+}

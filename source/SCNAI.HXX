@@ -209,4 +209,4 @@ SCENE_AI::SCENE_TYPE *pSceneType
 	*pSceneType = fSceneType;
 }
 
-#endif // _SCNAI_HXX
+#endif // _SCNAI_HXX

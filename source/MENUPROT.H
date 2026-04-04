@@ -153,4 +153,4 @@ BOOL IsButtonHilighted ( LONG MenuIndex, LONG ButtonId);
 #if defined (__cplusplus)
 }
 #endif
-#endif // _MENUPROT_H
+#endif // _MENUPROT_H

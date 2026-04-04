@@ -90,4 +90,4 @@ inline const SBYTE	STRENGTH::mfChanceToOpenLockedDoor(const SBYTE RawStrengthVal
 {
 	return (pStrengthTable[RawStrengthValue].dDoor.sbChanceToOpenLockedDoor);
 }
-#endif // _STRENGTH_HXX
+#endif // _STRENGTH_HXX

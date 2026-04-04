@@ -145,4 +145,4 @@ static void Regenerator::WipeNonPlayers()
 			RegenList[i].fValid=FALSE;
 		}
 	}
-}
+}

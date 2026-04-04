@@ -68,4 +68,4 @@ typedef enum {
 extern BOOL SaveVs(const SHORT hPlayerStats,
                    SAVETYPE savetype, SBYTE modifier);
 
-#endif // _EXPLEVEL_HXX
+#endif // _EXPLEVEL_HXX

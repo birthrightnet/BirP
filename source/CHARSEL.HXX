@@ -145,4 +145,4 @@ extern SPEED			battle_speed;
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _CHARSEL_HXX
+#endif // _CHARSEL_HXX

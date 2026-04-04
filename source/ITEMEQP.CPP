@@ -283,4 +283,4 @@ NoEquip,						// 262 ITEM_ABILITY_TURN_UNDEAD,
 NoEquip,						// 263 ITEM_ABILITY_LAY_ON_HANDS,
 };
 
-DEFINE_VECTOR_CLASS(ItemEquipType, EquipTypes);
+DEFINE_VECTOR_CLASS(ItemEquipType, EquipTypes);

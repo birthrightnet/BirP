@@ -66,4 +66,4 @@ extern "C" {
 #if defined (__cplusplus)
 }
 #endif
-#endif // _WADTHING_H
+#endif // _WADTHING_H

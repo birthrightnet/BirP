@@ -136,4 +136,4 @@ inline void EXIT_POINT::mfInitVals()
 	fExitInfo.mfInitVals();
 }
 
-#endif // _SCNEXIT_HXX
+#endif // _SCNEXIT_HXX

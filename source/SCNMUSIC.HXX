@@ -138,4 +138,4 @@ inline LONG SCENE_MUSIC_DATA::mfReadData(FILE *fp)
 #endif
 		return Result;
 }
-#endif // _SCNMUSIC_HXX
+#endif // _SCNMUSIC_HXX

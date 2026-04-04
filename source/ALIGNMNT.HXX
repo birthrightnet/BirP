@@ -95,4 +95,4 @@ inline BOOL const ALIGNMENT_INFO::mfIsEvil( const ALIGNMENT_INFO::TYPE type)
 	return FALSE;
 }
 
-#endif // _ALIGNMNT_HXX
+#endif // _ALIGNMNT_HXX

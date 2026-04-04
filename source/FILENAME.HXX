@@ -119,4 +119,4 @@ inline void FILENAME::mfWriteFileName (FILE *fp)
 	fprintf(fp, "%s\n", fcpFileName);
 }
 
-#endif // _FILENAME_HXX
+#endif // _FILENAME_HXX

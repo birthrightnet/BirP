@@ -2390,4 +2390,4 @@ void PaintBattleMagicPrep(LONG, LONG)
    ======================================================================== */
 void SetupAdvsitePlaces(void)
 {
-}
+}

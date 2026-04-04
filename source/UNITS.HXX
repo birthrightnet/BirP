@@ -106,4 +106,4 @@ BOOL CanISeeAnyoneInThisProv(REALM::REALM_TYPE /* Realm */, PROVINCE /* prov */)
 void MarkUnitsSpotted(PROVINCE prov);
 
 #endif // _UNITS_HXX
-/*	======================================================================== */
+/*	======================================================================== */

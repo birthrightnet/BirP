@@ -469,4 +469,4 @@ inline static void ADVENTURER::mfSetWhoGetsObjectsPickedUp( SHORT const hAvatar)
 {
 	fhWhoGetsObjects = hAvatar;
 }
-#endif // _ADVENTUR_HXX
+#endif // _ADVENTUR_HXX

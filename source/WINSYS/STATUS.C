@@ -407,4 +407,4 @@ LONG APIENTRY StatusFieldProc (HWND hwnd, UINT msg, UINT wParam, LONG lParam)
     return 0L;
 }
 
-#endif
+#endif

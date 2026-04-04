@@ -2134,4 +2134,4 @@ BOOL ObjectList::mfIsBattleSpell(LONG MySpellNumber)
 	SPELL_INFO::TYPE const spellindex = (SPELL_INFO::TYPE) ItemTypes[(*itor)->mfType()].mfGetExtendedData();
 	SPELL_INFO::SPELL_ITEM const spell = SPELL_INFO::mfGetSpell(spellindex);
 	return ((spell.WhereCast & SPELL_INFO::BATTLE) != 0);
-}
+}

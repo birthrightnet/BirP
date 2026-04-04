@@ -156,4 +156,4 @@ inline char *PLACE::mfGetSceneName()
 {
 	return fscInfo.mfGetSceneName();
 }
-#endif // _SCNPLACE_HXX
+#endif // _SCNPLACE_HXX

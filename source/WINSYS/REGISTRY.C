@@ -428,4 +428,4 @@ BOOL DelRegistry ( void )
 
 
 
-//---- End of Registry.c
+//---- End of Registry.c

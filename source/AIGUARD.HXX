@@ -57,4 +57,4 @@ inline LONG GUARDPT_DATA::mfReadData(FILE * fp)
 	return Result;
 }
 
-#endif
+#endif

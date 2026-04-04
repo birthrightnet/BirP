@@ -100,4 +100,4 @@ inline BOOL SCENE_FILE_VERSION::mfIsSet()
 	return Result;
 }
 
-#endif // _SCNVER_HXX
+#endif // _SCNVER_HXX

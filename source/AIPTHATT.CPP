@@ -243,4 +243,4 @@ void CAvatar::PathAttack (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			pAvatar->Status = AI_PAUSED;
 	}
 }
-#endif
+#endif

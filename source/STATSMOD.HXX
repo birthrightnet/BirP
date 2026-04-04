@@ -208,4 +208,4 @@ inline const SBYTE STATSMOD::mfGetSet(
 	return bStatsSets[ModType];
 }
 
-#endif // _STATSMOD_HXX
+#endif // _STATSMOD_HXX

@@ -40,4 +40,4 @@ D32DosMemAlloc (
 #else
 	return ((ULONG) 0);
 #endif
-}
+}

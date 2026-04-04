@@ -273,4 +273,4 @@ ULONG detect_scale (SHORT t, SHORT h, SHORT w)
 // Stub moved here from TIMER.C.
 void run_timers ()
 {
-}
+}

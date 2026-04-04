@@ -114,4 +114,4 @@ void SetCombatMenuUp(BOOL gCMR);
 void ForceHires();
 	
 void AdventureFixUnitsArray(LONG /* iUnitLeader */);
-#endif
+#endif

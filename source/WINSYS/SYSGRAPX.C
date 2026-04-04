@@ -460,4 +460,4 @@ void ScreenCopy (
 
 void DirectDrawSaveScreen( void )
 {
-} // DirectDrawSaveScreen
+} // DirectDrawSaveScreen

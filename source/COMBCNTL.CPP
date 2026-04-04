@@ -1230,4 +1230,4 @@ void CONTROL_PANELS::mfReleaseAll()
 			}
 		}
 	}
-}
+}

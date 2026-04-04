@@ -36,4 +36,4 @@ POINT arrow_points[]={
 
 	{0*ARROW_SIZE, -15*ARROW_SIZE},
 	{-5*ARROW_SIZE, -10*ARROW_SIZE},
-	};
+	};

@@ -42,4 +42,4 @@ SHORT num_spells_of(SPELL_INFO::CASTERTYPE	spell_type,
 		            PLAYER_CLASS_INFO::TYPE	char_class,
 		            SBYTE 					char_level);
 
-#endif // _SPELLPRO_HXX
+#endif // _SPELLPRO_HXX

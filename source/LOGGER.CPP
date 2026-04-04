@@ -243,4 +243,4 @@ LogLevel logLevelToEnum(const char *level)
 	else if (strcmp(level, "FATAL") == 0) return LogFatal;
 
 	return LogInfo;
-}
+}

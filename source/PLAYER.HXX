@@ -135,4 +135,4 @@ void ConvertScreenToFloor(LONG cursor_x, LONG cursor_y, LONG *sx, LONG *sy);
    inline functions
    ------------------------------------------------------------------------ */
 
-#endif
+#endif

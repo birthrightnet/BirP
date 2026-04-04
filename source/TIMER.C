@@ -178,4 +178,4 @@ void TickDelay (LONG NumTicks)
 	{
 		run_timers();
 	}
-}
+}

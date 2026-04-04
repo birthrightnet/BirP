@@ -156,4 +156,4 @@ void InitMagicItems()
 {
 	// This is a fn, because in the future the data may come from a resource file.
 	InitMagicThings(aCommonMagicItems, (sizeof(aCommonMagicItems)/ sizeof(THINGTYPE)), 1000, 1001);
-}
+}

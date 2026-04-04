@@ -74,4 +74,4 @@ LONG HoldingValue (LONG iHold);
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _PLACES_HXX
+#endif // _PLACES_HXX

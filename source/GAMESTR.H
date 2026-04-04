@@ -616,4 +616,4 @@ inline char const * const GetGameStr(const STRING_TABLE_INDICES index)
 
 #endif
 
-#endif // _GAMESTR_H
+#endif // _GAMESTR_H

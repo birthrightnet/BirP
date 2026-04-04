@@ -371,4 +371,4 @@ inline SPELL_INFO::SPHERE_TYPE SPELL_INFO::SPELL_ITEM::mfGetSphere() const
 	return (SPELL_INFO::SPHERE_TYPE)Sphere;
 }
 
-#endif // _SPELL_HXX
+#endif // _SPELL_HXX

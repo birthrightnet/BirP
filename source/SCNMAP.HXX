@@ -151,4 +151,4 @@ inline void MAP::mfInitVals()
 #endif
 }
 
-#endif // _SCNMAP_HXX
+#endif // _SCNMAP_HXX

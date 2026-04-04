@@ -894,4 +894,4 @@ void DirectDrawSaveScreen( void )
 
 		}
 	}
-} // DirectDrawSaveScreen
+} // DirectDrawSaveScreen

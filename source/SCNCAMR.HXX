@@ -133,4 +133,4 @@ inline void CAMERA_SETUP_DATA::mfSetCameraAccelleration(LONG )
 }
 #endif
 
-#endif // SCNCAMR_HXX
+#endif // SCNCAMR_HXX

@@ -1118,4 +1118,4 @@ void COMBAT_CAMERA::mfInitializeCamera()
 			}
 		}
 	}
-}
+}

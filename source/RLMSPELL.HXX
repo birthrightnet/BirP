@@ -191,4 +191,4 @@ inline REALM_SPELL_INFO::DURATION const REALM_SPELL_INFO::REALM_SPELL_ITEM::mfGe
 {
 	return Duration;
 }
-#endif // _RLMSPELL_HXX
+#endif // _RLMSPELL_HXX

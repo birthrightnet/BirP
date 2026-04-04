@@ -5020,4 +5020,4 @@ void BattleNextTurn (LONG, LONG)
 			pAvatar->fBtlCap.TurnAction = TRUE;
 		}
 	}
-}
+}

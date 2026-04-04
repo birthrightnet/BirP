@@ -64,4 +64,4 @@ const CHARISMA::CHARISMA_ITEM CHARISMA::pCharismaTable[] = {
 	{ 40, 18, 12},		// 23
 	{ 45, 20, 13},		// 24
 	{ 50, 20, 14}		// 25
-};
+};

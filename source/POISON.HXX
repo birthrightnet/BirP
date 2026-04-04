@@ -98,4 +98,4 @@ inline void AVATAR_POISON::mfSetType(AVATAR_POISON::TYPE const newType)
 	fType = newType;
 }
 
-#endif // _POISON_HXX
+#endif // _POISON_HXX

@@ -370,4 +370,4 @@ extern LONG				lens_factor;
 #if defined (__cplusplus)
 }
 #endif
-#endif // _SYSTEM_H
+#endif // _SYSTEM_H

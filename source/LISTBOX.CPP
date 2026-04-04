@@ -189,4 +189,4 @@ SHORT NewListBox(Rect& box,Rect& scrUp,Rect& scrDn,SHORT EntryBlock,SHORT LineHe
 
 	return hLB;
 
-}
+}

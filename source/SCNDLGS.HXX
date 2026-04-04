@@ -119,4 +119,4 @@ inline void DIALOG_TRIPLINES::mfSetTripLineSeen()
 {
 	fTripLineTripped = TRUE;
 }
-#endif // _SCNDLGS_HXX
+#endif // _SCNDLGS_HXX
