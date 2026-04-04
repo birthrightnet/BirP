@@ -1,0 +1,14 @@
+# Normalize all text files to LF in the repository, CRLF on checkout (Windows)
+* text=auto eol=crlf
+
+# Treat binary files as binary - no EOL conversion
+*.cur binary
+*.exe binary
+*.dll binary
+*.lib binary
+*.obj binary
+*.res binary
+*.bmp binary
+*.ico binary
+*.cab binary
+*.zip binary

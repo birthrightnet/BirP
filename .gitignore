@@ -1,7 +1,11 @@
 bin/
 obj/
+build-logs/
+source2/
 
 *.bat
+!MAKE.BAT
+!source/MAKE-ORIGINAL.BAT
 *.cur
 *.dat
 *.err
@@ -14,5 +18,3 @@ obj/
 *.res
 
 *.layout
-
-.github/copilot-instructions.md
