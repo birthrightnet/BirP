@@ -92,4 +92,3 @@ inline void SimpleFLC::mfMove(SHORT const delta_x, SHORT const delta_y)
 }
 
 #endif
-

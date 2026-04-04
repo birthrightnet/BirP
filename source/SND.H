@@ -309,5 +309,3 @@ extern long qput,qplay; //pointers (indexes) into que. if qput=qplay, que empty
 extern long crowdnoise;		// # of the current crowdnoise. 0 is none playing.
 extern long iterations;		//setting this to 0 will end the current crowd thing
 extern long loadnum;		//if true, load numbers as needed
-
-

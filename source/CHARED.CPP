@@ -1805,5 +1805,3 @@ BOOL CALLBACK SelectRegentWndProc (
 
 
 #endif
-
-

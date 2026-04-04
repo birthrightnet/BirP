@@ -93,4 +93,4 @@ inline void FOLLOW_PATH_DATA::mfGetCurrentPt(LONG &X, LONG &Y, LONG &Z, LONG &A)
 	}
 }
 
-#endif
+#endif

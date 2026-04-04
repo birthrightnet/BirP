@@ -159,5 +159,3 @@
 #define SSP_ACID_FLOOR		66		// Acid Floor
 
 #endif
-
-

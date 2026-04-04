@@ -215,4 +215,4 @@
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _MAPICON_HXX
+#endif // _MAPICON_HXX

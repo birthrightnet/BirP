@@ -152,4 +152,3 @@ static void AboutPaint(LONG MenuCombo, LONG /* unused */ )
 	
 	return;
 }
-

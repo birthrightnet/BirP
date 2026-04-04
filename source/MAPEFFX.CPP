@@ -33,9 +33,3 @@ return 0;}
 static LONG ItemEffects::MapTeleport(LONG Combo,LONG Arg,LONG Action)
 {
 return 0;}
-
-
-
-
-
-

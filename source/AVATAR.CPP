@@ -4396,4 +4396,4 @@ BOOL const CAvatar::mfIsHomeTeam() const
 
 	return (units[SCENE_MGR::HomeIndex].Realm == Realm.HomeRealm);
 
-}
+}

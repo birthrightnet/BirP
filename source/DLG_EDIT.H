@@ -59,4 +59,4 @@ void LoadSceneAvatars( char *szSceneName);
 void DestroyAvatars(void);
 extern BOOL bEditMode;
 
-#endif // _DLG_EDIT_H
+#endif // _DLG_EDIT_H

@@ -162,5 +162,4 @@ inline void MonoDevice::Printf( int row, int col, const char *format, ... )
 //#endif
 
 #endif
-#endif
-
+#endif

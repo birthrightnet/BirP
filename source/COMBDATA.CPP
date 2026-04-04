@@ -375,4 +375,3 @@ void COMBAT_SCENE_DATA::mfInitSceneVals()
 	fCeilingTaskIndex = find_task(HandleCeilings);
 	
 }
-	

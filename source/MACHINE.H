@@ -132,4 +132,4 @@ extern BOOL			gDontFight;
 #if defined (__cplusplus)
 }
 #endif
-#endif // _MACHINE_H
+#endif // _MACHINE_H

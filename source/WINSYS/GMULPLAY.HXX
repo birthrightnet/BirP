@@ -253,5 +253,4 @@ private:
 
 
 
-//---- GMulPlay.hxx
-
+//---- GMulPlay.hxx

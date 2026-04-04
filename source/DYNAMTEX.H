@@ -79,4 +79,3 @@ extern char DynTexFrameData[];
 
 #endif // WRC_CAMERA_TEST
 #endif
-

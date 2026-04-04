@@ -1152,4 +1152,3 @@ void beep(void)
 static void ParseCmdLine (LPSTR szCmdLine)
 {
 }
-

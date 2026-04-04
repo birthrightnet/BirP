@@ -1907,4 +1907,4 @@ void SetHelpBit(SHORT bitno)
 void SetAllHelpBits(void)
 {
 	helpbits = 0xFFFFFFFF;
-}
+}

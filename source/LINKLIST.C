@@ -202,4 +202,3 @@ HDL LListRemove (
 	
 	return( CurrNode );
 }
-

@@ -37,4 +37,4 @@ void InitMagicItems();
 #if defined (__cplusplus)
 }
 #endif
-#endif // _MAGIC_H
+#endif // _MAGIC_H

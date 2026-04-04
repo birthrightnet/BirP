@@ -49,4 +49,4 @@ class TargetMenu
 		static void Paint(LONG,LONG);
 		static void Activate(LONG,LONG);
 		static void Display(LONG, LONG);
-};
+};

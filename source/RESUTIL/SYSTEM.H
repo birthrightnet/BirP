@@ -475,5 +475,3 @@ extern POINT         zoomStart;           //menu.c
 }
 #endif
 #endif // _SYSTEM_H
-
-

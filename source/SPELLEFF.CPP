@@ -3306,5 +3306,3 @@ static void ResurrectionMenu::Display(SHORT hCastingPriestStats,ITEMTYPE Type)
 	SetButtonProc(D_RESURRECT_MENU, RESURRECT_BUT_ALL, ResurrectionMenu::Paint, 0, NO_KEY);
 	ShowSubMenu(0,D_RESURRECT_MENU);
 }
-
-

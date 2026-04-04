@@ -294,4 +294,4 @@ inline BOOL COMBAT_SCENE_DATA::mfCanGoToHighResArt() const
 {
 	return (fOldMedResAni == FALSE);
 }
-#endif // _COMBDATA_HXX
+#endif // _COMBDATA_HXX

@@ -1694,4 +1694,4 @@ void pull_camera()
 		fatal_error("Underflowed camera stack");
 }
 
-#endif // UNUSED
+#endif // UNUSED

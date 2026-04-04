@@ -307,5 +307,3 @@ MsgMgr::Fatal(char* fmt, ...) const
 	exit(1);
 }
 MsgMgr*	msgMgr;
-
-

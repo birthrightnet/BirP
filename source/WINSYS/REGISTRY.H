@@ -18,4 +18,4 @@ BOOL	LoadRegistry	( HKEY  hKey );
 BOOL	InitRegistry	( HKEY  hKey );
 BOOL	SaveRegistry	( HKEY  hKey, BOOL fSaveOptions );
 
-// Registry.h
+// Registry.h

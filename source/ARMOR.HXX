@@ -167,4 +167,3 @@ inline const BOOL SHIELD_INFO::mfIsShieldAllowed(
 }
 
 #endif // _ARMOR_HXX
-

@@ -1324,20 +1324,3 @@ void KernelInterface::AudioPanOff(int iModule, int iNoun, int iVerb, int iCond,
 }
 
 #endif // #ifndef AUDIO_LIB
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 	
-
-

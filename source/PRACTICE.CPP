@@ -4037,4 +4037,4 @@ void SelectGameType(LONG MenuCombo, LONG type)
 		default:
 			break;	
 	}
-}
+}

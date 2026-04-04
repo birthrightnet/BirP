@@ -166,4 +166,4 @@ const SBYTE ARMOR_INFO::mfGetWeaponAdjust(
 	}
 
 	return Result;
-}
+}

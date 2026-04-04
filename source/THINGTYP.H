@@ -750,4 +750,3 @@ LAST_GAME_THING  						= 690		// keep this up-to-date!!!
 #define KEY_PURPLE			KEY_BLACK
 											
 #endif // _THINGTYPE_H						
-											

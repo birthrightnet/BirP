@@ -265,5 +265,3 @@ void LEADER_DATA::mfMoveFollowers(CAvatar *) // pAvatar (pointer to yourself.
 		}
 	}
 }
-
-

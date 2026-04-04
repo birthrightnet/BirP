@@ -2340,4 +2340,3 @@ BOOL CALLBACK DialogJoinWait( HWND hwnd, UINT message, WPARAM wParam, LPARAM lPa
 
 
 //---- End of DPlay.cpp
-

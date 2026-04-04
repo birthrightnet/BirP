@@ -262,5 +262,3 @@ ACTIONS(STR_ACTION_OCCUPATION			,ACTION_TEXT24, H_Occupation),
 DEFINE_VECTOR_CLASS(ACTIONS const, Action);
 
 /* ======================================================================== */
-
-

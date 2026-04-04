@@ -793,6 +793,3 @@ LONG RollBloodlineNumericalStrength (BLOODLINE_STRENGTH_INFO::TYPE BloodStrength
 
 	return RollDice (&dice);
 }
-
-
-

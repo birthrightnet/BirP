@@ -104,5 +104,3 @@ ULONG GetNextLine(FILE *fp, char *cpNewLine, LONG len);
 BOOL Exists( char *);
 
 #endif
-
-

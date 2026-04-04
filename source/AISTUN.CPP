@@ -235,4 +235,4 @@ void STUNNED_DATA::mfSwitchToStunned(LONG hAvatar)
 		CAvatar * const pEnemy = (CAvatar * const) BLKPTR(pAvatar->hEnemy);
 		pEnemy->mfDisEngage();
 	}
-}
+}

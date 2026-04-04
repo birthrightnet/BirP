@@ -29,4 +29,4 @@ public:
 	SHORT		Shoot;		// shot type
 };
 	
-#endif
+#endif

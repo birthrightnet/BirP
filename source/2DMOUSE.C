@@ -158,4 +158,3 @@ void handle_2dmouse()
 		typeClicked = -1;
 	}
 }
-

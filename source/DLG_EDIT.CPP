@@ -1049,4 +1049,4 @@ void DoMapFunc(LONG , LONG , LONG )
 	}
 #endif
 #endif
-}
+}

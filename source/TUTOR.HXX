@@ -41,4 +41,3 @@ static inline BOOL TutorialHelpMgr::InBounds(long const i,long const j)
 
 
 #endif
-

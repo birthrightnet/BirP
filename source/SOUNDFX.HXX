@@ -1490,4 +1490,3 @@ extern LONG AmbientSoundScene4[];
 extern LONG AmbientSoundScene5[];
 
 #endif	// _SOUNDFX_HXX
-

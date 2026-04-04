@@ -69,4 +69,4 @@ inline const LONG FIREBALL_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif
+#endif

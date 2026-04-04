@@ -369,4 +369,3 @@ End:
 	SlideShowPlaying = FALSE;
 	return;	
 }
-

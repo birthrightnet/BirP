@@ -203,4 +203,4 @@ BOOL const nlnclipline(
 	}
 
 	return bVisible;
-}
+}

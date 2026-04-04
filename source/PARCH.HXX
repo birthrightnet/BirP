@@ -41,4 +41,4 @@ void InitializeParchmentMenu(LONG StringHandle);
 void ParchmentDone(LONG, LONG);
 void PaintParchment(LONG MenuCombo, LONG stringhandle);
 
-#endif // _PARCH_HXX
+#endif // _PARCH_HXX

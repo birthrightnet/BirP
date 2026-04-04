@@ -41,4 +41,3 @@ REGENTRY RegTable [ MAX_REGTABLE ] =
 
 
 // -- RegistrS.c
-

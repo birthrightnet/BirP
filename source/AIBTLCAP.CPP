@@ -5262,4 +5262,3 @@ void MultiPrintf(const char *format, ...)
 	}
 #endif
 }
-

@@ -109,4 +109,4 @@ inline void SCN_NOTE::mfInitVals()
 	fNoteStringId = STR_NULL;
 }
 
-#endif // _SCNNOTES_HXX
+#endif // _SCNNOTES_HXX

@@ -349,4 +349,3 @@ CLASS_TEST_TYPE TestPlayerClassLimits(
 
 	return cttResult;
 }
-

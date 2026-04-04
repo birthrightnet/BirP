@@ -479,4 +479,4 @@ private:
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _VECTOR_HXX
+#endif // _VECTOR_HXX

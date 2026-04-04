@@ -923,5 +923,4 @@ extern "C" HRESULT DDUnlockSurface( PCHAR pchBuf )
 	return ( ddrVal );
 } // DDUnlockSurface
 
-// DDraw.cpp
-
+// DDraw.cpp

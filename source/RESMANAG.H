@@ -148,4 +148,4 @@ void FreeResourceManager();
 #if defined (__cplusplus)
 }
 #endif
-#endif // _RESMAMANG_H
+#endif // _RESMAMANG_H

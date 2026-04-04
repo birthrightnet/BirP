@@ -65,4 +65,3 @@ BOOL reject(LONG MySector, LONG HisSector)
 	// in the reject table, a 1 means can't see and a 0 means can
 	return( !(ubValue & ubMask) );
 }
-

@@ -1280,4 +1280,4 @@ void PLAYER_STATS::mfDelete()
 		}
 	}
 	hAvatar = fERROR;
-}
+}

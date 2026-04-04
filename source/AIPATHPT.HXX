@@ -63,4 +63,4 @@ inline LONG PATH_PT::mfReadData(FILE *fp)
 typedef SHORT HDL_PATH_PTS;
 typedef PATH_PT *PTR_PATH_PTS;
 
-#endif	
+#endif	

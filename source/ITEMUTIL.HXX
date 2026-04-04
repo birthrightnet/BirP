@@ -53,4 +53,4 @@ LONG RlmSpellLevel(ITEMTYPE);
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _ITEMUTIL_HXX
+#endif // _ITEMUTIL_HXX

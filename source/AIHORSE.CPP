@@ -107,4 +107,3 @@ void CAvatar::Horse (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 		break;
 	}
 }
-

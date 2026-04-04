@@ -565,4 +565,4 @@ DACResumeWaveDev(void)
 			focusBuffCount = 0;
 		}
 	}
-}
+}

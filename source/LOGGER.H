@@ -43,4 +43,4 @@ LogLevel logLevelToEnum(const char *level);
 }
 #endif
 
-#endif // _LOGGER_H
+#endif // _LOGGER_H

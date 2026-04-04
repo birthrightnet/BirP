@@ -79,4 +79,4 @@ static void InfoBox::Paint(LONG MenuCombo,LONG)
 {
 	if (fAnyKeyChanged)
 		InfoBox::Hide();
-}
+}

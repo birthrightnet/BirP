@@ -878,5 +878,3 @@ const BOOL GAME_TTYPE::mfIsMissileBlocker (THINGTYPE const type)
 		(SceneType != SCENE_AI::BATTLE_SCENE));
 		
 }
-
-

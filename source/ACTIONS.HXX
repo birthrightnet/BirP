@@ -67,5 +67,3 @@ inline LONG   const ACTIONS::mfGetMoreInfo() const
 #endif // _ACTIONS_HXX
 
 /*	======================================================================== */
-
-

@@ -324,4 +324,4 @@ void ABILITY::RollAllAbilities(
 	fAbilities[INTELLIGENCE]	= RollIntelligence(PlayerRace);
 	fAbilities[WISDOM]	  	 	= RollWisdom(PlayerRace);
 	fAbilities[CHARISMA]		= RollCharisma(PlayerRace);
-}
+}

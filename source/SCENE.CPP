@@ -2308,4 +2308,3 @@ LONG mfReadUserDifficulty(FILE *fp, SCENE::SCENE_DATA *SceneData )
 
 	return Result;
 }
-

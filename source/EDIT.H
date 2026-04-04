@@ -48,4 +48,3 @@ void EditOpeningMessage (void);
 #endif
 
 #endif
-

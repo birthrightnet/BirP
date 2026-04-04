@@ -177,4 +177,4 @@ void ArtThing::mfSetToDeathHeightWidth()
 	pAnim=(ANIMPTR)BLKPTR(mt.iAnim);
 	mt.heiScaled=pAnim->width;
 	mt.widScaled=pAnim->height;
-}
+}

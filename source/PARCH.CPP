@@ -113,4 +113,3 @@ void InitializeParchmentMenu(LONG StringHandle)
 	SetButtonProc  (D_PARCHMENT, 0, PaintParchment, StringHandle, NO_KEY);
 	ShowMenu(D_PARCHMENT);
 }
-				

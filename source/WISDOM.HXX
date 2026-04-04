@@ -69,4 +69,4 @@ inline const SBYTE WISDOM::mfGetPriestBonus(const SBYTE WisdomValue,
 	}
 	return pWisdomTable[WisdomValue].sbBonusSpells[spellLevel];
 }
-#endif // _WISDOM_HXX
+#endif // _WISDOM_HXX

@@ -250,4 +250,3 @@ LONG clip_obj (LONG x, LONG* y1, LONG* y2, LONG* clipped)
 		return(FALSE);
 	return(TRUE);
 }
-

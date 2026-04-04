@@ -651,4 +651,4 @@ void ResumeSuspendedMusic(void)
 int GetMusicVolume(void)
 {
 	return(VolumeIndex);
-}
+}

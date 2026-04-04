@@ -137,4 +137,3 @@ LONG end,now;
 	while(get_time()<end);
 
 }
-

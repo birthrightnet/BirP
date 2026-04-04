@@ -526,4 +526,4 @@ void ADVENTURER::mfDoToAllAdventurers(CAvatar_pmf pmf)
 		CAvatar * const  pAvatar = (CAvatar * const) BLKPTR(*AdvItor);
 		(pAvatar->*pmf)();
 	}
-}
+}

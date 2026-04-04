@@ -61,4 +61,4 @@ inline const SBYTE INTELLIGENCE::mfGetMaxNumberOfSpells(const SBYTE IntellValue)
 {
 	return pIntelligenceTable[IntellValue].sbMaxNumberOfSpells;
 }
-#endif // _INTELLI_HXX
+#endif // _INTELLI_HXX

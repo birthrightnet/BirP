@@ -49,5 +49,3 @@ GAME_STRING const RACE_INFO::fpRaceInfoTable[] = {
 		STR_RACE_GOBLIN,
 		STR_RACE_GNOLLS
 };
-
-

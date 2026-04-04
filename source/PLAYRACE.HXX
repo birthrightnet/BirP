@@ -81,4 +81,4 @@ inline char const * const RACE_INFO::mfGetRaceName(
 	}
 }
 
-#endif // _PLAYRACE_HXX
+#endif // _PLAYRACE_HXX

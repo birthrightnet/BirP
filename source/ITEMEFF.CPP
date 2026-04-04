@@ -1825,4 +1825,4 @@ static LONG ItemEffects::RingResistance(LONG Combo,LONG Arg,LONG Action)
 		}
 	}
 	return OK; //everything went ok
-}
+}

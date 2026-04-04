@@ -638,4 +638,3 @@ void CAvatar::Gargoyles (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			
 	}
 }
-

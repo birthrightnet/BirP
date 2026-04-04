@@ -1728,5 +1728,3 @@ WadThingType CheckLongMove(
 	pPlayer->bump = tempPlayer.bump;
 	return tempPlayer.bump;
 } // CheckLongMove
-
-

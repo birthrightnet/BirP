@@ -201,4 +201,4 @@ inline BOOL const COMBAT_CAMERA::mfDidLeaderMove(CAvatar const * const pLeader) 
 		Result = TRUE;
 	}
 	return Result;
-}
+}

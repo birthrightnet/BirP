@@ -51,4 +51,4 @@ inline const SBYTE CHARISMA::mfGetReactionAdjustment(const SBYTE sbCharisma )
 	return pCharismaTable[sbCharisma].sbReactionAdjustment;
 }
 
-#endif // _CHARISMA_HXX
+#endif // _CHARISMA_HXX

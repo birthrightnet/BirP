@@ -56,4 +56,4 @@ void LoadMusicFromCD(short);
 #if defined (__cplusplus)
 }
 #endif
-#endif // _REDBOOK_H
+#endif // _REDBOOK_H

@@ -1,2 +1,2 @@
 
-	/* Prototypes for PCSYS\MOUSE.C */
+	/* Prototypes for PCSYS\MOUSE.C */

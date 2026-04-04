@@ -61,4 +61,4 @@ inline const SBYTE DEXTERITY::mfGetDefensiveAdjust(const SBYTE sbDexterity)
 	return pDexterityTable[sbDexterity].sbDefensiveAdjust;
 }
 
-#endif // _DEXTERIT_HXX
+#endif // _DEXTERIT_HXX

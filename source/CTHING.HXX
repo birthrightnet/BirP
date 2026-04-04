@@ -144,4 +144,3 @@ inline BOOL const CThing::mfIsRightButtonFnSet() const
 	return (RightButtonFn != 0);
 }
 #endif // _CTHING_HXX
-

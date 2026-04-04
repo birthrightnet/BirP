@@ -330,5 +330,3 @@ BOOL CheckCDError(void)
 
 	return (FALSE);
 }
-
-

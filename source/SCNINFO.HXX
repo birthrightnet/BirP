@@ -99,4 +99,4 @@ inline void SCENE_INFO::mfWriteSceneName(FILE *fp)
 }
 
 
-#endif // _SCNINFO_HXX
+#endif // _SCNINFO_HXX
