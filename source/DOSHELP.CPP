@@ -305,4 +305,3 @@ LONG DOSHELP_ContextOffset(LONG Context)
 	return offset;
 }
 
-

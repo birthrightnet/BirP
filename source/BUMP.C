@@ -1730,4 +1730,3 @@ WadThingType CheckLongMove(
 } // CheckLongMove
 
 
-

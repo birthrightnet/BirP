@@ -97,4 +97,3 @@ static APPEARANCE_INFO::TYPE APPEARANCE_INFO::IndexFromType (THINGTYPE iType)
 #endif
 
 
-

@@ -1361,4 +1361,3 @@ inline LONG const CAvatar::mfGetDamageDealt() const
 	return fDamage;
 }
 #endif // _AVATAR_H
-

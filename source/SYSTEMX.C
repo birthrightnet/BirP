@@ -274,4 +274,3 @@ ULONG detect_scale (SHORT t, SHORT h, SHORT w)
 void run_timers ()
 {
 }
-

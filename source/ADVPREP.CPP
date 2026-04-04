@@ -1123,4 +1123,3 @@ void AdvPrepReturn(LONG, LONG)
 	++TutorialActionNumber;
 	TutorialScreenNumber = 0;
 }
-

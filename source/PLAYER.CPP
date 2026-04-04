@@ -1370,4 +1370,3 @@ void ConvertScreenToFloor(LONG screen_x, LONG screen_y, LONG *sx, LONG *sy)
 	*sy = CAMERA_INT_VAL(camera.y) - tp.y;
 }
 
-

@@ -215,4 +215,3 @@ BOOL KillSplash( void );
 
 // SndUtilS.c
 #endif //_SOUND_HXX
-

@@ -158,4 +158,3 @@ static LONG ItemEffects::RingResistance(LONG Combo,LONG Arg,LONG Action)
 {
 return 0;}
 
-

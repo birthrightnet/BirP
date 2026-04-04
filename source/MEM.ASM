@@ -202,4 +202,3 @@ light_ren	proc ; char *sptr,char *tptr,long wrapmask,long tsy.lval,long src_inc,
 light_ren	endp
 	 ?
 		end
-

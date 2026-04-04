@@ -969,4 +969,3 @@ BOOL CAvatar::mfCanHarpyHitHim (
 	
 	return Result;
 }
-

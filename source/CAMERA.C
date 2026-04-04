@@ -1695,4 +1695,3 @@ void pull_camera()
 }
 
 #endif // UNUSED
-

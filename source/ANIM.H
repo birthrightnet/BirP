@@ -44,4 +44,3 @@ void CloseAnimationMenu(LONG, LONG);
 #endif
 
 
-

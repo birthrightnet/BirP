@@ -49,4 +49,3 @@ void EditOpeningMessage (void);
 
 #endif
 
-

@@ -235,4 +235,3 @@ inline GAME_CAMERA::CAMERA_STATE GAME_CAMERA::mfGetCurrentState()
 }
 #endif // _GAMECAMR_HXX
 
-

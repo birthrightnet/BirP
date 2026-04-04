@@ -652,4 +652,3 @@ int GetMusicVolume(void)
 {
 	return(VolumeIndex);
 }
-

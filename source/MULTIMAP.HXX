@@ -241,4 +241,3 @@ typedef enum
 } MPGAMESEMIPHORE_DATA;
 
 #endif // _MULTIMAP_HXX
-

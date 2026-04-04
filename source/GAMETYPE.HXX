@@ -346,4 +346,3 @@ inline THINGTYPE const GAME_TTYPE::mfGetLowResType(THINGTYPE const type)
 #endif // _GAMETYPE_HXX
 
 
-

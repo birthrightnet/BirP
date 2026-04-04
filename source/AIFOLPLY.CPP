@@ -789,4 +789,3 @@ void FOLLOW_PLAYER_DATA::mfSwitchToFollowPlayer(LONG hAvatar)
 }
 #endif
 
-

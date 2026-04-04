@@ -198,4 +198,3 @@ void pause_task(LONG taskIndex)
 	}
 }
 
-

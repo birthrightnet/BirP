@@ -245,4 +245,3 @@ static BOOL REGRELIC_STRUCT::ItemAvailable (LONG iItem, LONG iRegent)
 
 #endif // _WINDOWS
 
-

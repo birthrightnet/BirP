@@ -431,4 +431,3 @@ LONG l,sided;
 	return(sidedefs[sided].yoff);
 }
 
-

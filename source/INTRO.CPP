@@ -363,4 +363,3 @@ SHORT OpenIntro (SHORT iAnim, CSTRPTR szFileName, SHORT Type, BOOL *ffirst, BOOL
 }
 
 #endif
-
