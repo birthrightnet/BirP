@@ -34,4 +34,4 @@ DWORD mci_PlayCD		( HWND hWndNotify, BYTE bTrack, BYTE bStartMin,
 DWORD mci_StopCD		( void );
 DWORD mci_CheckCDBusy	( void );
 
-// MciUtil.h
+// MciUtil.h

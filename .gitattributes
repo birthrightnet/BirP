@@ -1,0 +1,24 @@
+# Normalize all text files to LF in the repository, CRLF on checkout (Windows)
+* text=auto eol=crlf
+
+# Force source files to be treated as text even if auto detection sees high-bit bytes
+source/*.C text eol=crlf
+source/*.CPP text eol=crlf
+source/*.H text eol=crlf
+source/*.HXX text eol=crlf
+source/*.INC text eol=crlf
+source/*.RC text eol=crlf
+source/*.DLG text eol=crlf
+source/*.CBP text eol=crlf
+
+# Treat binary files as binary - no EOL conversion
+*.cur binary
+*.exe binary
+*.dll binary
+*.lib binary
+*.obj binary
+*.res binary
+*.bmp binary
+*.ico binary
+*.cab binary
+*.zip binary

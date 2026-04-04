@@ -178,4 +178,4 @@ inline const BOOL WEAPON_INFO::mfIsWeaponAvailable(
 {
 	return fpWeaponTableInfo[WeaponType].fsRacesAvailable[PlayerRace];
 }
-#endif // _WEAPON_HXX
+#endif // _WEAPON_HXX

@@ -96,4 +96,4 @@ void RECHECK_OPTIONS::mfUpDateOptions()
 	
 	fOptionsChanged = FALSE;
 	fUpdatePanels = TRUE;
-}
+}

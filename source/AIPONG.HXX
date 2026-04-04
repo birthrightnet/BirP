@@ -76,4 +76,4 @@ inline const LONG PINGPONG_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif // AI_PONG_HXX
+#endif // AI_PONG_HXX

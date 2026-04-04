@@ -457,4 +457,4 @@ LONG DemandHolding(REALM::REALM_TYPE realm_, SHORT oldDemand);
 void ResetNPCActionData();
 BOOL ForeignUnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm);
 
-/* ======================================================================== */
+/* ======================================================================== */

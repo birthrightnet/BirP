@@ -642,4 +642,4 @@ void FileXfer::ResetSync( int sync )
 	}
 }
 
-// FileXfer.cpp
+// FileXfer.cpp

@@ -126,4 +126,4 @@ inline char *SCN_SECTOR::mfGetSceneName()
 {
 	return fscInfo.mfGetSceneName();
 }
-#endif // _SCNSCTOR_HXX
+#endif // _SCNSCTOR_HXX

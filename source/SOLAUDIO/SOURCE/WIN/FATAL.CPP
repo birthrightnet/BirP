@@ -98,4 +98,4 @@ void close_graph(void)
 void remove_keyint(void)
 {
 	// must be filled in by application code
-}
+}

@@ -179,4 +179,4 @@ CSTRPTR szAdvSiteTextFile[] = {       /* same indices as place_names */
 /* 061 "Elfwash Keep",      */  "bord_kg",
 /* 062 "Drak-mal Castle",   */  "sonne_kw",
 };
-#endif
+#endif

@@ -156,4 +156,4 @@ inline void PANORAMA_DATA::mfWriteData(FILE *fp) {
 }
 #endif
 
-#endif // _PANORAMA_HXX
+#endif // _PANORAMA_HXX

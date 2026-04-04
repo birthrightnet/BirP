@@ -401,4 +401,4 @@ void GainExp(PLAYER_STATS * pPS, const LONG ExpAmount,
                 ExpCheck(pPS);
         }
     }
-}
+}

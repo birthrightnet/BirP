@@ -210,4 +210,4 @@ inline void FOLLOW_PLAYER_DATA::mfSwapPlaces(FOLLOW_PLAYER_DATA & const OtherFol
 {
 	fAdventurer.mfSwapPlaces(OtherFollower.fAdventurer);
 }
-#endif	// _AIFOLPLY_HXX
+#endif	// _AIFOLPLY_HXX

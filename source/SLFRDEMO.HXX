@@ -423,4 +423,4 @@ inline SRDEMO_DATA::COMMAND_STATE SRDEMO_DATA::mfDoCommand()
 	return fCmdState;
 }
    
-#endif // _SLRDEMO_HXX
+#endif // _SLRDEMO_HXX

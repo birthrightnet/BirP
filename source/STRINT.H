@@ -55,4 +55,4 @@ extern "C" {
 #if defined (__cplusplus)
 }
 #endif
-#endif // _STRINT_H
+#endif // _STRINT_H

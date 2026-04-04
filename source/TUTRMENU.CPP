@@ -170,4 +170,4 @@ void PaintTutorial(LONG MenuCombo, LONG )
 	}
 	
 	gprint_text(text_x,text_y,cpBuffer, DKBROWN);
-}
+}

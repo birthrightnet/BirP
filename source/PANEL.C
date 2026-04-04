@@ -455,4 +455,4 @@ static void PaintPanels(void)
 	}
 	
 	SysShowCursor();
-}
+}

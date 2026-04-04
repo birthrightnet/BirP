@@ -445,4 +445,4 @@ inline void SCENE::mfClearOpeningDialog()
 {
 	fOpeningDialog = STR_NULL;
 }
-#endif // _SCENE_HXX
+#endif // _SCENE_HXX

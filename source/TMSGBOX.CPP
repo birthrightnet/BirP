@@ -153,4 +153,4 @@ void TitledMessage (char* t,char* m1)
 {
 // [d9-16-96 JPC] Added for access from C.
 	TitledMessageBox::Display (t, m1);
-}
+}

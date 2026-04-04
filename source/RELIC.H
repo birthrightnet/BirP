@@ -4,4 +4,4 @@
 // usual, but in a single-player game, they are ignored.
 // [d5-21-97 JPC]
 
-#define RELIC_CODE 999
+#define RELIC_CODE 999

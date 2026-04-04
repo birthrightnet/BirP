@@ -803,4 +803,4 @@ inline void ObjectList::mfMakeHead(ITEMTYPE const it,
 	HeadIndex=NewHead;
 }
 
-#endif
+#endif

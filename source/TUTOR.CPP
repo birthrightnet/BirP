@@ -86,4 +86,4 @@ static GAME_STRING const TutorialHelpMgr::GetHelp(long const i,long const j)
 	}
 	
 	return TutorText[i][j];
-}
+}

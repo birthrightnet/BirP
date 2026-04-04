@@ -83,4 +83,4 @@ inline BOOL const ALL_CLASS_EXPERIENCE_TABLE::mfCanIAdvanceALevel(
 	         pAllClassExperienceTable[type]->mfGetExperiencePts(sbCurrentLevel + 1) < CurrentExpPts) ? TRUE : FALSE;
 }
 
-#endif // _EXPERIEN_HXX
+#endif // _EXPERIEN_HXX

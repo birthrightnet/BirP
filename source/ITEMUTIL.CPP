@@ -113,4 +113,4 @@ LONG RlmSpellLevel(ITEMTYPE iType)
 		return (LONG) REALM_SPELL_INFO::mfGetRealmSpell(spType).mfGetLevel();
 		
 	return 0;
-}
+}

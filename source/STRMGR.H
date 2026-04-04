@@ -40,4 +40,4 @@ SHORT LoadSTR (
 }
 #endif
 	
-#endif // _STRMGR_H
+#endif // _STRMGR_H

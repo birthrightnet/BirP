@@ -134,4 +134,4 @@ inline static BOOL const SCENE_MGR::mfIsSceneRequested()
 {
 	return fNewSceneRequested;
 }
-#endif // _SCNMGR_HXX
+#endif // _SCNMGR_HXX

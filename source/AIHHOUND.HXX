@@ -71,4 +71,4 @@ inline const LONG HELLHOUND_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif
+#endif

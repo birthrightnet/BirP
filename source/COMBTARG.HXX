@@ -115,4 +115,4 @@ inline static SHORT const COMBAT_TARGETTING::mfWhoseShooting()
 {
 	return fhAvatar;
 }
-#endif // _COMBTARG_HXX
+#endif // _COMBTARG_HXX

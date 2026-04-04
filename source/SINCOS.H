@@ -30,4 +30,4 @@ extern LONG tan_table[];
 
 #ifdef __cplusplus
 }
-#endif
+#endif

@@ -12,4 +12,4 @@ Skel MENU
                 BEGIN
                       MENUITEM "Test",      IDM_TEST
                 END
-     END
+     END

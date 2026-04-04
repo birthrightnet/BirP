@@ -488,4 +488,4 @@ LONG DOSHelpSize = sizeof(DOSHelp) / sizeof(BUTTON);
 #endif	// french
 #endif	// english
 
-#endif
+#endif

@@ -50,4 +50,4 @@ HRESULT DDUnlockSurface         ( PCHAR pchBuf );
 #if defined (__cplusplus)
 }
 #endif
-#endif // _DDRAWPRO_H
+#endif // _DDRAWPRO_H

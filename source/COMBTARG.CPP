@@ -234,4 +234,4 @@ void COMBAT_TARGETTING::TargetClick(LONG but,LONG obj,LONG WadThingtype)
 			}
 		}
 	}
-}
+}

@@ -279,4 +279,4 @@ inline BOOL const PLAYER_CLASS_LIST::mfIsType(PLAYER_CLASS_INFO::TYPE const Clas
 	return (Class[0].Type == ClassType || Class[1].Type == ClassType);
 }
 
-#endif // _PLAYCLAS_HXX
+#endif // _PLAYCLAS_HXX

@@ -52,4 +52,4 @@ extern volatile unsigned char 	key_stat[];
 #if defined (__cplusplus)
 }
 #endif
-#endif // _MACHINT_H
+#endif // _MACHINT_H

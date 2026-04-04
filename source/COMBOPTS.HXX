@@ -203,4 +203,4 @@ inline static BOOL COMBAT_INITIAL_VIEWPT::mfIsModeFirstPerson()
 	return (fInitialState == FIRST_PERSON);
 }
 
-#endif // _COMBOPTS_HXX
+#endif // _COMBOPTS_HXX

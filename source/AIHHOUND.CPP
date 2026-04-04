@@ -652,4 +652,4 @@ void CAvatar::HellHounds (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 			break;
 	}
-}
+}

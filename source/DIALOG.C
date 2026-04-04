@@ -475,4 +475,4 @@ void CenterDialog(void)
 //GEH 	AlignDialog();
 //GEH 	CenterDialog();
 //GEH 	ShowDialog();
-//GEH }
+//GEH }

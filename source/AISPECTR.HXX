@@ -69,4 +69,4 @@ inline const LONG SPECTRE_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif
+#endif

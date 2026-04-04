@@ -72,4 +72,4 @@ inline const LONG SPIDER_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif
+#endif
