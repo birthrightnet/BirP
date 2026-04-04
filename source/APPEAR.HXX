@@ -96,4 +96,3 @@ inline const THINGTYPE APPEARANCE_INFO::mfGetType (
 #endif // _APPEARANCE_HXX
 
 
-

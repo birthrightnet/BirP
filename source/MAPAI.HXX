@@ -458,4 +458,3 @@ void ResetNPCActionData();
 BOOL ForeignUnitsHere (PROVINCE prov, REALM::REALM_TYPE _realm);
 
 /* ======================================================================== */
-

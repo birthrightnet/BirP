@@ -311,4 +311,3 @@ extern long iterations;		//setting this to 0 will end the current crowd thing
 extern long loadnum;		//if true, load numbers as needed
 
 
-

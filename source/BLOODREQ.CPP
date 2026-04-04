@@ -796,4 +796,3 @@ LONG RollBloodlineNumericalStrength (BLOODLINE_STRENGTH_INFO::TYPE BloodStrength
 
 
 
-

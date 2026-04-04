@@ -164,4 +164,3 @@ LONG ActionExpPoints(LONG RegentIndex, ACTION_EXPTYPE ActionType, LONG Modifier,
    ------------------------------------------------------------------------ */
    
 #endif // _ACTNMENU_HXX
-

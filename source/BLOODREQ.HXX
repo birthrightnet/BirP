@@ -62,4 +62,3 @@ BLOODLINE_DERIVATION_INFO::TYPE RollBloodlineDerivation();
 LONG RollBloodlineNumericalStrength (BLOODLINE_STRENGTH_INFO::TYPE BloodStrengthType);
 
 #endif // _BLOODREQ_HXX
-

@@ -49,4 +49,3 @@ int IsPanelUp ( LONG Index );
 
 #endif
 #endif 
-

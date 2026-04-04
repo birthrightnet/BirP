@@ -57,4 +57,3 @@ SHORT AveDice( DICE const * const);
 #endif
 
 #endif // _DICE_H
-

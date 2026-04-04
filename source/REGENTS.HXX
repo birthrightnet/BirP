@@ -440,4 +440,3 @@ inline void REGENT::mfSeticon(MAP_ICON const NewIconVal)
 	fRegentData.icon = NewIconVal;
 }
 #endif // _REGENTS_HXX
-

@@ -394,4 +394,3 @@ extern BOOL		fBattleCombat;		// tell the world if were on the field
 #endif
 
 #endif
-

@@ -149,4 +149,3 @@ void FreeResourceManager();
 }
 #endif
 #endif // _RESMAMANG_H
-

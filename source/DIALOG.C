@@ -476,4 +476,3 @@ void CenterDialog(void)
 //GEH 	CenterDialog();
 //GEH 	ShowDialog();
 //GEH }
-

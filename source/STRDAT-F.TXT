@@ -3939,4 +3939,3 @@ STR_DP_MODEM Modem
 STR_SAVEGAME		courant.sav
 
 END
-

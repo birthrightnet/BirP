@@ -371,4 +371,3 @@ void SystemHelpPaintProc( LONG, LONG );
 #endif // _GAME_H
 
 
-

@@ -787,4 +787,3 @@ void PINGPONG_DATA::mfSwitchToPingPong(LONG hAvatar)
 	pAvatar->Status = CAvatar::AI_END_LISTEN;
 }
 
-

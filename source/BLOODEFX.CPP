@@ -94,4 +94,3 @@ static LONG ItemEffects::BAFear(LONG Combo,LONG Arg,LONG Action)
 	return OK; //everything went ok	
 }
 
-

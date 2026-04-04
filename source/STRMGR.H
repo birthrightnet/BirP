@@ -41,4 +41,3 @@ SHORT LoadSTR (
 #endif
 	
 #endif // _STRMGR_H
-

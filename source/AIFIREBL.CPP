@@ -705,4 +705,3 @@ static void BlastTheNeighbors(
 		}
 	}
 }
-

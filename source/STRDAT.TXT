@@ -3820,4 +3820,3 @@ STR_DP_MODEM Modem
 STR_SAVEGAME	current.sav
 
 END
-

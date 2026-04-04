@@ -67,4 +67,3 @@ extern SCENARIO_INFO	ScenarioInfo;
    ------------------------------------------------------------------------ */
    
 #endif // _LOADSAVE_HXX
-

@@ -880,4 +880,3 @@ const BOOL GAME_TTYPE::mfIsMissileBlocker (THINGTYPE const type)
 }
 
 
-

@@ -214,4 +214,3 @@ static LONG ItemEffects::WaterWalk(LONG Combo,LONG Arg,LONG Action)
 {
 return 0;}
 
-

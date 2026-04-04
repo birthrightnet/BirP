@@ -713,4 +713,3 @@ inline void	REALM_STRUCT::mfSetDMCtrl( BOOL const DMCtrl)
 #endif // _REALM_HXX
 
 
-

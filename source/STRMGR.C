@@ -289,4 +289,3 @@ STRMGR_Test(void)
 	printf("\n");
 }
 #endif
-

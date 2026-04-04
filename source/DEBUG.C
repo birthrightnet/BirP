@@ -222,4 +222,3 @@ void ErrorMessage (const char *format, ...)
 #endif   // _WINDOWS
 // Debug.c
 
-

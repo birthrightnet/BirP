@@ -3793,4 +3793,3 @@ STR_LOAD_SCENE		^F07Loading Scene:
 
 
 END
-

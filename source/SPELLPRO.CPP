@@ -363,4 +363,3 @@ SHORT num_spells_of(SPELL_INFO::CASTERTYPE spell_type,
 	
 	return 0;
 }
-

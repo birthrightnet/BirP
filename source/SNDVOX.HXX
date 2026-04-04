@@ -108,4 +108,3 @@ SHORT AddVoxSndType( VOX_BLOCK Block, THINGTYPE ThingType);
    ------------------------------------------------------------------------ */
 
 #endif //_VOXSND_HXX
-
