@@ -45,5 +45,3 @@ BOOL DestroyStatusBar (void);
 #endif
 #endif
 #endif
-
-

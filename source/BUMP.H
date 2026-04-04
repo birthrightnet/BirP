@@ -81,4 +81,4 @@ LONG LinePointDistance (LONG x, LONG y,
 #if defined (__cplusplus)
 }
 #endif
-#endif // _BUMP_H
+#endif // _BUMP_H

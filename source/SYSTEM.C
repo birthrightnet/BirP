@@ -3125,5 +3125,3 @@ void DrawLittleButton (LONG x, LONG y, LONG w, LONG h, LONG pushFlag)
 #include "newsys.c"
 
 /* ======================================================================== */
-
-

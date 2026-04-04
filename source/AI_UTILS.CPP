@@ -311,4 +311,4 @@ void pfCommandOnHide(void)
 {
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	pCurrentScene->mfSetSceneState(SCENE_AI::PLAY);
-}
+}

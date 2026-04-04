@@ -294,5 +294,4 @@ PNET_ERRCODE_TYPE ClearErrorNum ( void );
 #endif // _H_PlatformNetworkModule
 
 
-// -- PNetMod.h
-
+// -- PNetMod.h

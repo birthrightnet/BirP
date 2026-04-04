@@ -247,4 +247,4 @@ FIGHT_SEQUENCE::FIGHT_SEQUENCE_DATA FIGHT_SEQUENCE::fFightSequenceData[(LAST_GAM
 	  {Weak_Defensive,  			Defensive},				// 147 Infantry Intro
 	  {Weak_Defensive,  			Defensive},				// 148 Royal Guard Intro
 	  {Weak_Defensive,  			Defensive} 				// 149 Lord Throne
-};
+};

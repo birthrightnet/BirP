@@ -49,4 +49,4 @@ void PaintTutorial(LONG MenuCombo, LONG /* unused */);
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _TUTRMENU_HXX
+#endif // _TUTRMENU_HXX

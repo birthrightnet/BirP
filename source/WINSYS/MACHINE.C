@@ -1166,4 +1166,3 @@ static void ParseCmdLine (LPSTR szCmdLine)
 		szCmdLine = pArgEnd+1;
 	}
 }
-

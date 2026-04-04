@@ -288,4 +288,4 @@ STRMGR_Test(void)
 	printf(STRMGR_GetStr(STR_STRING_100));
 	printf("\n");
 }
-#endif
+#endif

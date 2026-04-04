@@ -614,4 +614,4 @@ void CAvatar::Spectres (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 			break;
 	}
-}
+}

@@ -24,4 +24,3 @@ LONG GetBloodlineGrade ();
 void CharedDoEditorDialog ();
 
 #endif
-

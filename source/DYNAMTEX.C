@@ -482,6 +482,3 @@ void CloseAllVideoBuffers(void)
 #endif // WRC_CAMERA_TEST
 
 /*	======================================================================== */
-
-
-

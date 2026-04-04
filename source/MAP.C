@@ -1742,4 +1742,3 @@ void CalcWadBounds(LONG *rx, LONG *ry,LONG *rw,LONG *rh)
 	*rw=blockm_header.cols*128+MAP_WAD_BOUNDS_BUFFER;
 	*rh=blockm_header.rows*128+MAP_WAD_BOUNDS_BUFFER;
 }
-

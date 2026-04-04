@@ -70,4 +70,4 @@ ULONG after_memory;
 	logInfo("MEMORY(Includes ZONE): Before:%u After:%u Used:%u",before_memory,after_memory,before_memory-after_memory);
 	logInfo("----------------------------------------------------------------");
 #endif
-}
+}

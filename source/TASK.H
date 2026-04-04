@@ -54,4 +54,4 @@ void pause_task(LONG);
 #if defined (__cplusplus)
 }
 #endif
-#endif // _TASK_H
+#endif // _TASK_H

@@ -58,4 +58,4 @@ PFVL SetRightButtonClicked(PFVL pfClickFunc );
 #if defined (__cplusplus)
 }
 #endif
-#endif // _2DMOUSE_H
+#endif // _2DMOUSE_H

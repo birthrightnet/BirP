@@ -77,4 +77,4 @@ const STRENGTH::STRENGTH_ITEM STRENGTH::pStrengthTable[] = {
 SBYTE strength_percentile[] =
 {
    35, 65, 85, 96, 00
-};
+};

@@ -385,4 +385,4 @@ inline void CONTROL_PANELS::mfSetAllDefend()
 }
 
 
-#endif // _COMBCNTL_HXX
+#endif // _COMBCNTL_HXX

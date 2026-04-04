@@ -64,4 +64,3 @@ const CONSTITUTION::CONSTITUTION_ITEM CONSTITUTION::pConstitutionTable[] = {
 	{  2, 7,  99, 100,  3, 2, 5},					// 24
 	{  2, 7,  99, 100,  4, 1, 5}					// 25
 };
-

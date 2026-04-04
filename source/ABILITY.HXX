@@ -332,4 +332,4 @@ inline void ABILITY::mfSetCharisma(SBYTE const NewValue)
 {
 	fAbilities[ABILITY::CHARISMA] = NewValue;
 }
-#endif // _ABILITY_HXX
+#endif // _ABILITY_HXX

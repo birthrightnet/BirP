@@ -121,4 +121,3 @@ LONG GetNextLine(FILE *fp, char *cpNewLine, LONG len)
 	
 	return result;
 }
-

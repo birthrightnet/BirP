@@ -3119,4 +3119,4 @@ void AdventureFixUnitsArray(LONG iUnitIndex)
 	#else
 	FixUnitsArray(iUnitIndex);
 	#endif
-}
+}

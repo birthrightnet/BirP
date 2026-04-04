@@ -74,4 +74,3 @@ BOOL GetFileName (HWND i_hwnd, LPCSTR i_szDirName, LPCSTR i_szFilter,
 
 
 #endif
-

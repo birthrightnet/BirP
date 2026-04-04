@@ -2812,4 +2812,4 @@ LONG ParchmentSize = sizeof(Parchment) / sizeof(BUTTON);
 #endif // frenchver
 #endif // english ver
 
-#endif
+#endif

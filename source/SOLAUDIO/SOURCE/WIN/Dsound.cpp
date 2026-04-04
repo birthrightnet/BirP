@@ -1055,4 +1055,3 @@ DSDisplayError(HRESULT hr, LPSTR title, BOOL inService)
 
 #endif	//_DEBUG
 }
-

@@ -513,5 +513,4 @@ BOOL KillSplash( void );
 }
 #endif
 
-// SndUtilS.c
-
+// SndUtilS.c

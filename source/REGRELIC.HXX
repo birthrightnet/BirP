@@ -45,4 +45,4 @@ private:
 
 extern DECL_VECTOR_CLASS (REGRELIC_STRUCT, gRelics);
 
-#endif
+#endif

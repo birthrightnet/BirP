@@ -133,4 +133,3 @@ BOOL EffectSeparator<ValType>::mfChangeEffectValue(SHORT hAS,ValType NewVal)
 	else
 		return FALSE;
 }
-	

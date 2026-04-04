@@ -134,4 +134,4 @@ inline BOOL const FIGHT_SEQUENCE::mfIsWeakSequence(THINGTYPE const ThingType) co
 	return ((fFightSequenceData[ThingType - FIRST_GAME_THING].WeakSeq)  ==
 	        (fFightSequenceData[ThingType - FIRST_GAME_THING].AttackSeq[fCurrentSequence]));
 }
-#endif // _AIFTSEQ_HXX
+#endif // _AIFTSEQ_HXX

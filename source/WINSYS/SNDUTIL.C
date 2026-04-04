@@ -1688,5 +1688,3 @@ void DSError ( MMRESULT mmResult )
 
 
 //---- End of SndUtil.cpp
-
-

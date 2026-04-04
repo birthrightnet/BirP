@@ -73,4 +73,4 @@ inline void LEADER_DATA::mfDelete()
 		hdlPathDeltas = fERROR;
 	}
 }
-#endif
+#endif

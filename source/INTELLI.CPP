@@ -65,4 +65,3 @@ const INTELLIGENCE::INTELLIGENCE_ITEM INTELLIGENCE::pIntelligenceTable[] = {
 	{ 15, 9, 100, ALL_SPELLS, 0},	// 24
 	{ 20, 9, 100, ALL_SPELLS, 0},	// 25
 };
-

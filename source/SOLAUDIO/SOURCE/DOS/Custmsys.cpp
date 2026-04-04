@@ -275,5 +275,3 @@ int MemID::Load(char* fileName)
 	Close(fd);
 	return rc;
 }
-
-

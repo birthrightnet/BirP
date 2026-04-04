@@ -142,4 +142,4 @@ void SetCameraRotatePointRates( CAMERA *pCamera, const LONG , const LONG , const
 #if defined (__cplusplus)
 }
 #endif
-#endif // _CAMERA_H
+#endif // _CAMERA_H

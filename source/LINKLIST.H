@@ -50,4 +50,3 @@ extern HDL  LListRemove ( HDL First, HDL Remove );
    ------------------------------------------------------------------------ */
    
 #endif // _LINKLIST_H
-

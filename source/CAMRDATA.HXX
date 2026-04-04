@@ -186,4 +186,4 @@ inline void CAMERA_DATA::mfWriteData (FILE *fp)
 	fprintf(fp,"%ld\t%ld\t%ld\t%ld\t%ld\t%ld\n", fx, fy, fz, fa, fp, 0);
 }
 
-#endif // _CAMRDATA_HXX
+#endif // _CAMRDATA_HXX

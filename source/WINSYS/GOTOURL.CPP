@@ -159,4 +159,3 @@ BOOL CheckURL ( const char *url )
 	return FALSE;
 
 }
-

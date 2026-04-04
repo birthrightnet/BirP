@@ -395,4 +395,3 @@ Continue_Follow_Path:
 			pAvatar->Status = AI_PAUSED;
 	}
 }
-

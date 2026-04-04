@@ -1084,4 +1084,4 @@ inline ItemChargeHandler::ChargedItemChain ItemChargeHandler::mfChain(LONG idx)
 }
 #endif
 
-#endif
+#endif

@@ -650,9 +650,3 @@ void WINAPI midiCallback(HMIDISTRM hms, UINT uMsg, DWORD dwUser, DWORD dw1, DWOR
 
 
 // MdsUtil.c
-
-
-
-
-
-

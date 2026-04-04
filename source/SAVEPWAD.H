@@ -12,4 +12,3 @@ BOOL GetFileName (HWND hwnd, LPCSTR szDirName, LPCSTR szFilter, LPCSTR i_szExt,
    LPSTR szReturnName, LPSTR szReturnTitle, DWORD flags, int openOrSave);
 
 #endif
-

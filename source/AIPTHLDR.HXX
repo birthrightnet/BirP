@@ -45,4 +45,4 @@ inline LONG PATH_LEADER_DATA::mfReadData(FILE * fp)
 	return retVal;
 }
 
-#endif
+#endif

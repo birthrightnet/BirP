@@ -54,4 +54,4 @@ BOOL const nlnclipline(
 #if defined (__cplusplus)
 }
 #endif
-#endif // _NLNCLIP_H
+#endif // _NLNCLIP_H

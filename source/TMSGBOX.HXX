@@ -71,4 +71,4 @@ static inline LONG TitledMessageBox::Height(LONG Area)
 }
 	
 
-#endif
+#endif

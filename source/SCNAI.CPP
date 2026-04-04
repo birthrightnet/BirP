@@ -1142,4 +1142,4 @@ void UpdateTime(void)
 	}
 
 	prevTime = CurrentTime;
-}
+}

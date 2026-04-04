@@ -852,5 +852,4 @@ typedef void (*lpfnShowGatheringPlaceFunc)( void );
 SIGSAPI void ToggleCommExit(int DoIt);
 typedef void (*lpfnToggleCommExitFunc)( int );
 
-#endif //__SIERRANWAPI_H__
-
+#endif //__SIERRANWAPI_H__

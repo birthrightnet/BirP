@@ -233,4 +233,3 @@ BOOL TestLegalMoves(SHORT Row, SHORT Column)
 	}
 	return TRUE;
 }
-

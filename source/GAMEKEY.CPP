@@ -305,5 +305,3 @@ SHORT	GAME_KEYS::fKeyDefinitions[MAX_KEYS] = {
 	KEY_F8	   		// COMBAT_CAMERA_LEFTFRIEND
 };
 #endif
-
-

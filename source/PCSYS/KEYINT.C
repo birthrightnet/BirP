@@ -311,4 +311,3 @@ void clear_key_status(LONG unused)
 #pragma on (unreferenced)
 
 /*	======================================================================== */
-

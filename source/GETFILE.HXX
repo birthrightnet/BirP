@@ -16,4 +16,4 @@ BOOL GetFileName (HWND i_hwnd, LPCSTR i_szDirName, LPCSTR i_szFilter,
 	DWORD i_dwflags, int openOrSave);
 
 #endif
-#endif
+#endif

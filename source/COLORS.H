@@ -15,4 +15,4 @@
 #define BTN_LABEL_COLOR		BEIGE
 #define BTN_LABEL_HILITE_COLOR	WHITE
 
-#endif
+#endif

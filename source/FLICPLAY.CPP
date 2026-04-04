@@ -751,4 +751,3 @@ void SimpleFLC::mfDrawFrame(SHORT x, SHORT y)
 	}
 	DrawBitmap(x, y, pAnim->iBuff, 0, 0, pAnim->width, pAnim->height);
 }
-

@@ -47,5 +47,3 @@ void AdvPrepReturn (LONG, LONG);
 
 
 #endif	// _ADVPREP_HXX
-
-

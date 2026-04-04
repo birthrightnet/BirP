@@ -117,4 +117,4 @@ LONG PANORAMA_DATA::mfReadData(FILE *fp)
 		hSky_filenames = fhPanoramaFileNames;
 	}
 	return Result;
-}
+}

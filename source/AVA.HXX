@@ -545,5 +545,3 @@ inline LONG	AVA_FILE::mfGetBardLevel ()
 };
 
 #endif
-
-

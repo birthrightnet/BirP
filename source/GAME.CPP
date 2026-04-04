@@ -3604,4 +3604,3 @@ void SetLoadingProgress( LONG Percent )
 }
 
 }; // extern "C"
-

@@ -1471,4 +1471,4 @@ static void StaticInventoryGUI::mfAddItem(LONG,LONG Itype)
 	logInfo("adding %s to player's inventory",GAME_TTYPE::mfGetDescription(ItemTypes[Itype].mfGameType()));
 
 	AvatarInventory.mfAddItem((ITEMTYPE)Itype);
-}
+}

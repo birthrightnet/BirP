@@ -107,4 +107,4 @@ SHORT AddVoxSndType( VOX_BLOCK Block, THINGTYPE ThingType);
    Global Variables
    ------------------------------------------------------------------------ */
 
-#endif //_VOXSND_HXX
+#endif //_VOXSND_HXX

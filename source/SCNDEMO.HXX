@@ -121,4 +121,4 @@ inline BOOL SCENE_DEMO_DATA::mfIsSet()
 	return ( fCommandFile.mfIsSet());
 }
 
-#endif // _SCNDEMO_HXX
+#endif // _SCNDEMO_HXX

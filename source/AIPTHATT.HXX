@@ -53,4 +53,4 @@ inline LONG PATH_ATTACK_DATA::mfReadData(FILE * fp)
 	return retVal;
 }
 
-#endif
+#endif

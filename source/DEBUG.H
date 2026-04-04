@@ -74,4 +74,3 @@ void	ErrorMessage (const char *format, ...);
 
 // Debug.h
 #endif // _DEBUG_H
-

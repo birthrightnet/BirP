@@ -831,4 +831,4 @@ FILE_MODE SetFileMode ( FILE_MODE NewFileMode )
 	FILE_MODE OldMode = fmCurrentFileMode;
 	fmCurrentFileMode = NewFileMode;
 	return OldMode;
-}
+}

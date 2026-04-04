@@ -81,4 +81,4 @@ LONG CAMERA_SETUP_DATA::mfReadCameraData(FILE *fp)
 	}
 	
 	return Result;
-}
+}

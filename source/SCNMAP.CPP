@@ -100,4 +100,4 @@ LONG MAP::mfReadMap(FILE *fp)
 	}
 	
 	return Result;
-}
+}

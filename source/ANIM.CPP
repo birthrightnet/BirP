@@ -850,4 +850,4 @@ void CloseAnimationMenu(LONG , LONG )
 	}
 	SetPurgeClass(CLASS2);	// Purge all the animations and hiData's
 	HideMenu(D_SHOW_ANIMATION);
-}
+}

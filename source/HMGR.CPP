@@ -107,4 +107,4 @@ void HighlightMgr::Clear()
 		HiList[i].ID=fERROR;
 		HiList[i].Duration=0;
 	}
-}
+}

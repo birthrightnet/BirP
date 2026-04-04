@@ -116,4 +116,4 @@ inline BOOL const PLAYER_HIT::mfRollAttackTarget(
 			TRUE : FALSE);
 }
 
-#endif // _PLAYHIT_HXX
+#endif // _PLAYHIT_HXX

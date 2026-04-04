@@ -214,4 +214,4 @@ void SetMapCenter(LONG,LONG);
 #ifdef __cplusplus
 }
 #endif
-#endif
+#endif

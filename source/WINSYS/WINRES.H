@@ -594,4 +594,4 @@
 
 #ifdef _AFX_MINREBUILD
 #pragma component(minrebuild, on)
-#endif
+#endif

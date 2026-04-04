@@ -66,4 +66,4 @@ extern SCENARIO_INFO	ScenarioInfo;
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _LOADSAVE_HXX
+#endif // _LOADSAVE_HXX

@@ -654,4 +654,3 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			break;
 	}
 }
-

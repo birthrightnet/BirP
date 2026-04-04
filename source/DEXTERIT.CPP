@@ -65,4 +65,4 @@ const DEXTERITY::DEXTERITY_ITEM DEXTERITY::pDexterityTable[] = {
 	{ 4,  4, -5},		// 23
 	{ 5,  5, -6},		// 24
 	{ 5,  5, -6}		// 25
-};
+};

@@ -363,5 +363,3 @@ p->y = y1 + (num+offset) / f;				/* intersection y */
 return DO_INTERSECT;
 }
 #endif
-
-

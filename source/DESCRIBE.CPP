@@ -185,4 +185,4 @@ void DescribeBtlEngagement(void)
 	screennum = STR_BTLTUT_ENGAGEMENT;
 	screenend = screennum + 1;
 	ShowMenu(D_DESCRIBE_GAME);
-}
+}

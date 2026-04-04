@@ -174,4 +174,4 @@ inline LONG const GAME_KEYS::mfWriteRawData(FILE * const fp )
 	return Result;
 }
 
-#endif // _GAMEKEY_HXX
+#endif // _GAMEKEY_HXX

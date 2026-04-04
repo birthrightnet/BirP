@@ -2546,8 +2546,3 @@ BOOL ItemChargeHandler::mfFind(ITEMTYPE ItemTypeIdx,LONG* iFound,LONG* jFound)
 	return FALSE;
 
 }
-
-
-
-
-

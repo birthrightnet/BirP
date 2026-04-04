@@ -93,4 +93,3 @@ const WEAPON_INFO::TYPE WEAPON_INFO::mfFindType(char * cpWeaponName)
 	
 	return Result;
 }
-

@@ -75,4 +75,3 @@ LONG SCENE_FILE_VERSION::mfReadVersion(FILE *fp)
 		
 	return Result;
 }
-

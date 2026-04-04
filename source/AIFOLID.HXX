@@ -53,4 +53,4 @@ inline LONG FOLLOW_ID_DATA::mfReadData(FILE *fp)
 	return Result;
 }
 
-#endif
+#endif

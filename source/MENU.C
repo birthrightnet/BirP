@@ -2042,4 +2042,4 @@ void InvToStats(LONG a,LONG b)
 	Menus[D_AVATAR_ATTRIBUTES].Buttons[0].Flags |=D_ZOOM;
 
 
-}
+}

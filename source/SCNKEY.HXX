@@ -164,4 +164,4 @@ inline void KEY::mfInitVals() {
 	
 }
 
-#endif // _SCNKEY_HXX
+#endif // _SCNKEY_HXX

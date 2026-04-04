@@ -576,11 +576,3 @@ SHORT ItemType::mfDuration(SHORT AvaStatsHdl) const
 {
 	return 0;
 }
-
-
-
-
-
-
-
-

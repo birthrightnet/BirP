@@ -140,5 +140,3 @@ typedef struct _VECTOR_3D
 } VECTOR_3D, *PTR_VECTOR_3D;
 
 #endif // _TYPEDEFS_H
-
-

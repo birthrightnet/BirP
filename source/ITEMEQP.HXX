@@ -25,4 +25,4 @@ typedef enum
 extern DECL_VECTOR_CLASS(ItemEquipType,EquipTypes);
 extern LONG EquipMax[];
 		 
-#endif
+#endif

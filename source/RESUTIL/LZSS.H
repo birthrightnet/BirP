@@ -11,5 +11,3 @@ PTR _LZSSEncode_ (PTR, PTR, ULONG);
 PTR _LZSSDecode_ (PTR, PTR, PTR);
 
 #endif
-
-

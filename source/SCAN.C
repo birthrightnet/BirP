@@ -108,4 +108,4 @@ void scan_line (POINT *a, POINT *b, LONG * array)
 
 	if (x>=0 && x<MAX_VIEW_WIDTH)
 		array[x]=y;
-}
+}

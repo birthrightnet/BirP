@@ -43,4 +43,3 @@ LONG GetNextLine(FILE *,
 #endif
 
 #endif // _FILEUTIL_H
-

@@ -51,4 +51,4 @@ CSTRPTR	debug_realm_names[] = {
 "Second Swamp Mage",
 "N. Reformed Church",
 "Wizard Eyeless One",
-"Ruarch Rockhammer"	};
+"Ruarch Rockhammer"	};

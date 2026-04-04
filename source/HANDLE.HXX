@@ -500,4 +500,4 @@ private:
    Inline functions   
    ------------------------------------------------------------------------ */
    
-#endif // _HANDLE_HXX
+#endif // _HANDLE_HXX

@@ -528,4 +528,4 @@ inline BOOL const ArtThing::mfInDeepWater() const
 		     mfZ() < FloorHeight ) ? TRUE : FALSE;
 }
 
-#endif // _ATHING_HXX
+#endif // _ATHING_HXX
