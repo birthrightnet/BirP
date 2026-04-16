@@ -11,6 +11,10 @@
 #include <fcntl.h>
 #include <io.h>
 
+#ifndef DSBCAPS_CTRLDEFAULT
+#define DSBCAPS_CTRLDEFAULT (DSBCAPS_CTRLPAN | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRLFREQUENCY)
+#endif
+
 /**********************************
 To Do:
 

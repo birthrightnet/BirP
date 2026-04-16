@@ -713,7 +713,7 @@ AudioMgrDOS::DropSample(int n)
 		int dups;
 
 		for (dups = 0;dups < activeSamples;dups++) 
-			if (dups != n && sample[dups].memID.IsAllocated && (*sample[dups].memID == *sample[n].memID) )
+			if (dups != n && sample[dups].memID.IsAllocated() && (*sample[dups].memID == *sample[n].memID) )
 				break;
 				
 		if (dups == activeSamples)

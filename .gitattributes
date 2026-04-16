@@ -1,15 +1,9 @@
 # Normalize all text files to LF in the repository, CRLF on checkout (Windows)
 * text=auto eol=crlf
 
-# Force source files to be treated as text even if auto detection sees high-bit bytes
-source/*.C text eol=crlf
-source/*.CPP text eol=crlf
-source/*.H text eol=crlf
-source/*.HXX text eol=crlf
-source/*.INC text eol=crlf
-source/*.RC text eol=crlf
-source/*.DLG text eol=crlf
-source/*.CBP text eol=crlf
+# Force all files under source/ (including nested directories) to text + CRLF checkout.
+# This reduces mass EOL churn in subfolders like source/WINSYS and source/SOLAUDIO.
+source/** text eol=crlf
 
 # Treat binary files as binary - no EOL conversion
 *.cur binary
@@ -22,3 +16,4 @@ source/*.CBP text eol=crlf
 *.ico binary
 *.cab binary
 *.zip binary
+*.7z binary

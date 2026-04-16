@@ -1200,15 +1200,8 @@ BOOL MultiPlayer::GetAEventReply( int which, int * data1, int * data2, int * dat
 		}
 
 	}
-
 	return FALSE;
-
-
-
 }
-
-
-
 
 // -----------------------------------------------------------------
 //
@@ -1223,12 +1216,8 @@ BOOL MultiPlayer::GetAEventReply( int which, int * data1, int * data2, int * dat
 // -----------------------------------------------------------------
 int MultiPlayer::HaveEvent( void )
 {
-
 	//---- is the event set
-
 	return EventReply[0].EventId;  //---- filled in when event comes in
-
-
 }
 
 // -----------------------------------------------------------------
@@ -1244,12 +1233,8 @@ int MultiPlayer::HaveEvent( void )
 // -----------------------------------------------------------------
 int MultiPlayer::HaveResults( void )
 {
-
 	//---- is the event set
-
 	return EventResults.EventId;  //---- filled in when event comes in
-
-
 }
 
 
@@ -1267,9 +1252,7 @@ int MultiPlayer::HaveResults( void )
 int MultiPlayer::CheckForPlayers( void )
 {
 	int x;
-	static dwTime = 0;
-
-
+	static int dwTime = 0;
 
 #if 0
 	if ( fSigs )
@@ -1290,8 +1273,6 @@ int MultiPlayer::CheckForPlayers( void )
 	}
 #endif
 
-
-
 	for ( x = 0; x < MAX_PLAYERS; ++x )
 	{
 		if ( GetAPlayerId(x) != kNoPlayer )
@@ -1301,13 +1282,9 @@ int MultiPlayer::CheckForPlayers( void )
 
 	}
 
-
 	return TRUE;
 
-
 }
-
-
 
 // -----------------------------------------------------------------
 //

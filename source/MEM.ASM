@@ -1,4 +1,4 @@
-;±±±±±±±±±±±±±±±±±±±±±±±±±±±±± FILE HEADER ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+;±±±±±±±±±±±±±±±±±±±±±±±±±±±±?FILE HEADER ±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±?
 ;
 ;    file: mem.asm
 ; project: in house speed, watcom dos version
@@ -8,7 +8,7 @@
 ; made fast memcpy routine
 ;
 ;
-;±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±
+;±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±±?
 .486p
 .model flat 
 
@@ -202,3 +202,4 @@ light_ren	proc ; char *sptr,char *tptr,long wrapmask,long tsy.lval,long src_inc,
 light_ren	endp
 	 ?
 		end
+

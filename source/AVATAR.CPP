@@ -1306,7 +1306,8 @@ void CAvatar::DeleteAvatar(SHORT hAvatar)
 	CAvatar *pAvatar = (CAvatar *) BLKPTR(hAvatar);
 
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
-	for(LONG i=0; i<MAX_AVATARS&&pCurrentScene->Avatars[i]!=pAvatar->hThis; ++i)
+	LONG i;
+	for(i=0; i<MAX_AVATARS&&pCurrentScene->Avatars[i]!=pAvatar->hThis; ++i)
 	{}
 
 	pCurrentScene->Avatars[i]=fERROR;
@@ -1536,7 +1537,8 @@ void CAvatar::mfQueueSnd(BIRTHRT_SND const SndId,
 	               SHORT const range,
 	               LONG const inNumbFrames)
 {
-	for (SHORT i = 0; i < MAX_SND_QUEUE; ++i)
+	SHORT i;
+	for (i = 0; i < MAX_SND_QUEUE; ++i)
 	{
 		if (SndData[i].SndId == SndId && SndData[i].TriggerFrame != MAX_TICK)
 			return;							 // HACK, HACK, HACK!!!!!!!!
@@ -1962,6 +1964,8 @@ WadThingType CAvatar::mfMoveTowardWithBump(
 )
 {
 	PLAYER TempPlayer;
+	TempPlayer.bump = iNOTHING;
+	TempPlayer.BumpIndex = fERROR;
 	LONG BumpDistance;
 	WadThingType bumpResult;	// [d11-30-96 JPC] we need to manipulate this for flying things
 	LONG bumpObjectType;

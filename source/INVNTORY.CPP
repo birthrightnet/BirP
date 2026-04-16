@@ -1109,11 +1109,13 @@ BOOL const ObjectList::mfDoesContain(ITEMTYPE const it)
    ======================================================================== */
 static ITEMTYPE const ObjectList::mfGameTypetoItemType(THINGTYPE const GameType)
 {
+	LONG i;
+
 	if (!GAME_TTYPE::mfCanBePickedUp(GameType))
 		return MAX_ITEM_TYPES;
 
 
-	for (LONG i=ITEM_NO_THING;i<MAX_ITEM_TYPES;++i)
+	for (i=ITEM_NO_THING;i<MAX_ITEM_TYPES;++i)
 	{
 		if (GameType==ItemTypes[i].mfGameType())
 			return (ITEMTYPE)i;

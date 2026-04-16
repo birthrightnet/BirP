@@ -1937,4 +1937,3 @@ MemCopy proc public uses es edi esi ecx,\
 MemCopy endp
 
 	end
-

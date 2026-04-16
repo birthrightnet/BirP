@@ -69,6 +69,7 @@
 #include "places.hxx"
 #include "task.h"
 #include "pversion.hxx"
+#include "LOGGER.H"
 
 #ifdef _WINDOWS
 #include "winsys\DDrawPro.h"
@@ -148,6 +149,9 @@ void dec_lens (LONG, LONG);
 
 extern void ReadOptionSettings(void);
 LONG AverageTicksPerFrame (void);
+
+static int LogPrintf(const char *__format, ...);
+#define printf LogPrintf
 
 
 /* ------------------------------------------------------------------------
@@ -1268,15 +1272,15 @@ void AddGameKeys(void)
 	Description - removes printfs from the code in the release version
 	Returns     -
 	======================================================================== */
-
-// @TODO: Remove this once it's been verified we got everything.
-int	printf( const char *__format, ... )
+static int LogPrintf( const char *__format, ... )
 {
-	va_list args; // Declare a variable argument list
-	va_start(args, __format); // Initialize the args
-	logTrace("The following message was provided by printf.");
-	logInfo(__format, args);
+	char buffer[1024];
+	va_list args;
+	va_start(args, __format);
+	vsprintf(buffer, __format, args);
 	va_end(args);
+	logTrace("The following message was provided by printf.");
+	logInfo("%s", buffer);
 	return 0;
 }
 

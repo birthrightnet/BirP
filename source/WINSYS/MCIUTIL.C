@@ -10,14 +10,26 @@
 #include "mciutil.h"
 
 #include <string.h>
-#include <digitalv.h>
+/*
+   Added LPWSTR guard, included mmsystem.h, and changed stored proc type/cast to WNDPROC.
+   mmsystem.h is not pulled in by Watcom's windows.h; digitalv.h needs it.
+   LPWSTR is also absent from Watcom Win32 headers; define it as LPSTR for the
+   non-Unicode (8-bit) build target this project uses.
+   digitalv.h is sourced from Windows95DDK\INC16 by explicit relative path
+   to avoid globally adding the INC16 tree to include search order.
+*/
+#ifndef LPWSTR
+#define LPWSTR LPSTR
+#endif
+#include <mmsystem.h>
+#include "..\..\..\birp-dependencies\Windows95DDK\INC16\digitalv.h"
 
 extern fSound;
  
 static VOID positionMovie(HWND hWnd);
 
 //---- Globals to this file 
-static	FARPROC fpOldAVIWndProc = NULL;
+static	WNDPROC fpOldAVIWndProc = NULL;
 static	HWND hwndApp = NULL;
 
 MCI_OPEN_PARMS mci_OpenParms;    //---- Open parameters for mci 
@@ -656,7 +668,7 @@ BOOL mci_PlayAVI(char *szFile, HWND hWnd)
 			(DWORD)(LPMCI_STATUS_PARMS)&mciStatus);
 		ghwndMovie = (HWND)mciStatus.dwReturn;
 
-		fpOldAVIWndProc = (FARPROC) SetWindowLong( ghwndMovie, 
+      fpOldAVIWndProc = (WNDPROC) SetWindowLong( ghwndMovie,
 						                           GWL_WNDPROC, (DWORD) AviProc );
 
 		/* now get the movie centered */

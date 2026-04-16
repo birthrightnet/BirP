@@ -183,12 +183,13 @@ void KEY::mfCreateKey(char *cpBuffer, HDL_KEY hKey)
 		{
 
 			char cpFuncIdStr[20];
+			int i;
 
 			// Remove the Keystring.
 			cpBuffer = &cpBuffer[strlen(cpKeyIdStr)];
 
 			// Strip off leading White space
-			for(int i = 0; isspace(cpBuffer[i]) ;i++)
+			for(i = 0; isspace(cpBuffer[i]) ;i++)
 			{
 			}
 

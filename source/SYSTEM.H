@@ -252,7 +252,9 @@ extern "C" {
 #endif
 
 // TODO: Remove this once it's confirmed.
-int	printf( const char *__format, ... );
+// Chris: This printf reference was tripping up Open WATCOM v2.0's C++ compiler, so we'll move it to LOGGER:
+//int printf( const char *__format, ... );
+
 
 /* assert.c */
 // over-ride the assert

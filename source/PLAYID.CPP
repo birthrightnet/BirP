@@ -63,3 +63,4 @@ static GAME_STRING const PLAYER_TITLE::player_title_table[] = {
 static GAME_STRING const PLAYER_DESCRIPTION::player_des_table[] = {
 	  STR_NULL
 	  };
+				

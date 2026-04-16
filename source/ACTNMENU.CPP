@@ -752,7 +752,8 @@ void SelectRealm (LONG realm_, LONG)
 		iSelectedOneHolding = 99;
 		iSelectedUnit = 0;
 		modRegency = modGoldBars = modLevel = 0;
- 		for (LONG i=0; i<16; ++i)
+		LONG i;
+	 	for (i=0; i<16; ++i)
  			iSelectedMulProvince[i] = 0;
 	 	for (i=0; i<20; ++i)
 	 		iSelectedMulUnits[i] = 0;
@@ -922,7 +923,8 @@ void SelectOneHolding (LONG typ, LONG)
 	iSelectedOneHolding = (iSelectedOneHolding==typ)?99:typ;
 	fAllowRollButton += (iSelectedOneHolding!=99);
 	iSelectedUnit = 0;
- 	for(LONG i=0; i<16; ++i)
+	LONG i;
+	for(i=0; i<16; ++i)
  		iSelectedMulProvince[i]=0;
  	for(i=0; i<20; ++i)
  		iSelectedMulUnits[i]=0;

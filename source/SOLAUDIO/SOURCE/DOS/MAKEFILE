@@ -1,20 +1,98 @@
-include = .\;c:\watcom\h
+# Open Watcom-compatible SOLAUDIO DOS library build
+CPP = wpp386
+ASM = ..\..\..\..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+ASMFLAGS = -omf -Zp1 -Cp
+LIBTOOL = wlib
 
-target	= skel.exe
-targetub = skelub.exe
-debugAsmOpts = 
-debugOpt = 
-bannerOpt=
+SRC_DIR = .
+INC_DIR = ..\..\INC
+OUT_DIR = ..\..\LIB\DOS\W
+OBJ_DBG = OBJ\DBG
+OBJ_REL = OBJ\REL
 
-objects = &
-	skel.obj &
-	custmsys.obj &
-	kernaud.obj &
-	fatal.obj &
-	audio.obj &
-	audioa.obj
+CPPFLAGS_COMMON = -i=$(INC_DIR) -dDOS -dAUDIO_LIB -mf -5s -w3 -zq -ei -j -bt=dos4g
+CPPFLAGS_DBG = $(CPPFLAGS_COMMON) -dDEBUG -d2 -hw -r -od
+CPPFLAGS_REL = $(CPPFLAGS_COMMON) -s -oteanmlr
 
-$(target) : $(debugObjs) $(objects) 
-	*wlink name $(target) system dos4g option map option stack=16k &
-		debug all file {$(objects)}
-#	c:\watcom\bin\4gwbind c:\watcom\bin\4gwpro.exe $(targetub) $(target) $(bannerOpt) -V
+DBG_LIB = $(OUT_DIR)\SOLAUDDD.LIB
+REL_LIB = $(OUT_DIR)\SOLAUDD.LIB
+
+DBG_OBJECTS = &
+	$(OBJ_DBG)\AUDIOA.obj &
+	$(OBJ_DBG)\AUDIO.obj &
+	$(OBJ_DBG)\CUSTMSYS.obj &
+	$(OBJ_DBG)\CUSTMSYX.obj &
+	$(OBJ_DBG)\KERNAUD.obj &
+	$(OBJ_DBG)\FATAL.obj &
+	$(OBJ_DBG)\SKEL.obj
+
+REL_OBJECTS = &
+	$(OBJ_REL)\AUDIOA.obj &
+	$(OBJ_REL)\AUDIO.obj &
+	$(OBJ_REL)\CUSTMSYS.obj &
+	$(OBJ_REL)\CUSTMSYX.obj &
+	$(OBJ_REL)\KERNAUD.obj &
+	$(OBJ_REL)\FATAL.obj &
+	$(OBJ_REL)\SKEL.obj
+
+all: .SYMBOLIC clean dirs $(DBG_LIB) $(REL_LIB)
+
+dirs: .SYMBOLIC
+	@cmd /c "if not exist $(OUT_DIR) mkdir $(OUT_DIR)"
+	@cmd /c "if not exist $(OBJ_DBG) mkdir $(OBJ_DBG)"
+	@cmd /c "if not exist $(OBJ_REL) mkdir $(OBJ_REL)"
+
+$(DBG_LIB): dirs $(DBG_OBJECTS)
+	@cmd /c "if exist $(DBG_LIB) del $(DBG_LIB)"
+	$(LIBTOOL) -q -b -n $(DBG_LIB) +$(DBG_OBJECTS)
+
+$(REL_LIB): dirs $(REL_OBJECTS)
+	@cmd /c "if exist $(REL_LIB) del $(REL_LIB)"
+	$(LIBTOOL) -q -b -n $(REL_LIB) +$(REL_OBJECTS)
+
+$(OBJ_DBG)\AUDIOA.obj: $(SRC_DIR)\AUDIOA.ASM
+	$(ASM) $(ASMFLAGS) -Fo$(OBJ_DBG)\AUDIOA.obj $(SRC_DIR)\AUDIOA.ASM
+
+$(OBJ_DBG)\AUDIO.obj: $(SRC_DIR)\AUDIO.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\AUDIO.obj $(SRC_DIR)\AUDIO.CPP
+
+$(OBJ_DBG)\CUSTMSYS.obj: $(SRC_DIR)\CUSTMSYS.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\CUSTMSYS.obj $(SRC_DIR)\CUSTMSYS.CPP
+
+$(OBJ_DBG)\CUSTMSYX.obj: $(SRC_DIR)\CUSTMSYX.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\CUSTMSYX.obj $(SRC_DIR)\CUSTMSYX.CPP
+
+$(OBJ_DBG)\KERNAUD.obj: $(SRC_DIR)\KERNAUD.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\KERNAUD.obj $(SRC_DIR)\KERNAUD.CPP
+
+$(OBJ_DBG)\FATAL.obj: $(SRC_DIR)\FATAL.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\FATAL.obj $(SRC_DIR)\FATAL.CPP
+
+$(OBJ_DBG)\SKEL.obj: $(SRC_DIR)\SKEL.CPP
+	$(CPP) $(CPPFLAGS_DBG) -fo=$(OBJ_DBG)\SKEL.obj $(SRC_DIR)\SKEL.CPP
+
+$(OBJ_REL)\AUDIOA.obj: $(SRC_DIR)\AUDIOA.ASM
+	$(ASM) $(ASMFLAGS) -Fo$(OBJ_REL)\AUDIOA.obj $(SRC_DIR)\AUDIOA.ASM
+
+$(OBJ_REL)\AUDIO.obj: $(SRC_DIR)\AUDIO.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\AUDIO.obj $(SRC_DIR)\AUDIO.CPP
+
+$(OBJ_REL)\CUSTMSYS.obj: $(SRC_DIR)\CUSTMSYS.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\CUSTMSYS.obj $(SRC_DIR)\CUSTMSYS.CPP
+
+$(OBJ_REL)\CUSTMSYX.obj: $(SRC_DIR)\CUSTMSYX.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\CUSTMSYX.obj $(SRC_DIR)\CUSTMSYX.CPP
+
+$(OBJ_REL)\KERNAUD.obj: $(SRC_DIR)\KERNAUD.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\KERNAUD.obj $(SRC_DIR)\KERNAUD.CPP
+
+$(OBJ_REL)\FATAL.obj: $(SRC_DIR)\FATAL.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\FATAL.obj $(SRC_DIR)\FATAL.CPP
+
+$(OBJ_REL)\SKEL.obj: $(SRC_DIR)\SKEL.CPP
+	$(CPP) $(CPPFLAGS_REL) -fo=$(OBJ_REL)\SKEL.obj $(SRC_DIR)\SKEL.CPP
+
+clean: .SYMBOLIC
+	@cmd /c "if exist $(OBJ_DBG) rd /s /q $(OBJ_DBG)"
+	@cmd /c "if exist $(OBJ_REL) rd /s /q $(OBJ_REL)"
+

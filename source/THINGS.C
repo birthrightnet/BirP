@@ -25,7 +25,7 @@
    sort_things            - sorts things
 
    ======================================================================== */
-/* ®RM250¯------------------------------------------------------------------------
+/* ï¿½RM250ï¿½------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
 #include <stdio.h>
@@ -124,11 +124,11 @@ MINMEMCONVERT MinMemAdditionalTable[] = {
 };
 SHORT MinMemAdditionalTableMax = sizeof(MinMemAdditionalTable) / sizeof(MINMEMCONVERT);
 
-/*	ðððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððð
+/*	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	Every 10000 thing_spans is another 280 K of RAM in the code! --Wes
 	Sorry Wes, I will seriously reduce this when I have an opportunity to
 	turn the actinic illumination of my intellect upon it. --Alan
-	ðððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððððð */
+	ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 #define UNIT_SCALE_ADJUST		100
 
 /* ------------------------------------------------------------------------
@@ -149,7 +149,7 @@ static SHORT load_PCX_sequence (ULONG iAnim, ULONG type, ULONG seq, ULONG Rotati
 void WriteErrFile(char *n);
 void beep(void);
 void RemoveAnim (SHORT iAnim);
-SHORT NextAnimFrame (SHORT iAnim, SHORT iSeq, SHORT iRot, UBYTE * pCtrl, SHORT frame);
+SHORT NextAnimFrame (SHORT iAnim, USHORT iSeq, USHORT iRot, UBYTE * pCtrl, SHORT frame);
 SHORT NextPCXFrame (SHORT iAnim, SHORT iSeq, SHORT iRot);
 ERRCODE decode_frame (ANIMPTR pAnim, FLICHEADPTR pHead);
 void decode_byte_run (PTR pData, ANIMPTR pAnim);
@@ -3536,7 +3536,7 @@ exit:
 /* =======================================================================
 	NextAnimFrame - Advance to next frame of flic
 	======================================================================= */
-SHORT NextAnimFrame (SHORT iAnim, SHORT sequence, SHORT rotation, UBYTE * pCtrl, SHORT frame)
+SHORT NextAnimFrame (SHORT iAnim, USHORT sequence, USHORT rotation, UBYTE * pCtrl, SHORT frame)
 {
 	ANIMPTR			pAnim = 0;
 	FLICHEADPTR		pHead = 0;

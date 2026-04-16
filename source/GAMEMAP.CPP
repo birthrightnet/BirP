@@ -3612,7 +3612,7 @@ NoLeader:
 				if (realm[iHotSeatMultiplayerIndex].mfIsDMCtrl()
 					&& iHotSeatMultiplayerIndex != HomeRealm)
 				{
-					HomeRealm = iHotSeatMultiplayerIndex;
+					HomeRealm = (REALM::REALM_TYPE)iHotSeatMultiplayerIndex;
 					ActiveRegent = realm[HomeRealm].mfGetRegent();
 					if (i != HomeRealm)
 					{
@@ -3646,7 +3646,7 @@ NoLeader:
 				&& !realm[iHotSeatMultiplayerIndex].mfIsDMCtrl()
 				&& iHotSeatMultiplayerIndex != HomeRealm )
 			{
-				HomeRealm = iHotSeatMultiplayerIndex;
+				HomeRealm = (REALM::REALM_TYPE)iHotSeatMultiplayerIndex;
 				ActiveRegent = realm[HomeRealm].mfGetRegent();
 				if (i != HomeRealm)
 				{
@@ -3685,7 +3685,7 @@ NoLeader:
 		// lastly, set for AUTOPLAY
 		if (iHotSeatMultiplayerIndex == LAND_REALM_COUNT)
 			iHotSeatMultiplayerIndex = REALM::MIERES;
-		HomeRealm = iHotSeatMultiplayerIndex;
+		HomeRealm = (REALM::REALM_TYPE)iHotSeatMultiplayerIndex;
 		ActiveRegent = realm[HomeRealm].mfGetRegent();
 		if (i != HomeRealm)
 		{
@@ -5402,7 +5402,7 @@ BOOL UpdateDataArea (void)
 			// lastly, set for AUTOPLAY
 			if (iHotSeatMultiplayerIndex == LAND_REALM_COUNT)
 				iHotSeatMultiplayerIndex = REALM::MIERES;
-			HomeRealm = iHotSeatMultiplayerIndex;
+			HomeRealm = (REALM::REALM_TYPE)iHotSeatMultiplayerIndex;
 			ActiveRegent = realm[HomeRealm].mfGetRegent();
 			if (i != HomeRealm)
 			{
@@ -5426,7 +5426,7 @@ BOOL UpdateDataArea (void)
 		// lastly, set for AUTOPLAY
 		if (iHotSeatMultiplayerIndex == LAND_REALM_COUNT)
 			iHotSeatMultiplayerIndex = REALM::MIERES;
-		HomeRealm = iHotSeatMultiplayerIndex;
+		HomeRealm = (REALM::REALM_TYPE)iHotSeatMultiplayerIndex;
 		ActiveRegent = realm[HomeRealm].mfGetRegent();
 		if (i != HomeRealm)
 		{
@@ -6517,9 +6517,9 @@ BOOL UpdateDataArea (void)
 			{
 				CHAR	temp1[80];
 				CHAR	temp2[80];
-				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	// À occupied
+				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	// ï¿½ occupied
 				line(158-4, y+18, 182,	y+18,	DKBROWN);
-				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	// À castles
+				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	// ï¿½ castles
 				line(177-4, y+6,  182,	y+6,	DKBROWN);
 				print_textf(190, y+3, DKBROWN, STRMGR_GetStr(STR_GM_MAINT_CASTLES), cCastles);
 				y += 12;
@@ -8667,7 +8667,7 @@ DoSpecial:
 							// check for spotting units
 							if (units[j].Icon == A_SCT_UNIT_ICON)
 							{
-								PROVINCE	thisProv = prov;
+								PROVINCE	thisProv = (PROVINCE)prov;
 								PROVINCE	nextProv;
 								LONG		k;
 
@@ -8678,7 +8678,7 @@ DoSpecial:
 
 								for(k=0;k<7;k++)
 								{
-									nextProv = province[thisProv].Border[k].Province;
+									nextProv = (PROVINCE)province[thisProv].Border[k].Province;
 									if(CanISeeAnyoneInThisProv(HomeRealm, nextProv))
 									{
 										MarkUnitsSpotted(nextProv);

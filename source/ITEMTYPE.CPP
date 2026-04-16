@@ -2105,6 +2105,7 @@ BOOL ItemEffects::mfAddActiveItem(PFLLLL f,LONG a1,LONG a2,LONG dur,BOOL fAR)
 {
 	ITEMTYPE		Itemtype;
 	SHORT			hAvatarStats;
+	LONG			i;
 
  	SPLIT_COMBO(a1,Itemtype,hAvatarStats);
 	ItemType&		Item=ItemTypes[Itemtype];
@@ -2118,7 +2119,7 @@ BOOL ItemEffects::mfAddActiveItem(PFLLLL f,LONG a1,LONG a2,LONG dur,BOOL fAR)
 		return FALSE;
 	}
 
-	for (LONG i=0;i<MAX_ACTIVE_ITEMS;++i)
+	for (i=0;i<MAX_ACTIVE_ITEMS;++i)
 	{
 		if (!ActiveItems[i].Valid)
 			break;
@@ -2488,7 +2489,8 @@ void ItemChargeHandler::mfDropCharge(ITEMTYPE ItemTypeIdx,SHORT hAvatarStats)
 		if (pStats->Inventory.mfFindInSpellBoxes(ItemTypeIdx,&iSpellBoxFound))
 		{
 			InventoryItor itor2(pStats->Inventory);
-			for (LONG jSearch=0;jSearch<MAX_CHARGES;++jSearch)
+			LONG jSearch;
+			for (jSearch=0;jSearch<MAX_CHARGES;++jSearch)
 			{
 				if (jSearch==jFound)
 					continue;

@@ -13,9 +13,8 @@
 ## User settable macros ##
 ##########################
 
-ASM = ml
-##AFLAGS = -5p
-AFLAGS = /Gz /c /Cp /Zm /Zp4 /DDEBUG
+ASM = ..\..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+AFLAGS = -omf -Zp1 -Cp
 ExeFile  =
 
 CCompiler = wcc386
@@ -124,7 +123,7 @@ SYSTEM_OBJ =	$(OBJD)\resutil.obj &
 ## Makefile rules ##
 ####################
 
-install : $(Exe_file)
+install : clean $(Exe_file)
 
 resutil.exe: $(SYSTEM_OBJ)
         echo $(msg_$(version))
@@ -149,9 +148,9 @@ resutil.exe: $(SYSTEM_OBJ)
 #        *$(ASM) $(AFLAGS) /Fo$(OBJD)\ $<
 
 .asm.obj: .SYMBOLIC
-        ml /Zi $<
+	@cmd /c "if not exist $(OBJD) mkdir $(OBJD)"
+	*$(ASM) $(AFLAGS) -Fo$@ $<
 
 clean : .SYMBOLIC
-        del $(OBJD)\*.obj
-        del *.err
-
+	-del $(OBJD)\*.obj
+	-del *.err

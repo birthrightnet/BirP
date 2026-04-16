@@ -710,7 +710,6 @@ class ItemEffects
 		static LONG Invisibility		(LONG,LONG,LONG);
 		static LONG RingJump			(LONG,LONG,LONG);
 		static LONG RingProtect			(LONG,LONG,LONG);
-		static LONG Regenerate			(LONG,LONG,LONG);
 		static LONG ActResistance		(LONG,LONG,LONG);
 		static LONG Resistance			(LONG,LONG,LONG);
 		static LONG RingResistance		(LONG,LONG,LONG);
@@ -773,13 +772,10 @@ class ItemEffects
 		static LONG TomePrince			(LONG,LONG,LONG);
 
 		// wizard spells
-
 		static LONG Jump				(LONG,LONG,LONG);
-		static LONG Shrink				(LONG,LONG,LONG);
 		static LONG ShockingGrasp		(LONG,LONG,LONG);
 		static LONG Blindness			(LONG,LONG,LONG);
 		static LONG Knock				(LONG,LONG,LONG);
-		static LONG Levitate			(LONG,LONG,LONG);
 		static LONG LocateObject		(LONG,LONG,LONG);
 		static LONG Strength			(LONG,LONG,LONG);
 		static LONG StoneUndead			(LONG,LONG,LONG);
@@ -814,13 +810,10 @@ class ItemEffects
 		static LONG Shillelagh			(LONG,LONG,LONG);
 		static LONG TurnUndead			(LONG,LONG,LONG);
 		static LONG BarkSkin			(LONG,LONG,LONG);
-		static LONG ResistFire			(LONG,LONG,LONG);
 		static LONG SpritualHammer		(LONG,LONG,LONG);
 		static LONG MagicalVestement	(LONG,LONG,LONG);
-		static LONG WaterWalk			(LONG,LONG,LONG);
 		static LONG ProtectionFromEvil	(LONG,LONG,LONG);
 		static LONG FlameStrike			(LONG,LONG,LONG);
-		static LONG MapShowAll			(LONG,LONG,LONG);
 		static LONG Resurrection		(LONG,LONG,LONG);
 		static LONG FireStormSpell		(LONG,LONG,LONG);
 		static LONG HolyWordSpell		(LONG,LONG,LONG);
@@ -832,7 +825,6 @@ class ItemEffects
 		static LONG BADevineWrath		(LONG,LONG,LONG);
 		static LONG BAHeightendAbility	(LONG,LONG,LONG);
 		static LONG BABloodMark			(LONG,LONG,LONG);
-		static LONG BADetectIllusion	(LONG,LONG,LONG);
 		static LONG BADivineAura		(LONG,LONG,LONG);
 		static LONG BAEnhancedSense		(LONG,LONG,LONG);
 		static LONG BAFear				(LONG,LONG,LONG);

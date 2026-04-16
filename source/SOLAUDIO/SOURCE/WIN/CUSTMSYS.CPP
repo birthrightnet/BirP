@@ -24,7 +24,6 @@
 #ifdef WINDOWS
 #include <windows.h>  
 //#include <mmsystem.h>	 //if you want to use the code in GetElapsedTicks, bring these back in
-extern void mMBox(char *,char *);
 DWORD		AudioFeedMSec = 2000;
 DWORD		AudioIOBytes = 65535;
 DWORD		DSoundMSec = 1000;
@@ -184,6 +183,11 @@ void MemID::Get(int type, size_t size, int resHandle, int flag)
 	handle = malloc(len = size);
 }
 
+void MemID::Get(size_t size)
+{
+	Get(MemAudioBuffer, size, 0, 0);
+}
+
 void MemID::Realloc(size_t size)
 {
 	handle = realloc(handle, len = size);
@@ -288,6 +292,44 @@ ConfigMgr*	configMgr;
 
 MsgMgr::MsgMgr()
 {
+}
+
+// Change note (before/after/why):
+// - Before: WIN release links relied on extern declarations for mMBox and
+//   Fatal(int,int), but no implementation was linked in this library build.
+// - After: Provide local WIN implementations of mMBox and Fatal(int,int)
+//   in CUSTMSYS.CPP for the stand-alone SOLAUDIO build.
+// - Why: Resolve undefined symbol linker failures in WIN95 release builds
+//   while preserving fatal-error behavior (message box then exit).
+void
+mMBox(char* text, char* title)
+{
+	MessageBox(NULL, text, title, MB_OK | MB_TASKMODAL);
+}
+
+void
+Fatal(int code, int num)
+{
+	char buf[128];
+
+	switch (code)
+	{
+		case BAD_FORMAT:
+			sprintf(buf, "Invalid audio file format: %d", num);
+			break;
+		case COMPRESSED_WAVE:
+			sprintf(buf, "Cannot play compressed WAVE audio: %d", num);
+			break;
+		case SUBMIT:
+			sprintf(buf, "Audio submit error: %d", num);
+			break;
+		default:
+			sprintf(buf, "Unknown audio error: %d (%d)", code, num);
+			break;
+	}
+
+	mMBox(buf, "FATAL");
+	exit(1);
 }
 
 void

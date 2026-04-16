@@ -1,4 +1,4 @@
-/* =®RM250¯=======================================================================
+/* =ï¿½RM250ï¿½=======================================================================
    Copyright (c) 1990,1995   Synergistic Software
    All Rights Reserved.
    =======================================================================
@@ -112,7 +112,7 @@ void set_view()
 #endif
 }
 
-#if defined(UNUSED)
+#if 0 
 /* =======================================================================
    Function    - round
    Description - rounds a number to the nearest integral value
@@ -498,7 +498,7 @@ void projection(POINT *p,LONG z, LONG distanceToCamera)
 #endif
 
 
-#if defined(UNUSED)
+#if 0 /* was: #if defined(UNUSED) - UNUSED is now defined in MEMMANAG.H and clashes with math.h round() */
 /* =======================================================================
    Function    - cross_prod
    Description - returns the cross product of two vectors

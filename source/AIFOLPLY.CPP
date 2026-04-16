@@ -252,7 +252,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							if (SCENE_MGR::gTick > SoundDelay + pAvatar->fFollowPlayer.fTimeLastBump)
 							{
 								pAvatar->fFollowPlayer.fTimeLastBump = SCENE_MGR::gTick;
-								if (GAME_TTYPE::mfIsAvatarType(mythings[myThingBumped].type))
+								if (myThingBumped >= 0 && myThingBumped < MAX_THINGS && GAME_TTYPE::mfIsAvatarType(mythings[myThingBumped].type))
 								{
 									if (CAvatar::mfDeadFlicSeq(myThingBumped))
 									{
@@ -367,7 +367,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						if (SCENE_MGR::gTick > SoundDelay + pAvatar->fFollowPlayer.fTimeLastBump)
 						{
 							pAvatar->fFollowPlayer.fTimeLastBump = SCENE_MGR::gTick;
-							if (myThingBumped < MAX_THINGS && GAME_TTYPE::mfIsAvatarType(mythings[myThingBumped].type))
+							if (myThingBumped >= 0 && myThingBumped < MAX_THINGS && GAME_TTYPE::mfIsAvatarType(mythings[myThingBumped].type))
 							{
 								if (CAvatar::mfDeadFlicSeq(myThingBumped))
 								{

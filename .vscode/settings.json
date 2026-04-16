@@ -1,3 +1,20 @@
 {
-  "editor.insertFinalNewline": false
+  "files.insertFinalNewline": true,
+  "search.useIgnoreFiles": true,
+  "search.useGlobalIgnoreFiles": false,
+  "search.useParentIgnoreFiles": false,
+  "explorer.excludeGitIgnore": false,
+  "search.exclude": {
+    "**/.git/**": true,
+    "build-logs/**": true,
+  },
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    ".github": false,
+    ".github/**": false,
+    "scripts": false,
+    "scripts/**": false,
+    "build-logs": false,
+    "build-logs/**": true,
+  },
 }

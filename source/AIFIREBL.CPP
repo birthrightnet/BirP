@@ -477,7 +477,8 @@ void CAvatar::FireBall (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					{
 						SCENE * const pCurrentScene = (SCENE * const) BLKPTR(SCENE_MGR::hCurrentScene);
 						// check to see if this thing index is an avatar
-						for(LONG i = 0; i < MAX_AVATARS; i++ )
+						LONG i;
+						for(i = 0; i < MAX_AVATARS; i++ )
 						{
 							// This is a sparsly filled array.
 							if (pCurrentScene->Avatars[i] != fERROR)

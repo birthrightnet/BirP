@@ -527,7 +527,7 @@ typedef int (*lpfnFreeCustomServerMessageFunc)(char *Message);
 *		returns a 0 for success, a -1 for failure
 */
 
-SIGSAPI TellMeGameMessReceived(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID = 0);			  
+SIGSAPI int TellMeGameMessReceived(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID = 0);
 typedef int (*lpfnTellMeGameMessReceivedFunc)(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID);
 
 
@@ -581,7 +581,7 @@ typedef int (*lpfnFreeGameMessageBufferFunc)(void);
 *	Output:
 *		returns a 0 for success, a -1 for failure
 */
-SIGSAPI TellMeChatMessReceived(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID = 0);			  
+SIGSAPI int TellMeChatMessReceived(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID = 0);
 typedef int (*lpfnTellMeChatMessReceivedFunc)(NOTIFY_METHOD notifyType, MESS_RECEIVED_PROC my_function, HWND my_window, UINT messageID );
 
 
@@ -829,7 +829,7 @@ typedef int (*lpfnSendUserComplaintFunc)(char *Offender, char *Complaint);
 *		returns a 0 for success, a -1 for failure
 */
 
-SIGSAPI TellMeSpecialChatReceived(NOTIFY_METHOD notifyType, SPECIAL_CHAT_PROC my_function, HWND my_window, UINT messageID = 0);			  
+SIGSAPI int TellMeSpecialChatReceived(NOTIFY_METHOD notifyType, SPECIAL_CHAT_PROC my_function, HWND my_window, UINT messageID = 0);
 typedef int (*lpfnTellMeSpecialChatReceivedFunc)(NOTIFY_METHOD notifyType, SPECIAL_CHAT_PROC my_function, HWND my_window, UINT messageID );
 
 

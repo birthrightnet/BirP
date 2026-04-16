@@ -1,11 +1,7 @@
-bin/
-obj/
-build-logs/
-source2/
-
+# These files will be ignored by the birp-dev Git repository...
+build-artifacts/
+scripts/env-backups/
 *.bat
-!MAKE.BAT
-!source/MAKE-ORIGINAL.BAT
 *.cur
 *.dat
 *.err
@@ -16,5 +12,10 @@ source2/
 *.map
 *.obj
 *.res
-
 *.layout
+desktop.ini
+.DS_Store
+
+# ...but these exceptions will not be ignored!
+!MAKE.BAT
+!source/MAKE-ORIGINAL.BAT

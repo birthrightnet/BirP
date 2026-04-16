@@ -8,7 +8,7 @@
    ========================================================================
    Contains the following general functions:
 
-   ®RM250¯======================================================================= */
+   ï¿½RM250ï¿½======================================================================= */
 
 /* ------------------------------------------------------------------------
    Includes
@@ -1417,9 +1417,10 @@ void LoadGameDoMulti( void )
 	HidePanel(D_BUILD_ADV);
 
 	LinkUnits(FALSE); // Don't send to others
+	SHORT i;
 
 
-	for (SHORT i=0; i < LAND_REALM_COUNT; i++)
+	for (i=0; i < LAND_REALM_COUNT; i++)
 	{
 		SHORT RegentIdx = realm[i].mfGetRegent();
 		if (regents[RegentIdx].mfGetunit() == fERROR)
@@ -1860,7 +1861,7 @@ void PaintLoadSaveMenu (LONG MenuCombo, LONG)
 
 #ifdef _FOREIGNVER
 	#ifdef _FRENCHVER
-			sprintf(buffer, "%s %s", saved_games[i+first_displayed], (ScenInfo[i+first_displayed].IsScenario)?"Scénario":" ");
+			sprintf(buffer, "%s %s", saved_games[i+first_displayed], (ScenInfo[i+first_displayed].IsScenario)?"Scï¿½nario":" ");
 	#endif
 	#ifdef _GERMANVER
 			sprintf(buffer, "%s %s", saved_games[i+first_displayed], (ScenInfo[i+first_displayed].IsScenario)?"Szenario":" ");

@@ -1,5 +1,4 @@
 // audiodos.hpp
-
 #ifndef AUDIODOS_HPP
 #define AUDIODOS_HPP
 
@@ -121,7 +120,6 @@ private:
 	Boolean	ImpAudioDurationNoEx(int iSample, int* iDuration);
 	void		ImpAudioDistortNoEx(int iDistortionMask, int iSample); 
 	void		ImpAudioVolumeNoEx(int iVolume, int iSample);   
-	void		AudioServer();
 	int		CallDAC(int,int);
 	void		AdjustAudBuffSizes(unsigned *,unsigned *);
 	Boolean	GetDACBuffer(void);
@@ -138,7 +136,6 @@ private:
 	void		AudioCheck();
 	Boolean	AudioFade(int);
 	void		AudioUnLoad();
-	Boolean	CallDAC(int,int);
 	void		CheckRawFormat(int);
 	Boolean	CheckSOLFormat(int);
 	Boolean	CheckWAVEFormat(int);

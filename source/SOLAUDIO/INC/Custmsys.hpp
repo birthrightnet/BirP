@@ -1,6 +1,5 @@
 // CUSTMSYS.HPP - Customizable functions that support breaking out parts
 //						of the interpreter into stand-alone libraries.
-
 #ifndef CUSTMSYS_HPP
 #define CUSTMSYS_HPP
 
@@ -90,9 +89,7 @@ public:
 	void* operator*() const;
 	char& operator[](size_t s) const;
 	long IsAllocated() const;
-#if 0
 	operator int() const;
-#endif
 	int Load(char* fileName); // Only used in DOS, so you can ignore it for Windows
 
 protected:

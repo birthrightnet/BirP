@@ -13,9 +13,8 @@
 ## User settable macros ##
 ##########################
 
-ASM = ml
-##AFLAGS = -5p
-AFLAGS = /Gz /c /Cp /Zm /Zp4 /DDEBUG
+ASM = ..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+AFLAGS = -omf -Zp1 -Cp
 ExeFile  =
 
 CCompiler = wcc386
@@ -28,11 +27,7 @@ CPPCompiler = wpp386
 !error "Please define OS"
 !endif
 
-!ifeq RAND ON
 Rand_Flag = -d_RANDLOG
-!else
-Rand_Flag =
-!endif
 
 
 !ifeq OS DOS
@@ -71,20 +66,11 @@ Vec_Check =
 !endif
 !endif
 
-LogComments =
-!ifeq DEBUG ON
-!ifeq OS WIN95
 LogComments = -d_LOGCOMMENT
-!endif
-!endif
-
-!ifeq LOGCOMMENT ON
-LogComments = -d_LOGCOMMENT
-!endif
 
 soundsys = on
 !ifeq SOUND OFF
-soundsys = off
+!error "SOUND=OFF is no longer supported; sound is always enabled"
 !endif
 
 ForeignVer =
@@ -152,44 +138,47 @@ msg_debugging  = linking $(op_sys) debug version ...
 msg_production = linking $(op_sys) production version ...
 msg_profiling = linking $(op_sys) profile version ...
 
-dos_debugging_object_dir = obj\Debug\DOS
-dos_profiling_object_dir = obj\Debug\DOS
-dos_production_object_dir = obj\Release\DOS
-dos_debugging_binary_dir = bin\Debug\DOS
-dos_profiling_binary_dir = bin\Debug\DOS
-dos_production_binary_dir = bin\Release\DOS
+BUILD_ARTIFACTS_ROOT = ..\build-artifacts
+
+# Build outputs now live under build-artifacts to avoid polluting the repository root.
+dos_debugging_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Debug\DOS
+dos_profiling_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Debug\DOS
+dos_production_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Release\DOS
+dos_debugging_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Debug\DOS
+dos_profiling_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Debug\DOS
+dos_production_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Release\DOS
 dos_browser_dir = dosmbr
 dos_browser_database = nova.dbr
 dos_executable = nova.exe
 dos_system = dos4g
 dos_sys_dir = .\pcsys\
-dos_debugging_sound_on_lib = lib SOLAUDIO\LIB\DOS\W\SOLAUDDD.lib
+dos_debugging_sound_on_lib = lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\DOS\W\SOLAUDDD.LIB
 dos_debugging_sound_off_lib =
-dos_profiling_sound_on_lib = lib SOLAUDIO\LIB\DOS\W\SOLAUDDD.lib
+dos_profiling_sound_on_lib = lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\DOS\W\SOLAUDDD.LIB
 dos_profiling_sound_off_lib =
-dos_production_sound_on_lib = lib SOLAUDIO\LIB\DOS\W\SOLAUDDD.lib
+dos_production_sound_on_lib = lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\DOS\W\SOLAUDDD.LIB
 dos_production_sound_off_lib =
 dos_sound_on = -dAUDIO_LIB
 dos_sound_off =
 dos_graphics_lib =
 dos_multimedia_lib =
 
-win_debugging_object_dir = obj\Debug\Windows
-win_profiling_object_dir = obj\Debug\Windows
-win_production_object_dir = obj\Release\Windows
-win_debugging_binary_dir = bin\Debug\Windows
-win_profiling_binary_dir = bin\Debug\Windows
-win_production_binary_dir = bin\Release\Windows
+win_debugging_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Debug\Windows
+win_profiling_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Debug\Windows
+win_production_object_dir = $(BUILD_ARTIFACTS_ROOT)\compiled-code\Release\Windows
+win_debugging_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Debug\Windows
+win_profiling_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Debug\Windows
+win_production_binary_dir = $(BUILD_ARTIFACTS_ROOT)\binaries\Release\Windows
 win_browser_dir = winmbr
 win_browser_database = nova95.dbr
 win_executable = nova95.exe
 win_system = nt_win
 win_sys_dir = .\winsys\
-win_debugging_sound_on_lib =	lib SOLAUDIO\LIB\WIN\W\SOLAUDWD.lib
+win_debugging_sound_on_lib =	lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\WIN\W\SOLAUDWD.LIB
 win_debugging_sound_off_lib =
-win_profiling_sound_on_lib =	lib SOLAUDIO\LIB\WIN\W\SOLAUDWD.lib
+win_profiling_sound_on_lib =	lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\WIN\W\SOLAUDWD.LIB
 win_profiling_sound_off_lib =
-win_production_sound_on_lib =	 lib SOLAUDIO\LIB\WIN\W\SOLAUDW.lib
+win_production_sound_on_lib =	 lib $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO\LIB\WIN\W\SOLAUDW.LIB
 win_production_sound_off_lib =
 win_sound_on = -dAUDIO_LIB
 win_sound_off =
@@ -200,6 +189,13 @@ win_multimedia_lib = lib winmm.lib
 OBJD = $($(op_sys)_$(version)_object_dir)
 BIND = $($(op_sys)_$(version)_binary_dir)
 MBRD = $($(op_sys)_browser_dir)
+ERRLOG_DIR = $(BUILD_ARTIFACTS_ROOT)\logs
+SOLAUDIO_STAGE_ROOT = $(BUILD_ARTIFACTS_ROOT)\SOLAUDIO
+SOLAUDIO_STAGE_WIN_SRC_DIR = $(SOLAUDIO_STAGE_ROOT)\SOURCE\WIN
+SOLAUDIO_STAGE_DOS_SRC_DIR = $(SOLAUDIO_STAGE_ROOT)\SOURCE\DOS
+SOLAUDIO_STAGE_WIN_LIB_DIR = $(SOLAUDIO_STAGE_ROOT)\LIB\WIN\W
+SOLAUDIO_STAGE_DOS_LIB_DIR = $(SOLAUDIO_STAGE_ROOT)\LIB\DOS\W
+RES_STAGE_ROOT = $(BUILD_ARTIFACTS_ROOT)\RES
 
 SYS_DIR = $($(op_sys)_sys_dir)
 
@@ -216,10 +212,18 @@ SoundFlag    = $($(op_sys)_sound_$(soundsys))
 LIBRARIES    = $($(op_sys)_graphics_lib) $($(op_sys)_multimedia_lib) $($(op_sys)_$(version)_sound_$(soundsys)_lib)
 !endif
 
+!ifeq OS DOS
+!ifdef %LIB
+LIBPATH = libpath $(%WATCOM)\lib386;$(%WATCOM)\lib386\dos;$(%LIB)
+!else
+LIBPATH = libpath $(%WATCOM)\lib386;$(%WATCOM)\lib386\dos
+!endif
+!else
 !ifdef %LIB
 LIBPATH = libpath $(%LIB)
 !else
 LIBPATH =
+!endif
 !endif
 
 
@@ -251,7 +255,7 @@ optimize_on = -5s -otexan
 optimize_off = -5s -od
 warning_level = -w3
 # Note: -d2 implies -od (No optimizations.)
-debugging_on = -d2 -d_DEBUG -hw
+debugging_on = -d1 -d_DEBUG -hw
 profiling_on = -d1 -hw
 large_memory_model = -mf
 # Note: -za for Ansi C implies that enum are int.
@@ -286,7 +290,7 @@ dos_debugging_Compiler_Options = &
 	$(quiet) &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
-	-bt=$(System) -fo$(OBJD)\ &
+	-bt=$(System) -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\ &
 	$(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(DemoVer) $(WadBuildersVer) $($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 
 dos_profiling_Compiler_Options = &
@@ -297,7 +301,7 @@ dos_profiling_Compiler_Options = &
 	$(profiling_on) &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
-	-bt=$(System) -fo=$(OBJD)\ &
+	-bt=$(System) -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\ &
 	$(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(WadBuildersVer)  &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 
@@ -309,7 +313,7 @@ dos_production_Compiler_Options = &
 	$(quiet) &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
-	-bt=$(System) -fo=$(OBJD)\ &
+	-bt=$(System) -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\ &
 	$(SoundFlag) $(ForeignVer) $(FrenchVer) $(GermanVer) $(ReleaseVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(WadBuildersVer)  &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 !endif
@@ -322,7 +326,7 @@ dos_browser_options = &
 	$(quiet) &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
-	-bt=$(System) -fo=$(MBRD)\ &
+	-bt=$(System) -fo=$(MBRD)\ -fr=$(ERRLOG_DIR)\ &
 	$(SoundFlag) $(ReleaseVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(MultiPlayOnly) $(WadBuildersVer) $($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 
 # Linker_options   =
@@ -362,18 +366,19 @@ win_production_Compiler_Options = &
 	$(win_debugging_Compiler_Options)
 
 !else
+
 win_debugging_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
 	$(LogComments) -dWIN32 -d_WINDOWS $(SoundFlag) $(ReleaseVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(Rand_Flag) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(MultiPlayOnly) $(StatusFlag)&
 	$(CharEdFlag) &
-	$(optimize_on) &
+	$(optimize_off) &
 	$(debugging_on) &
 	$(warning_level) &
 	$(quiet) &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
 	$(large_memory_model) &
-	-bt=nt -fo=$(OBJD)\
+	-bt=nt -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\
 
 win_profiling_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
@@ -386,7 +391,7 @@ win_profiling_Compiler_Options = &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
 	$(large_memory_model) &
-	-bt=nt -fo=$(OBJD)\
+	-bt=nt -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\
 
 win_production_Compiler_Options = &
 	$($(op_sys)_$(version)_sound_$(soundsys)_Includes)&
@@ -398,7 +403,7 @@ win_production_Compiler_Options = &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
 	$(large_memory_model) &
-	-bt=nt -fo=$(OBJD)\
+	-bt=nt -fo=$(OBJD)\ -fr=$(ERRLOG_DIR)\
 !endif
 
 win_browser_options = &
@@ -413,7 +418,7 @@ win_browser_options = &
 	$(one_byte_data_packing) &
 	$(default_signed_chars) &
 	$(large_memory_model) &
-	-bt=nt -fo=$(MBRD)\
+	-bt=nt -fo=$(MBRD)\ -fr=$(ERRLOG_DIR)\
 
 win_debugging_Linker_Options = debug all option map=$*.map option q option symf
 win_profiling_Linker_Options = debug all option map=$*.map option q option symf
@@ -431,7 +436,7 @@ SYSTEM_OBJ =	&
 	$(OBJD)\panel.obj     &
 	$(OBJD)\request.obj     &
 	$(OBJD)\resmanag.obj  &
-	lzssdcod.obj  &
+	$(OBJD)\lzssdcod.obj  &
 	$(OBJD)\system.obj &
 	$(OBJD)\strmgr.obj &
 	$(OBJD)\fopen.obj &
@@ -644,6 +649,12 @@ sound_on_objs = $(SOUND_OBJ) $(SIERRA_SOUND_OBJ)
 sound_off_objs = $(SOUND_OBJ)
 !endif
 
+!ifeq OS WIN95
+resource_dependency = SyncWinResources
+!else
+resource_dependency =
+!endif
+
 dos_debugging_OBJ =
 dos_profiling_OBJ =
 dos_production_OBJ =
@@ -653,12 +664,39 @@ win_profiling_OBJ = $(OBJD)\debug.obj
 win_production_OBJ = $(OBJD)\debug.obj
 
 STRMGR_OBJ = $(OBJD)\strmake.obj
+MEM_OBJ = $(OBJD)\mem.obj
 
 ####################
 ## Makefile rules ##
 ####################
 
-install : version.cpp CleanVersion $(Exe_file)
+install : clean $(resource_dependency) version.cpp CleanVersion PrepareBuildDirs $(Exe_file)
+
+PrepareBuildDirs : .SYMBOLIC
+	@cmd /c "if not exist $(BUILD_ARTIFACTS_ROOT) mkdir $(BUILD_ARTIFACTS_ROOT)"
+	@cmd /c "if not exist $(OBJD) mkdir $(OBJD)"
+	@cmd /c "if not exist $(BIND) mkdir $(BIND)"
+	@cmd /c "if not exist $(ERRLOG_DIR) mkdir $(ERRLOG_DIR)"
+	@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) rd /s /q $(SOLAUDIO_STAGE_ROOT)"
+	@cmd /c "xcopy /E /I /Y SOLAUDIO\INC $(SOLAUDIO_STAGE_ROOT)\INC >nul & if errorlevel 2 exit /b 1 & exit /b 0"
+	@cmd /c "xcopy /E /I /Y SOLAUDIO\SOURCE\DOS $(SOLAUDIO_STAGE_DOS_SRC_DIR) >nul & if errorlevel 2 exit /b 1 & exit /b 0"
+	@cmd /c "xcopy /E /I /Y SOLAUDIO\SOURCE\WIN $(SOLAUDIO_STAGE_WIN_SRC_DIR) >nul & if errorlevel 2 exit /b 1 & exit /b 0"
+	@cmd /c "if exist $(RES_STAGE_ROOT) rd /s /q $(RES_STAGE_ROOT)"
+	@cmd /c "if exist ..\RES (xcopy /E /I /Y ..\RES $(RES_STAGE_ROOT) >nul) else (xcopy /E /I /Y ..\..\birp-dependencies\RES $(RES_STAGE_ROOT) >nul) & if errorlevel 2 exit /b 1 & exit /b 0"
+!ifeq OS WIN95
+	@echo Building SOLAUDIO WIN libraries...
+	@cmd /c "cd /d $(SOLAUDIO_STAGE_WIN_SRC_DIR) && wmake -f MAKEFILE"
+!else
+	@echo Building SOLAUDIO DOS libraries...
+	@cmd /c "cd /d $(SOLAUDIO_STAGE_DOS_SRC_DIR) && wmake -f MAKEFILE"
+!endif
+
+SyncWinResources : .SYMBOLIC
+!ifeq OS WIN95
+	@cmd /c "if not exist RES mkdir RES"
+	@copy /Y ..\..\birp-dependencies\RES\*.CUR RES\ >nul
+	@copy /Y ..\..\birp-dependencies\RES\*.ICO RES\ >nul
+!endif
 
 ## Realm AI version number remainder
 version.cpp: mapai.cpp gamemap.cpp actnmenu.cpp multimap.cpp multiui.cpp mapaitbl.cpp
@@ -674,13 +712,13 @@ version.cpp: mapai.cpp gamemap.cpp actnmenu.cpp multimap.cpp multiui.cpp mapaitb
 $(BIND)/nova.exe: $(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)
 	echo $(msg_$(version))
 	*wlink system $(System) $(dos_$(version)_Linker_Options) name $@ &
-		file {$(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
+		file {$(DOS_MAIN_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)} &
 		$(LIBPATH) $(LIBRARIES)
 
 $(BIND)/nova95.exe: $(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) nova95.res $($(op_sys)_$(version)_OBJ)
 	echo $(msg_$(version))
 	*wlink system $(System) $(win_$(version)_Linker_Options) name $@ &
-		file {$(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ) mem.obj} &
+		file {$(WIN95_MAIN_OBJ) $(WIN95_OBJ) $(SYSTEM_OBJ) $(MACHINE_OBJ) $(ENGINE_OBJ) $(GAME_OBJ) $(D_AND_D_OBJ) $(sound_$(soundsys)_objs) $($(op_sys)_$(version)_OBJ)} &
 		$(LIBPATH) $(LIBRARIES)
 	*wrc $(RSC_FLAGS) nova95.rc $@
 
@@ -710,7 +748,7 @@ strmake.exe: $(STRMGR_OBJ)
 		$(LIBPATH) $(LIBRARIES)
 
 CleanVersion : .SYMBOLIC
-	del $(OBJD)\version.obj
+	@if exist $(OBJD)\version.obj del $(OBJD)\version.obj
 	
 	
 .EXTENSIONS:
@@ -719,12 +757,13 @@ CleanVersion : .SYMBOLIC
 # Search Paths.
 .c: $(SYS_DIR);.
 .cpp: $(SYS_DIR);.
+.asm: RESUTIL;.
 
 .c.obj: .AUTODEPEND
 	*$(CCompiler) $($(op_sys)_$(version)_Compiler_Options) $<
 
 .cpp.obj: .AUTODEPEND
-	*$(CPPCompiler) $($(op_sys)_$(version)_Compiler_Options) -ew $<
+	*$(CPPCompiler) $($(op_sys)_$(version)_Compiler_Options) $<
 
 .rc.res: .AUTODEPEND
 	*$(RCCompiler) $(RES_OPTIONS) $<
@@ -736,13 +775,15 @@ CleanVersion : .SYMBOLIC
 	*$(CPPCompiler) $($(op_sys)_browser_options) $<
 
 .asm.obj: .SYMBOLIC
-	*$(ASM) $(AFLAGS) /Fo$(OBJD)\ $<
+	@cmd /c "if not exist $(OBJD) mkdir $(OBJD)"
+	*$(ASM) $(AFLAGS) -Fo$@ $<
 
 clean : .SYMBOLIC
-	del /s $(OBJD)\*.obj
-	del /s $(BIND)\*.map $(BIND)\*.exe $(BIND)\*.sym
-	del *.res
-	del *.err
+	-del /s $(OBJD)\*.obj
+	-del $(OBJD)\sound.obj $(OBJD)\main.obj
+	-del /s $(BIND)\*.map $(BIND)\*.exe $(BIND)\*.sym
+	-del *.res
+	-del $(ERRLOG_DIR)\*.err
 
 clean_all : .SYMBOLIC
 	del /s $(win_debugging_object_dir)\*.obj
@@ -751,25 +792,26 @@ clean_all : .SYMBOLIC
 	del /s $(dos_debugging_object_dir)\*.obj
 	del /s $(dos_profiling_object_dir)\*.obj
 	del /s $(dos_production_object_dir)\*.obj
-	del /s $(win_debugging_binary_dir)\*.map $(win_debugging_binary_dir)\*.exe $(win_debugging_binary_dir)\*.sym
-	del /s $(win_profiling_binary_dir)\*.map $(win_profiling_binary_dir)\*.exe $(win_profiling_binary_dir)\*.sym
-	del /s $(win_production_binary_dir)\*.map $(win_production_binary_dir)\*.exe $(win_production_binary_dir)\*.sym
-	del /s $(dos_debugging_binary_dir)\*.map $(dos_debugging_binary_dir)\*.exe $(dos_debugging_binary_dir)\*.sym
-	del /s $(dos_profiling_binary_dir)\*.map $(dos_profiling_binary_dir)\*.exe $(dos_profiling_binary_dir)\*.sym
-	del /s $(dos_production_binary_dir)\*.map $(dos_production_binary_dir)\*.exe $(dos_production_binary_dir)\*.sym
-	del *.res
-	del *.err
+	-del $(win_debugging_object_dir)\sound.obj $(win_debugging_object_dir)\main.obj
+	-del $(win_profiling_object_dir)\sound.obj $(win_profiling_object_dir)\main.obj
+	-del $(win_production_object_dir)\sound.obj $(win_production_object_dir)\main.obj
+	-del $(dos_debugging_object_dir)\sound.obj $(dos_debugging_object_dir)\main.obj
+	-del $(dos_profiling_object_dir)\sound.obj $(dos_profiling_object_dir)\main.obj
+	-del $(dos_production_object_dir)\sound.obj $(dos_production_object_dir)\main.obj
+	-del /s $(win_debugging_binary_dir)\*.map $(win_debugging_binary_dir)\*.exe $(win_debugging_binary_dir)\*.sym
+	-del /s $(win_profiling_binary_dir)\*.map $(win_profiling_binary_dir)\*.exe $(win_profiling_binary_dir)\*.sym
+	-del /s $(win_production_binary_dir)\*.map $(win_production_binary_dir)\*.exe $(win_production_binary_dir)\*.sym
+	-del /s $(dos_debugging_binary_dir)\*.map $(dos_debugging_binary_dir)\*.exe $(dos_debugging_binary_dir)\*.sym
+	-del /s $(dos_profiling_binary_dir)\*.map $(dos_profiling_binary_dir)\*.exe $(dos_profiling_binary_dir)\*.sym
+	-del /s $(dos_production_binary_dir)\*.map $(dos_production_binary_dir)\*.exe $(dos_production_binary_dir)\*.sym
+	-del *.res
+	-del $(ERRLOG_DIR)\*.err
 
 CleanCompile: clean install
 	echo Done.
 
 CleanAllCompile: clean_all install
 	 echo Done.
-
-# Remove the sound only dependant files.
-CleanSound : .SYMBOLIC
-	del $(OBJD)\sound.obj
-	del $(OBJD)\main.obj
 	
 MakeDirs : $(win_production_object_dir) &
 	$(win_debugging_object_dir) &

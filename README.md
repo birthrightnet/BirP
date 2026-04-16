@@ -2,15 +2,80 @@
 
 The Birthright Preservation Patch is an enhancement for the Windows version of Birthright: The Gorgon's Alliance. Its primary goal is to address bugs within the game while also enhancing existing features for a better overall experience.
 
-## Installation
+This repository is for **developers** of the Birthright Preservation Patch, and mirrors the [https://github.com/Shiryou/birp-dev](https://github.com/Shiryou/birp-dev). The **player** repository with installation instructions can be found at [https://github.com/Shiryou/BirP](https://github.com/Shiryou/BirP).
 
-Before you install the Birthright Preservation Patch, make sure you have Birthright: The Gorgon's Alliance and Patch 1.4 already installed. You can refer to the [installation guide][kw-install].
+## Getting started
 
-To install the Birthright Preservation Patch, download the latest ZIP archive from the [ModDB][moddb-birp] page and extract the files into your installation folder.
+Follow these steps to get started developing and building this project.
+
+### Install the original game + patch it
+
+Install the original Birthright: The Gorgon's Alliance and apply the official Patch 1.4 already installed. Follow [Kiran's Installation Guide](https://www.kiranwelle.com/birthright/).
+
+### Install the project toolchain and dependencies
+
+This birp-dev repository does NOT contain the required toolchain, packages, and resources that you will require to build the game. You need to install them in the correct folder structure so that the project build files, like [MAKE.BAT](MAKE.BAT), can use them to build the project.
+
+Follow these steps to set up your project toolchain and dependencies:
+
+### 1) Setting up the `birp-dependencies` folder
+
+Unpack the `birp-dependencies.7z`, which contains a folder called `birp-dependencies` to a sibling folder to `birp-dev`. The resulting folder structure should look like this:
+
+```text
+SomeParentFolder/
+|-- birp-dev/
+|-- birp-dependencies/
+```
+
+### 2) Set up your environment variables for building
+
+Run [setup-env-vars-for-birthright-preservation-patch.ps1](./scripts/setup-env-vars-for-birthright-preservation-patch.ps1) to setup the required environment variables for [Open Watcom 2.0](../birp-dependencies/OPENWATCOM-v2_0/), [DirectX 5 SDK](../birp-dependencies/DirectXSDK/), [Windows 95 DDK](../birp-dependencies/Windows95DDK/) and [UASM 2.57](../birp-dependencies/UASM-v2_57/).
+
+You can run it with:
+
+`powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-birthright-preservation-patch.ps1`
+
+### 3) Validate your environment variables
+
+Run [check-for-duplicate-env-vars.ps1](./scripts/check-for-duplicate-env-vars.ps1) to validate that your environment variables are set up correctly.
+
+You can run it with:
+
+`powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\check-for-duplicate-env-vars.ps1`
+
+## Toolchain Notes
+
+* The default developer toolchain was Watcom 10.6. It was removed from this repository after persistent WLINK memory access issues.
+* [Open Watcom v2.0](../birp-dependencies/OPENWATCOM-v2_0/) is the active compiler toolchain.
+* [UASM v2.57](../birp-dependencies/UASM-v2_57/) is the MASM-compatible assembler used for legacy `*.ASM` modules where Watcom `wasm` compatibility is limited.
+* Setup and validation scripts are documented in [./scripts/README.md](./scripts/README.md).
+
+## Building the game
+
+You are now ready to compile the Windows version of Birthright, which runs on operating systems up to Windows 11
+
+TLDR, run:
+
+`MAKE.BAT WIN95`
+
+.. and your project should build to the [build-artifacts/binaries](build-artifacts/binaries) folder. Skip to the [next section](#installing-your-build-and-testing) to learn how to install and test your build.
+
+### Advanced build options
+
+You can customize your build with many options. See [BUILD-OPTIONS.md](./BUILD-OPTIONS.md) for details on available build options, including build modes, feature flags, and targets.
+
+### Other build information
+
+For historical reference, [`MAKE-ORIGINAL.BAT`](./source/MAKE-ORIGINAL.BAT) is also included. This is the make script used in the original source tree, retained with only minor modifications in this repository.
+
+## Installing your build and testing
+
+Simply copy your built files from your [build-artifacts/binaries](build-artifacts/binaries) folder into your installed game directory (e.g. `C:\BIRTHRT`) and run the EXE you deployed there.
 
 ## Logging
 
-When you encounter an error and are ready to submit a bug report, please review your log files for any relevant messages.
+You can find the log files in the game directory (e.g. `C:\BIRTHRT`) after running the game. These logs can be useful for troubleshooting and debugging issues with the game.
 
 The following log messages are created at the beginning of each session:
 
@@ -20,8 +85,10 @@ The following log messages are created at the beginning of each session:
 
 When trying to gather information on a reproducible bug, it can be useful to increase the game's logging. This can be done by opening `BRSETUP.CFG` and adding the following lines:
 
-    [LOG_LEVEL]
-    TRACE
+```text
+[LOG_LEVEL]
+TRACE
+```
 
 The available logging levels are listed below. Each logging level will log messages at the specified level and below (i.e. DEBUG will include DEBUG, INFO, WARN, and FATAL messages).
 
@@ -33,40 +100,50 @@ The available logging levels are listed below. Each logging level will log messa
 
 ## Changelog
 
-Once we have our first build, this section will include a summary of the more significant changes. For the full list of changes, please see the [Changelog](./CHANGELOG.md).
+The [Changelog](./CHANGELOG.md) contains a log of changes made to the project, including bug fixes and new features.
 
-## Compiling
-
-### Prerequisites
-
-In order to compile this project, you will need:
-
-* [DirectX 5.0 SDK][archive-directx]
-* [Watcom 10.6][winworld-watcom]
-* [Windows 95 DDK][winworld-winddk]
-
-Add the header files and compiler directories to your `INCLUDE` and `PATH` environment variables, respectively. For example:
-
-```
-SET PATH=C:\WATCOM\BINNT;C:\WATCOM\BINW;%PATH%
-SET INCLUDE=C:\WATCOM\H;C:\WATCOM\H\NT;C:\DirectXSDK
-```
-
-### Compiling the game
-
-You can compile the Windows 95 version of Birthright (which runs on operating systems up to Windows 11) by running:
-
-`MAKE.BAT WIN95`
-
-DOS will also compile (on versions of Windows up to Windows ME), but currently has some missing fonts.
+Keep this file up to date with any notable changes you make to the project. Follow the existing format there when updating it.
 
 ### Updating Version Numbers
 
-Internal version numbers are set in `VERSION.CPP`. These should only be updated when functionality changes might cause issues in multiplayer. The patch version numbers are set in `PVERSION.H`
+Internal version numbers are set in `VERSION.CPP`. These should only be updated when functionality changes might cause issues in multiplayer. The patch version numbers are set in `PVERSION.H`.
+
+## Technologies and languages, and Code Styles
+
+This project uses several legacy technologies together:
+
+* C (`*.C`) and C++ (`*.CPP`) across the game engine, UI, gameplay, and AI.
+* Header variants (`*.H`, `*.HXX`) for mixed C/C++ interfaces.
+* Assembly (`*.ASM`) for some low-level/audio routines (including MASM-style legacy sources).
+* Windows resources (`*.RC`) and dialog definitions (`*.DLG`).
+* Watcom `wmake` makefiles plus batch wrappers (`MAKE.BAT`, `source/MAKEFILE`) for DOS/WIN95 builds.
+* Legacy SDK dependencies (DirectX 5 SDK and Windows 95 DDK).
+
+Common style patterns in this codebase:
+
+* Legacy compatibility-first approach: avoid behavior changes unless needed.
+* Macro-heavy and conditional compilation patterns (`_WINDOWS`, `AUDIO_LIB`, etc.).
+* Mixed procedural C and object-oriented C++ style.
+* Historically stable uppercase file naming and minimal-diff maintenance.
+
+At-a-glance matrix:
+
+| Area | Primary language/tech | Typical files | Example directories | Notes |
+| --- | --- | --- | --- | --- |
+| Core engine/runtime | C | `*.C`, `*.H` | `source/`, `source/WINSYS/` | Low-level systems and shared runtime behavior. |
+| Gameplay and UI | C++ | `*.CPP`, `*.HXX` | `source/`, `source/WINSYS/` | Domain logic, menus, AI, and game flow. |
+| Audio codecs/helpers | Assembly + C/C++ | `*.ASM`, `SOLAUDIO/SOURCE/WIN/*` | `source/SOLAUDIO/SOURCE/WIN/`, `source/SOLAUDIO/SOURCE/DOS/` | Legacy MASM-style assembly sources exist in audio paths. |
+| Windows resources | RC/DLG scripts | `*.RC`, `*.DLG` | `source/`, `source/WINSYS/` | Menus, dialogs, and resource definitions. |
+| Build orchestration | Watcom make + batch | `source/MAKEFILE`, `MAKE.BAT` | `source/`, `source/SOLAUDIO/SOURCE/WIN/` | Multi-target DOS/WIN95 builds via `wmake`. |
+| External SDK integration | Win95 DDK + DirectX 5 SDK | Include/lib paths in env vars | `../birp-dependencies/`, `scripts/` | Required headers/libs for legacy platform compatibility. |
 
 ## Contributing
 
-Pull requests are welcome. For large changes or new features, please open an issue first to discuss what you would like to change.
+Keep all your changes in a branch and submit a pull request (PR) when your changes are ready to be reviewed and merged.
+
+Squash your commits into large commits to keep the commit history clean. For example, if you are working on a bug fix, you might have several commits as you work on the fix, but when you submit your PR, you should squash those commits into a single commit that describes the bug fix.
+
+Please communicate with Kiran before starting work to ensure it aligns with the vision of the project.
 
 ## Disclaimer
 
@@ -75,10 +152,3 @@ This patch aims to enhance and fix bugs in **Birthright: The Gorgon's Alliance**
 This patch is provided free of charge and is not intended for commercial use. Any distribution of this patch must not be for profit. It is provided 'as-is' without any warranty. The creator(s) are not responsible for any issues that may arise from using this patch, including data loss, game crashes, or other unintended consequences.
 
 The patch is developed as a community effort. The original developers retain their rights to the original source code. Where permissable by law, modifications to the original source code are provided under the MIT license. Feedback and contributions are welcome, but please honor the rights of the original creators.
-
-[archive-directx]: https://archive.org/details/idx5sdk
-[kw-install]: https://www.kiranwelle.com/birthright/
-[moddb-birp]: https://www.moddb.com/mods/birthright-preservation-patch
-[releases]: https://github.com/Shiryou/BirP/releases
-[winworld-watcom]: https://winworldpc.com/product/watcom-c-c/106
-[winworld-winddk]: https://winworldpc.com/product/windows-sdk-ddk/windows-95-ddk

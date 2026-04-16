@@ -114,6 +114,10 @@ extern	BOOL	threadErrorFlag;
 #endif
 #endif
 
+#ifndef threadAssert
+#define threadAssert(expr,n)
+#endif
+
 static ResNum	panResNum			= 0;
 static int		panPercent			= -1;
 

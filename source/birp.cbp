@@ -8,18 +8,18 @@
 		<Option pch_mode="2" />
 		<Option compiler="ow" />
 		<MakeCommands>
-			<Build command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) CHARED=$(CHARED) $(CMD)" />
-			<CompileFile command="$make -f $makefile $file OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG)" />
-			<Clean command="$make -f $makefile clean OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG)" />
+			<Build command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) PROFILE=$(PROFILE) CHARED=$(CHARED) $(CMD)" />
+			<CompileFile command="$make -f $makefile $file OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) PROFILE=$(PROFILE) CHARED=$(CHARED)" />
+			<Clean command="$make -f $makefile clean OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) PROFILE=$(PROFILE) CHARED=$(CHARED)" />
 			<DistClean command="$make -f $makefile distclean$target" />
 			<AskRebuildNeeded command="$make -q -f $makefile $target" />
-			<SilentBuild command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) &gt; $(CMD_NULL)" />
+			<SilentBuild command="$make -f $makefile OS=$(OS) SOUND=$(SOUND) RELEASE=$(RELEASE) DEBUG=$(DEBUG) PROFILE=$(PROFILE) CHARED=$(CHARED) &gt; $(CMD_NULL)" />
 		</MakeCommands>
 		<Build>
 			<Target title="Debug WIN95">
-				<Option output="bin/Debug/Windows/nova95" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Debug/Windows" />
+				<Option output="../build-artifacts/binaries/Debug/Windows/nova95" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/Windows" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
@@ -28,6 +28,7 @@
 				<Environment>
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="WIN95" />
+					<Variable name="PROFILE" value="" />
 					<Variable name="RELEASE" value="OFF" />
 				</Environment>
 				<MakeCommands>
@@ -40,9 +41,9 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Debug CHARED">
-				<Option output="bin/Debug/Windows/chared" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Debug/Windows" />
+				<Option output="../build-artifacts/binaries/Debug/Windows/chared" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/Windows/Chared" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
@@ -52,6 +53,7 @@
 					<Variable name="CHARED" value="ON" />
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="WIN95" />
+					<Variable name="PROFILE" value="" />
 					<Variable name="RELEASE" value="OFF" />
 				</Environment>
 				<MakeCommands>
@@ -64,14 +66,15 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Debug DOS">
-				<Option output="bin/Debug/Windows/nova" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Debug/DOS" />
+				<Option output="../build-artifacts/binaries/Debug/DOS/nova" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/DOS" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Environment>
 					<Variable name="DEBUG" value="ON" />
 					<Variable name="OS" value="DOS" />
+					<Variable name="PROFILE" value="" />
 					<Variable name="RELEASE" value="OFF" />
 				</Environment>
 				<MakeCommands>
@@ -84,9 +87,9 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release WIN95">
-				<Option output="bin/Release/Windows/nova95" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Release/Windows" />
+				<Option output="../build-artifacts/binaries/Release/Windows/nova95" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Release/Windows" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
@@ -96,6 +99,7 @@
 				<Environment>
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="WIN95" />
+					<Variable name="PROFILE" value="" />
 					<Variable name="RELEASE" value="ON" />
 				</Environment>
 				<MakeCommands>
@@ -108,9 +112,9 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release CHARED">
-				<Option output="bin/Release/Windows/chared" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Release/Windows" />
+				<Option output="../build-artifacts/binaries/Release/Windows/chared" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Release/Windows/Chared" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Compiler>
@@ -120,7 +124,8 @@
 					<Variable name="CHARED" value="ON" />
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="WIN95" />
-					<Variable name="RELEASE" value="OFF" />
+					<Variable name="PROFILE" value="" />
+					<Variable name="RELEASE" value="ON" />
 				</Environment>
 				<MakeCommands>
 					<Build command="" />
@@ -132,15 +137,80 @@
 				</MakeCommands>
 			</Target>
 			<Target title="Release DOS">
-				<Option output="bin/Release/Windows/nova" prefix_auto="1" extension_auto="1" />
-				<Option working_dir="../SIERRA/BIRTHRT" />
-				<Option object_output="obj/Release/DOS" />
+				<Option output="../build-artifacts/binaries/Release/DOS/nova" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Release/DOS" />
 				<Option type="0" />
 				<Option compiler="ow" />
 				<Environment>
 					<Variable name="DEBUG" value="OFF" />
 					<Variable name="OS" value="DOS" />
+					<Variable name="PROFILE" value="" />
 					<Variable name="RELEASE" value="ON" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Profile WIN95">
+				<Option output="../build-artifacts/binaries/Debug/Windows/nova95" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/Windows" />
+				<Option type="0" />
+				<Option compiler="ow" />
+				<Environment>
+					<Variable name="DEBUG" value="" />
+					<Variable name="OS" value="WIN95" />
+					<Variable name="PROFILE" value="ON" />
+					<Variable name="RELEASE" value="" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Profile CHARED">
+				<Option output="../build-artifacts/binaries/Debug/Windows/chared" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/Windows/Chared" />
+				<Option type="0" />
+				<Option compiler="ow" />
+				<Environment>
+					<Variable name="CHARED" value="ON" />
+					<Variable name="DEBUG" value="" />
+					<Variable name="OS" value="WIN95" />
+					<Variable name="PROFILE" value="ON" />
+					<Variable name="RELEASE" value="" />
+				</Environment>
+				<MakeCommands>
+					<Build command="" />
+					<CompileFile command="" />
+					<Clean command="" />
+					<DistClean command="$make -f $makefile distclean$target" />
+					<AskRebuildNeeded command="" />
+					<SilentBuild command=" &gt; $(CMD_NULL)" />
+				</MakeCommands>
+			</Target>
+			<Target title="Profile DOS">
+				<Option output="../build-artifacts/binaries/Debug/DOS/nova" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="../../SIERRA/BIRTHRT" />
+				<Option object_output="../build-artifacts/compiled-code/Debug/DOS" />
+				<Option type="0" />
+				<Option compiler="ow" />
+				<Environment>
+					<Variable name="DEBUG" value="" />
+					<Variable name="OS" value="DOS" />
+					<Variable name="PROFILE" value="ON" />
+					<Variable name="RELEASE" value="" />
 				</Environment>
 				<MakeCommands>
 					<Build command="" />
@@ -157,6 +227,7 @@
 		</Build>
 		<VirtualTargets>
 			<Add alias="Debug" targets="Debug DOS;Debug WIN95;Debug CHARED;" />
+			<Add alias="Profile" targets="Profile DOS;Profile WIN95;Profile CHARED;" />
 			<Add alias="Release" targets="Release DOS;Release WIN95;Release CHARED;" />
 		</VirtualTargets>
 		<Compiler>

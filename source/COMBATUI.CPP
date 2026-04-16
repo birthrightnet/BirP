@@ -1022,13 +1022,14 @@ void PlayAdventureUI(SCENE &rScene)
 		if(COMBAT_TARGETTING::mfGetTargetIndex() != (LONG)fERROR)
 		{
 			CAvatar *pTargetAvatar;
+			LONG i;
 			BOOL TargetFound = FALSE;
 
 			// get the avatar who cast the spell
 			CAvatar * const pShootingAvatar = (CAvatar *) BLKPTR (COMBAT_TARGETTING::mfWhoseShooting());
 
 			// check to see if this thing index is an avatar
-			for(LONG i = 0; i < MAX_AVATARS; i++ )
+			for(i = 0; i < MAX_AVATARS; i++ )
 			{
 				// This is a sparsly filled array.
 				if (rScene.Avatars[i] != fERROR)

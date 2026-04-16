@@ -531,9 +531,7 @@ static LONG ItemEffects::Shrink(LONG Combo,LONG Arg,LONG Action)
 	EffectSeparator<LONG> OldW;
 	EffectSeparator<LONG> OldH;
 	
-	static fAlreadyShrunk=FALSE;
-
-	
+	static BOOL fAlreadyShrunk=FALSE;	
 
 	if(fDomainTurn)
 	{
@@ -544,8 +542,7 @@ static LONG ItemEffects::Shrink(LONG Combo,LONG Arg,LONG Action)
 		return NOT_SUPPORTED;
 	}
 	else	// adventure level
-	{
-		
+	{		
 		switch(Action)
 		{
 			case ACTIVATE:

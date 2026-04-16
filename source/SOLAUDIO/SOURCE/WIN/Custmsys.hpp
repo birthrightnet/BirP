@@ -1,6 +1,5 @@
 // CUSTMSYS.HPP - Customizable functions that support breaking out parts
 //						of the interpreter into stand-alone libraries.
-
 #ifndef CUSTMSYS_HPP
 #define CUSTMSYS_HPP
 
@@ -24,6 +23,12 @@ const uchar		MemResAudio = 0x0d;
 #include <assert.h>
 #else
 #define assert(expr)
+#endif
+#if !defined(DEBUG)
+#define fatal_test(exp)
+#else
+#define fatal_test(exp) _fatal_test((exp),__FILE__,__LINE__);
+void _fatal_test(Boolean, char *, int);
 #endif
 
 #ifdef WINDOWS
@@ -62,7 +67,7 @@ int GetElapsedTicks();
 char* GetAudioDriverName();
 
 #define MemAudioBuffer 0
-#define LOCKED 0
+// UNUSED #define LOCKED 0
 #define MOVEABLE 0
 #define DISCARDABLE 0
 #define TRANSITORY 0
@@ -77,6 +82,7 @@ public:
 	MemID(const MemID& id);
 	MemID(void* h); 
 	void Get(int type, size_t size, int resHandle = 0, int flag = 0);
+	void Get(size_t size);
 	void Realloc(size_t size);
 	void Free();
 	int Read(int fd, size_t ofs, size_t size) const;
@@ -85,8 +91,8 @@ public:
 	void* operator=(void* p);
 	void* operator*() const;
 	char& operator[](size_t s) const;
-//	operator int() const;
 	long IsAllocated() const;
+	operator int() const;
 	int Load(char* fileName); // Only used in DOS, so you can ignore it for Windows
 
 protected:

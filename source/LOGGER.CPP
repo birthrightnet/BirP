@@ -9,6 +9,7 @@
 #include <windows.h>
 #include "logger.h"
 
+// Global logger state used by all logging entry points.
 BOOL logBufferingStarted = FALSE;
 BOOL logBufferingDisabled = FALSE;
 FILE *logFile;
@@ -20,6 +21,7 @@ LogLevel currentLogLevel = LogDebug;
 LogLevel currentLogLevel = LogWarn;
 #endif // defined
 
+// Sets the log destination file and writes an initial metadata line.
 void initializeLogging(const char *filename)
 {
 	delete[] logFileName;
@@ -38,6 +40,7 @@ void initializeLogging(const char *filename)
 	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
 }
 
+// Opens the file unless buffering keeps it open across calls.
 int openLogging()
 {
 	if (logBufferingStarted) {
@@ -51,6 +54,7 @@ int openLogging()
 	return logFile != NULL;
 }
 
+// Flushes/closes the file unless buffering mode is active.
 int closeLogging()
 {
 	if (logBufferingStarted) {
@@ -64,6 +68,7 @@ int closeLogging()
 	return 0;
 }
 
+// Buffer mode keeps the file handle open to reduce open/close overhead.
 void startLogBuffer()
 {
 	if(logBufferingDisabled) {
@@ -73,6 +78,7 @@ void startLogBuffer()
 	logBufferingStarted = TRUE;
 }
 
+// Returns to per-message open/close behavior.
 void stopLogBuffer()
 {
 	if(logBufferingDisabled) {
@@ -82,6 +88,7 @@ void stopLogBuffer()
 	closeLogging();
 }
 
+// Permanently disables buffering for the current process lifetime.
 void disableLogBuffer()
 {
 	logBufferingDisabled = TRUE;
@@ -100,6 +107,7 @@ void setLogLevel(LogLevel level)
 	logMeta("Changing logging from %s to %s.", logLevelToString(oldLevel), logLevelToString(currentLogLevel));
 }
 
+// Core writer: applies level filter, timestamps, and writes one line.
 void logMessage(LogLevel level, const char *message)
 {
 	if (level < currentLogLevel)
@@ -123,6 +131,7 @@ void logMessage(LogLevel level, const char *message)
 	closeLogging();
 }
 
+// Convenience wrappers format varargs text, then delegate to logMessage.
 void logTrace(const char *message, ...) {
 	if (LogTrace < currentLogLevel)
 	{
@@ -214,6 +223,7 @@ void logMeta(const char *message, ...) {
 	logMessage(LogMeta, buffer);
 }
 
+// Converts enum values to stable on-disk text labels.
 const char* logLevelToString(LogLevel level)
 {
 	switch (level) {
@@ -228,6 +238,7 @@ const char* logLevelToString(LogLevel level)
 	return "INFO";
 }
 
+// Parses uppercase level names; unknown input falls back to INFO.
 LogLevel logLevelToEnum(const char *level)
 {
 	if (level == NULL)

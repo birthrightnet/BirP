@@ -69,7 +69,7 @@ static SHORT DiskInQueue (CSTRPTR pszFile);
 static FILE_MODE fmCurrentFileMode = FILEOPEN_MIXED_MODE;
 
 #ifndef _WINDOWS
-int __far crit_error_handler(unsigned deverr, unsigned errcode, unsigned far *devhdr)
+int crit_error_handler(unsigned deverr, unsigned errcode, unsigned *devhdr)
 {
 #if 0
 	int fFadeOut;

@@ -143,7 +143,7 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 			if (SCENE_MGR::gTick > SoundDelay + fTimeLastBump)
 			{
 				fTimeLastBump = SCENE_MGR::gTick;
-				if (GAME_TTYPE::mfIsAvatarType(mythings[pPlayer->BumpIndex].type))
+				if (pPlayer->BumpIndex >= 0 && GAME_TTYPE::mfIsAvatarType(mythings[pPlayer->BumpIndex].type))
 				{
 					if (CAvatar::mfDeadFlicSeq(pPlayer->BumpIndex))
 					{
@@ -431,7 +431,7 @@ BOOL const ADVENTURER::mfJoinAdventureTeam(SHORT const hdlAvatar)
 void ADVENTURER::mfFillReversePlayerPts(
 	PLAYER * const pPlayerPts,
 	LONG const NumberOfPts,
-	LONG const ThingIndex) const
+	LONG const ThingIndex)
 {
 	if (fhdlPathPositions != fERROR)
 	{
