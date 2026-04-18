@@ -3,7 +3,7 @@
 Runs all MAKE.BAT build-output scenario tests.
 
 .DESCRIPTION
-Invokes 8 scenario-specific build-output tests and aggregates pass/fail results.
+Invokes 4 scenario-specific build-output tests and aggregates pass/fail results.
 
 .PARAMETER ContinueOnFailure
 Continue executing all scenarios after a failure. By default, execution stops on first failed scenario.
@@ -15,7 +15,7 @@ Skips checking for required toolchain commands (wmake/wcc386/wpp386) in each sce
 Optional path override to MAKE.BAT. Defaults to birp-dev\MAKE.BAT from repository root.
 
 .EXAMPLE
-powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\test-all-build-outputs.ps1
+powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\test-all-builds.ps1
 #>
 
 [CmdletBinding()]
@@ -37,14 +37,10 @@ if (-not (Test-Path -LiteralPath $buildLogsDir)) {
 }
 
 $scenarioScripts = @(
-    'test-build-output-win95-default.ps1',
-    'test-build-output-win95-release.ps1',
-    'test-build-output-win95-debug.ps1',
-    'test-build-output-win95-profile.ps1',
-    'test-build-output-dos-default.ps1',
-    'test-build-output-dos-release.ps1',
-    'test-build-output-dos-debug.ps1',
-    'test-build-output-dos-profile.ps1'
+    'build-win-release.ps1',
+    'build-win-debug.ps1',
+    'build-dos-release.ps1',
+    'build-dos-debug.ps1'
 )
 
 Write-Host '=== MAKE.BAT build-output test harness (all scenarios) ===' -ForegroundColor Cyan
