@@ -657,7 +657,7 @@ void update_screen(void)
 		{
 		case iDIRECTTOCARD:
 			{
-			HRESULT ddrval = DDUnlockSurface( screen );
+			HRESULT ddrval = DDUnlockSurface( (char *)screen );
 			if ( ddrval != DD_OK )
 				fatal_error( "Unable to unlock surface: error = %d", ddrval );
 
@@ -701,7 +701,7 @@ void update_screen(void)
 			break;
 
 		case iCOPYTOCARD:
-			DDDrawBuffer( screen );
+			DDDrawBuffer( (char *)screen );
 			DDFlipSurface();
 			break;
 
@@ -787,6 +787,7 @@ void ScreenCopy (
 	SHORT resolution							// [d10-26-96 JPC] new
 	)
 {
+	(void)iSrcBitm;
 
 #if 1
 

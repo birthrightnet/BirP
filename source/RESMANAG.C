@@ -1,4 +1,4 @@
-/* ®RM200¯ */
+/* ï¿½RM200ï¿½ */
 /* ========================================================================
 	ResManag.c	- Resource manager routines
    Copyright (c) 1989-1994 by Alan B. Clark
@@ -100,8 +100,8 @@ SHORT LoadLump (
 
 #if fUSE_RES_FILES
 // [d3-06-97 JPC]
-LONG FindExtensionIndex (CSTRPTR szResName);
-SHORT FindResourceSlot (CSTRPTR szResName, LONG iExtIndex, LONG * piSlot, LONG * piResFileSlot, BOOL fResfileRequired);
+static LONG FindExtensionIndex (CSTRPTR szResName);
+static SHORT FindResourceSlot (CSTRPTR szResName, LONG iExtIndex, LONG * piSlot, LONG * piResFileSlot, BOOL fResfileRequired);
 SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL fRotated, LONG iResFileSlot);
 SHORT LoadFLCFromResFile (LONG iResFileSlot, BOOL fLockRes);
 #endif
@@ -170,12 +170,12 @@ RESTYPE	ResExtentions[cMAXEXTENTS] = {
 	{ "PCX", LoadPCX, DisposRes, SetPurgeRes, ClrPurgeRes, HashCRC },
 	{ "FLC", LoadFLC, DisposRes, SetPurgeRes, ClrPurgeRes, HashCRC },
 	{ "WAV", LoadLump, DisposRes, SetPurgeRes, ClrPurgeRes, HashID },
-	{  NULL, NULL, NULL, NULL, NULL, NULL },
-	{  NULL, NULL, NULL, NULL, NULL, NULL },
-	{  NULL, NULL, NULL, NULL, NULL, NULL },
-	{  NULL, NULL, NULL, NULL, NULL, NULL },
-	{  NULL, NULL, NULL, NULL, NULL, NULL },
-	{  NULL, NULL, NULL, NULL, NULL, NULL }
+	{  "", NULL, NULL, NULL, NULL, NULL },
+	{  "", NULL, NULL, NULL, NULL, NULL },
+	{  "", NULL, NULL, NULL, NULL, NULL },
+	{  "", NULL, NULL, NULL, NULL, NULL },
+	{  "", NULL, NULL, NULL, NULL, NULL },
+	{  "", NULL, NULL, NULL, NULL, NULL }
 };
 
 #if 01
@@ -435,6 +435,7 @@ static BOOL ProcessUnknownExtension (LONG iSlot, DIRENTRY_PTR pDirentry)
 // ---------------------------------------------------------------------------
 void DeleteResFile (CSTRPTR szFileName)
 {
+	(void)szFileName;
 }
 
 
@@ -444,6 +445,8 @@ void DeleteResFile (CSTRPTR szFileName)
 // ---------------------------------------------------------------------------
 void ReleaseResFile (LONG iFile)
 {
+	(void)iFile;
+
 // 	if (gfResFileInUse[iFile])
 // 	{
 // 		gfResFileInUse[iFile] = FALSE;
@@ -727,6 +730,8 @@ void ScanResFiles ()
 // ---------------------------------------------------------------------------
 void CopyResFile (CSTRPTR szResFileName, CSTRPTR szDestPath)
 {
+	(void)szResFileName;
+	(void)szDestPath;
 }
 
 
@@ -1444,10 +1449,11 @@ SHORT ClrPurgeRes (SHORT iResBlk, SHORT iMemBlk)
 	======================================================================= */
 SHORT LoadUFF (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL fRotated, LONG iResFileSlot)
 {
-	szFileName = 0;
-	fNoScale = 0;
-	fLockRes = 0;
-	fRotated = 0;
+	(void)szFileName;
+	(void)fNoScale;
+	(void)fLockRes;
+	(void)fRotated;
+	(void)iResFileSlot;
 	return fERROR;
 }
 
@@ -1971,6 +1977,7 @@ SHORT LoadPCXFromResFile (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL
 	SHORT			iSrcBlk;
 	ULONG	   		cbSafety = 2048L;		/* default to a safety buffer of 2k bytes */
 	RESOURCE_HEADER resHeader;
+	(void)szFileName;
 
 
 #if defined (_CHATTER) && 0
@@ -2421,6 +2428,8 @@ SHORT LoadFLC (CSTRPTR szFileName, BOOL fNoScale, BOOL fLockRes, BOOL fRotated, 
 		return LoadFLCFromResFile (iResFileSlot, fLockRes);
 	}
 #endif
+	(void)fNoScale;
+	(void)fRotated;
 
 	file = DiskOpen(szFileName);	/* try to open the file */
 	if (file == fERROR)								/* Resource not found. Print an error */
@@ -2743,6 +2752,8 @@ SHORT LoadLump (
 {
 	SHORT hLump = fERROR;
 	SHORT pFileRead;
+	(void)fhAvatar;
+	(void)fRotated;
 
 #if fUSE_RES_FILES
 	if (iResFileSlot >= 0)

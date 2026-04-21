@@ -72,6 +72,7 @@ void CAvatar::Stunned (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 		case AI_INIT:
 		{
 			LONG deltaZ;
+			(void)deltaZ;
 		
 			pAvatar->Status = AI_MOVING;
 			pAvatar->attrib.IssuedChallange = FALSE;
@@ -199,6 +200,14 @@ void CAvatar::Stunned (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			LONG BumpDistance;
 			LONG dz,dx,dy ;
 			LONG BumpIndex;
+			(void)TempPlayer;
+			(void)NewVector;
+			(void)OldVector;
+			(void)Result;
+			(void)BumpDistance;
+			(void)dz;
+			(void)dx;
+			(void)dy;
 
 
 		

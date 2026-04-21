@@ -56,6 +56,7 @@ void CAvatar::Gargoyles (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	LONG FloorHeight;
 	LONG CeilingHeight;
 	LONG Special;
+	(void)WingFlappingFrame;
 	
 	if( player.ThingIndex != fERROR &&
 		!reject( pAvatar->mfGetSector(), mythings[player.ThingIndex].sect))

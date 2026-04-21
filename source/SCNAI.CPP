@@ -615,6 +615,7 @@ void SCENE_AI::mfBattleInit ( SCENE &rScene)
 void SCENE_AI::mfBattleRelease (SCENE &rScene)
 {
 	char path[256];	
+	(void)path;
 	fChatLineOn = FALSE;
 	
 	// release the control panel stuff

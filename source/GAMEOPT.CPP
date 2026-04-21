@@ -704,6 +704,10 @@ void PaintOptionMenu (LONG MenuCombo, LONG LoadSave)
 	LONG	MenuId, ButtonId;
 	char	buffer[30];
 	LONG    menu_x, menu_y, color;
+	(void)j;
+	(void)color;
+	(void)num_screen_sizes;
+	(void)sound_levels;
 	
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 

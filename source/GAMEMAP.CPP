@@ -1301,6 +1301,7 @@ void ChangeControlMode (LONG, LONG);
 	======================================================================== */
 void LoadControlSet (void)
 {
+	(void)fPlayerAcknowledgedDeath;
 	if (fControlMode & 0x100)
 		fControlMode &= 0xFF;
 
@@ -1565,6 +1566,7 @@ void DisplayProcess (LONG mode, LONG color, LONG index1, LONG index2)
 	======================================================================== */
 static void PaintDeathNotification(LONG MenuCombo, LONG RealmThatBitTheDust)
 {
+	(void)PaintDeathNotification;
 	LONG mx,my,X,Y;
 	char buffer[200];
 	char Realmbuf[40];
@@ -1790,6 +1792,8 @@ void AdjustName (LONG _realm)
 	LONG	cNearProvs[PROVINCE_COUNT];
 	LONG	xProv, rProv, yProv, bProv, xSum, ySum, xCtr, yCtr, pCnt;
 	char	n[50];
+	(void)xCtr;
+	(void)yCtr;
 
 	if (!realm[_realm].mfExists())		// don't do non existant realms
 		return;
@@ -2063,6 +2067,8 @@ void DisplayInfoStr (CSTRPTR szFrame, BOOL fCentered, char* format, ...)
 	va_list argp;
 	SHORT		x1, x2;
 	SHORT		iBkgnd, w, h, x;
+	(void)x1;
+	(void)x2;
 
 	if ((iBkgnd = GetResourceStd(szFrame, FALSE)) == fERROR)
 		return;
@@ -2101,6 +2107,7 @@ void DrawBorders (LONG x, LONG y, LONG map_x, LONG map_y, LONG w, LONG h, LONG /
 	UBYTE		pix1, pix2, pix3, pix, prov;
 	UBYTE		ff[2][480];
 	BOOL		f;
+	(void)pMap;
 
 	if (iLgMap == fERROR || iProvMap == fERROR)
 		return;
@@ -4119,6 +4126,9 @@ void RollDiceForFortify()
 void UpdateHoldingFlag (void)
 {
 	LONG					i, j, k, l, p, q;
+	(void)l;
+	(void)p;
+	(void)q;
 
 	for (i=1; i< PROVINCE_COUNT; ++i)
 	{
@@ -4325,6 +4335,7 @@ static void DoRandomEvent (LONG select, PROVINCE prov)
 	LONG	i, k, l, r;
 	REALM::REALM_TYPE	m_rlm = REALM::MONSTERS;
 	BOOL	fSend = FALSE;
+	(void)i;
 
 	if (prov >= GORGE && prov <= TORAIN && realm[REALM::FIVEPEAKS].mfExists())
 		m_rlm = REALM::FIVEPEAKS;
@@ -4555,6 +4566,7 @@ void RandomEvents (void)
 {
 	LONG	i, j, k, l, r, maxScore, rm;
 	BOOL	fSend = FALSE;
+	(void)i;
 
 	if (fTutorialSelected)			// boost the player's gold
 	{
@@ -4897,6 +4909,7 @@ BOOL UpdateDataArea (void)
 	LONG		counter2 = 0;
 	LONG		lPrint2 = FALSE;
 	LONG		lPageDone2 = FALSE;
+	(void)wait;
 
 //printf("UpdateDataArea - dturn_mode:%s (%d)  global_action_turn:%d\n",(dturn_mode>10)?"MAX_MODE":szDomainMode[dturn_mode],dturn_mode,global_action_turn);
 
@@ -6886,6 +6899,7 @@ void InitDomainTurn (LONG Fake)
 	LONG				fMedResAni_ = fMedResAni;
 	char				n[40];
 	static BOOL		FirstRun	= TRUE;
+	(void)FirstRun;
 	//static ULONG	old_free_mem = 0;
 
 #if defined (_EDIT)
@@ -7286,6 +7300,10 @@ void RealmNames (LONG clipped_x, LONG clipped_y)
 	LONG	j, temp, trans;
 	LONG	x_icon, y_icon, w_icon, h_icon, l_icon, t_icon, icon_scale;
 	char	n[50];
+	(void)w_icon;
+	(void)h_icon;
+	(void)l_icon;
+	(void)t_icon;
 
 	origin_x = (SHORT)l_map;
 
@@ -7335,6 +7353,7 @@ void RealmNames (LONG clipped_x, LONG clipped_y)
 BOOL CheckForCastleNeutralized (PROVINCE iProvince, LONG iMovingUnit)
 {
 	LONG	i, j, k, l, cUnits = 0, ccUnits;
+	(void)ccUnits;
 
 	// check for foreign castles
 	CheckAndFixPlaces(iProvince);
@@ -7389,6 +7408,8 @@ BOOL CheckUnit2ndMoveBlocked (LONG iMovingUnit, PROVINCE iProvince, PROVINCE iNe
 {
 	REALM::REALM_TYPE	iRealm = (REALM::REALM_TYPE) units[iMovingUnit].Realm;
 	LONG	i, j, k, cn;
+	(void)i;
+	(void)k;
 
 	if (units[iMovingUnit].MovePart!=0)	// in case we are on the move
 		return 1;
@@ -9628,6 +9649,8 @@ LONG CheckUnitArrival (LONG iMovingUnit, BOOL fJoinAllowed)
 	BOOL	f = TRUE;
 	SHORT	result;
 	char	n[50];
+	(void)i;
+	(void)n;
 
 #ifdef _DEMO
 		TurnOffAllSounds();
@@ -10187,6 +10210,7 @@ void WithdrawLosingUnit (BOOL fSend)
 	BOOL		fFoundEnemy;
 	BOOL		fTerrainPassable;
 	char 		buffer[100];
+	(void)f;
 //	BOOL		fPermittedBorder[8];
 
 	if (fWasABattle == FALSE)
@@ -10459,6 +10483,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	BOOL		fFoundEnemy;
 
 	// discover losing realm
+	(void)f;
 	UnitRealm = units[UnitIndex].Realm;
 	prov = units[UnitIndex].province;
 
@@ -10570,6 +10595,7 @@ SHORT CalculatePoints (REALM::REALM_TYPE CheckRealm)
 
 	// You can't check the realm's existance here as the 5 globals are set in
 	// CalculateProvPoints....Fix this later.  -GWP-
+	(void)j;
 	accumPoints = CalculateProvPoints(CheckRealm);
 	accumPoints += CalculateRelicPoints(CheckRealm);
 
@@ -11380,6 +11406,7 @@ void NPCBattleResults (BOOL fSend)
 
 	// printf ("NPCBattleResults\n");
 
+	(void)Winner;
 	// exp points for being brave enough to fight
 	BattleExpPoints( SCENE_MGR::HomeIndex, BTL_EXP_ENGAGE, 0, FALSE );
 	BattleExpPoints( SCENE_MGR::AwayIndex, BTL_EXP_ENGAGE, 0, FALSE );

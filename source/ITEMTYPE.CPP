@@ -1126,6 +1126,8 @@ LONG ItemEffects::Invulnerable(LONG Combo,LONG Arg,LONG Action)
 {
 	STATSMOD::MOD_TYPE	type;
 	LONG				mod;
+	(void)type;
+	(void)mod;
 
 	ITEMTYPE		Itemtype;
 	SHORT			hPlayerStats;
@@ -1497,6 +1499,7 @@ LONG ItemEffects::ImproveArmor(LONG Combo,LONG Arg,LONG Action)
  	SPLIT_COMBO(Combo,Itemtype,hPlayerStats);
 
 	ItemType&		Item=ItemTypes[Itemtype];
+	(void)cur_ac;
 
 	// if(fDomainTurn)
 	// {

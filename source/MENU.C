@@ -143,6 +143,8 @@ void ResetMenus(void)
    ======================================================================== */
 void ShowSubMenu(LONG unused, LONG index)
 {
+	(void)unused;
+
 	ShowMenu(index);
 }
 
@@ -153,6 +155,8 @@ void ShowSubMenu(LONG unused, LONG index)
    ======================================================================== */
 void QuitSystem(LONG unused, LONG zero)
 {
+	(void)unused;
+
 	quit_sys(zero);
 }
 /* ========================================================================
@@ -232,6 +236,8 @@ void ShowMenu(LONG Index)
 
 void HideSubMenu(LONG unused, LONG Index)
 {
+	(void)unused;
+
 	HideMenu(Index);
 	RunMenus();
 }
@@ -1947,6 +1953,8 @@ void DecrementVal( LONG unused, LONG pVal )
 #pragma unreferenced on
 {
 	LONG *pLocal = (LONG*)pVal;
+	(void)unused;
+
 	pLocal[0]--;
 }
 
@@ -1960,6 +1968,8 @@ void IncrementVal( LONG unused, LONG pVal )
 #pragma unreferenced on
 {
 	LONG *pLocal = (LONG*)pVal;
+	(void)unused;
+
 	pLocal[0]++;
 }
 
@@ -1973,6 +1983,8 @@ void ToggleVal( LONG unused, LONG pVal )
 #pragma unreferenced on
 {
 	LONG *pLocal = (LONG*)pVal;
+	(void)unused;
+
 	pLocal[0]=!pLocal[0];
 }
 /* ========================================================================
@@ -1984,6 +1996,9 @@ void ToggleVal( LONG unused, LONG pVal )
 void QuitSys( LONG unused, LONG unused2 )
 #pragma unreferenced on
 {
+	(void)unused;
+	(void)unused2;
+
 	quit_sys(0);
 }
 

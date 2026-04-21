@@ -62,21 +62,21 @@
 /* this is the definition of the battle field grid */
 /*                             */
 /*        His Reserves		   */
-/* ÚÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄ¿  */
-/* ³Away³    ³    ³    ³    ³  */
-/* ³ 2,0³ 2,1³ 2,2³ 2,3³ 2,4³  */
-/* ³Home³    ³    ³    ³    ³  */
-/* ÀÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÙ  */
-/* ÚÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄ¿  */
-/* ³    ³    ³    ³    ³    ³  */
-/* ³ 1,0³ 1,1³ 1,2³ 1,3³ 1,4³  */
-/* ³    ³    ³    ³    ³    ³  */
-/* ÀÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÙ  */
-/* ÚÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄÂÄÄÄÄ¿  */
-/* ³    ³    ³    ³    ³    ³  */
-/* ³ 0,0³ 0,1³ 0,2³ 0,3³ 0,4³  */
-/* ³    ³    ³    ³    ³    ³  */
-/* ÀÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÁÄÄÄÄÙ  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  */
+/* ï¿½Awayï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ 2,0ï¿½ 2,1ï¿½ 2,2ï¿½ 2,3ï¿½ 2,4ï¿½  */
+/* ï¿½Homeï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  */
+/* ï¿½    ï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ 1,0ï¿½ 1,1ï¿½ 1,2ï¿½ 1,3ï¿½ 1,4ï¿½  */
+/* ï¿½    ï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¿  */
+/* ï¿½    ï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ 0,0ï¿½ 0,1ï¿½ 0,2ï¿½ 0,3ï¿½ 0,4ï¿½  */
+/* ï¿½    ï¿½    ï¿½    ï¿½    ï¿½    ï¿½  */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
 /*        My Reserves		   */
 /*                             */
 /* each grid is broken into 2 x and y sub points */
@@ -212,6 +212,17 @@ void CAvatar::BattleCapt (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	PTR_SCENE	pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	SHORT		*pList; 
 	SHORT				level;
+	(void)i;
+	(void)pList;
+	(void)&TransRowCol;
+	(void)&CheckResults;
+	(void)&CheckRout;
+	(void)&CheckFallBack;
+	(void)&CheckMove;
+	(void)&CheckReserves;
+	(void)&CheckWin;
+	(void)&CheckMagic;
+	(void)&MultiPrintf;
 
 	switch( Status )
 	{
@@ -973,6 +984,7 @@ void CAvatar::CreateBattleTroops(void)
 {
 	LONG i;
 	LONG k;
+	(void)k;
 	// Note : Don't lock the scene here, its already locked.
 	PTR_SCENE	pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	const LONG	X = mfX();
@@ -1099,6 +1111,8 @@ SHORT ResolveAttack(SHORT hDefender, SHORT hAttacker, LONG AttackType)
 	SHORT	SpecialDefender;
 	SHORT	type;
 	SHORT	i,j;
+	(void)i;
+	(void)j;
 		
 	//GEH just a little protection is fine
 	if(hDefender == fERROR || hAttacker == fERROR)
@@ -1642,6 +1656,9 @@ SHORT ResolveBattleMagic(CAvatar *pDefender)
 	SHORT	points = 0;
 	SHORT	Bonus;
 	SHORT	Special;
+	(void)DefenderClass;
+	(void)DefenderValue;
+	(void)Special;
 		
 	fBattleStarted = TRUE;	// be sure we know fighting has started
 	
@@ -1944,6 +1961,7 @@ void BATTLE_CAPTAIN_DATA::mfTryToEngageEnemyBtlCap(CAvatar *pAvatar)
 	LONG	HisStatus;
 	SHORT	TestRow;
 	CAvatar *pOtherAvatar;
+	(void)TestRow;
 	
 	// if in the reserves, bail
 	if(pAvatar->fBtlCap.OnBtlField == FALSE)
@@ -2019,6 +2037,8 @@ void BATTLE_CAPTAIN_DATA::mfRunEnemyBtlCapAI(CAvatar *pAvatar)
 	SHORT i;
 	CHAR temp[80];
 	CHAR buffer[80];
+	(void)temp;
+	(void)buffer;
 	/* if not already engaged in battle, move about */
 	if(pAvatar->Engaged == 0)
 	{ 
@@ -3239,6 +3259,8 @@ void BATTLE_CAPTAIN_DATA::mfFallBack(LONG hAvatar)
 	SHORT	gridCol;
 	CHAR	temp[80];
 	CHAR	buffer[80];
+	(void)temp;
+	(void)buffer;
  	
 	pAvatar = (CAvatar *) BLKPTR((SHORT) hAvatar);
 	
@@ -3565,6 +3587,8 @@ void BATTLE_CAPTAIN_DATA::mfRout(LONG hAvatar, BOOL Broadcast, BOOL Speak)
 	SHORT	gridCol;
 	CHAR	temp[80];
 	CHAR	buffer[80];
+	(void)temp;
+	(void)buffer;
 	
 	pAvatar = (CAvatar *) BLKPTR((SHORT) hAvatar);
 	
@@ -3807,6 +3831,8 @@ void KillBattleCaptain(CAvatar *pAvatar)
 {
 	CHAR	temp[80];
 	CHAR	buffer[80];
+	(void)temp;
+	(void)buffer;
 
 	fUpdatePanels = TRUE;
 	
@@ -3928,6 +3954,7 @@ void CAvatar::FollowBtlCap (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	LONG	index;
 	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 	SHORT rndnum;
+	(void)index;
 	
 	switch( Status )
 	{

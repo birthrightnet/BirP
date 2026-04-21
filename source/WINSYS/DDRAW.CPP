@@ -412,6 +412,7 @@ extern "C" BOOL DDInitialize ( HWND hwndMain, BOOL fGDI )
    DDSURFACEDESC   ddsd;
    DDSCAPS         ddscaps;
 	int rval;
+	(void)rval;
         
     // -- Save the requested state information
 	fUsingGDI = fGDI;

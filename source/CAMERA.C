@@ -366,6 +366,8 @@ void SetCameraRotatePointTarget(
 	const LONG Radius,
 	const BOOL swoop)
 {
+	(void)swoop;
+
 	pCamera->TargetRequested = ROTATE_CAMERA_AROUND_POINT;
 	
 	if (X != NO_CHANGE)

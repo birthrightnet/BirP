@@ -345,6 +345,7 @@ static LONG ItemEffects::BarkSkin(LONG Combo,LONG Arg,LONG Action)
 				LONG 			PriestClass=CANT_CAST_SPELLS;
 				LONG 			PriestLevel=0;
 				LONG 			ACSet=0;
+				(void)ACSet;
 
 				Item.mfMessage(STR_ACTIVATE_BARKSKIN);
 				if (pPlayerStats->hAvatar != fERROR)
@@ -371,6 +372,7 @@ static LONG ItemEffects::BarkSkin(LONG Combo,LONG Arg,LONG Action)
 			case DEACTIVATE:
 			{
 				LONG ACSet;
+				(void)ACSet;
 				LONG 			PriestClass=CANT_CAST_SPELLS;
 				LONG 			PriestLevel=0;
 
@@ -3096,6 +3098,7 @@ static LONG ItemEffects::ActInfravision(LONG Combo,LONG Arg,LONG action)
 	ItemType&		Item=ItemTypes[IType];
 
 	ActiveItem* ai;
+	(void)ai;
 
 	if(fDomainTurn)
 	{

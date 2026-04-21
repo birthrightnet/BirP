@@ -41,7 +41,7 @@
 +		SetLock			- lock a block of memory in place
 
 	======================================================================== */
-/* ®RM200¯ */
+/* ï¿½RM200ï¿½ */
 /* includes */
 
 #include <stdio.h>
@@ -845,7 +845,7 @@ SHORT _NewBlock (ULONG cBytes)
 	//printf("_NewBlock (%ld)\n", cBytes);
 
 #if defined (MEMORY_CHK)
-	if (cBytes <= 0)
+	if (cBytes == 0)
 	{
 		fatal_error("MEMMANAG ERROR! Not allowed to allocate blocks of %ld.\n", cBytes);
 	}

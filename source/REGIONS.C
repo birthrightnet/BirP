@@ -38,7 +38,7 @@
 #include "sound.hxx"
 
 /* ------------------------------------------------------------------------
-   ®RM250¯Notes
+   ï¿½RM250ï¿½Notes
    ------------------------------------------------------------------------ */
 	//REVISIT:Do we need any more functionality here?
 	//                       Should val be a PTR so it can be modified by the region func.
@@ -122,6 +122,7 @@ static REGION *gpLastRegion = &regions[0];
 void add_key(LONG key,PFVLL func, LONG val, LONG val2)
 {
 	LONG i;
+	(void)val2;
 
 	i = add_region(0,0,0,0,key,func,val,val,0, -1);
 
@@ -412,7 +413,7 @@ REGION_EVENT_TYPE check_regions(void)
 			continue;
 		if (key_status(pThisRegion->key))
 		{
-			AddSndObj( SND_UI_BUTTON_CLICK, NULL, VOLUME_NINETY);
+			AddSndObj( SND_UI_BUTTON_CLICK, 0, VOLUME_NINETY);
 			(*pThisRegion->function)(pThisRegion->val, pThisRegion->val2);
 			EventHandled = REGION_HANDLED_EVENT;
 			break;
@@ -509,7 +510,7 @@ SKIP_TIP:
 					Y_RES_ADJ(pThisRegion->h) )
 				)
 			{
-				AddSndObj( SND_UI_BUTTON_CLICK, NULL, VOLUME_NINETY);
+				AddSndObj( SND_UI_BUTTON_CLICK, 0, VOLUME_NINETY);
 				(*pThisRegion->function)(pThisRegion->val, pThisRegion->val2);
 				EventHandled = REGION_HANDLED_EVENT;
 				break;
@@ -558,7 +559,7 @@ REGION_EVENT_TYPE check_regions(void)
 			continue;
 		if (key_status(pThisRegion->key))
 		{
-			AddSndObj( SND_UI_BUTTON_CLICK, NULL, VOLUME_NINETY);
+			AddSndObj( SND_UI_BUTTON_CLICK, 0, VOLUME_NINETY);
 			(*pThisRegion->function)(pThisRegion->val, pThisRegion->val2);
 			EventHandled = REGION_HANDLED_EVENT;
 			break;
@@ -573,7 +574,7 @@ REGION_EVENT_TYPE check_regions(void)
 					Y_RES_ADJ(pThisRegion->h) )
 				)
 			{
-				AddSndObj( SND_UI_BUTTON_CLICK, NULL, VOLUME_NINETY);
+				AddSndObj( SND_UI_BUTTON_CLICK, 0, VOLUME_NINETY);
 				(*pThisRegion->function)(pThisRegion->val, pThisRegion->val2);
 				EventHandled = REGION_HANDLED_EVENT;
 				break;

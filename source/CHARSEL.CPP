@@ -304,6 +304,8 @@ void MultiResetRealmSelect(void)
 {
 	FILE *fp;
 	LONG	i;
+	(void)SourcePath;
+	(void)iRegentProvince;
 
 #ifdef _WINDOWS
 	if ( IsMultiPlayer() )
@@ -539,6 +541,7 @@ void NewGameConfirmed2(BOOL fMulti)
 void NewGameConfirmed(LONG,LONG lMultiFlag)
 {
 	LONG i;
+	(void)i;
 //printf("DomainNewGame: ");
 //for (i=0; i<10; i++) printf("%d ",region_state[i]);
 //printf("\n");
@@ -852,6 +855,10 @@ void DisplayRealmSelection(void)
 	SHORT					hStat;
 	char					buff[80];
 	int					i, y = 40;
+	(void)pStat1;
+	(void)pStat2;
+	(void)hStat;
+	(void)buff;
 
 	// draw left panel
 	//iDTurnBk = GetResourceStd("UI\\DTURN_BK.PCX", FALSE);
@@ -1181,6 +1188,7 @@ void SelectRegent(LONG arg1, LONG arg2)
 void BeginRule(LONG, LONG)
 {
 	int i, j;
+	(void)j;
 
 	TurnOffAllSounds();
 
@@ -1405,6 +1413,7 @@ void PaintMoreInfo (LONG MenuCombo, LONG )
 	char	buff[80];
 	FILE	*in;
 	char path[256];
+	(void)path;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	LONG	startY;
 
@@ -1465,6 +1474,7 @@ void PaintMoreInfo (LONG MenuCombo, LONG )
 void SelectAdvParty(void)
 {
 	int i;
+	(void)i;
 
 	iAdvMode = ADV_GETPARTY;
 	localActiveRegent = ActiveRegent;
@@ -2172,6 +2182,7 @@ void SelectAdvSite(void)
 	int level;
 	int rndsite;
 	int numRuns = 9999;
+	(void)k;
 
 	iNewSite = -1;	// assume no new site available
 

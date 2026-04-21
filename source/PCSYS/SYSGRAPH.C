@@ -1,4 +1,4 @@
-/* =®RM250¯======================================================================
+/* =ï¿½RM250ï¿½======================================================================
    Copyright (c) 1990,1995   Synergistic Software
    All Rights Reserved.
    =======================================================================
@@ -255,6 +255,9 @@ static void set_term_hires(LONG unused, LONG arg )
 {
 	LONG NewMapCX;
 	LONG NewMapCY;
+        (void)unused;
+        (void)arg;
+
         if (fHighRes == FALSE)
         {
                 if( _setvideomode(0x101) == 0 )
@@ -289,6 +292,9 @@ void set_hires(LONG unused, LONG arg )
 {
 	LONG NewMapCX;
 	LONG NewMapCY;
+        (void)unused;
+        (void)arg;
+
         if (fHighRes == FALSE)
         {
                 // GWP if( _setvideomode(0x101) == 0 )
@@ -323,6 +329,9 @@ static void set_term_lowres(LONG unused, LONG  arg )
 {
 	LONG NewMapCX;
 	LONG NewMapCY;
+        (void)unused;
+        (void)arg;
+
         if (fHighRes == TRUE)
         {
                 union REGS regs;
@@ -363,6 +372,9 @@ void set_lowres(LONG unused, LONG  arg )
 {
 	LONG NewMapCX;
 	LONG NewMapCY;
+        (void)unused;
+        (void)arg;
+
         if (fHighRes == TRUE)
         {
                 // GWP union REGS regs;
@@ -729,6 +741,7 @@ void ScreenCopy (
         SHORT   cbDest;
         ULONG   cbDestOffset;
         //ULONG l;
+        (void)resolution;
 
 /* -----------------------------------------------------------*/
 

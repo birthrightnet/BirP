@@ -1,4 +1,4 @@
-/* ®RM255¯ */
+/* ï¿½RM255ï¿½ */
 /* ========================================================================
    Copyright (c) 1990,1995   Synergistic Software
    All Rights Reserved.
@@ -188,7 +188,7 @@ char gNodeHit[DEBUG_NODES];
 
 
 #define DEBUG_SCALE	(10)
-debug_draw_seg_line(long x1,long y1,long x2,long y2,long c)
+void debug_draw_seg_line(long x1,long y1,long x2,long y2,long c)
 {
 	x1-=camera.x>>8;
 	x2-=camera.x>>8;

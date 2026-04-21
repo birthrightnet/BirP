@@ -820,6 +820,12 @@ void GameMain(void)
 	LONG fileResult, vol, i;
  	char path[256];
 	char waveres[256];
+	(void)fp;
+	(void)fileResult;
+	(void)vol;
+	(void)path;
+	(void)waveres;
+	(void)&LogPrintf;
 	//SHORT splashbitm;
 
 	// Initialize Memory Manager, check for less than full needed memory
@@ -1294,6 +1300,7 @@ void PlayIntro(void)
 	SHORT   bitm;
 	LONG    now;
 	BOOL	fFlicPlayedComplete;
+	(void)now;
 
 	FadeOut(100);
 	clear_screen();
@@ -1747,6 +1754,7 @@ void PlayFinale(LONG WinningRealm,LONG)
 	CHAR	game[10];
 	SHORT	i;
 	SHORT	bitm;
+	(void)i;
 	LONG	now;
 	CHAR 	*Dash;
 	SHORT  prevTrack = ucWhichTrack;
@@ -2131,6 +2139,7 @@ void FadeTo (LONG red, LONG green, LONG blue, LONG steps)
 	UBYTE	CardPal[768];
 	UBYTE	TempPal[768];
 	LONG	i, j, c;
+	(void)c;
 
 	logInfo("FadeTo called %d/%d/%d, %d", red, green, blue, steps);
 
@@ -2303,6 +2312,10 @@ void NewIntro (void)
 	SHORT			iDark = fERROR;
 	LONG			hash[256];
 	SHORT			bitm;
+	(void)oj;
+	(void)y;
+	(void)hash;
+	(void)bitm;
 	static char* scrname[] = {	"INTRO\\SCREEN0.PCX",
 				       	"INTRO\\SCREEN1.PCX",
 				       	"INTRO\\SCREEN2.PCX",

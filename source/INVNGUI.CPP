@@ -348,6 +348,7 @@ void InventoryGUI::mfPaintActionButtonText(LONG MenuId) const
 	const char* Label;
 	LONG GetMe;
 	LONG button;
+	(void)Label;
 
     if (fPickingRecipient)
     {
@@ -505,6 +506,7 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 	char NumBuf[20];
 	LONG Line, i;
 	SHORT hIcon;
+	(void)hIcon;
 
 	BOOL showEmpty = (fDomainTurn || fPreparingSpells || CurrCategory != IC_SPELL);
 	InventoryItor itor(Ol);
@@ -579,6 +581,8 @@ void InventoryGUI::mfPaintListBoxLine(LONG Lines,ObjectList & const Ol,LONG Menu
 		LONG CurrTextY;
 		LONG TextMarginX=4;  //margins!
 		LONG TextMarginY=4;
+		(void)CurrTextX;
+		(void)CurrTextY;
 
 
 

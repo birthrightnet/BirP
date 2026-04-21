@@ -135,7 +135,6 @@ extern LONG		GameSpecificGlobal_h;
    ------------------------------------------------------------------------ */
 // private
 static void TogglePartyCheck(LONG i, LONG);
-static void SelectAdventures(void);
 static void DescribeAdvPrep(void);
 static void AdvPrepIncTut(LONG, LONG);
 static void MagicPrep(SHORT AdvIndex);
@@ -161,6 +160,8 @@ void AdventurePrep(void)
 {
 	SHORT	i,x,y,me;
 	LONG	MenuCombo;
+	(void)me;
+	(void)iPartyLead;
 	
 	HideMenu(D_GAMEBUTTON);
 	push_regions();
@@ -265,6 +266,9 @@ void AdvPrepPaint (LONG MenuCombo, LONG )
 	char    buff[80];
 	CHAR    color = 228;
 	LONG    MenuId, ButtonId;
+	(void)j;
+	(void)w;
+	(void)h;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	
 	// current site title
@@ -546,6 +550,11 @@ void AdvPrepDone (LONG MenuCombo, LONG )
 	LONG	index;
 	LONG	iPartyLead;
 	BOOL	fSend = FALSE;
+	(void)j;
+	(void)HomeIndex;
+	(void)AwayIndex;
+	(void)unit;
+	(void)index;
 	
 	#if defined(_WINDOWS)
 		fSend = IsMultiPlayer();

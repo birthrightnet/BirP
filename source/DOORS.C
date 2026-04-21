@@ -941,7 +941,7 @@ static BOOL DoorKeyOK (LONG special)
 
 	if (DoesPlayerHaveItem (CHIME_OF_OPENING))
 	{
-		AddSndObj(SND_HIGH_CHIME_OF_OPENING1_1,NULL,VOLUME_FULL);
+		AddSndObj(SND_HIGH_CHIME_OF_OPENING1_1,0,VOLUME_FULL);
 		return TRUE;
 	}
 
@@ -1004,21 +1004,21 @@ static BOOL DoorKeyOK (LONG special)
 		case LSP_SWDOOR_L_GEM_BLUE:
 		case LSP_SWDOOR_R_GEM_BLUE:
 			if (DoesPlayerHaveItem(GEM_BLUE))
-				AddSndObj(SND_GEM_STONE1,NULL,VOLUME_FULL);
+				AddSndObj(SND_GEM_STONE1,0,VOLUME_FULL);
 			return (DoesPlayerHaveItem (GEM_BLUE) ||
 				DoesPlayerHaveItem (KEY_SKELETON));
 		case LSP_GEM_GREEN:
 		case LSP_SWDOOR_L_GEM_GREEN:
 		case LSP_SWDOOR_R_GEM_GREEN:
 			if (DoesPlayerHaveItem(GEM_GREEN))
-				AddSndObj(SND_GEM_STONE1,NULL,VOLUME_FULL);
+				AddSndObj(SND_GEM_STONE1,0,VOLUME_FULL);
 			return (DoesPlayerHaveItem (GEM_GREEN) ||
 				DoesPlayerHaveItem (KEY_SKELETON));
 		case LSP_GEM_OF_PASSAGE:
 		case LSP_SWDOOR_L_PASSAGE:
 		case LSP_SWDOOR_R_PASSAGE:
 			if (DoesPlayerHaveItem(GEM_OF_PASSAGE))
-				AddSndObj(SND_GEM_STONE1,NULL,VOLUME_FULL);
+				AddSndObj(SND_GEM_STONE1,0,VOLUME_FULL);
 			// Skeleton key does not work here.
 			return (DoesPlayerHaveItem (GEM_OF_PASSAGE));
 		default:
@@ -1026,7 +1026,7 @@ static BOOL DoorKeyOK (LONG special)
 	}
 
 	if (ReturnValue)
-		AddSndObj(SND_KEY_LOCK1,NULL,VOLUME_FULL);
+		AddSndObj(SND_KEY_LOCK1,0,VOLUME_FULL);
 
 	return ReturnValue;
 }
@@ -1754,6 +1754,7 @@ void HandleLifts (LONG arg)
 // ---------------------------------------------------------------------------
 
 	LONG iLift;
+	(void)arg;
 
 #if defined (_EDIT) && !defined (_JPC)
 	return;										// do NOT allow changes in EditWad
@@ -2127,6 +2128,7 @@ void HandleFloors (LONG arg)
 // ---------------------------------------------------------------------------
 
 	LONG iFloor;
+	(void)arg;
 
 #if defined (_EDIT) && !defined (_JPC)
 	return;										// do NOT allow changes in EditWad
@@ -2444,6 +2446,7 @@ void HandleCeilings (LONG arg)
 // ---------------------------------------------------------------------------
 
 	LONG iCeiling;
+	(void)arg;
 
 #if defined (_EDIT) && !defined (_JPC)
 	return;										// do NOT allow changes in EditWad

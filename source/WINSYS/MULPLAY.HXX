@@ -150,7 +150,7 @@ const int iGameNameSize	= 23;
 const int iChatMsgSize		= 100;  //
 const int iPlaySpecSize	= 100;	// overkill number
 
-const char szLoadTemp[] = ".\\SAVEGAME\\MPTRANS~.TMP";
+extern const char szLoadTemp[];
 
 
 // const int iPlanProfileName = MAX_PATH;

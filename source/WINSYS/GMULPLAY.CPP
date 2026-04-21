@@ -111,6 +111,8 @@ GenericMultiPlayer::GenericMultiPlayer( void ) :
 	fAvailable( FALSE ), pnmGame( NULL, &err ), ulSndMsgNum( 0 )
 {
 	int x;
+	(void)fpOldEditWndProc;
+	(void)fpOldEditWndProc;
 
 	for ( x = 0 ; x < MAX_PLAYERS; x++ )
 	{
@@ -1574,6 +1576,7 @@ void GenericMultiPlayer::SetupChat( void )
 // -- Debug statements from NetPlay.dll
 static int DumpString( char *s )
 {
+    (void)DumpString;
 
 #ifdef _MULTIMONO
     mono_puts( 0,19, s );

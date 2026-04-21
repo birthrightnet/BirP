@@ -210,6 +210,7 @@ extern "C"
 LONG GetLevelFiendIndex(void)
 {
 	POINT ReturnMe;
+	(void)ReturnMe;
 
 	for (LONG i=0;i<MAX_THINGS;++i)
 	{
@@ -702,6 +703,7 @@ void ObjectList::mfSaveTo(FILE *fp)
 {
 	SHORT iteminfo[2];
 	LONG  size, count;
+	(void)size;
 
     count = mfLength();
 
@@ -723,6 +725,7 @@ void ObjectList::mfLoadFrom(FILE *fp)
     LONG size, count;
     LONG i;
     SHORT iteminfo[2];
+	(void)size;
 
     BOOL sQI = fQuietItems;
     fQuietItems = TRUE;
@@ -845,6 +848,7 @@ void ObjectList::mfAddToSpellBoxes(LONG const to,ItemCategory const cat)
 {
 	LONG i;
 	LONG EmptyIndex;
+	(void)EmptyIndex;
 
 
 	InventoryItor itor(*this);
@@ -1386,6 +1390,7 @@ void ObjectList::ReadINV(SHORT hPlayerStats, LONG id)
     LONG count;
     SHORT entry;
     FILE_MODE OldFileMode;
+	(void)OldFileMode;
 
     BOOL sQI = fQuietItems;
     fQuietItems = TRUE;

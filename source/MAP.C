@@ -136,6 +136,9 @@ static void DrawMapGrid(void);
 static void MapHandleSecretSSect(void);
 static void DrawMapLinedef(long i);
 static void DrawMapBlockLinedefs(SHORT * bm);
+static void HdlMapRegion(void);
+void DrawMapCheaterArrows(void);
+void CalcWadBounds(LONG *rx, LONG *ry, LONG *rw, LONG *rh);
 
 
 /* ------------------------------------------------------------------------
@@ -345,6 +348,8 @@ static void HdlMapRegion(void)
    ======================================================================== */
 void SetMapHighlightEnemies(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -361,6 +366,8 @@ void SetMapHighlightEnemies(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightTreasure(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -375,6 +382,8 @@ void SetMapHighlightTreasure(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightEvil(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -389,6 +398,8 @@ void SetMapHighlightEvil(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightSecretDoors(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -403,6 +414,8 @@ void SetMapHighlightSecretDoors(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightTraps(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -417,6 +430,8 @@ void SetMapHighlightTraps(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightMagic(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 	//printf("highlighting\n");
@@ -431,6 +446,8 @@ void SetMapHighlightMagic(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightInvisibleCreatures(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	//since this is not a flag, we can't "toggle" it, so this equation
 	//will suffice. this equation only works if !0 == 1.
 
@@ -445,6 +462,8 @@ void SetMapHighlightInvisibleCreatures(LONG unused,LONG arg)
    ======================================================================== */
 void SetMapHighlightQuestObject(LONG unused,LONG arg)
 {
+	(void)unused;
+
 	if (arg==TOGGLE)
 		gMapInfo.Highlight.QuestObject=!gMapInfo.Highlight.QuestObject;
 	else
@@ -518,6 +537,7 @@ PFV SetMapGameDraw(PFV pfGameFunc)
 BOOL SetMapFullScreen(LONG unused, LONG arg)
 {
 	BOOL old=gMapInfo.fFullScreen;
+	(void)unused;
 
 	if (arg==TOGGLE)
 	{
@@ -543,6 +563,7 @@ BOOL SetMapDraw(LONG unused, LONG arg)
 {
 
 	BOOL old=gMapInfo.fDrawMap;
+	(void)unused;
 
 	if (arg==TOGGLE)
 	{
@@ -584,6 +605,7 @@ BOOL SetMapDraw(LONG unused, LONG arg)
 BOOL SetMapShowAll(LONG unused1,LONG arg)
 {
 	BOOL old=gMapInfo.fDrawAll;
+	(void)unused1;
 
 	//printf("sm%li\n",arg);
 
@@ -1651,6 +1673,8 @@ void MapHandleZoom(LONG action)
    ======================================================================== */
 void ZoomMap( LONG unused, LONG f )
 {
+	(void)unused;
+
 	if(!gMapInfo.fDrawMap)
 		return;
 
@@ -1675,6 +1699,8 @@ void ZoomMap( LONG unused, LONG f )
    ======================================================================== */
 void ZoomMapAbsolute( LONG unused, LONG f )
 {
+	(void)unused;
+
 	if(!gMapInfo.fDrawMap)
 		return;
 

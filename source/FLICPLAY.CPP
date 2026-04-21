@@ -135,6 +135,7 @@ BOOL PlayFlic(char * fn, LONG secondsToWaitAtEnd)
 	LONG lCurFrame = 0;
 	char n[256];
 	int tag = 33333;
+	(void)n;
 	frameSoundIndex = 0;
 	BOOL	fComplete = TRUE;	// assume all works compeletly
 

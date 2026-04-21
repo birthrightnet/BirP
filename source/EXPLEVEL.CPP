@@ -95,6 +95,7 @@ UBYTE lookup_save(SCLASSTYPE classtype, SHORT level, SAVETYPE savetype)
 {
     UBYTE save;
     SHORT best_save_level, i, index, increment;
+	(void)save;
 
     best_save_level = saving_throw[classtype].best_save_level;
     increment = saving_throw[classtype].levels_per_advance;
@@ -355,6 +356,8 @@ void GainExp(PLAYER_STATS * pPS, const LONG ExpAmount,
     LONG  current_xp;
     LONG  xp_for_next_level;
     LONG  xp_for_yet_another_level;
+	(void)current_level;
+	(void)current_xp;
 
     num_classes = 0;
     for (index = 0; index < MAX_PLAYER_CLASSTYPES; index++)

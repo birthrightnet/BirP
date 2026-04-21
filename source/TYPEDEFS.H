@@ -166,10 +166,9 @@ typedef union
 /* -----------------------------------------------------------------
    Pragmas
    ----------------------------------------------------------------- */
-// init cont problems with shorts
-#pragma warning 389 4
-// unused variables
-#pragma warning  14 4
+// Legacy warning-number pragmas from the original toolchain are invalid
+// under Open Watcom v2 and generate W141 repeatedly in DOS builds.
+// Keep default compiler warning behavior instead.
 
 
 #endif // _TYPEDEFS_H

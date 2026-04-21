@@ -77,6 +77,7 @@ BOOL FindUserSceneFiles ( char * pPath, char * pExt )
 	SCENE::SCENE_TYPE	SceneType;
 	SCENE::SCENE_DATA	SceneData;
 	char				SceneNames[MAX_SCENE_FILES][13];
+	(void)fPtr;
 	
 	// build path to scene directory with wildcard extention
 	sprintf(ScenePath, "%s*%s", pPath, pExt);

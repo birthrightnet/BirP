@@ -121,12 +121,6 @@ void ToggleDirectDraw(LONG, LONG);
 HWND	hwndApp;
 #endif
 
-static void InitTroopDisplay (LONG type, LONG realm);
-static void PaintTroopCard();
-static LONG AddUnit (SHORT StartIndex, LONG prov, LONG icon, LONG id, LONG realm);
-static LONG DelUnit (SHORT StartIndex, SHORT KillIndex);
-static void MusterList( SHORT StartIndex );
-
 static void PaintHello( LONG MenuCombo, LONG );
 
 void NextHelpKeys(LONG, LONG);
@@ -322,6 +316,10 @@ void DoneHelpMenu(LONG , LONG)
 {
 	iAbortSlideShow = FALSE;
 	CHAR	chFileName[80];
+
+#ifndef _WINDOWS
+	(void)chFileName;
+#endif
 
 	switch(iHelpHighlight)
 	{
@@ -538,6 +536,9 @@ void PaintHelpKeys (LONG MenuCombo, LONG arg)
 	char    textbuf[4096];
 	char    buff[80];
 	FILE    *in;
+	(void)W;
+	(void)H;
+	(void)buffer;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	// get position of help screen
@@ -593,6 +594,8 @@ void PaintHelpKeys (LONG MenuCombo, LONG arg)
 void init_game()
 {
 //	InitRedirectableVideo(256, 128);
+	(void)&PaintHello;
+	(void)action;
 
 	init_doors();
 
@@ -1134,6 +1137,7 @@ void PaintAttributes (LONG MenuCombo, LONG )
 	LONG	hPlayerStats;
 	SHORT	regentNum = 0;
 	char path[256];
+	(void)path;
 	
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	
@@ -1710,6 +1714,7 @@ void InitBattleCard( SHORT UnitIndex )
 void InitBattleCard_alt (LONG type, LONG realm)
 {
 	SHORT				hPlayerStats;
+	(void)hPlayerStats;
 
 	iTroopType = type;
 	iTroopRealm = realm;
@@ -1731,6 +1736,10 @@ void PaintBattleCard( LONG MenuCombo, LONG )
 	LONG	MenuId, ButtonId;
 	CHAR	buffer[150];
 	LONG	timedif;
+	(void)i;
+	(void)X;
+	(void)Y;
+	(void)timedif;
 	
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2339,6 +2348,7 @@ int PaintInputField(LONG lButtonId, char *szBuffer, LONG lBufLen, LONG lFont,
 					)
 				{
 					SHORT	Item;
+					(void)Item;
 					
 					if(fDomainTurn)
 					{
@@ -2358,6 +2368,7 @@ int PaintInputField(LONG lButtonId, char *szBuffer, LONG lBufLen, LONG lFont,
 					)
 				{
 					SHORT	Item;
+							(void)Item;
 					
 					if(fDomainTurn)
 					{
@@ -2972,6 +2983,11 @@ void PaintHelpScreen(LONG MenuCombo, LONG)
 	LONG X, Y, W, H;
 	char buffer[40];
 	LONG	MenuId, ButtonId;
+	(void)i;
+	(void)X;
+	(void)Y;
+	(void)W;
+	(void)H;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -3084,6 +3100,9 @@ void Sinners(LONG, LONG)
 	SHORT	bitm;
 	SHORT	hBitm;
 	LONG	now;
+	(void)filename;
+	(void)i;
+	(void)now;
 	
 	StopRedBook();
 	TurnOffAllSounds();
@@ -3244,6 +3263,10 @@ void BowToPlayer(LONG MenuCombo, LONG)
 void GetMoreInfo( LONG MenuCombo, LONG Context )
 {
 	CHAR chFileName[80];
+
+#ifndef _WINDOWS
+	(void)chFileName;
+#endif
 
 #if defined(_JUNEDEMO)
 	return;

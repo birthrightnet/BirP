@@ -2416,6 +2416,8 @@ LONG DeleteUnit (SHORT iUnit, BOOL fSend, BOOL ReOrderStack )
 	LONG	NewUnitLeader = units[iUnit].NextUnit;
 	LONG	i, k, m, n;
 	BOOL	dataNotSent = TRUE;	// Flag so we only transfer the data once.
+	(void)m;
+	(void)n;
 
 	// remove the deleted unit from the list
 
@@ -2711,6 +2713,8 @@ LONG CalcUnitValues (LONG iUnit)
 void MoveSubUnitUpList (LONG iUnit, LONG iStartUnit)
 {
 	LONG	i, iNext, iPrev, n, j;
+	(void)n;
+	(void)j;
 
 	if (iUnit == iStartUnit) return;
 

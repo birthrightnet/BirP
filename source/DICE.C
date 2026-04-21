@@ -1,4 +1,4 @@
-/* =®RM250¯=======================================================================
+/* =ï¿½RM250ï¿½=======================================================================
    Copyright (c) 1990,1995	Synergistic Software
    All Rights Reserved
    ========================================================================
@@ -50,6 +50,11 @@ SHORT RollDice( DICE const * const pDiceInfo)
 {
 	SHORT sResult = 0;
 	LONG i;
+
+#if defined (_WINDOWS) && defined(_DEBUG)
+   (void)FileName;
+   (void)LineNum;
+#endif
 
 	for (i = 0; i < pDiceInfo->sbNumberOfDice; i++)
 	{

@@ -1001,6 +1001,7 @@ SHORT LoadAVD (
 	SHORT hPlayerStats = fERROR;
 	FILE * pFileRead;
 	FILE_MODE OldFileMode;
+	(void)OldFileMode;
 
 	// in the multiplayer game, we don't want any altered avatar file
 	#ifndef _DEBUG

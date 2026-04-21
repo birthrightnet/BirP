@@ -2450,6 +2450,7 @@ ErrCode PlatformNetworkModule::ReceiveMessages (	DWORD dwWait,
 					}	BRUnitMessage, *PBRUnitMessage;
 
 					char temp[200];
+					(void)temp;
 					PCHAR pMsg = (PCHAR)lpRecBuff->cData;
 					pMsg += sizeof(BRHeader);
 					UNIT_PTR pUnit = (UNIT_PTR) ( ((PBRUnitMessage) pMsg)->UnitData );
@@ -3101,8 +3102,10 @@ ErrCode PlatformNetworkModule::SendMessage (	DWORD  dpToId,
 	int	    iResult	  = 0;
 	DWORD   dwLenMsg  = sizeof (NETMSG);
 	DWORD   dwTimeOut ;
+	(void)dwTimeOut;
 	DWORD   dwFlag ;
 	char    errstr[256] ;
+	(void)errstr;
 
 	DPID     dpFromId2 = dpToId;
 	DPID     dpToId2   = dwPlayerId;
@@ -3825,8 +3828,10 @@ int PlatformNetworkModule::ForceStart( void )
 	int	    iResult	  = 0;
 	DWORD   dwLenMsg  = sizeof (NETMSG);
 	DWORD   dwTimeOut ;
+	(void)dwTimeOut;
 	DWORD   dwFlag ;
 	char    errstr[256] ;
+	(void)errstr;
 
 	//---- Count up the players in the game
 

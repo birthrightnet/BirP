@@ -91,6 +91,8 @@ void PaintParchment(LONG MenuCombo, LONG stringhandle)
 	LONG	menu_x, menu_y;
 	LONG	X,Y;
 	LONG	MenuId, ButtonId;
+   (void)X;
+   (void)Y;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	if( GetButtonPosition( MenuId, PARCHMENT_TEXT, &menu_x, &menu_y ) == fERROR)

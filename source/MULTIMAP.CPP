@@ -116,6 +116,10 @@ extern PMENU		Menus;
    ======================================================================== */
 void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lData)
 {
+	(void)iVal0;
+	(void)iVal1;
+	(void)iVal2;
+	(void)iVal3;
 
 	char	n[40];
 
@@ -667,6 +671,7 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 {
 	LONG arg;
+	(void)arg;
 
 	switch(lArray_Id)
 	{
@@ -1068,6 +1073,7 @@ BOOL SetGameData( LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index,
 {
 #ifdef _WINDOWS
 	int timeNow;
+	(void)timeNow;
 
 	if( IsMultiPlayer() )
 	{
@@ -1132,6 +1138,7 @@ LONG GetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 {
 #ifdef _WINDOWS
 	int timeNow;
+	(void)timeNow;
 
 	if( IsMultiPlayer() )
 	{
@@ -1237,6 +1244,8 @@ void PaintGenericStatement(LONG MenuCombo, LONG val)
 void RequestPlacesIndex(LONG *index, BOOL fSend)
 {
 	LONG mycount, mytmp, arg;
+	(void)mycount;
+	(void)arg;
 
 //#ifdef _WINDOWS
 	// if we are the master, or a single player game
@@ -1283,6 +1292,8 @@ void RequestPlacesIndex(LONG *index, BOOL fSend)
 void RequestPlacesIndex(LONG *index, BOOL fSend)
 {
 	LONG mycount, mytmp, arg;
+	(void)mycount;
+	(void)arg;
 
 #ifdef _WINDOWS
 	// if we are the master or a single player game or an NPC
@@ -1416,6 +1427,7 @@ LONG WaitForResult(LONG iWhichAction, LONG iWhichProvince, LONG iWhichHolding)
 {
 	int  iWhichRealm;
 	LONG lPlayerId;
+	(void)lPlayerId;
 
 #ifdef _WINDOWS
 	// get the realm of the remote player
@@ -1506,6 +1518,9 @@ LONG AskAndWaitForTargetPlayer(LONG iWhichAction, LONG iWhichProvince, LONG iWhi
 	BOOL	fFirstTime = FALSE;
 	int	iPlayerId;
 	static LONG oldSuccess = 999;
+	(void)timer;
+	(void)timer2;
+	(void)iPlayerId;
 
 
 	// find the realm of the target

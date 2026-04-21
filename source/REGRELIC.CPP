@@ -150,6 +150,7 @@ static void REGRELIC_STRUCT::AssignRelics ()
 	LONG			cLieutenants;
 	LONG			cItems;
 	LONG			iRegent;
+	(void)iRegent;
 	LONG			iLieutenant;
 	LONG			iItem;
 

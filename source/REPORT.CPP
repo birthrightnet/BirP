@@ -516,6 +516,9 @@ void CopyReactionTable(void)
    ======================================================================== */
 void StartNewReports (void)
 {
+	(void)startCount;
+	(void)szReport;
+	(void)iAbort;
 	iNewReports = iNextReport;
 }
 
@@ -688,6 +691,7 @@ void PaintRegentLose(LONG MenuCombo, LONG)
    ======================================================================== */
 static void DoneImmediateReport(LONG MenuCombo, LONG)
 {
+   (void)DoneImmediateReport;
    //---- reset the report timeout
    lReportTimeout = 0;
 
@@ -866,6 +870,7 @@ void AddReportTo (LONG iRealm, LONG subject, LONG index1, LONG index2, LONG inde
 {
 	LONG	i;
 	int		iSubImm = FALSE;
+	(void)i;
 
 	// if an AI sent a report to us, add it
 	if(iRealm == HomeRealm)
@@ -1094,6 +1099,9 @@ void GiveReport (LONG lArg)
 	char		buff[80];
 	FILE		*in;
 	REALM::REALM_TYPE		testRealm;
+	(void)now;
+	(void)buff;
+	(void)in;
 
 	iWhosReport = 0;
 	sndPlayed = FALSE;
@@ -1829,6 +1837,8 @@ void PaintReportButtons (LONG MenuCombo, LONG)
 	LONG	x,y;
 	LONG	w,h;
 	int		i;
+	(void)MenuId;
+	(void)ButtonId;
 
 	// region for buttons is at 0, 420 for 640 by 60
 
@@ -2021,6 +2031,11 @@ void PaintReportMenu (LONG MenuCombo, LONG)
 	CHAR	color = 228;
 	CHAR	temp1[80];
 	CHAR	temp2[80];
+	(void)j;
+	(void)s;
+	(void)p;
+	(void)sz_type;
+	(void)last;
 
 	// fully automatic play
 	if (DoneTimer && iHotSeatMultiplayerIndex == REALM::MIERES)
@@ -2211,6 +2226,8 @@ static void PaintImmediateReport (LONG MenuCombo, LONG)
 	LONG	MenuId, ButtonId;
 	SHORT	bitm;
 	char	szBitm[40];
+	(void)mx;
+	(void)my;
 
 //	LONG X;
 //	LONG Y;
@@ -2466,6 +2483,7 @@ static void PaintProvinceTable (LONG x, LONG y, LONG w, LONG h)
 	SHORT	scaleWidth;
 	SHORT	points;
 	char	szRealm[40];
+	(void)scoreWidth;
 
 	// print title
 	y += 20;
@@ -2746,6 +2764,7 @@ static void PaintWarReport (LONG x, LONG y, LONG w, LONG h)
 	int		iSwordDisplay = FALSE;
 	BOOL	warShown[LAND_REALM_COUNT];
 	LONG	i;
+	(void)szRealm;
 
 	for (i=0; i < LAND_REALM_COUNT; i++)
 	{
@@ -2838,6 +2857,8 @@ static void PaintAllianceReport(LONG x, LONG y, LONG w, LONG h)
 	char	szRealm[40];
 	SHORT	column;
 	int		lastY;
+	(void)j;
+	(void)k;
 
 	// print title
 	y += 20;
@@ -2967,6 +2988,8 @@ static void PaintInvestitureReport(LONG x, LONG y, LONG w, LONG h)
 	SHORT	column = 0;
 	SHORT	topY;
 	SHORT	printed = FALSE;
+	(void)j;
+	(void)k;
 
 	// print title
 	y += 20;

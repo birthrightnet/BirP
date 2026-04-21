@@ -25,6 +25,8 @@
 
 #include "MulPlay.hxx"
 
+const char szLoadTemp[] = ".\\SAVEGAME\\MPTRANS~.TMP";
+
 #include "FileXfer.hxx"
 
 #include "fstream.h"
@@ -222,7 +224,7 @@ int iOnSeed = 0;
 // -----------------------------------------------------------------
 MultiPlayer::MultiPlayer( void ) : eStatus( iMPS_NONE )
 {
-
+	(void)hwndWait;
 
 	InitGoop();
 
@@ -1253,6 +1255,7 @@ int MultiPlayer::CheckForPlayers( void )
 {
 	int x;
 	static int dwTime = 0;
+	(void)dwTime;
 
 #if 0
 	if ( fSigs )
@@ -3133,6 +3136,7 @@ BOOL MultiPlayer::SendGameType( void )
 	PCHAR pMsg  = NULL;
 
 	int x;
+	(void)x;
 
 
 	//---- Master only sends this message
@@ -4760,6 +4764,7 @@ void MultiPlayer::ReadCfg( void )
 
 	CHAR szFile[MAX_PATH] = "";
 	short temp;
+	(void)temp;
 
 	sprintf( szFile, "%s", pszCfg );
 
@@ -5149,6 +5154,7 @@ void MultiPlayer::WriteCfg( void )
 
 	CHAR szFile[MAX_PATH] = "";
 	short temp;
+	(void)temp;
 	sprintf( szFile, "%s", pszCfg );
 
 	ofstream ofile( szFile, ios::out );
@@ -5659,6 +5665,7 @@ static void SaveString( long lContext, char* theString,
  						 long theIndex, PNETGAMEINFO pnm )
 {
 	int len;
+	(void)len;
 	LPGUID lpGuid = (LPGUID) pnm;
 
 //	strcpy( &pszProtocol[theIndex][0], theString );
@@ -5726,6 +5733,7 @@ void StartWait( USHORT usType )
 	else
 	{
 		char temp[200];
+		(void)temp;
 
 		// sync point value + 16
 		if (usType == 99)
@@ -5837,6 +5845,7 @@ void MDisplayInfo (CSTRPTR szFrame, int iformat, ...)
 	char		texbuffer[200];
 	va_list argp;
 	SHORT		iBkgnd, w, h, x, y;
+	(void)y;
 	char		*format;
 
 	if ((iBkgnd = GetResourceStd(szFrame, FALSE)) == fERROR)
@@ -5997,7 +6006,9 @@ BOOL DoMultiRealmStuff(SHORT HomeRealm, int iWhichRegent )
 {
 	int ok = FALSE;
 	int timeNow;
+	(void)timeNow;
 	DWORD dMyId;
+	(void)dMyId;
 
 	// player has selected a realm
 	// put the players id into the selected array

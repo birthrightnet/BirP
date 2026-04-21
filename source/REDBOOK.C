@@ -84,19 +84,6 @@ SHORT ucWhichTrack = 0;
 static  SHORT volume_levels[] = {0, 13, 26, 38, 51, 64, 77, 90, 102, 115, 127};
 
 extern unsigned char Tunes[];
-static int MusicVolume[] = {	
-	VOLUME_OFF  ,
-	VOLUME_TEN    ,
-	VOLUME_TWENTY ,
-	VOLUME_THIRTY ,
-	VOLUME_FORTY ,
-	VOLUME_FIFTY ,
-	VOLUME_SIXTY ,
-	VOLUME_SEVENTY ,
-	VOLUME_EIGHTY ,
-	VOLUME_NINETY ,
-	VOLUME_FULL
-};
 static int VolumeIndex = 10;
 //static int FadeMusic = fERROR;
 /*#######################################################################\
@@ -300,34 +287,34 @@ int PlayTrack (SHORT track)
 		{
 			case SND_WIN_MUSIC1:
 				CurrentSong = (BIRTHRT_SND) (SND_WIN_MUSIC1 + random(SND_WIN_MUSIC_TOTAL) );
-				CurrentTag=AddSndObj(CurrentSong,NULL,VOLUME_FULL);
+				CurrentTag=AddSndObj(CurrentSong,0,VOLUME_FULL);
 				break;
 			case SND_LOSE_MUSIC1:
 				CurrentSong = (BIRTHRT_SND) (SND_LOSE_MUSIC1 + random(SND_LOSE_MUSIC_TOTAL) );
-				CurrentTag=AddSndObj(CurrentSong,NULL,VOLUME_FULL);
+				CurrentTag=AddSndObj(CurrentSong,0,VOLUME_FULL);
 				break;
 			case SND_LOSE_COMBAT_MUSIC1:
 				CurrentSong = (BIRTHRT_SND) (SND_LOSE_COMBAT_MUSIC1 + random(SND_LOSE_COMBAT_MUSIC_TOTAL) );
-				CurrentTag=AddSndObj(CurrentSong,NULL,VOLUME_FULL);
+				CurrentTag=AddSndObj(CurrentSong,0,VOLUME_FULL);
 				break;
 			case SND_WIN_GAME_MUSIC1:
 				CurrentSong = (BIRTHRT_SND) (SND_WIN_GAME_MUSIC1 + random(SND_WIN_GAME_MUSIC_TOTAL) );
-				CurrentTag=AddSndObj(CurrentSong,NULL,VOLUME_FULL);
+				CurrentTag=AddSndObj(CurrentSong,0,VOLUME_FULL);
 				break;
 			case 2:
-				CurrentTag = AddSndObj((BIRTHRT_SND)102,NULL,VOLUME_FULL);
+				CurrentTag = AddSndObj((BIRTHRT_SND)102,0,VOLUME_FULL);
 				CurrentSong= 102;
 				break;
 			case 103:
-				CurrentTag = AddSndObj((BIRTHRT_SND)103,NULL,VOLUME_FULL);
+				CurrentTag = AddSndObj((BIRTHRT_SND)103,0,VOLUME_FULL);
 				CurrentSong= 103;
 				break;
 			case 5:
-				CurrentTag = AddSndObj((BIRTHRT_SND)105,NULL,VOLUME_FULL);
+				CurrentTag = AddSndObj((BIRTHRT_SND)105,0,VOLUME_FULL);
 				CurrentSong= 105;
 				break;
 			default:
-				CurrentTag = AddSndObj((BIRTHRT_SND)THE_SONG_ON_THE_HARD_DRIVE,NULL,VOLUME_FULL);
+				CurrentTag = AddSndObj((BIRTHRT_SND)THE_SONG_ON_THE_HARD_DRIVE,0,VOLUME_FULL);
 				CurrentSong= THE_SONG_ON_THE_HARD_DRIVE;
 				break;
 			}
@@ -342,6 +329,7 @@ int PlayTrack (SHORT track)
 
 unsigned long FindTrackStart (unsigned char track)
 {
+	(void)track;
 	// redbook not used in birthright I
 #ifdef UseTheCD
 	if(InstallationType == INSTALL_LARGE)
@@ -558,6 +546,7 @@ void LoadMusicFromCD(short track)
 	long int length;
 	SHORT hBuffer, ItemsRead;
 	PTR pt;
+	(void)track;
 
 	if(!fCDAvailible)
 		return;

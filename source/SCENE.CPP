@@ -1024,6 +1024,11 @@ LONG SCENE::mfReadMusicTrack(FILE *fp)
 //	FILE *in, *out;
 	int in, out;
 	char n[256], o[256];
+	(void)test;
+	(void)in;
+	(void)out;
+	(void)n;
+	(void)o;
 
 	LONG Result = GetNextLine(fp,cpBuffer, sizeof(cpBuffer) );
 

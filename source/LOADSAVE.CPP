@@ -202,6 +202,14 @@ void SaveGameFiles(FILE *fp)
     LONG ver, i, j, saved, size, count;
     LONG dummy = 0;
     LONG newIPlaces = 1;
+	(void)pRmS;
+	(void)pRgS;
+	(void)pPrS;
+	(void)pPlS;
+	(void)buffer;
+	(void)i;
+	(void)j;
+	(void)saved;
 
     /*-------------------------------------------------------------------*/
     /* Save version, whoami, date, action_turn, etc. */

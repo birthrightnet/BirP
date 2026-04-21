@@ -255,6 +255,7 @@ DSound::Init(DWORD buffSize,LPSTR sampPtr,DWORD sampSize,WORD bits,DWORD rate,WO
 {
 LPVOID		buffPtr1, buffPtr2;
 DWORD			buffLen1, buffLen2;
+	(void)buffPtr1; (void)buffPtr2; (void)buffLen1; (void)buffLen2;
 
 	// if secondary buffer size is zero, then this a static buffer which
 	// will be loaded and played in its entirety
@@ -864,6 +865,7 @@ DSound::CopyData(LPSTR sampPtr, LPSTR writePtr, DWORD writeLen, BOOL FirstBuffer
 LPSTR		newWritePtr;
 DWORD		newWriteLen;
 DWORD	 	nextPos;
+	(void)nextPos;
 
 	if (bytesLeft > writeLen) {
 		// normal case - write full length to buffer

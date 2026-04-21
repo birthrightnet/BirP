@@ -530,6 +530,8 @@ LONG	BB_WarCardIcon = -1;
 void RunBattlesOnly(void)
 {
 	SHORT i;
+	(void)iTroopScale;
+	(void)iTroopWidth;
 	
 	HideMenu(D_GAMEBUTTON);
 	push_regions();
@@ -618,6 +620,12 @@ void BuildArmyPaint (LONG MenuCombo, LONG )
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	BOOL	FoundMyHead = FALSE, FoundHisHead = FALSE;
 	LONG OrigColor;
+	(void)X;
+	(void)Y;
+	(void)W;
+	(void)H;
+	(void)mx;
+	(void)my;
 
 	// what is the current Scenario
 // STR_BB_Scenario_TEXT	^F02Scenario ^F03%hd ^F02of 50
@@ -965,6 +973,7 @@ void BuildListClear (LONG MenuCombo, LONG )
 {
 	SHORT 	i;
 	SHORT	MenuId, ButtonId;
+	(void)i;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	
@@ -1023,6 +1032,7 @@ void BuildListClear (LONG MenuCombo, LONG )
 void BuildUnitSel (LONG ButtonId, LONG )
 {
 	SHORT 	i;
+	(void)i;
 
   	/* -----------------------------------------------------------------
 	   Handle right clicks help
@@ -1196,6 +1206,7 @@ void BuildArmyRestartProc(LONG MenuCombo, LONG button)
 void BuildArmyReload (LONG MenuCombo, LONG )
 {
 	SHORT i;
+	(void)i;
 	
 	SHORT	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
@@ -1441,6 +1452,7 @@ static void InitTroopDisplay (LONG type, LONG id, LONG realm)
 {
 	LONG typeID;
 	SHORT				hPlayerStats;
+	(void)hPlayerStats;
 	
 	iTroopId = id;
 	iTroopType = type;
@@ -1473,6 +1485,12 @@ static void PaintTroopCard()
 	CHAR	buffer[150];
 	LONG	timedif;
 	SHORT	iBitm;
+	(void)i;
+	(void)X;
+	(void)Y;
+	(void)MenuId;
+	(void)ButtonId;
+	(void)timedif;
 	
 	// if not set, we have nothing to paint
 	if(iTroopType == fERROR)
@@ -1866,6 +1884,11 @@ static void PaintBattleScenarios()
 	LONG	timedif;
 	SHORT	iBitm;
 	SHORT	color;
+	(void)mx;
+	(void)my;
+	(void)MenuId;
+	(void)ButtonId;
+	(void)timedif;
 	
 	// scene picture
 	sprintf(buffer, "ui\\btlscn\\btlscn%hd.pcx", CurrentScenario);
@@ -2026,6 +2049,7 @@ static LONG DelUnit (SHORT StartIndex, SHORT KillIndex)
 	char	n[40];
 	LONG	c=0, i, k, j;
 	LONG	f = FALSE;
+	(void)n;
 
 	for (i = StartIndex; i < StartIndex+15; i++)	// scan for head unit here
 	{ 
@@ -2129,6 +2153,8 @@ static BOOL ReadBtlScenario(FILE *fp, BOOL fCreateUnits)
 	SHORT	unitlist[15];
 	SHORT	count;
 	SHORT	iTerrainSubType;
+	(void)buffer2;
+	(void)iType;
 	
 	// remove old data from the regents array
 	ClearRegentUnits();
@@ -2309,6 +2335,7 @@ static void WriteBtlStatFile(void)
 	SHORT	i;
 	FILE	*fp;
 	CHAR	buffer[50];
+	(void)buffer;
 	
 	// read out current Scenario
 	fp = fopen("btlsts.dat", "w");	
@@ -2337,6 +2364,7 @@ static void SetCurrentScenario(SHORT iValue)
 {
 	LONG	i;
 	FILE	*fp;
+	(void)fp;
 	
 	CurrentScenario = iValue;
 	WriteBtlStatFile();
@@ -2404,6 +2432,11 @@ void PlayBtlFinale(void)
 	SHORT	i;
 	SHORT	bitm;
 	LONG	now;
+	(void)temp;
+	(void)rlm;
+	(void)battle;
+	(void)game;
+	(void)i;
 	
 	StopRedBook();
 	KillSoundsNoFade();
@@ -2508,6 +2541,7 @@ void RunAdvOnly(void)
 {
 	SHORT	i,x,y,me;
 	LONG	j;
+	(void)me;
 	
 	HideMenu(D_GAMEBUTTON);
 	push_regions();
@@ -2627,6 +2661,9 @@ void BuildAdvPaint (LONG MenuCombo, LONG )
 	CHAR    color = 228;
 	LONG    MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
+	(void)j;
+	(void)w;
+	(void)h;
 	
 	PartyHasAtLeastOne = FALSE;
 	
@@ -2820,6 +2857,9 @@ void BuildAdvDone (LONG MenuCombo, LONG )
 	LONG	unit;		 // index for unit search loop
 	LONG	lastGuy = -1; // lockstep link
 	LONG    MenuId, ButtonId;
+	(void)HomeIndex;
+	(void)AwayIndex;
+	(void)unit;
 		
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	
@@ -3014,6 +3054,7 @@ void BuildAdvListSel (LONG MenuCombo, LONG )
 	SHORT	i,index;
 	LONG    MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
+	(void)i;
 
 	/* -----------------------------------------------------------------
 	   Handle right clicks help
@@ -3430,6 +3471,11 @@ void PlayAdvFinale(void)
 	SHORT	i;
 	SHORT	bitm;
 	LONG	now;
+	(void)temp;
+	(void)rlm;
+	(void)battle;
+	(void)game;
+	(void)i;
 	
 	StopRedBook();
 	KillSoundsNoFade();
@@ -3558,6 +3604,7 @@ void PaintGameSelect(LONG MenuCombo, LONG)
 	LONG	mw, mh;
 	char	buffer[80];
 	LONG	OrigColor;
+	(void)OrigColor;
 	
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	
@@ -3634,6 +3681,7 @@ void NewGameConfirmed(LONG,LONG lMultiFlag);
 void ResetToNonTutorialAdventures (void)
 {
 	LONG	i;
+	(void)i;
 
 	advsite[0].name = "endie_mw";
 	advsite[0].realm = REALM::ALAMIE;

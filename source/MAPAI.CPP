@@ -232,6 +232,7 @@ void logreroll( SHORT LineNum )
 void DoNPCAdmin (void)
 {
 	LONG	i, j, k, l, rlm, hr, fr, iUnit, roll, surplus;
+	(void)k;
 
 	#ifdef _WINDOWS
 	if ( IsMultiPlayer() )
@@ -630,6 +631,9 @@ void PaintNPCAction (LONG MenuCombo, LONG)
 	UBYTE	success;
 	char FormatString[80];
 	char actionBuffer[80];
+	(void)i;
+	(void)j;
+	(void)success;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -972,6 +976,7 @@ DoItAgain:
 BOOL IsBorder (PROVINCE prov, REALM::REALM_TYPE realm, SHORT action, LONG purpose)
 {
 	LONG	i, j, testprov_border, testprov_borderrealm;
+	(void)j;
 
 	for (i=0; i<7; ++i)
 	{
@@ -1063,6 +1068,8 @@ static BOOL UnitsHereNotUs (REALM::REALM_TYPE OurRealm, PROVINCE prov)
 {
 	LONG	i, iUnit;
 	LONG	cUnits = 0;
+	(void)iUnit;
+	(void)cUnits;
 
 	for (i=1; i<MAX_UNITS; ++i)
 	{
@@ -1504,6 +1511,7 @@ BOOL FindProv (SHORT action)
 	LONG	j = 999;
 	LONG	f = FALSE;
 	LONG	pr = 0;
+	(void)s;
 
 	for (i=1; i<PROVINCE_COUNT; ++i)
 	{
@@ -3128,6 +3136,7 @@ BOOL npc_move_ (PROVINCE cur_prov)
 {
 	LONG	i, dx, dy, dist, cnt, l;
 	REALM::REALM_TYPE test_realm;
+	(void)i;
 	PROVINCE	test_prov;
 	PROVINCE	best_prov = NO_PROVINCE;
 	LONG	best_border = 0;
@@ -3272,6 +3281,7 @@ BOOL npc_move (PROVINCE cur_prov)
 	LONG	i, dx, dy;
 	BOOL	fSend = (CurrentRealm == HomeRealm);
 	BOOL	retVal;
+	(void)i;
 
 	if (cur_prov == NO_PROVINCE)
 		cur_prov = (PROVINCE) UnitFinalProvince(TargetUnit);
@@ -3379,7 +3389,7 @@ BOOL RecursiveRoadBuilder (PROVINCE cur_prov)
 		if (province[cur_prov].Border[best_border].MoveCost != PLAINS_ROAD
 			&& province[cur_prov].Border[best_border].MoveCost != RIVER_ROAD)
 		{
-//printf("Î");
+//printf("ï¿½");
 			// set border one direction
 			province[cur_prov].Border[best_border].MoveCost = PLAINS_ROAD;
 			//SetGameData(MP_PROVINCE, MPPROV_BORDER0+best_border, cur_prov, PLAINS_ROAD, TRUE);
@@ -3489,6 +3499,7 @@ void SetHelped (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend )
 void SetScrewed (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend )
 {
 	LONG	k;
+	(void)k;
 
 	if (Target != REALM::ANY_REALM && Target != Active)
 	{
@@ -3529,6 +3540,7 @@ void SetScrewed (REALM::REALM_TYPE Target, REALM::REALM_TYPE Active, BOOL fSend 
 static BOOL TestInvaded (REALM::REALM_TYPE ourRealm, REALM::REALM_TYPE testRealm)
 {
 	LONG i, unit_test_prov;
+	(void)unit_test_prov;
 
 	if (AREALLIED(ourRealm, testRealm))
 		return FALSE;
@@ -3583,6 +3595,7 @@ static BOOL TestOccupied (REALM::REALM_TYPE thisRealm)
 BOOL TestAdjacent (REALM::REALM_TYPE ActiveRealm, REALM::REALM_TYPE testRealm)
 {
 	LONG	i, j;
+	(void)j;
 
 	for (i=1; i<PROVINCE_COUNT; ++i)
 		//if ((province[i].Realm == ActiveRealm || AREALLIED(province[i].Realm,ActiveRealm))
@@ -4200,6 +4213,10 @@ BOOL DoNPCAction (void)
 	BOOL				PassedOnceAlready;
 	ACTION_EXPTYPE		ActionExpType  = RLM_EXP_PASS;
 	LONG				ActionExpModifier = 0;
+	(void)done;
+	(void)place;
+	(void)maxloops;
+	(void)holding;
 
 	//static BOOL		fPrintDebugData = TRUE;
 
@@ -4985,7 +5002,7 @@ CreateHldng:
 							for (k=0; k<7 && !f; ++k)
 								if (province[province[j].Border[k].Province].Realm==i)
 								{
-									roll = RealmReaction[rlm][i]+random(40)-20	// ñ20%
+									roll = RealmReaction[rlm][i]+random(40)-20	// ï¿½20%
 											- (ISATWAR(i,rlm))?50:0				// 50% more if they declared war on us
 											+ (AREALLIED(i,rlm))?20:0 ;			// 20% less if they are permissive allies
 									if (roll < min)

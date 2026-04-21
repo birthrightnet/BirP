@@ -721,6 +721,8 @@ LONG ItemEffects::BAEnhancedSense(LONG Combo,LONG Arg,LONG Action)
 	DICE	dice;
 	LONG	mod;
 	LONG	RegentIndex;
+	(void)dice;
+	(void)mod;
 	
 	ITEMTYPE		IType;
 	SHORT			hPlayerStats;
@@ -816,6 +818,8 @@ LONG ItemEffects::BAFear(LONG Combo,LONG Arg,LONG Action)
 {
 	STATSMOD::MOD_TYPE	type;
 	LONG				mod;
+	(void)type;
+	(void)mod;
 
 	ITEMTYPE		IType;
 	SHORT			hPlayerStats;

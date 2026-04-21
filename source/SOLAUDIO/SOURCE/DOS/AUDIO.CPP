@@ -1337,7 +1337,7 @@ AudioMgrDOS::CheckWAVEFormat(int n)
 				sptr -= sizeof(chunk.len);
 				slen += sizeof(chunk.len);
 			} else {
-				LSeek(sample[n].fd,-sizeof(chunk.len),SEEK_CUR);
+				LSeek(sample[n].fd,-4L,SEEK_CUR);
 			}
 			okWAVE = 1;
 			continue;

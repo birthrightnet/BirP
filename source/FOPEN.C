@@ -71,6 +71,10 @@ static FILE_MODE fmCurrentFileMode = FILEOPEN_MIXED_MODE;
 #ifndef _WINDOWS
 int crit_error_handler(unsigned deverr, unsigned errcode, unsigned *devhdr)
 {
+	(void)deverr;
+	(void)errcode;
+	(void)devhdr;
+
 #if 0
 	int fFadeOut;
 	char szText[80];

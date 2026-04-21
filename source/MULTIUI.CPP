@@ -237,6 +237,7 @@ static LONG	gDifficulty = 1;
 BOOL gMPStartGame = FALSE;
 static BOOL gMPStartGameLoop = TRUE;
 
+
 int iTTimeLimit = iTT_None;  //---- Turn time limit default None
 
 BOOL		fSyncPending = FALSE;
@@ -371,6 +372,29 @@ void DoButtonMove ( LONG MenuCombo )
    ======================================================================== */
 void SetMPControlMode ( void )
 {
+	(void)TempChatSend;
+	(void)TempChatRec;
+
+#ifdef _WINDOWS
+	(void)TempProt;
+#endif
+
+	(void)fWeb;
+	(void)fQuestion;
+	(void)m_mode;
+	(void)highlighted_choice;
+	(void)fEnumerate;
+	(void)fQuit;
+	(void)iGameTop;
+	(void)iNumGames;
+	(void)gEnvironment;
+	(void)gProtocol;
+	(void)gNumPlayers;
+	(void)gGameType;
+	(void)gTimeLimit;
+	(void)gDetailLevel;
+	(void)gDifficulty;
+	(void)&DrawShield;
 
 #ifdef _WINDOWS
 
@@ -410,6 +434,11 @@ void PaintWebStart( LONG MenuCombo, LONG )
 	LONG W;
 	LONG H;
 
+	(void)i;
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -785,6 +814,10 @@ void ToggleChatSend( LONG index, LONG old )
 	int i;
 	int iOk = 1;
 
+#ifndef _WINDOWS
+	(void)i;
+#endif
+
 #ifdef _WINDOWS
 
 	if ( IsMultiPlayer() )
@@ -872,6 +905,10 @@ void ToggleChatRec( LONG index, LONG old )
 
 	int i;
 	int iOk = 1;
+
+#ifndef _WINDOWS
+	(void)i;
+#endif
 
 
 #ifdef _WINDOWS
@@ -1080,6 +1117,8 @@ void DoneChatSelect( LONG MenuCombo, LONG )
 {
 	int i;
 
+	(void)i;
+
    DoButtonMove ( MenuCombo );
 
 
@@ -1158,9 +1197,14 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 	int x;
 	int done;
 
-
+	(void)i;
+	(void)color;
+	(void)x;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
+
+
+
 
 
 	//---- Title screen
@@ -1393,6 +1437,10 @@ void PaintChatSelect(LONG MenuCombo, LONG)
 void AddInputSpace ( int type )
 {
 	int i;
+
+#ifndef _WINDOWS
+	(void)i;
+#endif
 
 #ifdef _WINDOWS
 
@@ -1660,6 +1708,7 @@ void ShowMultiPlayerMenu(LONG, LONG)
 
 #else
 		return;    //---- Not in DOS Should never be here in DOS
+
 #endif
 	}
 }
@@ -1675,7 +1724,13 @@ void DispMultiOpts(int fProt, LONG MenuId )
 	char buffer[100];
 	char buffer1[100];
 
+	(void)mx;
+	(void)my;
+	(void)buffer;
+	(void)buffer1;
+
 #ifdef _WINDOWS
+
 
 	init_gfont(FONT_SANS_8PT);
 
@@ -1737,9 +1792,11 @@ void DispMultiOpts(int fProt, LONG MenuId )
 #endif
 
 
-
-
 #endif
+
+
+
+
 
 }
 
@@ -1952,6 +2009,13 @@ void PaintWaitingMenu( LONG MenuCombo, LONG )
 	LONG W;
 	LONG H;
 
+	(void)i;
+	(void)numplayers;
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -2144,6 +2208,11 @@ void PaintWaitingTypeMenu( LONG MenuCombo, LONG )
 	LONG W;
 	LONG H;
 
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -2265,6 +2334,9 @@ void PaintWaitingRealmMenu( LONG MenuCombo, LONG )
 	int i;
 	int numplayers;
 	int fDone = TRUE;
+
+	(void)i;
+	(void)numplayers;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId );
 
@@ -2422,6 +2494,14 @@ void PaintVoteWait(LONG MenuCombo, LONG)
 	int data2;
 	int data3;
 	int data4;
+
+	(void)i;
+	(void)color;
+	(void)x;
+	(void)data1;
+	(void)data2;
+	(void)data3;
+	(void)data4;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2593,6 +2673,9 @@ void PaintWaitingSyncMenu( LONG MenuCombo, LONG sync )
 	int numplayers;
 	int fDone = TRUE;
 
+	(void)i;
+	(void)numplayers;
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId );
 
 
@@ -2711,6 +2794,12 @@ void PaintMPOver( LONG MenuCombo, LONG )
 	LONG Y;
 	LONG W;
 	LONG H;
+
+	(void)i;
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2924,6 +3013,8 @@ BOOL MultiAllRealmsSelected( void )
 	BOOL fDone = TRUE;
 	int i;
 
+	(void)i;
+
 #ifdef _WINDOWS
 
 	//---- Check if all the players have selected a realm
@@ -3023,6 +3114,11 @@ void PaintAdventQuestion(LONG MenuCombo, LONG val)
 	LONG Y;
 	LONG W;
 	LONG H;
+
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -3165,6 +3261,11 @@ void PaintMultiQuit(LONG MenuCombo, LONG val)
 	LONG W;
 	LONG H;
 
+	(void)mx;
+	(void)my;
+	(void)textbuf;
+	(void)ptemp;
+
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	X = X_RES_ADJ(Menus[MenuId].Buttons[QUESTION_TEXT].X);
@@ -3270,6 +3371,7 @@ void StartSync ( LONG sync )
 	LONG	i;
 	LONG	rv;
 	BOOL	fDone;
+	(void)i; (void)rv; (void)fDone;
 
 	if ( IsMultiPlayer() )
 	{
@@ -4350,6 +4452,7 @@ void PaintMultiPlayerName (LONG MenuCombo, LONG )
 	SHORT i;
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
+	(void)mw; (void)mh;
 	CHAR buffer[256];
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
@@ -4519,6 +4622,7 @@ void PaintMultiPlayerJoin ( LONG MenuCombo, LONG )
 	SHORT i;
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
+	(void)i; (void)mw; (void)mh;
 	CHAR buffer[256];
 	static LONG WaitTime = 0;
 
@@ -4761,6 +4865,7 @@ void PaintMultiPlayerCreate (LONG MenuCombo, LONG )
 	SHORT i;
 	LONG MenuId, ButtonId;
 	LONG mx,my,mw,mh;
+	(void)i; (void)mw; (void)mh;
 	CHAR buffer[256];
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);

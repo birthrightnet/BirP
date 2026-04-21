@@ -184,6 +184,7 @@ void PlayAdvFlc(void)
 	SHORT	bitm;
 	LONG	now;
 	SHORT   CurrentVolume;
+	(void)CurrentVolume;
 	
 	// load new palette
 	FadeOut(100);

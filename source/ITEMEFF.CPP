@@ -385,6 +385,7 @@ static LONG ItemEffects::RingInfravision(LONG Combo,LONG Arg,LONG action)
 	ItemType&		Item=ItemTypes[IType];
 
 	ActiveItem* ai;
+	(void)ai;
 
 	if(fDomainTurn)
 	{
@@ -448,6 +449,7 @@ static LONG ItemEffects::SeeInDark(LONG Combo,LONG Arg,LONG action)
 	ItemType&		Item=ItemTypes[Itemtype];
 
 	ActiveItem* ai;
+	(void)ai;
 
 	if(fDomainTurn)
 	{
@@ -927,6 +929,9 @@ static LONG ItemEffects::CloakProtect(LONG Combo,LONG Arg,LONG Action)
  	SPLIT_COMBO(Combo,IType,hPlayerStats);
 
 	ItemType&		Item=ItemTypes[IType];
+	(void)ac_mod;
+	(void)max_ac;
+	(void)cur_ac;
 
 	// works in all modes
 	{

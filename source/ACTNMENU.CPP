@@ -518,6 +518,7 @@ BOOL DoPageProvince(LONG *startCount, LONG provCount, LONG countToPrint, LONG co
 static BOOL ProcessGoldAndReg (LONG mode)
 {
 	LONG	j;
+	(void)j;
 
 	// DM controlled realms get unlimited resources
 	if (iCurAction != HOLD_ACTION && realm[HomeRealm].mfIsDMCtrl())
@@ -804,6 +805,8 @@ void SelectProvince (LONG prov, LONG)
 void Selection (LONG prov, LONG index)
 {
 	LONG i, j;
+	(void)i;
+	(void)j;
 	checkGoldReg = 0;
 
 	fAllowRollButton -= (iSelection[index]!=0);
@@ -1476,6 +1479,7 @@ static LONG LargestSource (PROVINCE prov, LONG place, REALM::REALM_TYPE ThisReal
 {
 	LONG			j, k, i;
 	LONG			route, route2;
+	(void)route2;
 
 	//printf("*");
 
@@ -2275,6 +2279,9 @@ void PaintMuster (LONG x, LONG y, LONG h)
 	SHORT		startY;
 	SHORT		units;
 	UBYTE		numType;
+	(void)j;
+	(void)units;
+	(void)numType;
 	SHORT 	troops=0;     // number of troops you already have
 	LONG		provCount = 0;
 	LONG		provCount1 = 0;
@@ -2924,6 +2931,9 @@ void PaintDiplomacy (LONG x, LONG y, LONG h)
 	static LONG reaction=0;
 	static LONG	typAlliance = 0;
 	UBYTE	coReaction;
+	(void)time;
+	(void)pYourStat;
+	(void)coReaction;
 
 
 	del_region(NextPrev,0);
@@ -2955,7 +2965,7 @@ void PaintDiplomacy (LONG x, LONG y, LONG h)
 	if (iSelectedRealm && iSelectedRealm >= LAND_REALM_COUNT
 			&& CheckVassal((REALM::REALM_TYPE)iSelectedRealm) && !ISVASSAL(iSelectedRealm, HomeRealm) )
 	{
-DiplomacyRestart:
+	DiplomacyRestart:
 		AddSndObj((BIRTHRT_SND)SND_UI_DID_NOT_SUCCEED,0,VOLUME_NINETY);
 		InitActionGlobals();
 		fAllowCancelButton = TRUE;
@@ -4608,6 +4618,8 @@ void PaintRule (LONG x, LONG y, LONG h)
 	LONG		lPrint = TRUE;
 	LONG		lPageDone = FALSE;
 	BOOL		fCostUnlocked = (fAllowCancelButton || fAllowRollButton);
+	(void)tmpIndex;
+	(void)select;
 
 	startY = y;
 	provCount = tmp_provCount;
@@ -5721,6 +5733,7 @@ void PaintLieutenant(LONG x, LONG y, LONG h)
 	 SHORT				hStat;
 	 LONG				charisma = 0;
 	 LONG				i, j;
+	 (void)i;
 	 LONG				numLieutenants;
 	 LONG				iRegent;
 	 LONG			   	Gold;
@@ -6174,6 +6187,7 @@ void PaintRealmSpell(LONG x, LONG y, LONG h)
 	LONG		baseLevel, rate, maxamt;
 	LONG		disX, disY;
 	CLASS_ENUM	type;
+	(void)q;
 	RegencePoint = 0;
 	GoldBar = 0;
 	GoldGained = 0;
@@ -6915,6 +6929,7 @@ md_exit: 		init_gfont(FONT_SANS_8PT);
 
 			case ITEM_SPELL_TRANSPORT:
 				LONG test_prov;
+				(void)test_prov;
 				modLevel=level;
 				if(pStat->StatsMod.mfGetMod(STATSMOD::TRANSPORT_MOD) > 0 && modLevel < 15)
 					modLevel = 15;
@@ -7359,6 +7374,7 @@ void LogAction( LONG iAction )
 static void InitActionGlobals (void)
 {
 	SHORT	i, j;
+	(void)startPlace;
 
 	OldNPCRegency = -1;
 	fAllowRollButton = FALSE;
@@ -7400,6 +7416,7 @@ static void InitActionGlobals (void)
 void PaintDomainAction (LONG MenuCombo, LONG iAction)
 {
 	SHORT	i, j;
+	(void)j;
 	LONG	X,Y;
 	LONG	W,H;
 	LONG	MenuId, ButtonId;
@@ -7612,6 +7629,7 @@ void AdjustHoldingLevel (PROVINCE prov, BOOL fSend)
 	LONG		count, tmpIndex, tmp, j, i;
 	LONG		holding[6];
 	char		n[40];
+	(void)n;
 
 	for(j = 0; j<6; ++j)
 		holding[j] = 0;
@@ -8872,6 +8890,8 @@ void RollOthersAction (LONG, LONG)
 void PaintOthersAction (LONG MenuCombo, LONG)
 {
 	SHORT	i, j;
+	(void)i;
+	(void)j;
 	LONG	X,Y;
 	LONG	W,H;
 	LONG	MenuId, ButtonId;
@@ -9135,6 +9155,8 @@ void NeverOthersDiplomacy(LONG, LONG)
 BOOL NPCResult(SHORT flag)
 {
 	LONG 	TProvince, holding, gold, offgold, trib, tmp, value, victim;
+	(void)TProvince;
+	(void)holding;
 
 	if (flag)
 	{
@@ -9485,6 +9507,7 @@ void NoOthersDiplomacy(LONG, LONG)
 void PaintOthersDiplomacy (LONG MenuCombo, LONG)
 {
 	LONG	k, i, tmpIndex, j;
+	(void)k;
 	LONG	MenuId, ButtonId;
 	LONG	x, y, w, h;
 

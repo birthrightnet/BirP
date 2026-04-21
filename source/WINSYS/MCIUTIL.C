@@ -24,7 +24,7 @@
 #include <mmsystem.h>
 #include "..\..\..\birp-dependencies\Windows95DDK\INC16\digitalv.h"
 
-extern fSound;
+extern BOOL fSound;
  
 static VOID positionMovie(HWND hWnd);
 

@@ -129,8 +129,6 @@ void ForceHires ();
 
 extern void SetRelicFound( SHORT PlacesIndex );
 
-static void CombatEndHelpProc(LONG , LONG );
-
 BOOL GetCombatMenuUp()
 {
     return gCombatMenuRequested;
@@ -1301,6 +1299,7 @@ static void ShowCombatUIMenu(SCENE & rScene)
 		LONG MenuYPos = 0;
 		LONG i;
 		LONG NumberOfFollowers = 0;
+		(void)i;
 
 #if defined (_WINDOWS)
 // [d11-12-96 JPC] Prevent menu from being expanded on screen.
@@ -1415,6 +1414,7 @@ void InitCombatUI(SCENE & rScene)
 	SHORT hLeader = fERROR;
 	DumbAutoLockPtr<COMBAT_SCENE_DATA> const pcsdData(rScene.fhData);
 	LONG i;
+	(void)i;
 
 	pcsdData->mfInitCombatVals();
 

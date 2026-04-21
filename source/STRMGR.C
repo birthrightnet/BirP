@@ -192,6 +192,10 @@ SHORT LoadSTR (
 	LONG length;
 	SHORT hStrDataBlock = fERROR;
 	STRING_DATA_BLOCK *pStrDataBlock;
+	(void)fSetPal;
+	(void)fLockRes;
+	(void)fRotated;
+	(void)iResFileSlot;
 	
 	// run the hash fn again to tell us which block to extract.
 	lWhichBlock = (LONG) HashID(szFileName);

@@ -231,7 +231,9 @@ void __interrupt __far key_rtn (void)
 	if(CtrlDown && a == 0x02e)	// pass on control-c
 	{
 		//int386(0x1B, &regs, &regs);	// generate ctrl-break
+		#pragma warning 112 9
 		int386(0x03, &regs, &regs);	// generate debug interrupt
+		#pragma warning 112 1
 		return;
 	}
 #endif

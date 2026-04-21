@@ -185,6 +185,7 @@ int main(int argc,char * argv[])
    ======================================================================== */
 void quit_sys(LONG dummy)
 {
+	(void)dummy;
 	close_graph();
 	close_statistics();
 	// Be Sure to shut down sound system before distroy'ing the heap.

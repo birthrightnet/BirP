@@ -1,4 +1,4 @@
-/* =®RM250¯=======================================================================
+/* =ï¿½RM250ï¿½=======================================================================
    Copyright (c) 1990,1995	Synergistic Software
    All Rights Reserved
    ========================================================================
@@ -83,6 +83,7 @@ static void load_nodes(IWAD_ENTRY *ent, FILE *);
 static void load_sectors(IWAD_ENTRY *ent, FILE *);
 static void load_wall_textures(void);
 // static void load_flats(void );
+void PurgeLevel(void);
 
 /* ------------------------------------------------------------------------
    Global Variables
@@ -452,9 +453,9 @@ LONG numRead;
 	{
 		sidedefs[i].xoff = t[i].xoff;
 		sidedefs[i].yoff = t[i].yoff;
-		sidedefs[i].n1=get_texture(&t[i].n1[0], &status);
-		sidedefs[i].n2=get_texture(&t[i].n2[0], &status);
-		sidedefs[i].n3=get_texture(&t[i].n3[0], &status);
+		sidedefs[i].n1=get_texture((char *)&t[i].n1[0], &status);
+		sidedefs[i].n2=get_texture((char *)&t[i].n2[0], &status);
+		sidedefs[i].n3=get_texture((char *)&t[i].n3[0], &status);
 #if defined(_EDIT)
 		sidedefs[i].n1_noTexture = 0;
 		sidedefs[i].n2_noTexture = 0;
@@ -751,8 +752,8 @@ LONG numRead;
 	{
 		sectors[i].fh		= t[i].fh;
 		sectors[i].ch 		= t[i].ch;
-		sectors[i].f_flat	= get_floor_texture(&t[i].f_flat[0]);
-		sectors[i].c_flat	= get_floor_texture(&t[i].c_flat[0]);
+		sectors[i].f_flat	= get_floor_texture((char *)&t[i].f_flat[0]);
+		sectors[i].c_flat	= get_floor_texture((char *)&t[i].c_flat[0]);
 		sectors[i].light	= t[i].light;
 		sectors[i].special	= t[i].special;
 		sectors[i].tag		= t[i].tag;

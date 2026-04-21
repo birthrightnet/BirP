@@ -44,6 +44,7 @@
 /* ------------------------------------------------------------------------
 	prototypes
    ------------------------------------------------------------------------ */
+void init_gfont_ (CSTRPTR filename);
 
 /* =======================================================================
    Function    - 
@@ -117,10 +118,10 @@ LONG gtext_width_sub__ (char *txt, LONG Mode)
 			switch (c)
 			{
 				case 'f':								/* change font */
-					init_gfont_(GetFilename(text, &i));
+						init_gfont_(GetFilename((char *)text, &i));
 					break;
 				case 's':								/* inter-char space */
-					inter_char_space = GetNumber(text, &i);
+						inter_char_space = GetNumber((char *)text, &i);
 					break;
 				case 'b':								/* bold  */
 					fBoldLocal = !fBoldLocal;
@@ -133,9 +134,9 @@ LONG gtext_width_sub__ (char *txt, LONG Mode)
 						i++;
 					else
 					{
-						GetNumber(text, &i);
+						GetNumber((char *)text, &i);
 						i++;
-						GetNumber(text, &i);
+						GetNumber((char *)text, &i);
 					}
 					break;
 				case 'c':								/* 2nd char and number */
@@ -146,7 +147,7 @@ LONG gtext_width_sub__ (char *txt, LONG Mode)
 				case 'r':
 				case 't':
 				case 'w':
-					GetNumber(text, &i);
+					GetNumber((char *)text, &i);
 					break;
 				case 'j':								/* 2nd char */
 					i++;
@@ -272,15 +273,15 @@ LONG gtext_height_(char *txt)
 
 			if (c == 'f')								/* change font */
 			{
-				init_gfont_(GetFilename(text, &i));
+				init_gfont_(GetFilename((char *)text, &i));
 			}
 
 			if (c == 'w')								/* word wrapped */
 			{
 				LONG ii;
-				wrap_width = GetNumber(text, &i);
+				wrap_width = GetNumber((char *)text, &i);
 
-				for (ii=i; ii != 0; ii = gtext_width_sub__(&text[ii],DO_WRAP))
+				for (ii=i; ii != 0; ii = gtext_width_sub__((char *)&text[ii],DO_WRAP))
 				{
 				}
 				//ii = i;
@@ -324,6 +325,8 @@ SHORT gprint_text_ (LONG x, LONG y, char *text, LONG color)
 	SHORT	iBitm = fERROR;
 	SHORT	iBkgnd= fERROR;
 	PTR	pfont;
+	(void)iBitm;
+	(void)iBkgnd;
 
 	if (iCurFont < 1)
 		return 0;

@@ -1484,6 +1484,7 @@ void TextureFrameHandler (LONG arg)
 // This is not intended to be a permanent function, but you never know.
 // The function is set up in MAIN: GameMain, which calls TASK: add_task.
 // ---------------------------------------------------------------------------
+	(void)arg;
 
 	++gcFrames;									// just a frame counter
 
@@ -1515,6 +1516,11 @@ SHORT LoadAnimatedTextureStub (																// )
 	SHORT			iBlk;
 	SHORT			scale;
 	ULONG			w,h;
+	(void)szFileName;
+	(void)fSetPal;
+	(void)fLockRes;
+	(void)fRotated;
+	(void)iResFileSlot;
 
 	// [d4-15-97 JPC] UNITARY_SCALE/2 = 2.5, which we can't track because
 	// scale is an integer.  So bump up to medium res.

@@ -137,8 +137,6 @@ static PFVLLL	fPrevObjMouseCallback = 0;
 static PFVLLL	fPrevWallMouseCallback = 0;
 static PFVLLL	fPrevFloorMouseCallback = 0;
 static PFVL		fPrevRightMouseCallback = 0;
-static void FieldFloorClick(LONG ButtonClicked, LONG SectorClicked, LONG WhichType);
-static void FieldObjectClick(LONG ButtonClicked, LONG ObjectClicked, LONG WhichType);
 static BOOL ConvertFieldToGrid( LONG fx, LONG fy, LONG *gx, LONG *gy, BOOL *home);
 static BOOL WhichGridHalf( LONG CX, LONG CY, SHORT *Row, SHORT *Column, BOOL *Home);
 
@@ -347,6 +345,14 @@ BOOL fUnitsStillMoving = FALSE;
 void InitBattleUI(SCENE &rScene)
 {
 	SHORT i;
+	(void)&fPrevObjMouseCallback;
+	(void)&fPrevWallMouseCallback;
+	(void)&fPrevFloorMouseCallback;
+	(void)&fPrevRightMouseCallback;
+	(void)sBattleCameraCount;
+	(void)UnitFieldX;
+	(void)UnitFieldY;
+	(void)UnitFieldCursor;
 
 	//---- Clear the message que
 
@@ -563,6 +569,13 @@ void BattleMoveCamera(void)
 	static	BOOL	fRotatedCamera = FALSE;
 	static	POINT	TempPoint = {0,-1500};
 	static 	BOOL fOldMoving = !fUnitsStillMoving;
+	(void)Temp;
+	(void)TargetAngle;
+	(void)TargetRadius;
+	(void)TargetHeight;
+	(void)TargetPitch;
+	(void)fRotatedCamera;
+	(void)TempPoint;
 
 
 	// run battle clock
@@ -960,6 +973,12 @@ void BattleControlGrid(LONG MenuCombo, LONG DataCombo)
 	SHORT	Health, color;
 	SHORT	Movement;
 	CAvatar *pAvatar;
+	(void)buffer;
+	(void)i;
+	(void)mx;
+	(void)my;
+	(void)Health;
+	(void)color;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 	SPLIT_LONG(DataCombo, CalledByMouse, location);
@@ -1398,6 +1417,9 @@ void BattleReservesGrid(LONG MenuCombo, LONG unused)
 	LONG	MenuId, ButtonId;
 	CAvatar *pAvatar;
 	char n[256];
+	(void)temp;
+	(void)buffer;
+	(void)n;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
 	if( GetButtonPosition( MenuId, 0, &mx, &my ) == fERROR)
@@ -1784,6 +1806,7 @@ void BattleStatusPaint(LONG MenuCombo)
 	SHORT	color;
 	LONG	MenuId, ButtonId;
 	CAvatar	*pAvatar;
+	(void)color;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2012,6 +2035,10 @@ void BattleUnitInfoPaint(LONG MenuCombo)
 	SHORT		iBitm;
 	BITMPTR		pBitm;
 	SHORT		scale;
+	(void)i;
+	(void)j;
+	(void)r;
+	(void)c;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2382,6 +2409,7 @@ void BattleSelTroopsPaint(LONG MenuCombo, LONG unused)
 	LONG	x,y,mx,my;
 	LONG	MenuId, ButtonId;
 	CHAR	buffer[80];
+	(void)j;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 
@@ -2761,6 +2789,8 @@ void CheckMissileRange()
 	SHORT	R,C;
 	CHAR	temp[80];
 	CHAR	buffer[80];
+	(void)temp;
+	(void)buffer;
 
 	for(R=0;R<GRID_MAX_ROWS;R++)
 	{
@@ -2819,6 +2849,7 @@ void CheckMissileRange()
 BOOL BattleMissilesReady(CAvatar *pAvatar)
 {
 	SHORT	buttonId;
+	(void)buttonId;
 
 	if (GetBattleMissile(pAvatar->fBtlCap.OfficerIcon) &&
 		pAvatar->fBtlCap.MissileCount < BattleTick )
@@ -2871,6 +2902,8 @@ void CheckMagicRange()
 	SHORT	R,C;
 	CHAR	temp[80];
 	CHAR	buffer[80];
+	(void)temp;
+	(void)buffer;
 
 	for(R=0;R<GRID_MAX_ROWS;R++)
 	{
@@ -3128,6 +3161,7 @@ void CollapseUnits(SHORT UnitIndex) // either home or away
 	SHORT	NextIndex;
 	SHORT	CheckIndex = 0;
 	SHORT	MyType;
+	(void)NextIndex;
 
 	// check the home team
 	do
@@ -3255,6 +3289,7 @@ void BattlePanelMode( LONG MenuCombo, LONG WhichMode )
 	LONG	MenuId, ButtonId;
 	SHORT	i;
 	CAvatar *pAvatar;
+	(void)pAvatar;
 	// static storage of the current cursor type
 	//static	SHORT	save_cursor = cursor_bitmap;
 
@@ -3590,6 +3625,7 @@ void BattleCancelSelUnit(LONG, LONG)
 void BattleCancelMove(LONG, LONG)
 {
 	SHORT		i;
+	(void)i;
 
 	// if from the reserves, put him back
 	if(startLoc == -1)
@@ -3863,6 +3899,7 @@ void SetWhosWhere(SHORT Row, SHORT Col, BOOL Home, SHORT hAvatar)
 static BOOL ConvertFieldToGrid( LONG fx, LONG fy, LONG *gx, LONG *gy, BOOL *home)
 {
 	LONG	i;
+	(void)i;
 
 	// find x -> column
 	if (fx >= FIELDGRID1_X && fx < FIELDGRID2_X)
@@ -4016,6 +4053,7 @@ void SetBattleUIMouseCursor (void)
 	LONG	MenuCombo;
 	LONG	CursorType = BTL_CURSOR_CANCEL;
 	LONG	UnitType;
+	(void)UnitType;
 
 	ConvertScreenToFloor(cursor_x, cursor_y, &fx, &fy);
 	if (!ConvertFieldToGrid(fx, fy, &Column, &Row, &Home))
@@ -4438,6 +4476,7 @@ void PaintBattleLose (LONG MenuCombo, LONG )
 	CHAR	buffer[256];
 	SHORT	UnitIndex;
 	SHORT	Count = 0;
+	(void)j;
 	char RealmName[80];
 
 
@@ -4588,6 +4627,7 @@ void PaintBattleLose (LONG MenuCombo, LONG )
 void BattleWin(LONG, LONG)
 {
 	LONG	regentUnit;
+	(void)regentUnit;
 
 	fUpdatePanels = TRUE;
 	RunPanels();
@@ -4718,6 +4758,9 @@ void PaintBattleWin (LONG MenuCombo, LONG )
 	SHORT	Count = 0;
 	//CAvatar *pAvatar;
 	char RealmName[80];
+	(void)j;
+	(void)Troops;
+	(void)dummy;
 
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
 

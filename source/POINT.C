@@ -653,6 +653,8 @@ LONG AngleFromPoint2 ( LONG X1, LONG Y1, LONG X2, LONG Y2, LONG Resolution)
 	LONG  Quad;
 	LONG  RetVal;
 
+	(void)Resolution;
+
 	XDelta = X2 - X1;
 	YDelta = Y2 - Y1;
 

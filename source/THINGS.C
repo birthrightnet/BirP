@@ -792,7 +792,7 @@ SHORT load_FLC_sequence (ULONG iAnim, ULONG ttype, ULONG seq, ULONG Rotation)
    Description - loads a graphic for an object
    Returns     - the index of the new graphic in the obj_graphic table
    ======================================================================== */
-static void load_obj_graphic(LONG i,
+void load_obj_graphic(LONG i,
 					  ULONG ttype,
 					  ULONG AnimationSeq,
 					  SBYTE rotation,
@@ -2540,7 +2540,7 @@ static void draw_thing (LONG t)
 			/* get width and height of selected sequence */
 			pHead = (FLICHEADPTR)BLKPTR(iHead);
 			// We've been paged out.
-			if (pHead <= 0)
+			if (pHead == 0)
 				return;
 
 			hei = pHead->width;
@@ -2702,7 +2702,7 @@ static void draw_thing (LONG t)
 			/* get width and height of selected sequence */
 			pBitm = (BITMPTR)BLKPTR(iHead);
 			// We've been paged out.
-			if (pBitm <= 0)
+			if (pBitm == 0)
 				return;
 
 			hei = pBitm->h;		// these are the original (as drawn) width and height of the graphic
@@ -2760,7 +2760,7 @@ static void draw_thing (LONG t)
 				pBitm = (BITMPTR) BLKPTR(mythings[t].iBitm);
 			}
 
-			if (pBitm <= 0)
+			if (pBitm == 0)
 				return;
 
 			hei = pBitm->w;		// these are the original (as drawn) width and height of the graphic
@@ -2878,7 +2878,7 @@ static void draw_thing (LONG t)
 
 	/* xsrc_inc is number of source columns per screen column */
 	xsrc_inc = (new_w << 15) / (b.x - a.x);
-	if (xsrc_inc <= 0)
+	if (xsrc_inc == 0)
 		return;
 
 	/* xsrc_inc and src_x refer to source bitmap so remove the scale factor */
@@ -3198,7 +3198,7 @@ SHORT OpenAnim (SHORT iAnim, SHORT iSeq, CSTRPTR szFileName, SHORT Type)
 		{
 			piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 			if (piData->iData[iSeq] <= 0 ||
-			    BLKPTR(piData->iData[iSeq]) <= 0)
+			    BLKPTR(piData->iData[iSeq]) == 0)
 			{
 				iHead = GetResourceStd(szFileName,FALSE);
 				// refresh the pointer
@@ -3219,7 +3219,7 @@ SHORT OpenAnim (SHORT iAnim, SHORT iSeq, CSTRPTR szFileName, SHORT Type)
 		{
 			piData = (I_DATA_BLK *) BLKPTR(pAnim->hiData);
 			if (piData->iData[iSeq] <= 0 ||
-				BLKPTR(piData->iData[iSeq]) <= 0)
+				BLKPTR(piData->iData[iSeq]) == 0)
 			{
 				iHead = GetResourceRot(szFileName);
 
@@ -4004,6 +4004,7 @@ void decode_delta_flc (PTR pData, ANIMPTR pAnim)
 // see below
 void sort_things_from_camera(long n)
 {
+	(void)n;
 }
 
 #if 0
@@ -4451,6 +4452,7 @@ void AddThingToAdjacentSubsectors (LONG ThingIndex)
 #else
 void AddThingToAdjacentSubsectors (LONG ThingIndex)
 {
+	(void)ThingIndex;
 	// do nothing; leave in for a while so others can compile.
 }
 #endif
@@ -4472,6 +4474,9 @@ SHORT LoadIData (
 	LONG  iResFileSlot)
 {
 	SHORT hiData = fERROR;
+	(void)fSetPal;
+	(void)fRotated;
+	(void)iResFileSlot;
 
 	hiData = NewBlock(sizeof(I_DATA_BLK));
 	if (hiData > 0)

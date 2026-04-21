@@ -150,6 +150,7 @@ static BIRTHRT_SND MusicID;
 
 unsigned long SndRandom ( LONG val )
 {
+	(void)PauseAllSounds_Hits;
 
 #ifdef _WINDOWS
 

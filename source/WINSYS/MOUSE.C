@@ -94,6 +94,7 @@ void init_mouse (CSTRPTR name, BOOL Centered)
 	// GWP LONG w,h;
 //	char cursor_path[256];
 	char path[256];
+	(void)Centered;
 
 	// set windows cursor
 	strcpy(chCursorName, name);
