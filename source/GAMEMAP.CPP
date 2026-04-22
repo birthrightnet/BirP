@@ -6533,9 +6533,9 @@ BOOL UpdateDataArea (void)
 			{
 				CHAR	temp1[80];
 				CHAR	temp2[80];
-				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	// ÔøΩ occupied
+				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	// ù occupied
 				line(158-4, y+18, 182,	y+18,	DKBROWN);
-				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	// ÔøΩ castles
+				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	// ù castles
 				line(177-4, y+6,  182,	y+6,	DKBROWN);
 				print_textf(190, y+3, DKBROWN, STRMGR_GetStr(STR_GM_MAINT_CASTLES), cCastles);
 				y += 12;
@@ -11387,6 +11387,65 @@ SHORT GetLastUnit( SHORT FirstUnit )
 }
 
 /* ========================================================================
+   Function    - GetLastDuelUnit
+	Description - Prefer non-hero units first, then lieutenants, and keep
+	              the regent as the final auto-battle fallback
+	Returns     - unit index
+	======================================================================== */
+SHORT GetLastDuelUnit( SHORT FirstUnit )
+{
+	if (FirstUnit == fERROR)
+		return fERROR;
+
+	SHORT lastUnit = FirstUnit;
+	SHORT preferredUnit = fERROR;
+	SHORT preferredLieutenant = fERROR;
+	SHORT regentUnit = fERROR;
+	SHORT k;
+	BOOL isRegent;
+	BOOL isLieutenant;
+
+	while (TRUE)
+	{
+		isRegent = IsRegent(lastUnit);
+		isLieutenant = IsLieutenant(lastUnit);
+
+		if (!isRegent && !isLieutenant)
+			preferredUnit = lastUnit;
+		else
+		if (isLieutenant)
+			preferredLieutenant = lastUnit;
+		else
+		if (isRegent)
+			regentUnit = lastUnit;
+
+		k = units[lastUnit].NextUnit;
+
+		// end of list, this is the last unit
+		if (k == fERROR)
+			break;
+
+		// next unit is a new stack head, so stop at this stack tail
+		if (units[k].Joined == 0)
+			break;
+
+		lastUnit = k;
+	}
+
+	if (preferredUnit != fERROR)
+		return preferredUnit;
+
+	if (preferredLieutenant != fERROR)
+		return preferredLieutenant;
+
+	// fallback when only the regent remains in this stack
+	if (regentUnit != fERROR)
+		return regentUnit;
+
+	return lastUnit;
+}
+
+/* ========================================================================
    Function    - NPCBattleResults
    Description - fight a battle between NPC's
    Returns     - side-effect in SCENE_MGR::Victor and SCENE_MGR::Loser
@@ -11409,6 +11468,9 @@ void NPCBattleResults (BOOL fSend)
 	SHORT HomeRealm = units[SCENE_MGR::HomeIndex].Realm;
 	SHORT AwayRealm = units[SCENE_MGR::AwayIndex].Realm;
 	BOOL  HomeLarger = FALSE;
+	BOOL	HomeOverwhelmingAdvantage = FALSE;
+	BOOL	AwayOverwhelmingAdvantage = FALSE;
+	BOOL	HeroVsHeroDuel = FALSE;
 
 	// printf ("NPCBattleResults\n");
 
@@ -11454,8 +11516,8 @@ void NPCBattleResults (BOOL fSend)
 	// -----------------------------------------------------------------
 
 	// -- Get last unit in list
-	HomeUnitIndex = GetLastUnit(SCENE_MGR::HomeIndex);
-	AwayUnitIndex = GetLastUnit(SCENE_MGR::AwayIndex);
+	HomeUnitIndex = GetLastDuelUnit(SCENE_MGR::HomeIndex);
+	AwayUnitIndex = GetLastDuelUnit(SCENE_MGR::AwayIndex);
 	// -- Get power of these units
 	HomeUnitPower = UnitPower(HomeUnitIndex);
 	HomeUnitPower += random(HomeUnitPower/2);
@@ -11502,6 +11564,13 @@ void NPCBattleResults (BOOL fSend)
 			AwayPower += UnitPower(UnitIndex);
 		}
 
+		// Mirror the existing retreat threshold so heroes on the side with
+		// overwhelming odds are not treated as valid auto-battle casualties.
+		HomeOverwhelmingAdvantage = ((AwayPower * 3) < HomePower);
+		AwayOverwhelmingAdvantage = ((HomePower * 3) < AwayPower);
+		HeroVsHeroDuel = IsRegentOrLieutenant(HomeUnitIndex)
+			&& IsRegentOrLieutenant(AwayUnitIndex);
+
 		// -----------------------------------------------------------------
 		// -- If one side is great enough in power over the other
 		// -- then must have them retreat, except in the case
@@ -11539,10 +11608,23 @@ void NPCBattleResults (BOOL fSend)
 					goto HomeWins;
 			}
 
+			// Preserve heroes under overwhelming odds, except when both duel
+			// participants are heroes (that matchup should resolve normally).
+			if (!HeroVsHeroDuel
+				&& AwayOverwhelmingAdvantage
+				&& IsRegentOrLieutenant(AwayUnitIndex))
+			{
+				logInfo("Preserving Away hero during overwhelming auto-battle odds: Realm:%s Index:%03d Unit:%s",
+					realm[units[AwayUnitIndex].Realm].mfGetName(),
+					AwayUnitIndex,
+					UnitName(AwayUnitIndex));
+				goto AwayWins;
+			}
+
 			// -- check for top of stack before killing
 			if ( units[AwayUnitIndex].Joined == 0)
 			{
-				logInfo("   Deleting TOS Away Realm:%s  Index:%03d Unit:%s",
+				logInfo("Deleting TOS Away Realm:%s Index:%03d Unit:%s",
 					realm[units[AwayUnitIndex].Realm].mfGetName(),
 					AwayUnitIndex,
 					UnitName(AwayUnitIndex)
@@ -11555,7 +11637,7 @@ void NPCBattleResults (BOOL fSend)
 			}
 			else
 			{
-				logInfo("   Deleting Away Realm:%s  Index:%03d Unit:%s",
+				logInfo("Deleting Away Realm:%s Index:%03d Unit:%s",
 					realm[units[AwayUnitIndex].Realm].mfGetName(),
 					AwayUnitIndex,
 					UnitName(AwayUnitIndex)
@@ -11569,7 +11651,7 @@ void NPCBattleResults (BOOL fSend)
 				HomeUnitPower -= AwayUnitPower/2;
 
 				// -- get next last unit
-				AwayUnitIndex = GetLastUnit(SCENE_MGR::AwayIndex);
+				AwayUnitIndex = GetLastDuelUnit(SCENE_MGR::AwayIndex);
 				AwayUnitPower = UnitPower(AwayUnitIndex);
 				AwayUnitPower += random(AwayUnitPower/2);
 
@@ -11593,10 +11675,23 @@ void NPCBattleResults (BOOL fSend)
 					goto AwayWins;
 			}
 
+			// Preserve heroes under overwhelming odds, except when both duel
+			// participants are heroes (that matchup should resolve normally).
+			if (!HeroVsHeroDuel
+				&& HomeOverwhelmingAdvantage
+				&& IsRegentOrLieutenant(HomeUnitIndex))
+			{
+				logInfo("Preserving Home hero during overwhelming auto-battle odds: Realm:%s Index:%03d Unit:%s",
+					realm[units[HomeUnitIndex].Realm].mfGetName(),
+					HomeUnitIndex,
+					UnitName(HomeUnitIndex));
+				goto HomeWins;
+			}
+
 			// -- check for top of stack before killing
 			if ( units[HomeUnitIndex].Joined == 0)
 			{
-				logInfo("   Deleting TOS Home Realm:%s  Index:%03d Unit:%s",
+				logInfo("Deleting TOS Home Realm:%s Index:%03d Unit:%s",
 					realm[units[HomeUnitIndex].Realm].mfGetName(),
 					HomeUnitIndex,
 					UnitName(HomeUnitIndex)
@@ -11609,7 +11704,7 @@ void NPCBattleResults (BOOL fSend)
 			}
 			else
 			{
-				logInfo("   Deleting Home Realm:%s  Index:%03d Unit:%s",
+				logInfo("Deleting Home Realm:%s Index:%03d Unit:%s",
 					realm[units[HomeUnitIndex].Realm].mfGetName(),
 					HomeUnitIndex,
 					UnitName(HomeUnitIndex)
@@ -11623,7 +11718,7 @@ void NPCBattleResults (BOOL fSend)
 				AwayUnitPower -= HomeUnitPower/2;
 
 				// -- get next last unit
-				HomeUnitIndex = GetLastUnit(SCENE_MGR::HomeIndex);
+				HomeUnitIndex = GetLastDuelUnit(SCENE_MGR::HomeIndex);
 				HomeUnitPower = UnitPower(HomeUnitIndex);
 				HomeUnitPower += random(HomeUnitPower/2);
 			}

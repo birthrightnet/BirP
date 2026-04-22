@@ -23,16 +23,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Many updates to `MAKE.BAT` to support new build options and targets, and to be the primary build script for the project. See `BUILD-OPTIONS.md` for details on new build options and targets.
 - Replaced and unified logging [#8](https://github.com/Shiryou/BirP/issues/8).
 - Updated build, deploy, and test scripts to reduce console noise while improving warning/error summaries and visibility.
+- Updated auto-battle duel ordering to resolve regular units first, then lieutenants, and only use the regent once no other unit in that stack remains. [#19](https://github.com/Shiryou/BirP/issues/19)
+- Removed all warning suppression left by original codebase, exposing all warnings during builds.
 
 ### Fixed
 
-- Resolved warning-producing code paths in memory manager, selected platform-specific source modules, and SOLAUDIO CUSTMSYS linkage across WIN/DOS and DEBUG/RELEASE builds.
-- Removed an unused `_MULTIMONO` `DumpString` prototype in `WINSYS/GMULPLAY.CPP` that produced W014 "no reference to symbol" warnings in WIN and CHARED debug builds.
+- Resolved hundreds of warnings and errors that surfaced after updating to Open Watcom v2.0 and disabling the warning suppression left from the original codebase.
 - Hardened `PrepareBuildDirs` SOLAUDIO/RES staging cleanup with retry logic to reduce intermittent `Access denied` failures while restaging under `build-artifacts`.
 - Fixed DOS audio driver detection so `audioDrv` parsing in `resource.cfg` is whitespace-tolerant and falls back to `DACBLAST.DRV` instead of forced silent `DACNONE.DRV` when no valid entry is found.
 - Reduced random Adventure Mode crash risk by validating adventure bump indices before dereferencing `mythings[]`, correcting the scene 5 ambient sound table bound, preventing adventure-team joins when breadcrumb path state is missing, hardening team-iterator avatar-handle checks, adding stale enemy-handle guards in follow-player and combat attack routines, hardening scene avatar loops against invalid current-scene/avatar handles, and expanding adventure/environmental sound diagnostics around sound queueing, looping lava audio, stale looping-sound thing indices, and invalid scene/avatar handles. [#4](https://github.com/Shiryou/BirP/issues/4)
-- Hardened battle AI enemy/leader handle validation across captain combat flows to prevent stale-handle dereferences during engagements.
+- Hardened battle AI enemy/leader handle validation across captain combat flows to prevent stale-handle dereferences during engagements. [#4](https://github.com/Shiryou/BirP/issues/4)
 - Restored initial menu/adventure music startup and improved suspend/resume handling so music no longer waits for first combat or fails to restart reliably. [#10](https://github.com/Shiryou/BirP/issues/10) [#32](https://github.com/Shiryou/BirP/issues/32)
+- Prevented `CheckTheCDMusic` from repeatedly requesting track playback while music is suspended, avoiding large volumes of blocked-track warnings during adventure/combat sessions. [#4](https://github.com/Shiryou/BirP/issues/4)
+- Added a bounded `CheckTheCDMusic` auto-resume fallback when music remains suspended too long during Adventure-context gameplay, preventing extended no-music states. [#10](https://github.com/Shiryou/BirP/issues/10)
+- Fixed adventure music not resuming after combat by forcing music to resume if it remains suspended too long (more than 12 seconds) in Adventure-context gameplay. [#10](https://github.com/Shiryou/BirP/issues/10)
+- Fixed auto-battle resolution so regents and lieutenants on the overwhelmingly stronger side are no longer valid casualties unless they are dueling an opposing regent/lieutenant. [#19](https://github.com/Shiryou/BirP/issues/19)
 - Fixed no-CD bypass startup handling so release builds honor explicit `brsetup.cfg` bypass configuration (`[CD]=.` or `[CD_BYPASS]=1`).
 - Fixed tome-learned adventure spells being appended to the end of Prepare Magic lists by adding level-aware insertion for new `IC_SPELL` inventory entries (with spell-index tiebreaker), so newly learned spells now appear in their expected level order. [#25](https://github.com/Shiryou/BirP/issues/25)
 - Fixed two paths where quantity of consumable items in inventory could be increased by dozens. One path was in adventure prepare screen, the other could come from a numeric cast that could result in a large positive number. [#27](https://github.com/Shiryou/BirP/issues/27)
@@ -52,4 +57,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Custom adventures no longer crash the game when picking up the quest goal item. [#3](https://github.com/Shiryou/BirP/issues/3)
-- Fixed many legacy C and C++ errors that were intolerable by our modern Open Watcom toolchain.

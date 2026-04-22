@@ -1419,10 +1419,6 @@
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
-		<Unit filename="REGENTSX.CPP">
-			<Option target="Debug WIN95" />
-			<Option target="Release WIN95" />
-		</Unit>
 		<Unit filename="REGIONS.C">
 			<Option compilerVar="CC" />
 			<Option target="Debug WIN95" />

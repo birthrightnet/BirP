@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0.13
-Date: 2026-05-02
+Version: 1.4.0.14
+Date: 2026-05-03
 
 TABLE OF CONTENTS
 
@@ -52,29 +52,31 @@ Steps to install:
 
 Added
 
-- Added "modern mode" in-game resolution options with support for `800x600`, `1024x768`, `1280x960`, `1400x1050`, `1600x1200`, and `1920x1440`. The original "OG mode" remains available.
+- Added "modern mode" in-game resolution options with support for `800x600`, `1024x768`, `1280x960`, `1400x1050`, `1600x1200`, and `1920x1440`. The original "OG mode" remains available. (#6)
 
 Removed
 
-- Removed DirectDraw as a supported display mode and removed related options and hotkeys; GDI is now the only supported rendering path.
-- Removed the deprecated `Auto Resolution` graphics option.
+- Removed DirectDraw as a supported display mode and removed related options and hotkeys; GDI is now the only supported rendering path. (#6)
+- Removed the deprecated `Auto Resolution` graphics option. (#6)
 
 Fixed
 
-- Fixed game window position resetting after restart by persisting last moved coordinates between sessions.
-- Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling.
-- Hardened battle AI enemy/leader handle checks to prevent rare tactical battle crashes caused by stale references.
-- Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume.
+- Fixed game window position resetting after restart by persisting last moved coordinates between sessions. (#6)
+- Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling. (#4)
+- Hardened battle AI enemy/leader handle checks to prevent rare tactical battle crashes caused by stale references. (#4)
+- Fixed auto-battle resolution so regents and lieutenants on the overwhelmingly stronger side are no longer valid casualties unless they are dueling an opposing regent or lieutenant. (#19)
+- Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume. (#10)
 - Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.
 - Fixed DOS audio driver fallback parsing so invalid or missing `audioDrv` entries no longer force silent output.
-- Fixed spell learning from tomes so newly learned adventure spells are inserted in proper level order in Prepare Magic lists instead of being appended at the end.
-- Fixed two inventory quantity corruption paths that could incorrectly add dozens of consumable items.
+- Fixed spell learning from tomes so newly learned adventure spells are inserted in proper level order in Prepare Magic lists instead of being appended at the end. (#25)
+- Fixed two inventory quantity corruption paths that could incorrectly add dozens of consumable items. (#27)
 
 1.4.0.4 - 2025-11-02
 
 Changed
 
 - Allow calling all files from game directory instead of CD; the CD is no longer required in this mode (all files must first be copied from the CD to the game directory). (#2)
+- Auto-battle now duels all regular units first, then lieutenants, then regents. Before it dueled from the bottom of the unit stack, upwards, which could result in lieutenants or regents dueling before regular units. (#19)
 
 Fixed
 
