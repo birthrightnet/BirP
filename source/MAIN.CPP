@@ -688,11 +688,11 @@ void MainLoop(void)
 #endif
 	}       // if in domain turn else..
 
-	// Show frames per second
+// Show frames per second
 #if !defined(_RELEASE)
 	UpdateFPS();
-	color_rect( render_width/2, render_top+5, 60, 15, 0);
-	print_textf( render_width/2, render_top + 5, 31,"^F00F/S %ld  T/F %ld", fps, AverageTicksPerFrame());
+	//color_rect( render_width/2, render_top+5, 60, 15, 0);
+	//print_textf( render_width/2, render_top + 5, 31,"^F00F/S %ld  T/F %ld", fps, AverageTicksPerFrame());
 
 //	print_textf( render_width/2, render_top + 5, 31,"^F00X:%ld Y:%ld %ld%ld%ld%ld",
 //		JoyXPos,
@@ -703,10 +703,10 @@ void MainLoop(void)
 //		JoyButton4
 //	);
 
-	ScreenCopy(0, render_width/2, render_top+5, 60, 15, SC_DEFAULT_RES);
+	//ScreenCopy(0, render_width/2, render_top+5, 60, 15, SC_DEFAULT_RES);
 
-	if (fPosition)
-		PrintLocationInfo();
+	//if (fPosition)
+		//PrintLocationInfo();
 
 
 //#if defined(_WINDOWS)

@@ -1,4 +1,5 @@
 {
+  "files.encoding": "windows1252",
   "files.insertFinalNewline": true,
   "search.useIgnoreFiles": true,
   "search.useGlobalIgnoreFiles": false,
