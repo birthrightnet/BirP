@@ -255,6 +255,32 @@ static BOOL TheftAffectsAlliance(void)
 	return TRUE;
 }
 
+static BOOL ShouldInsertSpellBefore(ITEMTYPE const NewType, ITEMTYPE const ExistingType)
+{
+	// Only re-order within the adventure spell category.
+	// Other categories keep their existing insertion behavior.
+	if (ItemTypes[ExistingType].mfCategory() != IC_SPELL)
+		return FALSE;
+
+	LONG const NewSpellIndex = ItemTypes[NewType].mfGetExtendedData();
+	LONG const ExistingSpellIndex = ItemTypes[ExistingType].mfGetExtendedData();
+
+	if (NewSpellIndex < 0 || ExistingSpellIndex < 0)
+		return FALSE;
+
+	SPELL_INFO::SPELL_ITEM const NewSpell = SPELL_INFO::mfGetSpell((SPELL_INFO::TYPE)NewSpellIndex);
+	SPELL_INFO::SPELL_ITEM const ExistingSpell = SPELL_INFO::mfGetSpell((SPELL_INFO::TYPE)ExistingSpellIndex);
+
+	if (NewSpell.Level < ExistingSpell.Level)
+		return TRUE;
+
+	if (NewSpell.Level > ExistingSpell.Level)
+		return FALSE;
+
+	// Stable tie-breaker within the same level.
+	return (NewSpellIndex < ExistingSpellIndex) ? TRUE : FALSE;
+}
+
 
 
 
@@ -1248,7 +1274,6 @@ AddItemStatus const ObjectList::mfAddItem(
 	}
 	else
 	{
-		InventoryItor itor(*this);
 		SHORT NewItem;
 
 		if (ReturnCode&LIST_FULL)
@@ -1258,10 +1283,40 @@ AddItemStatus const ObjectList::mfAddItem(
 		if (NewItem < 0)				// No space available.
 			return ReturnCode|LIST_FULL;
 
-		itor.mfLast();
-		(*itor)->mfSetNext(NewItem);
-		++itor;
-		(*itor)->mfInit(Type,count,_charges,fERROR,TRUE);
+		if (ItemTypes[Type].mfCategory() == IC_SPELL)
+		{
+			// Insert newly learned spells in sorted position so Prepare Magic
+			// display order remains level-first instead of append-at-end.
+			InvenIndex PrevIndex = fERROR;
+			InvenIndex CurrIndex = begin();
+
+			while (CurrIndex != fERROR)
+			{
+				ITEMTYPE const CurrType = AllItems[CurrIndex].mfType();
+
+				if (ShouldInsertSpellBefore(Type, CurrType))
+					break;
+
+				PrevIndex = CurrIndex;
+				CurrIndex = AllItems[CurrIndex].mfNext();
+			}
+
+			AllItems[NewItem].mfInit(Type, count, _charges, CurrIndex, TRUE);
+
+			// Splice into the linked list either at the head or after PrevIndex.
+			if (PrevIndex == fERROR)
+				HeadIndex = NewItem;
+			else
+				AllItems[PrevIndex].mfSetNext(NewItem);
+		}
+		else
+		{
+			InventoryItor itor(*this);
+			itor.mfLast();
+			(*itor)->mfSetNext(NewItem);
+			++itor;
+			(*itor)->mfInit(Type,count,_charges,fERROR,TRUE);
+		}
 	}
 
 	return ReturnCode|ADD_OK;
@@ -1992,7 +2047,10 @@ void MultiAddItem(LONG iRegentIndex, LONG iItemtype, LONG number)
 {
 	SHORT hPlayerStats = playerstats[iRegentIndex];
 	ITEMTYPE Itemtype = (ITEMTYPE) iItemtype;
-	SHORT count = number;
+	
+	// Clamp count to SHORT range to prevent integer overflow
+	// The inventory system uses SHORT (16-bit) for quantities
+	SHORT count = (SHORT) ((number < 0) ? 0 : ((number > SHRT_MAX) ? SHRT_MAX : number));
 
 	if (hPlayerStats != fERROR)
 	{
@@ -2075,9 +2133,15 @@ BOOL ObjectList::PrepBattleSpell(
 	}
 
 	// -- Check to see if this character can learn any more
-	// -- of this type of spell
+	// -- of this type of spell.
+	// -- Only memorize (increment quantity) for IC_SPELL items.
+	// -- IC_MAGITEM items (e.g. Necklace of Missiles, wands) are physical
+	// -- items whose quantities must not be inflated during battle prep.
+	// -- Their extended data is -1, making mfCanIMemorizeThisSpell unsafe
+	// -- to call and potentially return TRUE from out-of-bounds table access.
 	LONG const Index = itor.mfGetCurrentInvIndex();
-	if (pPS->mfCanIMemorizeThisSpell(Item) == TRUE)
+	if (ItemTypes[Item].mfCategory() == IC_SPELL &&
+	    pPS->mfCanIMemorizeThisSpell(Item) == TRUE)
 	{
 		(*itor)->mfGainOne();
 		retVal = TRUE;
