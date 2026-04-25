@@ -486,6 +486,11 @@ void DoSetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index, LONG lDat
 			break;
 
 		case	MP_UNITS:
+			if (lArray_Index < 0 || lArray_Index >= MAX_UNITS)
+			{
+				logError("DoSetGameData - invalid MP_UNITS index:%ld struct:%ld data:%ld", lArray_Index, lStruct_Id, lData);
+				return;
+			}
 			switch(lStruct_Id)
 			{
 				case	MPUNITS_PROVINCE:
@@ -941,6 +946,11 @@ LONG DoGetGameData(LONG lArray_Id, LONG lStruct_Id, LONG lArray_Index)
 			break;
 
 		case	MP_UNITS:
+			if (lArray_Index < 0 || lArray_Index >= MAX_UNITS)
+			{
+				logError("DoGetGameData - invalid MP_UNITS index:%ld struct:%ld", lArray_Index, lStruct_Id);
+				return fERROR;
+			}
 			switch(lStruct_Id)
 			{
 				case	MPUNITS_PROVINCE:

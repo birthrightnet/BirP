@@ -4770,9 +4770,17 @@ void RandomEvents (void)
 				DoRandomEvent(random(8)+9, prov);	// random monster
 
 		// give 5-10/5-15/5-20 skeletons directly to the gorgon where ever he is
-		prov = (PROVINCE) units[regents[THE_GORGON].mfGetunit()].province;
-		for (i=random(rm)+5; i>=0; i--)
-			DoRandomEvent(12, prov);					// skeletons
+		LONG const iGorgonUnit = regents[THE_GORGON].mfGetunit();
+		if (iGorgonUnit > 0 && iGorgonUnit < MAX_UNITS)
+		{
+			prov = (PROVINCE) units[iGorgonUnit].province;
+			for (i=random(rm)+5; i>=0; i--)
+				DoRandomEvent(12, prov);				// skeletons
+		}
+		else
+		{
+			logInfo("   DoRandomEvents - invalid Gorgon unit index:%ld, skipping direct skeleton grant", iGorgonUnit);
+		}
 	}
 
 	// ------------------------------------------

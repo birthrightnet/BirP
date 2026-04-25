@@ -71,6 +71,7 @@ Fixed
 - Fixed spell learning from tomes so newly learned adventure spells are inserted in proper level order in Prepare Magic lists instead of being appended at the end. (#25)
 - Expanded spell book sorting fix to retroactively fix pre-patch save games with spell books already out of order. (#25)
 - Fixed two inventory quantity corruption paths that could incorrectly add dozens of consumable items. (#27)
+- Fixed an uncommon fatal end-of-turn crash (`units[-1]`) by validating map and multiplayer unit indices before dereferencing unit records. (#30)
 
 1.4.0.4 - 2025-11-02
 
