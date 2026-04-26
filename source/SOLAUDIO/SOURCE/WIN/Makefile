@@ -1,6 +1,6 @@
 # Open Watcom-compatible SOLAUDIO Windows library build
 CPP = wpp386
-ASM = ..\..\..\..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+ASM = uasm64.exe
 ASMFLAGS = -omf -Zp1 -Cp
 LIBTOOL = wlib
 

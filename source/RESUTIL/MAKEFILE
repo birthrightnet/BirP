@@ -13,7 +13,7 @@
 ## User settable macros ##
 ##########################
 
-ASM = ..\..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+ASM = uasm64.exe
 AFLAGS = -omf -Zp1 -Cp
 ExeFile  =
 

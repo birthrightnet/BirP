@@ -13,7 +13,7 @@
 ## User settable macros ##
 ##########################
 
-ASM = ..\..\birp-dependencies\UASM-v2_57\uasm64.exe
+ASM = uasm64.exe
 AFLAGS = -omf -Zp1 -Cp
 ExeFile  =
 
@@ -783,7 +783,7 @@ clean : .SYMBOLIC
 	-del $(OBJD)\sound.obj $(OBJD)\main.obj
 	-del /s $(BIND)\*.map $(BIND)\*.exe $(BIND)\*.sym
 	-del *.res
-	-del $(ERRLOG_DIR)\*.err
+	-del /s $(ERRLOG_DIR)\*.err
 
 clean_all : .SYMBOLIC
 	del /s $(win_debugging_object_dir)\*.obj
@@ -805,7 +805,7 @@ clean_all : .SYMBOLIC
 	-del /s $(dos_profiling_binary_dir)\*.map $(dos_profiling_binary_dir)\*.exe $(dos_profiling_binary_dir)\*.sym
 	-del /s $(dos_production_binary_dir)\*.map $(dos_production_binary_dir)\*.exe $(dos_production_binary_dir)\*.sym
 	-del *.res
-	-del $(ERRLOG_DIR)\*.err
+	-del /s $(ERRLOG_DIR)\*.err
 
 CleanCompile: clean install
 	echo Done.
