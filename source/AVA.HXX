@@ -153,6 +153,7 @@ public:
 	// user's convenient reference).
 	inline void			mfSetRealmName (char * szName);
 	inline char *		mfGetRealmName ();
+};
 
 
 // ---------------------------------------------------------------------------
@@ -541,7 +542,5 @@ inline LONG	AVA_FILE::mfGetBardLevel ()
 
 	return MAX (level1, level2);
 }
-
-};
 
 #endif

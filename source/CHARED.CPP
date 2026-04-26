@@ -348,7 +348,7 @@ static int GetAVAFileName ()
 
 	int			result;
 
-	result = DialogBox ((HANDLE) hInstApp, "DIALOG_SELCHAR", (HWND) NULL,
+	result = DialogBox (hInstApp, "DIALOG_SELCHAR", (HWND) NULL,
 		(DLGPROC) SelectRegentWndProc);
 	if (result == -1)
 	{
@@ -1372,7 +1372,7 @@ static void ShowNewAppearance (HWND hwnd, int index)
 	if ((hbitmap = PCXtoDIBSection (hdcMem, szFilename, pBuffer)) == NULL)
 		goto ErrExit;
 
-	if ((oldhbitmap = SelectObject (hdcMem, hbitmap)) == NULL)
+	if ((oldhbitmap = (HBITMAP) SelectObject (hdcMem, hbitmap)) == NULL)
 		goto ErrExit;
 
 	GetObject (hbitmap, sizeof(BITMAP), (LPVOID) & bm);
@@ -1608,7 +1608,7 @@ void CharedDoEditorDialog ()
 	result = GetAVAFileName ();
 	if (result != -1 && result != IDCANCEL)
 	{
-		DialogBox ((HANDLE) hInstApp, "DIALOG_CHARED", (HWND) NULL, (DLGPROC) CharedWndProc);
+		DialogBox (hInstApp, "DIALOG_CHARED", (HWND) NULL, (DLGPROC) CharedWndProc);
 	}
 }
 

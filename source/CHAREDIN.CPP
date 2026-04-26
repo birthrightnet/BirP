@@ -1046,7 +1046,7 @@ int SelectInventory (HWND hwnd)
 {
 	int			result;
 
-	result = DialogBox ((HANDLE) hInstApp, "DIALOG_CHARINV", hwnd,
+	result = DialogBox (hInstApp, "DIALOG_CHARINV", hwnd,
 		(DLGPROC) SelectInventoryWndProc);
 
 	if (result == -1)

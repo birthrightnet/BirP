@@ -397,7 +397,7 @@ void DoEditorDialog(
 	iAvatarX = x;
 	iAvatarY = y;
 	bThingTypeChanged = FALSE;
-	LONG err = DialogBox((HANDLE) hInstApp, (LPCSTR) IDD_EDITOR, (HWND) NULL, (DLGPROC) DlgEditorProc);
+	LONG err = DialogBox(hInstApp, (LPCSTR) IDD_EDITOR, (HWND) NULL, (DLGPROC) DlgEditorProc);
 }
 
 
@@ -540,7 +540,7 @@ BOOL CALLBACK DlgEditorProc(
 						iAvatarTargetY = iAvatarY;
 					}
 
-					if (DialogBox((HANDLE) hInstApp, (LPCSTR) IDD_EDIT_AI, hwndDlg, (DLGPROC) DlgEditAIProc))
+					if (DialogBox(hInstApp, (LPCSTR) IDD_EDIT_AI, hwndDlg, (DLGPROC) DlgEditAIProc))
 					{
 //							pAvatarAI = AI_functions[iCurSel];
 						iAvatarFuncIndex = (CAvatar::AIFUNC)iCurSel;
