@@ -35,12 +35,14 @@
 #include "margin.hxx"
 #include "multimap.hxx"
 #include "context.hxx"
+#include "logger.h"
 
 /* ------------------------------------------------------------------------
    Defines
    ------------------------------------------------------------------------ */
 #define OPTIONSAVEFILE "gameopt.dat"
-#define OPTIONVERSION 0x00003101
+#define OPTIONVERSION 0x00003103
+#define OPTIONVERSION_LEGACY_AUTORES 0x00003102
 
 #define MODE_MASK		0x00FF
 #define MODE_CHANGED	0x0100
@@ -72,6 +74,12 @@ static BOOL		new_mundane = TRUE;
 static LONG		newControlMode = 1;
 
 static SHORT		num_screen_sizes = 6;
+static SHORT		resolution_mode_setting = RESOLUTION_MODE_OG;
+static SHORT		resolution_preset_setting = RESOLUTION_PRESET_640X480;
+static SHORT		resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
+static SHORT		old_resolution_mode_setting = RESOLUTION_MODE_OG;
+static SHORT		old_resolution_preset_setting = RESOLUTION_PRESET_640X480;
+static SHORT		old_resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
 
 static SHORT sound_levels[] = {0, 13, 26, 38, 51, 64, 77, 90, 102, 115, 127};
 
@@ -91,6 +99,8 @@ SHORT sitecount[MAX_SITES] = {0};
 
 #ifdef _WINDOWS
    extern "C" HWND hwndApp;
+	extern "C" LONG lSavedX;
+	extern "C" LONG lSavedY;
 #endif
 
 extern LONG OptionMenuSize;
@@ -113,15 +123,92 @@ void WriteOptionSettings(void);
 extern void LoadControlSet(void);
 extern void ActivateControlSet(void);
 
-#ifdef _WINDOWS
-extern void ToggleDirectDraw(LONG, LONG);
-#endif
-
 extern "C" {
 int InitRedBook(void);
 int ShutdownRedBook(void);
 int StopRedBook (void);
 extern BOOL fMinMemory;
+}
+
+static SHORT ClampResolutionMode(SHORT mode)
+{
+	if (mode < RESOLUTION_MODE_OG || mode > RESOLUTION_MODE_MODERN)
+		return RESOLUTION_MODE_OG;
+
+	return mode;
+}
+
+static SHORT ClampResolutionPreset(SHORT preset)
+{
+	if (preset < RESOLUTION_PRESET_640X480 || preset >= RESOLUTION_PRESET_COUNT)
+		return RESOLUTION_PRESET_640X480;
+
+	return preset;
+}
+
+static SHORT ClampScaleMode(SHORT mode)
+{
+	if (mode < RESOLUTION_SCALE_ASPECT_FIT || mode > RESOLUTION_SCALE_STRETCH)
+		return RESOLUTION_SCALE_ASPECT_FIT;
+
+	return mode;
+}
+
+static void ClampResolutionSettings(void)
+{
+	SHORT oldMode = resolution_mode_setting;
+	SHORT oldPreset = resolution_preset_setting;
+	SHORT oldScale = resolution_scale_setting;
+
+	resolution_mode_setting = ClampResolutionMode(resolution_mode_setting);
+	resolution_preset_setting = ClampResolutionPreset(resolution_preset_setting);
+	resolution_scale_setting = ClampScaleMode(resolution_scale_setting);
+
+#if !defined(_WINDOWS)
+	resolution_mode_setting = RESOLUTION_MODE_OG;
+#endif
+
+	if (resolution_mode_setting == RESOLUTION_MODE_OG)
+		resolution_preset_setting = RESOLUTION_PRESET_640X480;
+
+	if (oldMode != resolution_mode_setting ||
+		oldPreset != resolution_preset_setting ||
+		oldScale != resolution_scale_setting)
+	{
+		logWarn("ClampResolutionSettings adjusted values: mode %d->%d preset %d->%d scale %d->%d",
+			oldMode, resolution_mode_setting,
+			oldPreset, resolution_preset_setting,
+			oldScale, resolution_scale_setting);
+	}
+}
+
+static void ApplyRuntimeResolutionSettings(void)
+{
+	ClampResolutionSettings();
+	logInfo("ApplyRuntimeResolutionSettings mode=%d preset=%d scale=%d",
+		resolution_mode_setting,
+		resolution_preset_setting,
+		resolution_scale_setting);
+
+	SetRuntimeResolutionState(resolution_mode_setting, resolution_preset_setting, resolution_scale_setting);
+	set_screen_size(MAX_VIEW_WIDTH, MAX_VIEW_HEIGHT);
+
+#ifdef _WINDOWS
+	if (sDrawMode == iGDI)
+	{
+		DefaultMainWindowSize(0);
+		ShowWindow(hwndApp, SW_SHOW);
+		SetFocus(hwndApp);
+		logInfo("ApplyRuntimeResolutionSettings reapplied GDI window size to %ldx%ld",
+			gDisplayWidth,
+			gDisplayHeight);
+	}
+#endif
+
+	logInfo("Runtime resolution applied logical=%ldx%ld display=%ldx%ld viewport=%ld,%ld %ldx%ld",
+		gLogicalWidth, gLogicalHeight,
+		gDisplayWidth, gDisplayHeight,
+		gViewportX, gViewportY, gViewportW, gViewportH);
 }
 /* ------------------------------------------------------------------------
    Code
@@ -261,20 +348,25 @@ void OptAdjLevel(LONG which, LONG what)
 		    break;    
 		    
 		case OPT_ADJ_SCREEN_AUTORES:
-		    newAutoRes += what;
-		    if (newAutoRes >= 1 )
-		        newAutoRes = TRUE;
-		    if (newAutoRes <= 0 )
-		        newAutoRes = FALSE;
+			// Auto Resolution is deprecated/disabled; keep state forced off.
+			newAutoRes = FALSE;
 		    break;
+
+		case OPT_ADJ_SCREEN_RESMODE:
+			resolution_mode_setting += what;
+			logDebug("Options screen resolution mode adjust delta=%ld requested=%d", what, resolution_mode_setting);
+			ApplyRuntimeResolutionSettings();
+			break;
+
+		case OPT_ADJ_SCREEN_PRESET:
+			resolution_preset_setting += what;
+			logDebug("Options screen resolution preset adjust delta=%ld requested=%d", what, resolution_preset_setting);
+			ApplyRuntimeResolutionSettings();
+			break;
 
 #ifdef _WINDOWS
 		case OPT_ADJ_SCREEN_WINDOW:
-			screen_mode += what;
-		    if (screen_mode >= 1 )
-		        screen_mode = iDDRAW;
-		    if (screen_mode <= 0 )
-		        screen_mode = iGDI;
+				screen_mode = iGDI;
 			break;
 #endif
         		    
@@ -344,7 +436,7 @@ void OpenOptions   (LONG, LONG)
 		else     
 			selected_screen_size = 0;
        
-		newAutoRes = fAIAutoRes;
+		newAutoRes = FALSE;
        
 		//GEH 6/8 game_difficulty = (DIFFICULTY) (DIF_EASY + gWinningPoints / 100 - 3);
 		combat_firstperson_view = COMBAT_INITIAL_VIEWPT::mfIsModeFirstPerson();
@@ -352,13 +444,24 @@ void OpenOptions   (LONG, LONG)
 		//---- GDI or DDRAW
    
 #ifdef _WINDOWS
-		screen_mode = sDrawMode;
+		screen_mode = iGDI;
 #else
 		screen_mode = 0;
 #endif
 		new_mundane = mundane_descriptions;
 		
 		newControlMode = (fControlMode & MODE_MASK);
+		resolution_mode_setting = gResolutionMode;
+		resolution_preset_setting = gResolutionPreset;
+		resolution_scale_setting = gScaleMode;
+		old_resolution_mode_setting = resolution_mode_setting;
+		old_resolution_preset_setting = resolution_preset_setting;
+		old_resolution_scale_setting = resolution_scale_setting;
+		ClampResolutionSettings();
+		logInfo("OpenOptions captured runtime resolution mode=%d preset=%d scale=%d",
+			resolution_mode_setting,
+			resolution_preset_setting,
+			resolution_scale_setting);
    
 		// make sure the values are reasonable by running a null-adjust
 		for (i=0; i < OPT_ADJ_COUNT; i++)
@@ -396,6 +499,15 @@ void OptionCancel  (LONG, LONG)
 	TickDelay(4);
 	
     del_region(OptAdjLevel, 0);
+
+	resolution_mode_setting = old_resolution_mode_setting;
+	resolution_preset_setting = old_resolution_preset_setting;
+	resolution_scale_setting = old_resolution_scale_setting;
+	logInfo("OptionCancel restoring previous resolution mode=%d preset=%d scale=%d",
+		resolution_mode_setting,
+		resolution_preset_setting,
+		resolution_scale_setting);
+	ApplyRuntimeResolutionSettings();
 
     if (musvol > 0  &&  oldsfxvol == 0)       // sounds off
     {
@@ -463,8 +575,9 @@ void UpdateOptionSettings(void)
 		fBtlTurnBased = FALSE;
 		fBattleNextTurn = 0;
     }
-    DifficultyLevel  =  3 - battle_difficulty; /*        ditto         */
-    fAIAutoRes = newAutoRes;
+	DifficultyLevel  =  3 - battle_difficulty; /*        ditto         */
+	newAutoRes = FALSE;
+	fAIAutoRes = FALSE;
     if (selected_screen_size > 0)
     {
         SetCombatMenuUp(TRUE);
@@ -477,17 +590,11 @@ void UpdateOptionSettings(void)
     }
 
 
-    //---- switch to GDI or DDRAW
-
+	//---- force GDI presentation mode
 #ifdef _WINDOWS
-	if ( screen_mode != sDrawMode )
-		ToggleDirectDraw(0,0);
-	else
-	{
-		ShowWindow(hwndApp, SW_SHOW);
-
-		SetFocus(hwndApp);
-	}
+	screen_mode = iGDI;
+	ShowWindow(hwndApp, SW_SHOW);
+	SetFocus(hwndApp);
 #endif
 
 	mundane_descriptions = new_mundane;
@@ -496,6 +603,14 @@ void UpdateOptionSettings(void)
 		fControlMode = newControlMode|MODE_CHANGED;
 	else	
 		fControlMode = newControlMode | (fControlMode & MODE_CHANGED);
+
+	ApplyRuntimeResolutionSettings();
+
+	logInfo("UpdateOptionSettings complete mode=%d preset=%d scale=%d screen_mode=%d",
+		resolution_mode_setting,
+		resolution_preset_setting,
+		resolution_scale_setting,
+		screen_mode);
 	
     gWinningPoints = 300 + (LONG) game_difficulty * 100;
 
@@ -508,7 +623,10 @@ void WriteOptionSettings(void)
 	FILE *fp;
 	ULONG ver = OPTIONVERSION;
 	if ((fp = fopen(OPTIONSAVEFILE, "wb")) == NULL)
+	{
+		logWarn("WriteOptionSettings failed to open %s for writing", OPTIONSAVEFILE);
 		return;
+	}
 	
 	fwrite(&ver, sizeof(ULONG), 1, fp);
 	
@@ -523,12 +641,37 @@ void WriteOptionSettings(void)
 	fwrite(&sfxvol, sizeof(SHORT), 1, fp);
 	fwrite(&sfxenv, sizeof(ENV_SETTING), 1, fp);
 	fwrite(&selected_screen_size, sizeof(SHORT), 1, fp);
-	fwrite(&newAutoRes, sizeof(BOOL), 1, fp);
 	fwrite(&combat_firstperson_view, sizeof(BOOL), 1, fp);
 	fwrite(sitecount, sizeof(SHORT), MAX_SITES, fp);
 	fwrite(&screen_mode, sizeof(SHORT), 1, fp);
 	fwrite(&mundane_descriptions, sizeof(BOOL), 1, fp);
+	fwrite(&resolution_mode_setting, sizeof(SHORT), 1, fp);
+	fwrite(&resolution_preset_setting, sizeof(SHORT), 1, fp);
+	fwrite(&resolution_scale_setting, sizeof(SHORT), 1, fp);
+#ifdef _WINDOWS
+	fwrite(&lSavedX, sizeof(LONG), 1, fp);
+	fwrite(&lSavedY, sizeof(LONG), 1, fp);
+#endif
 	fclose(fp);
+	logInfo("WriteOptionSettings saved %s mode=%d preset=%d scale=%d screen_mode=%d winPos=%ld,%ld",
+		OPTIONSAVEFILE,
+		resolution_mode_setting,
+		resolution_preset_setting,
+		resolution_scale_setting,
+		screen_mode,
+#ifdef _WINDOWS
+		lSavedX,
+		lSavedY
+#else
+		0L,
+		0L
+#endif
+		);
+}
+
+extern "C" void WriteOptionSettingsFromC(void)
+{
+	WriteOptionSettings();
 }
 
 
@@ -536,9 +679,11 @@ void ReadOptionSettings(void)
 {
 	FILE *fp;
 	ULONG ver;
+	BOOL migrateLegacyFormat = FALSE;
 	
 	if ((fp = fopen(OPTIONSAVEFILE, "rb")) == NULL)
 	{
+		logWarn("ReadOptionSettings missing %s; writing defaults", OPTIONSAVEFILE);
 		for (SHORT i=0; i < MAX_SITES; i++)
 			sitecount[i] = 0;
 			
@@ -548,8 +693,10 @@ void ReadOptionSettings(void)
 	}
 	
 	fread(&ver, sizeof(ULONG), 1, fp);
-	if (ver != OPTIONVERSION)
+	if (ver != OPTIONVERSION && ver != OPTIONVERSION_LEGACY_AUTORES)
 	{
+		logWarn("ReadOptionSettings version mismatch in %s: got 0x%08lx expected 0x%08lx or 0x%08lx; resetting file",
+			OPTIONSAVEFILE, ver, OPTIONVERSION, OPTIONVERSION_LEGACY_AUTORES);
 		fclose(fp);
 		remove(OPTIONSAVEFILE);
 		for (SHORT i=0; i < MAX_SITES; i++)
@@ -560,6 +707,7 @@ void ReadOptionSettings(void)
 	}
 	else
 	{
+		migrateLegacyFormat = (ver == OPTIONVERSION_LEGACY_AUTORES);
 		fread(&game_difficulty, sizeof(DIFFICULTY), 1, fp);
 		fread(&battle_difficulty, sizeof(DIFFICULTY), 1, fp);
 		fread(&battle_speed, sizeof(SPEED), 1, fp);
@@ -572,16 +720,56 @@ void ReadOptionSettings(void)
 		oldsfxvol = sfxvol;
 		fread(&sfxenv, sizeof(ENV_SETTING), 1, fp);
 		fread(&selected_screen_size, sizeof(SHORT), 1, fp);
-		fread(&newAutoRes, sizeof(BOOL), 1, fp);
+		if (migrateLegacyFormat)
+		{
+			BOOL legacyAutoRes;
+			fread(&legacyAutoRes, sizeof(BOOL), 1, fp);
+			logInfo("ReadOptionSettings legacy format ignored deprecated Auto Resolution value=%d", legacyAutoRes);
+		}
+		newAutoRes = FALSE;
 		fread(&combat_firstperson_view, sizeof(BOOL), 1, fp);
 		fread(sitecount, sizeof(SHORT), MAX_SITES, fp);
 		fread(&screen_mode, sizeof(SHORT), 1, fp);
+		screen_mode = iGDI;
 		fread(&mundane_descriptions, sizeof(BOOL), 1, fp);
+		fread(&resolution_mode_setting, sizeof(SHORT), 1, fp);
+		fread(&resolution_preset_setting, sizeof(SHORT), 1, fp);
+		fread(&resolution_scale_setting, sizeof(SHORT), 1, fp);
+#ifdef _WINDOWS
+		if (fread(&lSavedX, sizeof(LONG), 1, fp) != 1 ||
+			fread(&lSavedY, sizeof(LONG), 1, fp) != 1)
+		{
+			lSavedX = -1;
+			lSavedY = -1;
+		}
+#endif
 		new_mundane = mundane_descriptions;
 		fclose(fp);
+		logInfo("ReadOptionSettings loaded %s ver=0x%08lx mode=%d preset=%d scale=%d screen_mode=%d winPos=%ld,%ld",
+			OPTIONSAVEFILE,
+			ver,
+			resolution_mode_setting,
+			resolution_preset_setting,
+			resolution_scale_setting,
+			screen_mode,
+#ifdef _WINDOWS
+			lSavedX,
+			lSavedY
+#else
+			0L,
+			0L
+#endif
+			);
 	}
 	
 	UpdateOptionSettings();
+	if (migrateLegacyFormat)
+	{
+		logInfo("ReadOptionSettings migrating legacy options format from 0x%08lx to 0x%08lx",
+			OPTIONVERSION_LEGACY_AUTORES,
+			OPTIONVERSION);
+		WriteOptionSettings();
+	}
 	return;
 }
 
@@ -653,17 +841,15 @@ void OptionDefaults(LONG MenuCombo, LONG)
 	combat_firstperson_view = FALSE;
     selected_screen_size = 1;
     new_mundane = TRUE;
+	resolution_mode_setting = RESOLUTION_MODE_OG;
+	resolution_preset_setting = RESOLUTION_PRESET_640X480;
+	resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
 
     for (i=0; i < OPT_ADJ_COUNT; i++)
         OptAdjLevel(i, 0);
 
 #ifdef _WINDOWS
-
-#ifndef _DEBUG
 	screen_mode = iGDI;
-#else
-	screen_mode = 0;
-#endif
 
 #else
    screen_mode = 0;
@@ -893,37 +1079,52 @@ void PaintOptionMenu (LONG MenuCombo, LONG LoadSave)
 		
 	case 8:  /* screen */
 		gprint_text(menu_x+164, menu_y+81, STRMGR_GetStr(STR_OPT_HDR_SCREEN), 31);
-		
-		print_textf(menu_x+164, menu_y+110, 173, STRMGR_GetStr(STR_OPT_SCREEN_SIZE));
-		strcpy(buffer, STRMGR_GetStr(STR_OPT_SCREEN_SIZE_0 + selected_screen_size));
+
+		print_textf(menu_x+164, menu_y+110, 173, "Resolution Mode");
+		if (resolution_mode_setting == RESOLUTION_MODE_MODERN)
+			strcpy(buffer, "Modern");
+		else
+			strcpy(buffer, "OG");
 		print_textf(menu_x+324 - gtext_width(buffer), menu_y+110, 173, "%s", buffer);
-		
-		gprint_text(menu_x+165, menu_y + 130, STRMGR_GetStr(STR_OPT_SCREEN_AUTORES), 173);
-		if (newAutoRes)
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_ON));
-		else
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_OFF));
+
+		print_textf(menu_x+164, menu_y+130, 173, "Resolution Preset");
+		switch (resolution_preset_setting)
+		{
+		case RESOLUTION_PRESET_800X600:
+			strcpy(buffer, "800x600");
+			break;
+		case RESOLUTION_PRESET_1024X768:
+			strcpy(buffer, "1024x768");
+			break;
+		case RESOLUTION_PRESET_1280X960:
+			strcpy(buffer, "1280x960");
+			break;
+		case RESOLUTION_PRESET_1400X1050:
+			strcpy(buffer, "1400x1050");
+			break;
+		case RESOLUTION_PRESET_1600X1200:
+			strcpy(buffer, "1600x1200");
+			break;
+		case RESOLUTION_PRESET_1920X1440:
+			strcpy(buffer, "1920x1440");
+			break;
+		case RESOLUTION_PRESET_640X480:
+		default:
+			strcpy(buffer, "640x480");
+			break;
+		}
 		print_textf(menu_x+324 - gtext_width(buffer), menu_y+130, 173, "%s", buffer);
-
-#ifdef _WINDOWS
-		gprint_text(menu_x+165, menu_y + 150, STRMGR_GetStr(STR_OPT_SCREEN_WINDOW), 173);
-		gprint_text(menu_x+165, menu_y + 170, STRMGR_GetStr(STR_OPT_SCREEN_WINDOW2), 173);
-
-		if (screen_mode)
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_ON));
-		else
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_OFF));
-
+		
+		print_textf(menu_x+164, menu_y+150, 173, STRMGR_GetStr(STR_OPT_SCREEN_SIZE));
+		strcpy(buffer, STRMGR_GetStr(STR_OPT_SCREEN_SIZE_0 + selected_screen_size));
 		print_textf(menu_x+324 - gtext_width(buffer), menu_y+150, 173, "%s", buffer);
-
+		
+#ifdef _WINDOWS
 #endif
 		
-		PaintOptionAdj(menu_x, menu_y, 0, OPT_ADJ_SCREEN_SIZE);
-		PaintOptionAdj(menu_x, menu_y, 1, OPT_ADJ_SCREEN_AUTORES);
-
-#ifdef _WINDOWS
-		PaintOptionAdj(menu_x, menu_y, 2, OPT_ADJ_SCREEN_WINDOW );
-#endif
+		PaintOptionAdj(menu_x, menu_y, 0, OPT_ADJ_SCREEN_RESMODE);
+		PaintOptionAdj(menu_x, menu_y, 1, OPT_ADJ_SCREEN_PRESET);
+		PaintOptionAdj(menu_x, menu_y, 2, OPT_ADJ_SCREEN_SIZE);
 		
 	    break;
 	
@@ -952,17 +1153,9 @@ void PaintOptionMenu (LONG MenuCombo, LONG LoadSave)
 		strcpy(buffer, STRMGR_GetStr(STR_OPT_SCREEN_SIZE_0 + selected_screen_size));
 		print_textf(menu_x+324 - gtext_width(buffer), menu_y+150, 173, "%s", buffer);
 		
-		gprint_text(menu_x+165, menu_y + 170, STRMGR_GetStr(STR_OPT_SCREEN_AUTORES), 173);
-		if (newAutoRes)
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_ON));
-		else
-		    strcpy(buffer, STRMGR_GetStr(STR_OPT_OFF));
-		print_textf(menu_x+324 - gtext_width(buffer), menu_y+170, 173, "%s", buffer);
-		
 		PaintOptionAdj(menu_x, menu_y, 0, OPT_ADJ_SOUND_CHANNELS);
 		PaintOptionAdj(menu_x, menu_y, 1, OPT_ADJ_SOUND_ENV);
 		PaintOptionAdj(menu_x, menu_y, 2, OPT_ADJ_SCREEN_SIZE);
-		PaintOptionAdj(menu_x, menu_y, 3, OPT_ADJ_SCREEN_AUTORES);
 	
 	default:
 	    break;

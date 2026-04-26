@@ -116,6 +116,15 @@
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
+#define OG_UI_WIDTH		640
+#define OG_UI_HEIGHT	480
+
+// Step 5 hook: keep OG tables intact while allowing future viewport remapping.
+#define OG_UI_TO_VIEW_X(_x) ((LONG)(gViewportX + (((LONG)(_x) * gViewportW) / OG_UI_WIDTH)))
+#define OG_UI_TO_VIEW_Y(_y) ((LONG)(gViewportY + (((LONG)(_y) * gViewportH) / OG_UI_HEIGHT)))
+#define OG_UI_TO_VIEW_W(_w) ((LONG)(((LONG)(_w) * gViewportW) / OG_UI_WIDTH))
+#define OG_UI_TO_VIEW_H(_h) ((LONG)(((LONG)(_h) * gViewportH) / OG_UI_HEIGHT))
+
 /* ------------------------------------------------------------------------
    Prototypes
    ------------------------------------------------------------------------ */

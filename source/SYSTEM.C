@@ -53,6 +53,7 @@
 #include "machint.h"
 #include "Main.hxx"
 #include "light.h"
+#include "logger.h"
 
 /* ------------------------------------------------------------------------
    Notes
@@ -123,6 +124,17 @@ LONG		screen_buffer_width = MAX_VIEW_WIDTH;
 LONG		screen_buffer_height = MAX_VIEW_HEIGHT;
 LONG		window_width;
 LONG		window_height;
+LONG		gLogicalWidth = MAX_VIEW_WIDTH;
+LONG		gLogicalHeight = MAX_VIEW_HEIGHT;
+LONG		gDisplayWidth = MAX_VIEW_WIDTH;
+LONG		gDisplayHeight = MAX_VIEW_HEIGHT;
+LONG		gViewportX = 0;
+LONG		gViewportY = 0;
+LONG		gViewportW = MAX_VIEW_WIDTH;
+LONG		gViewportH = MAX_VIEW_HEIGHT;
+SHORT		gResolutionMode = RESOLUTION_MODE_OG;
+SHORT		gResolutionPreset = RESOLUTION_PRESET_640X480;
+SHORT		gScaleMode = RESOLUTION_SCALE_ASPECT_FIT;
 
 LONG		margin_left = 0;
 LONG		margin_right = 0;
@@ -272,19 +284,118 @@ void RestoreVideoSet (void)
    ======================================================================== */
 void set_view_size (LONG vx,LONG vy,LONG vw,LONG vh)
 {
+	LONG logicalHeight;
+
 	if (fHighRes)
 	{
 		--vw;
 		--vh;
 	}
+
+	logicalHeight = gLogicalHeight;
+	if (logicalHeight <= 0)
+		logicalHeight = MAX_VIEW_HEIGHT;
+
 	render_width=lens_view_width=vw;
 	render_height=vh;
 	render_perspect = (vw * lens_factor) / (2 * NORMAL_LENS);
 	render_center_x=vx+(vw/2);
-	render_center_y=vy+(vh/2)+((camera.p*vh)/480);
+	render_center_y=vy+(vh/2)+((camera.p*vh)/logicalHeight);
 	render_bot=vy+vh;
 	render_top=vy;
 	init_spans();		// set spans tables for new size and aspect ratio
+}
+
+void SetRuntimeResolutionState(SHORT resolutionMode, SHORT resolutionPreset, SHORT scaleMode)
+{
+	SHORT requestedMode = resolutionMode;
+	SHORT requestedPreset = resolutionPreset;
+	SHORT requestedScale = scaleMode;
+	LONG displayWidth;
+	LONG displayHeight;
+
+	if (resolutionMode < RESOLUTION_MODE_OG || resolutionMode > RESOLUTION_MODE_MODERN)
+		resolutionMode = RESOLUTION_MODE_OG;
+
+	if (resolutionPreset < RESOLUTION_PRESET_640X480 || resolutionPreset >= RESOLUTION_PRESET_COUNT)
+		resolutionPreset = RESOLUTION_PRESET_640X480;
+
+	if (scaleMode < RESOLUTION_SCALE_ASPECT_FIT || scaleMode > RESOLUTION_SCALE_STRETCH)
+		scaleMode = RESOLUTION_SCALE_ASPECT_FIT;
+
+	if (requestedMode != resolutionMode ||
+		requestedPreset != resolutionPreset ||
+		requestedScale != scaleMode)
+	{
+		logWarn("SetRuntimeResolutionState clamped request mode %d->%d preset %d->%d scale %d->%d",
+			requestedMode, resolutionMode,
+			requestedPreset, resolutionPreset,
+			requestedScale, scaleMode);
+	}
+
+	gResolutionMode = resolutionMode;
+	gResolutionPreset = resolutionPreset;
+	gScaleMode = scaleMode;
+
+	if (gResolutionMode == RESOLUTION_MODE_OG)
+	{
+		displayWidth = 640;
+		displayHeight = 480;
+	}
+	else
+	{
+		switch (gResolutionPreset)
+		{
+			case RESOLUTION_PRESET_800X600:
+				displayWidth = 800;
+				displayHeight = 600;
+				break;
+
+			case RESOLUTION_PRESET_1024X768:
+				displayWidth = 1024;
+				displayHeight = 768;
+				break;
+
+			case RESOLUTION_PRESET_1280X960:
+				displayWidth = 1280;
+				displayHeight = 960;
+				break;
+
+				case RESOLUTION_PRESET_1400X1050:
+					displayWidth = 1400;
+					displayHeight = 1050;
+					break;
+
+				case RESOLUTION_PRESET_1600X1200:
+					displayWidth = 1600;
+					displayHeight = 1200;
+					break;
+
+				case RESOLUTION_PRESET_1920X1440:
+					displayWidth = 1920;
+					displayHeight = 1440;
+					break;
+
+			case RESOLUTION_PRESET_640X480:
+			default:
+				displayWidth = 640;
+				displayHeight = 480;
+				break;
+		}
+	}
+
+	gDisplayWidth = displayWidth;
+	gDisplayHeight = displayHeight;
+	gViewportX = 0;
+	gViewportY = 0;
+	gViewportW = displayWidth;
+	gViewportH = displayHeight;
+
+	logInfo("SetRuntimeResolutionState mode=%d preset=%d scale=%d logical=%ldx%ld display=%ldx%ld viewport=%ld,%ld %ldx%ld",
+		gResolutionMode, gResolutionPreset, gScaleMode,
+		gLogicalWidth, gLogicalHeight,
+		gDisplayWidth, gDisplayHeight,
+		gViewportX, gViewportY, gViewportW, gViewportH);
 }
 
 /* ======================================================================
@@ -363,10 +474,30 @@ void get_margin_size(LONG *Left, LONG *Right, LONG *Top, LONG *Bottom)
 
 void set_screen_size (LONG w, LONG h)
 {
+	static LONG lastLogicalW = -1;
+	static LONG lastLogicalH = -1;
+	static LONG lastDisplayW = -1;
+	static LONG lastDisplayH = -1;
+	static SHORT lastMode = -1;
+	static SHORT lastPreset = -1;
+	static SHORT lastScale = -1;
+
 #ifndef _WINDOWS
 	screen_buffer_width = w;
 	screen_buffer_height = h;
 #endif
+	gLogicalWidth = w;
+	gLogicalHeight = h;
+	if (gDisplayWidth <= 0)
+		gDisplayWidth = w;
+	if (gDisplayHeight <= 0)
+		gDisplayHeight = h;
+	if (gViewportW <= 0)
+		gViewportW = gDisplayWidth;
+	if (gViewportH <= 0)
+		gViewportH = gDisplayHeight;
+	clip_x = (SHORT)w;
+	clip_y = (SHORT)h;
 	window_width = w;
 	window_height = h;
 
@@ -380,6 +511,28 @@ void set_screen_size (LONG w, LONG h)
 		set_view_size (margin_left, margin_top,
 			window_width-margin_left/2-margin_right/2,
 			window_height-margin_top/2-margin_bottom/2);
+
+	if (lastLogicalW != gLogicalWidth ||
+		lastLogicalH != gLogicalHeight ||
+		lastDisplayW != gDisplayWidth ||
+		lastDisplayH != gDisplayHeight ||
+		lastMode != gResolutionMode ||
+		lastPreset != gResolutionPreset ||
+		lastScale != gScaleMode)
+	{
+		logInfo("set_screen_size logical=%ldx%ld display=%ldx%ld mode=%d preset=%d scale=%d",
+			gLogicalWidth, gLogicalHeight,
+			gDisplayWidth, gDisplayHeight,
+			gResolutionMode, gResolutionPreset, gScaleMode);
+
+		lastLogicalW = gLogicalWidth;
+		lastLogicalH = gLogicalHeight;
+		lastDisplayW = gDisplayWidth;
+		lastDisplayH = gDisplayHeight;
+		lastMode = gResolutionMode;
+		lastPreset = gResolutionPreset;
+		lastScale = gScaleMode;
+	}
 }
 
 void dec_view_size(LONG dummy1, LONG dummy2)

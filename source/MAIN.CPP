@@ -306,55 +306,19 @@ extern LONG lSavedY;
 }
 void ToggleDirectDraw(LONG, LONG)
 {
+	logWarn("ToggleDirectDraw requested but DirectDraw support is disabled; forcing GDI mode");
 
-	if (sDrawMode == iGDI)
-	{
-	    //GEH Leave this until direct draw 5.0 is working
-	    #ifdef _JUNEDEMO
-	    return;
-	    #endif
-
-		RECT rc;
-
-		sDrawMode = iDDRAW;        // set the mode first! 5 SEP 96 CAM
-
- 		 // -- Save the current window position for later	CAM 21 NOV 96
-		GetWindowRect( hwndApp, &rc );
-		lSavedX = rc.left;
-		lSavedY = rc.top;
-
- 		DefaultMainWindowSize( 0 );	// CAM 12 FEB 97
-
-		if ( DDInitialize( hwndApp, FALSE ) )
-		{
-			ShowCursor( FALSE );
-			SetRedrawMainMapLevel();
-			screen_buffer_width = MAX_VIEW_WIDTH;
-			screen_buffer_height = MAX_VIEW_HEIGHT;
-			set_screen_size(screen_buffer_width,screen_buffer_height);
-
-		}
-		else
-		{
-			sDrawMode = iGDI;
-	 		DefaultMainWindowSize( 0 );	// CAM 12 FEB 97
-		}
-	}
-	else
-	{
-		sDrawMode = iGDI;   // set the mode first! 5 SEP 96 CAM
+	if (sDrawMode != iGDI)
 		DDCleanup();
-		SetRedrawMainMapLevel();
 
- 		DefaultMainWindowSize( 0 );	// CAM 21 NOV 96
+	sDrawMode = iGDI;
+	SetRedrawMainMapLevel();
+	DefaultMainWindowSize(0);
+	InvalidateRect(NULL, NULL, TRUE);
+	ShowWindow(hwndApp, SW_SHOW);
+	ShowCursor(TRUE);
 
-		 // -- Make sure the desktop redraws		CAM 13 FEB 97
-
-		InvalidateRect( NULL, NULL, TRUE );
-
-		ShowWindow(hwndApp, SW_SHOW);
-		ShowCursor( TRUE );
-	}
+	logInfo("ToggleDirectDraw complete newDrawMode=%d", sDrawMode);
 }
 
 
@@ -365,7 +329,12 @@ extern "C" void DirectDrawPreFrame( void )
 	if ( sDrawMode == iGDI )
 	{
 		screen = GDIscreen;
-		screen_buffer_width = 640 /*WindowWidth*/;
+		screen_buffer_width = gLogicalWidth;
+		screen_buffer_height = gLogicalHeight;
+		if (screen_buffer_width <= 0)
+			screen_buffer_width = 640;
+		if (screen_buffer_height <= 0)
+			screen_buffer_height = 480;
 	}
 	else
 	{
@@ -1128,7 +1097,9 @@ void DumpScreen (LONG, LONG)
 	static CSTRPTR  szFileName = "scrn0000.pcx";
 
 	// dump build buffer to a .pcx file
-	PutScreen(iDispBuffer, 0, 0, 640, 480,szFileName);
+	PutScreen(iDispBuffer, 0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), szFileName);
 
 	// increment screen number
 	if ((++filenumber) % 10 == 0)
@@ -1613,11 +1584,16 @@ void PlayCredits(LONG,LONG)
 		{
 			POINT start,bck;
 
-			start.x = 320;
-			start.y = 240;
-			bck.x = 320;
-			bck.y = 240;
-			ZoomBitmap (0, 0, bitm, 0, 0, 640, 480, fERROR, start, bck, 640, 480);
+			start.x = (SHORT)(((screen_buffer_width > 0) ? screen_buffer_width : 640) / 2);
+			start.y = (SHORT)(((screen_buffer_height > 0) ? screen_buffer_height : 480) / 2);
+			bck.x = start.x;
+			bck.y = start.y;
+			ZoomBitmap (0, 0, bitm, 0, 0,
+				(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+				(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480),
+				fERROR, start, bck,
+				(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+				(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 			update_screen();
 			SetPurge(bitm);
 		}
@@ -1791,7 +1767,9 @@ void PlayFinale(LONG WinningRealm,LONG)
 
 	if (bitm != fERROR)
 	{
-		DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
+		DrawBitmap (0, 0, bitm, 0, 0,
+			(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+			(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 		SetPurge(bitm);
 	}
 
@@ -1978,8 +1956,7 @@ void AddGlobalKeys(void)
 {
 
 #if defined(_WINDOWS)
-	// Direct Draw hot keys
-	add_key(GAME_KEYS::mfGetKey(GAME_KEYS::TOGGLE_DIRECT_DRAW), ToggleDirectDraw, 0, 0);
+	// DirectDraw support has been retired; no runtime toggle hotkey.
 //	add_key(GAME_KEYS::mfGetKey(GAME_KEYS::TOGGLE_CHAT_SELECT_WINDOW),ShowChatSelectWindow, 0, 0);
 	add_key(GAME_KEYS::mfGetKey(GAME_KEYS::TOGGLE_CHAT_DISPLAY_WINDOW),ToggleChatDisplayWindow, 0, 0);
 #endif
@@ -2086,6 +2063,8 @@ static LONG			cx = 0, cy = 0, cw = 640, ch = 480;
 void DoPan (void)
 {
 	LONG			x, f;
+	LONG const viewW = (screen_buffer_width > 0) ? screen_buffer_width : 640;
+	LONG const viewH = (screen_buffer_height > 0) ? screen_buffer_height : 480;
 	static LONG		ox = 0;
 
 	if (fPan)
@@ -2094,9 +2073,9 @@ void DoPan (void)
 		if (x!=ox)
 		{
 			ox = x;
-			DrawBitmap(0, 0, iScreen, x, 0, 640, 480);
+			DrawBitmap(0, 0, iScreen, x, 0, (SHORT)viewW, (SHORT)viewH);
 			update_screen();
-			if (x>(1920-640))
+			if (x>(1920-viewW))
 				fPan = FALSE;
 			run_timers();
 		}
@@ -2114,7 +2093,7 @@ void DoPan (void)
 		if (ww < cw) {cw += ((ww - cw)/10)-1; f=TRUE;}
 		if (wh > ch) {ch += ((wh - ch)/10)+1; f=TRUE;}
 		if (wh < ch) {ch += ((wh - ch)/10)-1; f=TRUE;}
-		color_rect(0, 0, 640, 480, 0);
+		color_rect(0, 0, (SHORT)viewW, (SHORT)viewH, 0);
 		DrawBitmap(cx, cy, iScreen, cx, cy, cw, ch);
 		update_screen();
 		if (!f)
@@ -2213,14 +2192,18 @@ void FadeTo (LONG red, LONG green, LONG blue, LONG steps)
 void CrossFade (SHORT iScreen, LONG steps)
 {
 	LONG			j,x,y,z,zz,ps,pd,st,wid;
+	LONG			dstW, dstH, srcH;
 	BITMPTR		s;
 	PTR			sptr;
 	static LONG	hash[256] = {-1,0};
 	static LONG	hash_s[256] = {-1,0};
 
+	dstW = (screen_buffer_width > 0) ? screen_buffer_width : 640;
+	dstH = (screen_buffer_height > 0) ? screen_buffer_height : 480;
+
 	if (steps <= 1)
 	{
-		DrawBitmap(0, 0, iScreen, 0, 0, 640, 480);
+		DrawBitmap(0, 0, iScreen, 0, 0, (SHORT)dstW, (SHORT)dstH);
 		update_screen();
 		return;
 	}
@@ -2248,9 +2231,10 @@ tryagain:
 		return;
 	sptr = (PTR)s + sizeof(BITMHDR);			// get pointer to data
 	wid = s->w;
+	srcH = s->h;
 
 	for (x=0; x<256; x++)
-		hash_s[x] = ((hash[x]&0xFFFFFFF0L)*(wid/640L)) + (hash[x]&0x000FL);
+		hash_s[x] = ((((hash[x]&0xFFFFFFF0L) * wid) / dstW) + (hash[x]&0x000FL));
 
 	if (steps < 256)
 	{
@@ -2259,11 +2243,11 @@ tryagain:
 		{
 			for (zz=0; zz<st; zz++)
 			{
-				for (x=0; x<640; x+=16)
+				for (x=0; x<dstW; x+=16)
 				{
 					pd=hash[z+zz]+x; ps=hash_s[z+zz]+x;
-					for (y=0; y<480; y+=16, pd+=(640*16), ps+=(wid*16))
-						if (pd>=0 && pd<(640*480) && ps>=0 && ps<(wid*480))
+					for (y=0; y<dstH; y+=16, pd+=(dstW*16), ps+=(wid*16))
+						if (pd>=0 && pd<(dstW*dstH) && ps>=0 && ps<(wid*srcH))
 							screen[pd] = sptr[ps];
 				}
 				run_timers();
@@ -2278,11 +2262,11 @@ tryagain:
 		{
 			for (zz=0; zz<st; zz++)
 			{
-				for (x=0; x<640; x+=16)
+				for (x=0; x<dstW; x+=16)
 				{
 					pd=hash[z]+x; ps=hash_s[z]+x;
-					for (y=0; y<480; y+=16, pd+=(640*16), ps+=(wid*16))
-						if (pd>=0 && pd<(640*480) && ps>=0 && ps<(wid*480))
+					for (y=0; y<dstH; y+=16, pd+=(dstW*16), ps+=(wid*16))
+						if (pd>=0 && pd<(dstW*dstH) && ps>=0 && ps<(wid*srcH))
 							screen[pd] = sptr[ps];
 				}
 				run_timers();
@@ -2348,8 +2332,12 @@ void NewIntro (void)
   	clear_key_status(0);
 
 #ifdef _WINDOWS
-	color_rect(0, 0, 640, 480, 0);
-	iDark = SaveBitmap(0, 0, 640, 480);
+	color_rect(0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), 0);
+	iDark = SaveBitmap(0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 #endif
 
 	for (j=0; j<NumberOfScreens; j++)
@@ -2406,8 +2394,12 @@ void NewIntro (void)
 					fPan = fZoom = 0;
 					curScreen = effect[i];
 					iScreen = iScreen_[curScreen];
-					wx = 0; wy = 0; ww = 640; wh = 480;
-					cx = 0; cy = 0; cw = 640; ch = 480;
+					wx = 0; wy = 0;
+					ww = (screen_buffer_width > 0) ? screen_buffer_width : 640;
+					wh = (screen_buffer_height > 0) ? screen_buffer_height : 480;
+					cx = 0; cy = 0;
+					cw = (screen_buffer_width > 0) ? screen_buffer_width : 640;
+					ch = (screen_buffer_height > 0) ? screen_buffer_height : 480;
 					break;
 
 #ifdef _WINDOWS
@@ -2454,19 +2446,37 @@ void NewIntro (void)
 				case 60: CrossFade(iScreen,80); break;		// crossfade
 #endif
 				// default
-				case 61: wx = 0; wy = 0; ww = 640; wh = 480; break;
+				case 61:
+					wx = 0;
+					wy = 0;
+					ww = (screen_buffer_width > 0) ? screen_buffer_width : 640;
+					wh = (screen_buffer_height > 0) ? screen_buffer_height : 480;
+					break;
 				// zoom down to Spider
 				case 62: wx = 77; wy = 160; ww = 335; wh = 236; break;
 				// zoom over to Rhuobhe
 				case 63: wx = 395; wy = 108; ww = 132; wh = 262; break;
 				//	Raesene
-				case 64: cx = 279; cy = 174; cw = 138; ch = 202; color_rect(0, 0, 640, 480, 0); break;
+				case 64:
+					cx = 279;
+					cy = 174;
+					cw = 138;
+					ch = 202;
+					color_rect(0, 0,
+						(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+						(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), 0);
+					break;
 				//	Roele on throne
 				case 65: wx = 248; wy = 98; ww = 140; wh = 245; break;
 				// Michele Roele dead
 				case 66: wx = 0; wy = 195; ww = 212; wh = 232; break;
 				// Gorgon on crag
-				case 67: wx = 280; wy = 0; ww = 325; wh = 480; break;
+				case 67:
+					wx = 280;
+					wy = 0;
+					ww = 325;
+					wh = (screen_buffer_height > 0) ? screen_buffer_height : 480;
+					break;
 
 				case 70:						// init the screen
 						// this is now done below

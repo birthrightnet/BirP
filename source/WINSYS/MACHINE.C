@@ -35,6 +35,7 @@ X   machine_post_frame    -does postframe things, such as updating the screen
 #include "main.hxx"
 #include "sound.hxx"
 #include "fileutil.h"
+#include "logger.h"
 //#include "game.h"
 #include "mmsystem.h"
 
@@ -63,6 +64,9 @@ void CheckCD(void);
 LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
 void AppExit(void);
 void WaitForMessageQueueToEmpty( void );
+#if !defined(_CHARED)
+void WriteOptionSettingsFromC(void);
+#endif
 
 void load_new_wad(char *n, LONG);
 
@@ -155,7 +159,7 @@ static  char  szAppName[]= "Birthright Character Editor";
 static char szClassName[] = "BRCHARED";
 #else
 	#ifdef _FRENCHVER
-	static  char  szAppName[]= "Birthright - Le Pacte des Ténèbres";
+	static  char  szAppName[]= "Birthright - Le Pacte des Tï¿½nï¿½bres";
 	static char szClassName[] = "Birthright";
 	#else
 		#ifdef _GERMANVER
@@ -538,6 +542,16 @@ void DefaultMainWindowSize( UINT flags )
 {
 	RECT rc;
 	int XF, YF;
+	LONG displayWidth = gDisplayWidth;
+	LONG displayHeight = gDisplayHeight;
+
+	if (displayWidth <= 0)
+		displayWidth = 640;
+	if (displayHeight <= 0)
+		displayHeight = 480;
+
+	logInfo("DefaultMainWindowSize drawMode=%d requestedDisplay=%ldx%ld flags=0x%x",
+		sDrawMode, displayWidth, displayHeight, flags);
 
 	WaitForMessageQueueToEmpty();
 
@@ -546,8 +560,8 @@ void DefaultMainWindowSize( UINT flags )
 
 	rc.top = 0;
 	rc.left = 0;
-	rc.right = 640;
-	rc.bottom = 480;
+	rc.right = displayWidth;
+	rc.bottom = displayHeight;
 
 	if ( sDrawMode == iGDI )
 	{
@@ -578,6 +592,8 @@ void DefaultMainWindowSize( UINT flags )
 	}
 
 	WaitForMessageQueueToEmpty();
+	logInfo("DefaultMainWindowSize applied window rect %ldx%ld savedPos=%ld,%ld",
+		(rc.right - rc.left), (rc.bottom - rc.top), lSavedX, lSavedY);
 
 } // DefaultMainWindowSize
 
@@ -723,6 +739,11 @@ void quit_sys(LONG arg)
 
 void AppExit(void)
 {
+#if !defined(_CHARED)
+	WriteOptionSettingsFromC();
+	logInfo("AppExit wrote option settings before shutdown");
+#endif
+
 	ReleaseDC(hwndApp, gdcScreen);
 	close_graph();
 	close_statistics();
@@ -886,9 +907,12 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 		case WM_SIZE:
 			if ( sDrawMode == iGDI )
 			{
-				//GEH for now, only allow 640,480
-				WindowWidth = MAX_VIEW_WIDTH;
-				WindowHeight = MAX_VIEW_HEIGHT;
+				WindowWidth = gLogicalWidth;
+				WindowHeight = gLogicalHeight;
+				if (WindowWidth <= 0)
+					WindowWidth = MAX_VIEW_WIDTH;
+				if (WindowHeight <= 0)
+					WindowHeight = MAX_VIEW_HEIGHT;
 
 				// WindowWidth = LOWORD(lParam);
 				// WindowHeight = HIWORD(lParam);
@@ -912,6 +936,11 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 				// }
 
 				set_screen_size(WindowWidth,WindowHeight);
+				logInfo("WM_SIZE applied logical window %ldx%ld (lParam=%ldx%ld)",
+					WindowWidth,
+					WindowHeight,
+					(LOWORD(lParam)),
+					(HIWORD(lParam)));
 			}
 			//GEH FALL THROUGH!  break;
 
@@ -955,6 +984,15 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 			SetWindowLong(hwnd, GWL_STYLE, lStyle);
 	        ShowWindow (hwnd, SW_SHOW);
 	        SetFocus (hwnd);
+			break;
+		case WM_MOVE:
+			if ( sDrawMode == iGDI )
+			{
+				RECT rcWin;
+				GetWindowRect( hwnd, &rcWin );
+				lSavedX = rcWin.left;
+				lSavedY = rcWin.top;
+			}
 			break;
 		case WM_CHAR:
 			// -- chat box key

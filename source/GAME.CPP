@@ -407,7 +407,9 @@ void DoSlideShow(LONG iWhich)
 //	TurnOffAllSounds();
 
 	// save the background
-	hBitm = SaveBitmap(0, 0, 640, 480);
+	hBitm = SaveBitmap(0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 	
 	fAnyKeyChanged = FALSE;
 	mouse_button = 0;
@@ -447,11 +449,16 @@ void DoSlideShow(LONG iWhich)
 			p->scale = UNITARY_SCALE;
 			p->x_ctr_pt = 0;
 
-			start.x = 320;
-			start.y = 240;
-			bck.x = 320;
-			bck.y = 240;
-			ZoomBitmap (0, 0, bitm, 0, 0, 640, 480, fERROR, start, bck, 640, 480);
+			start.x = (SHORT)(((screen_buffer_width > 0) ? screen_buffer_width : 640) / 2);
+			start.y = (SHORT)(((screen_buffer_height > 0) ? screen_buffer_height : 480) / 2);
+			bck.x = start.x;
+			bck.y = start.y;
+			ZoomBitmap (0, 0, bitm, 0, 0,
+				(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+				(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480),
+				fERROR, start, bck,
+				(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+				(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 			init_gfont(FONT_SANS_12PT);
 			print_text_centered(320,12,"Click to continue - ESC to abort", WHITE);
 			update_screen();
@@ -505,7 +512,9 @@ void DoSlideShow(LONG iWhich)
 	}
 End:
 	// restore background
-	DrawBitmap (0, 0, hBitm, 0, 0, 640, 480);
+	DrawBitmap (0, 0, hBitm, 0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 	DisposBlock(hBitm);
 
 	fAnyKeyChanged = FALSE;
@@ -3110,7 +3119,9 @@ void Sinners(LONG, LONG)
 	
 	SysHideCursor();
 	
-	hBitm = SaveBitmap(0, 0, 640, 480);
+	hBitm = SaveBitmap(0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 	
 	bitm = GetResourceStd ("ui\\FILLPANL.PCX", FALSE);
   		
@@ -3118,11 +3129,16 @@ void Sinners(LONG, LONG)
 	{
 		POINT start,bck;
 		
-		start.x = 320;
-		start.y = 240;
-		bck.x = 320;
-		bck.y = 240;
-		ZoomBitmap (0, 0, bitm, 0, 0, 640, 480, fERROR, start, bck, 640, 480);
+		start.x = (SHORT)(((screen_buffer_width > 0) ? screen_buffer_width : 640) / 2);
+		start.y = (SHORT)(((screen_buffer_height > 0) ? screen_buffer_height : 480) / 2);
+		bck.x = start.x;
+		bck.y = start.y;
+		ZoomBitmap (0, 0, bitm, 0, 0,
+			(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+			(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480),
+			fERROR, start, bck,
+			(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+			(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 		update_screen();
 		SetPurge(bitm);
 	}
@@ -3195,7 +3211,9 @@ void Sinners(LONG, LONG)
 	}
 
 End:
-	DrawBitmap (0, 0, hBitm, 0, 0, 640, 480);
+	DrawBitmap (0, 0, hBitm, 0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 	DisposBlock(hBitm);
 
 	SysShowCursor();

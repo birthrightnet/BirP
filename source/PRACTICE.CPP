@@ -2448,7 +2448,9 @@ void PlayBtlFinale(void)
  		
 	if (bitm != fERROR)
 	{
-		DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
+		DrawBitmap (0, 0, bitm, 0, 0,
+			(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+			(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 		SetPurge(bitm);
 	}
 	
@@ -3487,7 +3489,9 @@ void PlayAdvFinale(void)
  		
 	if (bitm != fERROR)
 	{
-		DrawBitmap (0, 0, bitm, 0, 0, 640, 480);
+		DrawBitmap (0, 0, bitm, 0, 0,
+			(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+			(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 		SetPurge(bitm);
 	}
 	

@@ -80,6 +80,12 @@ enum {
 	BTL_CURSOR_CANCEL,
 };
 
+static LONG BattleUIPanelTopY(void)
+{
+	LONG const logicalH = (gLogicalHeight > 0) ? gLogicalHeight : 480;
+	return logicalH - BTLUI_PANEL_HEIGHT;
+}
+
 #define BTL_MAGIC_SPELL_LIST_X1	 30
 #define BTL_MAGIC_SPELL_LIST_X2	180
 #define BTL_MAGIC_SPELL_LIST_Y	  8
@@ -992,7 +998,7 @@ void BattleControlGrid(LONG MenuCombo, LONG DataCombo)
 		home = CalledByMouse & 0xFF00;
 	}
 	else
-	if (cursor_y > (480-BTLUI_PANEL_HEIGHT))
+	if (cursor_y > BattleUIPanelTopY())
 	{
 		if (!WhichGridHalf(cursor_x, cursor_y, &r, &c, &home))
 			return;
@@ -3996,7 +4002,7 @@ static BOOL WhichGridHalf( LONG CX, LONG CY, SHORT *Row, SHORT *Column, BOOL *Ho
 		return FALSE;
 
 	//  Bound Row
-	i = 480 - BTLUI_PANEL_HEIGHT;
+	i = (SHORT)BattleUIPanelTopY();
 	if(CY >= i+BTLUI_GRID_Y1 && CY < (i+BTLUI_GRID_Y1+BTLUI_GRID_HALF) )
 	{
 		*Row = 2;
@@ -4077,7 +4083,7 @@ void SetBattleUIMouseCursor (void)
 			mouse_click = 0;
 		}
 
-		if (cursor_y < (480-BTLUI_PANEL_HEIGHT))
+		if (cursor_y < BattleUIPanelTopY())
 		{
 			CursorType = BTL_CURSOR_DAGGER;
 

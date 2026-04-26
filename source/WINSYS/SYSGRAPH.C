@@ -35,6 +35,7 @@
 #include "engine.h"
 #include "player.hxx"
 #include "ddrawpro.h"
+#include "logger.h"
 
 
 /* ------------------------------------------------------------------------
@@ -186,6 +187,7 @@ void set_hires(LONG unused, LONG UnusedAlso)
 
 	if (fHighRes == FALSE)
 	{
+		logInfo("set_hires entering (drawMode=%d)", sDrawMode);
 		if ( sDrawMode == iGDI )
 		{
 #if 01
@@ -232,6 +234,7 @@ void set_hires(LONG unused, LONG UnusedAlso)
 		SetMapCenter(NewMapCX,NewMapCY);
 	
 		PlayerSpeed = PlayerHiresSpeed;
+		logInfo("set_hires applied Window=%ldx%ld logical=%ldx%ld", WindowWidth, WindowHeight, gLogicalWidth, gLogicalHeight);
 	
 		// [d10-27-96 JPC] Move earlier: fHighRes = TRUE;
 	}
@@ -256,6 +259,7 @@ void set_lowres(LONG unused, LONG UnusedAlso)
 
 	if (fHighRes == TRUE)
 	{
+		logInfo("set_lowres entering (drawMode=%d)", sDrawMode);
 		// [d10-26-96 JPC] Restore the old way of doing this instead of using
 		// constants.
 		WindowWidth /= 2;
@@ -280,6 +284,7 @@ void set_lowres(LONG unused, LONG UnusedAlso)
 		SetMapCenter(NewMapCX,NewMapCY);
 	
 		PlayerSpeed = (SHORT)PlayerLoresSpeed;
+		logInfo("set_lowres applied Window=%ldx%ld logical=%ldx%ld", WindowWidth, WindowHeight, gLogicalWidth, gLogicalHeight);
 	
 		// [d10-27-96 JPC] Move earlier: fHighRes = FALSE;
 	}
@@ -298,11 +303,13 @@ void init_graph (LONG init_mode)
 
 	if(init_mode)
 	{
+		logInfo("init_graph init_mode=%ld requesting hires", init_mode);
 		fHighRes = FALSE;	// Guarentee the resolution will change.
 		set_hires(0L, 0L);
 	}
 	else
 	{
+		logInfo("init_graph init_mode=%ld requesting lores", init_mode);
 		fHighRes = TRUE;	// Guarentee the resolution will change.
 		set_lowres(0L, 0L);
 	}
@@ -310,8 +317,13 @@ void init_graph (LONG init_mode)
 	init_pal("default");
 
 	/* setup defaults */
-	dx = 640;
-	dy = 480;
+	dx = gLogicalWidth;
+	dy = gLogicalHeight;
+	if (dx <= 0)
+		dx = MAX_VIEW_WIDTH;
+	if (dy <= 0)
+		dy = MAX_VIEW_HEIGHT;
+	logInfo("init_graph creating DIB logical=%dx%d", dx, dy);
 
 	//  Create a new HDC and 8-bit Bitmap
    BufferHeader.Header.biSize = sizeof(BITMAPINFOHEADER);
@@ -329,8 +341,8 @@ void init_graph (LONG init_mode)
 	BufferHeader.Header.biHeight = -(abs(BufferHeader.Header.biHeight));
 
 	// create the offscreen buffer
-	BufferHeader.Header.biWidth = MAX_VIEW_WIDTH;
-	BufferHeader.Header.biHeight = MAX_VIEW_HEIGHT + 1;
+	BufferHeader.Header.biWidth = dx;
+	BufferHeader.Header.biHeight = dy + 1;
 
 	// force bitmap to top-down
 	BufferHeader.Header.biHeight = -(abs(BufferHeader.Header.biHeight));
@@ -343,6 +355,9 @@ void init_graph (LONG init_mode)
 
 	hbm = CreateDIBSection(	gViewDC, (BITMAPINFO far *)&BufferHeader, 
 									DIB_RGB_COLORS, &pBuffer, NULL, 0);
+
+	if (hbm == NULL || pBuffer == NULL)
+		logError("init_graph CreateDIBSection failed hbm=%p pBuffer=%p", hbm, pBuffer);
 
 	screen = (PUCHAR) pBuffer;
 	GDIscreen = (PUCHAR) pBuffer; // save a copy
@@ -673,6 +688,13 @@ void update_screen(void)
 		case iBLT:
 		{
 			HDC hdcDD = DDGetDC( TRUE );
+			LONG displayWidth = gDisplayWidth;
+			LONG displayHeight = gDisplayHeight;
+
+			if (displayWidth <= 0)
+				displayWidth = 640;
+			if (displayHeight <= 0)
+				displayHeight = 480;
 
 
 			if ( hdcDD != NULL )
@@ -681,12 +703,12 @@ void update_screen(void)
 
             if ( fHighRes == TRUE )
             {
-   				StretchBlt( hdcDD, 0, 0, 640, 480,
+				StretchBlt( hdcDD, 0, 0, displayWidth, displayHeight,
 	   							gViewDC, 0, 0, WindowWidth, WindowHeight, SRCCOPY );
             }
             else
             {
-   				StretchBlt( hdcDD, 0, 0, render_width*2, render_height*2,
+				StretchBlt( hdcDD, 0, 0, displayWidth, displayHeight,
 	   							gViewDC, 0, 0, render_width, render_height, SRCCOPY );
             }
 
@@ -787,13 +809,64 @@ void ScreenCopy (
 	SHORT resolution							// [d10-26-96 JPC] new
 	)
 {
+   LONG logicalWidth;
+   LONG logicalHeight;
+   LONG viewportX;
+   LONG viewportY;
+   LONG viewportW;
+   LONG viewportH;
+   LONG destX;
+   LONG destY;
+   LONG destW;
+   LONG destH;
+   LONG destX2;
+   LONG destY2;
+   BOOL useRuntimeScaling;
 	(void)iSrcBitm;
 
 #if 1
 
 	if ( sDrawMode == iGDI)
 	{
-		if (fHighRes || resolution == SC_HIGH_RES)
+		logicalWidth = gLogicalWidth;
+		logicalHeight = gLogicalHeight;
+		viewportX = gViewportX;
+		viewportY = gViewportY;
+		viewportW = gViewportW;
+		viewportH = gViewportH;
+
+		if (logicalWidth <= 0)
+			logicalWidth = MAX_VIEW_WIDTH;
+		if (logicalHeight <= 0)
+			logicalHeight = MAX_VIEW_HEIGHT;
+		if (viewportW <= 0)
+			viewportW = logicalWidth;
+		if (viewportH <= 0)
+			viewportH = logicalHeight;
+
+		useRuntimeScaling = (viewportX != 0) ||
+			(viewportY != 0) ||
+			(viewportW != logicalWidth) ||
+			(viewportH != logicalHeight);
+
+		if (useRuntimeScaling)
+		{
+			destX = viewportX + (((LONG)xSrc * viewportW) / logicalWidth);
+			destY = viewportY + (((LONG)ySrc * viewportH) / logicalHeight);
+			destX2 = viewportX + ((((LONG)xSrc + (LONG)width) * viewportW) / logicalWidth);
+			destY2 = viewportY + ((((LONG)ySrc + (LONG)height) * viewportH) / logicalHeight);
+			destW = destX2 - destX;
+			destH = destY2 - destY;
+
+			if (destW <= 0)
+				destW = 1;
+			if (destH <= 0)
+				destH = 1;
+
+			StretchBlt(gdcScreen, destX, destY, destW, destH,
+				gViewDC, xSrc, ySrc, width, height, SRCCOPY);
+		}
+		else if (fHighRes || resolution == SC_HIGH_RES)
 		{
 			StretchBlt(gdcScreen, xSrc, ySrc, width, height, gViewDC, xSrc, ySrc, width, height, SRCCOPY);
 		}
@@ -878,18 +951,25 @@ void DirectDrawSaveScreen( void )
 	if ( sDrawMode == iDDRAW )
 	{
 		HDC hdcDD = NULL;
+		LONG displayWidth = gDisplayWidth;
+		LONG displayHeight = gDisplayHeight;
 
 		if ( sDrawType == iDIRECTTOCARD )
 		{
 			DDUnlockSurface( (PCHAR) screen );
 			screen = GDIscreen;
 
+			if (displayWidth <= 0)
+				displayWidth = 640;
+			if (displayHeight <= 0)
+				displayHeight = 480;
+
 			 // -- copy previous screen to the current screen
 			hdcDD = DDGetDC( FALSE );
 			if ( hdcDD != NULL )
 			{
 				StretchBlt( gViewDC, 0, 0, WindowWidth, WindowHeight,
-									hdcDD, 0, 0, 640, 480, SRCCOPY );
+									hdcDD, 0, 0, displayWidth, displayHeight, SRCCOPY );
 				DDReleaseDC( hdcDD );
 			}
 

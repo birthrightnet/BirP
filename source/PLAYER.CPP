@@ -1,4 +1,4 @@
-/* =®RM250¯======================================================================
+/* =ï¿½RM250ï¿½======================================================================
    Copyright (c) 1990,1995	Synergistic Software
    All Rights Reserved
    ========================================================================
@@ -105,7 +105,7 @@ extern "C" {
 // for line to line wad teleports
 // auto low res for fast movement
 #if defined (_WINDOWS)
-BOOL fAIAutoRes = TRUE;
+BOOL fAIAutoRes = FALSE;
 #else
 BOOL fAIAutoRes = FALSE;					// [d11-12-96 JPC] has no effect in DOS
 #endif

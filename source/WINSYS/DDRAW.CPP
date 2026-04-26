@@ -11,6 +11,8 @@
 #include "system.h"
 #include "engine.h"
 
+#include "logger.h"
+
 #include "ddrawpro.h"
 
 extern "C" {
@@ -859,21 +861,40 @@ HRESULT DDSetCooperative( BOOL fExclusive )
 extern "C" HRESULT DDSetDisplayMode( BOOL fHigh )
 {
    HRESULT hRes = DD_OK;
+   LONG displayWidth = gDisplayWidth;
+   LONG displayHeight = gDisplayHeight;
+
+   if (displayWidth <= 0)
+      displayWidth = 640;
+   if (displayHeight <= 0)
+      displayHeight = 480;
 
 	if ( fHigh )
    {
-		hRes =  IDirectDraw_SetDisplayMode( lpDD, 640, 480, 16 );
+      logInfo("DDSetDisplayMode requesting %ldx%ldx16", displayWidth, displayHeight);
+      hRes =  IDirectDraw_SetDisplayMode( lpDD, displayWidth, displayHeight, 16 );
 
        if ( hRes != DD_OK )
        {
-   		hRes =  IDirectDraw_SetDisplayMode( lpDD, 640, 480, 8 );
+         logWarn("DDSetDisplayMode failed at %ldx%ldx16 (HRESULT=%ld), trying 8-bit", displayWidth, displayHeight, (LONG)hRes);
+      		hRes =  IDirectDraw_SetDisplayMode( lpDD, displayWidth, displayHeight, 8 );
+         if ( hRes == DD_OK )
+            logInfo("DDSetDisplayMode fallback succeeded at %ldx%ldx8", displayWidth, displayHeight);
        }
+
+      if ( hRes != DD_OK )
+         logWarn("DDSetDisplayMode failed at %ldx%ldx8 (HRESULT=%ld)", displayWidth, displayHeight, (LONG)hRes);
+      else
+         logInfo("DDSetDisplayMode succeeded at %ldx%ld", displayWidth, displayHeight);
 
 		return hRes;
 
    }
 	else
+   {
+      logInfo("DDSetDisplayMode requesting 320x200x8 (low-res path)");
 		return ( IDirectDraw_SetDisplayMode( lpDD, 320, 200, 8 ) );
+   }
 
 } // DDSetDisplayMode
 

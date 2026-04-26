@@ -35,6 +35,7 @@ X   machine_post_frame    -does postframe things, such as updating the screen
 #include "main.hxx"
 #include "sound.hxx"
 #include "fileutil.h"
+#include "logger.h"
 //#include "game.h"
 
 // [d11-09-96 JPC] No longer use registry. #include "registry.h"
@@ -494,6 +495,16 @@ void DefaultMainWindowSize( UINT flags )
 {
 	RECT rc;
 	int XF, YF;
+	LONG displayWidth = gDisplayWidth;
+	LONG displayHeight = gDisplayHeight;
+
+	if (displayWidth <= 0)
+		displayWidth = 640;
+	if (displayHeight <= 0)
+		displayHeight = 480;
+
+	logInfo("DefaultMainWindowSize(draw editor) drawMode=%d requestedDisplay=%ldx%ld flags=0x%x",
+		sDrawMode, displayWidth, displayHeight, flags);
 
 	WaitForMessageQueueToEmpty();
 
@@ -502,8 +513,8 @@ void DefaultMainWindowSize( UINT flags )
 
 	rc.top = 0;
 	rc.left = 0;
-	rc.right = 640;
-	rc.bottom = 480;
+	rc.right = displayWidth;
+	rc.bottom = displayHeight;
 
 	if ( sDrawMode == iGDI )
 	{
@@ -534,6 +545,8 @@ void DefaultMainWindowSize( UINT flags )
 	}
 
 	WaitForMessageQueueToEmpty();
+	logInfo("DefaultMainWindowSize(draw editor) applied window rect %ldx%ld savedPos=%ld,%ld",
+		(rc.right - rc.left), (rc.bottom - rc.top), lSavedX, lSavedY);
 
 } // DefaultMainWindowSize
 
@@ -974,9 +987,12 @@ Specifies flags that control the interpretation of the uIDCheckItem parameter an
 		case WM_SIZE:
 			if ( sDrawMode == iGDI )
 			{
-				//GEH for now, only allow 640,480
-				WindowWidth = MAX_VIEW_WIDTH;
-				WindowHeight = MAX_VIEW_HEIGHT;
+				WindowWidth = gLogicalWidth;
+				WindowHeight = gLogicalHeight;
+				if (WindowWidth <= 0)
+					WindowWidth = MAX_VIEW_WIDTH;
+				if (WindowHeight <= 0)
+					WindowHeight = MAX_VIEW_HEIGHT;
 
 				// WindowWidth = LOWORD(lParam);
 				// WindowHeight = HIWORD(lParam);
@@ -999,7 +1015,12 @@ Specifies flags that control the interpretation of the uIDCheckItem parameter an
 				// 	WindowHeight /= 2;
 				// }
 
-				// set_screen_size(WindowWidth,WindowHeight);
+				set_screen_size(WindowWidth,WindowHeight);
+				logInfo("WM_SIZE(draw editor) applied logical window %ldx%ld (lParam=%ldx%ld)",
+					WindowWidth,
+					WindowHeight,
+					(LOWORD(lParam)),
+					(HIWORD(lParam)));
 			}
 #ifdef _STATUS
          AdjustStatusBar (hwnd);       // [d5-07-96 10:34 JPC]
@@ -1032,13 +1053,20 @@ Specifies flags that control the interpretation of the uIDCheckItem parameter an
         		InvalidateRect( hwnd, NULL, TRUE );
 			return ( fRealize );
 
-#ifdef _STATUS
 		case WM_MOVE:
-         AdjustStatusBar (hwnd);       // [d5-07-96 10:34 JPC]
-         ShowWindow (ghwndStatus, SW_SHOW);
-         SetFocus (hwnd);
-			break;
+#ifdef _STATUS
+			AdjustStatusBar (hwnd);       // [d5-07-96 10:34 JPC]
+			ShowWindow (ghwndStatus, SW_SHOW);
+			SetFocus (hwnd);
 #endif
+			if ( sDrawMode == iGDI )
+			{
+				RECT rcWin;
+				GetWindowRect( hwnd, &rcWin );
+				lSavedX = rcWin.left;
+				lSavedY = rcWin.top;
+			}
+			break;
 
 		case WM_DISPLAYCHANGE:
 			// If the window display is changed on the fly adjust the window

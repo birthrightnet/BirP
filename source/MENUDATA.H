@@ -47,6 +47,18 @@
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
+typedef enum MENU_UI_ANCHOR_TAG
+{
+   MENU_UI_ANCHOR_TOP_LEFT = 0,
+   MENU_UI_ANCHOR_TOP_RIGHT,
+   MENU_UI_ANCHOR_BOTTOM_LEFT,
+   MENU_UI_ANCHOR_BOTTOM_RIGHT,
+   MENU_UI_ANCHOR_CENTER
+} MENU_UI_ANCHOR;
+
+// Step 5 hook: existing data tables stay OG-authored; anchor metadata can be
+// introduced incrementally without changing button table layout today.
+#define MENU_UI_ANCHOR_DEFAULT	MENU_UI_ANCHOR_TOP_LEFT
 
 /* ------------------------------------------------------------------------
    Prototypes

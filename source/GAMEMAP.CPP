@@ -2014,7 +2014,7 @@ void DisplayInfo (CSTRPTR szFrame, BOOL fCentered, int iformat, ...)
 
 	w = ((BITMPTR)BLKPTR(iBkgnd))->w;
 	h = ((BITMPTR)BLKPTR(iBkgnd))->h;
-	x = (SHORT)((((640-l_map)/2)+l_map) - (w/2));
+	x = (SHORT)(((((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map)/2)+l_map) - (w/2));
 
 	SysHideCursor();
 	DrawBitmap(x, (SHORT)(240-(h/2)), iBkgnd, 0, 0, w, h);
@@ -2075,7 +2075,7 @@ void DisplayInfoStr (CSTRPTR szFrame, BOOL fCentered, char* format, ...)
 
 	w = ((BITMPTR)BLKPTR(iBkgnd))->w;
 	h = ((BITMPTR)BLKPTR(iBkgnd))->h;
-	x = (SHORT)((((640-l_map)/2)+l_map) - (w/2));
+	x = (SHORT)(((((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map)/2)+l_map) - (w/2));
 
 	SysHideCursor();
 	DrawBitmap(x, (SHORT)(240-(h/2)), iBkgnd, 0, 0, w, h);
@@ -2105,7 +2105,7 @@ void DrawBorders (LONG x, LONG y, LONG map_x, LONG map_y, LONG w, LONG h, LONG /
 	ULONG		dptr_buffer_width;
 	ULONG		coBorder;
 	UBYTE		pix1, pix2, pix3, pix, prov;
-	UBYTE		ff[2][480];
+	UBYTE		ff[2][MAX_VIEW_HEIGHT];
 	BOOL		f;
 	(void)pMap;
 
@@ -2136,9 +2136,12 @@ void DrawBorders (LONG x, LONG y, LONG map_x, LONG map_y, LONG w, LONG h, LONG /
 
 	ww = p->w;
 
-	for (yy=0; yy<2; ++yy)			  // clear history
-		for (xx=0; xx<480; ++xx)
-			ff[yy][xx] = FALSE;
+	{
+		ULONG const clearH = (gLogicalHeight > 0 && gLogicalHeight <= MAX_VIEW_HEIGHT) ? gLogicalHeight : MAX_VIEW_HEIGHT;
+		for (yy=0; yy<2; ++yy)			  // clear history
+			for (xx=0; xx < clearH; ++xx)
+				ff[yy][xx] = FALSE;
+	}
 
 	for (yy=(map_y/TWOMAPS_RATIO)+1; yy < (map_y+h-2)/TWOMAPS_RATIO; ++yy)
 	{
@@ -4915,7 +4918,7 @@ BOOL UpdateDataArea (void)
 
 	if (HomeRealm == 0 || ActiveRegent == 0)  // problems!
 	{
-		DrawBitmap (0, 0, iDTurnBk,(SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, 480);
+		DrawBitmap (0, 0, iDTurnBk,(SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480));
 		return FALSE;
 	}
 
@@ -5622,7 +5625,7 @@ BOOL UpdateDataArea (void)
 		}
 
 		//iDTurnBk = GetResourceStd("UI\\DTURN_BK.PCX", FALSE);
-		DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, 480);
+		DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480));
 
 		if (fControlMode & 0x100)		// control mode has changed, set correct stuff
 		{
@@ -5720,7 +5723,7 @@ BOOL UpdateDataArea (void)
 	else if (fSelectDomains)
 	{
 		//iDTurnBk = GetResourceStd("UI\\DTURN_BK.PCX", FALSE);
-		DrawBitmap (0, 0, iDTurnBk,(SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, 480);
+		DrawBitmap (0, 0, iDTurnBk,(SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480));
 
 		if (l_map==DATA_AREA_MAX)
 		{
@@ -5826,8 +5829,8 @@ BOOL UpdateDataArea (void)
 			)
 		{
 			//DoTaxRolls(0,0);
-			DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, 480);
-			ScreenCopy( 0, 0, 0, (SHORT)l_map, 480, SC_DEFAULT_RES);
+			DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480));
+			ScreenCopy( 0, 0, 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480), SC_DEFAULT_RES);
 			SwitchToActionMode(0,0);
 			fRedrawAll = TRUE;
 			return FALSE;
@@ -5848,7 +5851,7 @@ BOOL UpdateDataArea (void)
 	#endif
 			CurrentRealm = HomeRealm;		// true while in admin phase
 
-		DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, 480);
+		DrawBitmap (0, 0, iDTurnBk, (SHORT)(DATA_AREA_MAX-l_map), 0, (SHORT)l_map, (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480));
 		if (l_map>=DATA_AREA_MIN)
 		{
 			if (fTutorialSelected)
@@ -8334,8 +8337,8 @@ DoSpecial:
 	// limit scale
 	if (map_scale>MAX_SCALE) map_scale = MAX_SCALE;
 	if (map_scale<MIN_SCALE) map_scale = MIN_SCALE;
-	scaled_win_size_x = (((640-l_map) * map_scale) / FULL_SCALE);
-	scaled_win_size_y = ((480 * map_scale) / FULL_SCALE);
+	scaled_win_size_x = ((((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map) * map_scale) / FULL_SCALE);
+	scaled_win_size_y = (((gLogicalHeight > 0 ? gLogicalHeight : 480) * map_scale) / FULL_SCALE);
 	scaled_l_max = MAP_WIDTH - scaled_win_size_x;
 	scaled_t_max = MAP_HEIGHT - scaled_win_size_y;
 
@@ -8390,12 +8393,12 @@ DoSpecial:
 		SysHideCursor();
 		if (fMapPosnChanged)			// if map changed
 		{
-			ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)((fLgMap==LARGE)?clipped_x:clipped_x/2), (SHORT)((fLgMap==LARGE)?clipped_y:clipped_y/2), (SHORT)(640-l_map), (SHORT)480, (SHORT)((fLgMap==LARGE)?map_scale:map_scale/2) );
+			ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)((fLgMap==LARGE)?clipped_x:clipped_x/2), (SHORT)((fLgMap==LARGE)?clipped_y:clipped_y/2), (SHORT)((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map), (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480), (SHORT)((fLgMap==LARGE)?map_scale:map_scale/2) );
 			if (map_scale >= (FULL_SCALE<<1)) fEnhancedRes = FALSE;
 		}
 		else
 		{
-			ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)clipped_x, (SHORT)clipped_y, (SHORT)(640-l_map), (SHORT)480, (SHORT)-map_scale);
+			ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)clipped_x, (SHORT)clipped_y, (SHORT)((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map), (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480), (SHORT)-map_scale);
 			fEnhancedRes = TRUE;
 		}
 #else
@@ -8404,8 +8407,8 @@ DoSpecial:
 		FrameTimerStart();
 		fRedrawAll = FALSE;
 		SysHideCursor();
-//		ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)clipped_x, (SHORT)clipped_y, (SHORT)(640-l_map), (SHORT)480, (SHORT)map_scale);
-		ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)((fLgMap==LARGE)?clipped_x:clipped_x/2), (SHORT)((fLgMap==LARGE)?clipped_y:clipped_y/2), (SHORT)(640-l_map), (SHORT)480, (SHORT)((fLgMap==LARGE)?map_scale:map_scale/2) );
+//		ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)clipped_x, (SHORT)clipped_y, (SHORT)((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map), (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480), (SHORT)map_scale);
+		ScaleBitmap ((SHORT)l_map, 0, iLgMap, (SHORT)((fLgMap==LARGE)?clipped_x:clipped_x/2), (SHORT)((fLgMap==LARGE)?clipped_y:clipped_y/2), (SHORT)((gLogicalWidth > 0 ? gLogicalWidth : 640)-l_map), (SHORT)(gLogicalHeight > 0 ? gLogicalHeight : 480), (SHORT)((fLgMap==LARGE)?map_scale:map_scale/2) );
 #endif
 
 		// ========================================================
@@ -8761,11 +8764,14 @@ DoSpecial:
 						else			// static and left to right (not mirrored)
 							if (x_icon < 0) {w_icon += x_icon; l_icon = -x_icon; x_icon = 0;} else l_icon = 0;
 
-						if ((x_icon+w_icon) > (640-l_map))
 						{
-							if (l && dir>=0 && dir<=4)
-								l_icon += ((x_icon+w_icon) - (640-l_map));
-							w_icon = (640-l_map) - x_icon;
+							LONG const viewportW = (gLogicalWidth > 0 ? gLogicalWidth : 640) - l_map;
+							if ((x_icon+w_icon) > viewportW)
+							{
+								if (l && dir>=0 && dir<=4)
+									l_icon += ((x_icon+w_icon) - viewportW);
+								w_icon = viewportW - x_icon;
+							}
 						}
 
 						//if (y_icon < 0) {h_icon += y_icon; t_icon = -y_icon; y_icon = 0;} else t_icon = 0;

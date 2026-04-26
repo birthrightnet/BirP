@@ -427,17 +427,26 @@ void AlignDialog(void)
 	if(sDialog.rDialogRect.bottom == 0)
 		sDialog.rDialogRect.bottom = sDialog.rDialogRect.top + iBottom;
 
-	// set the dialog rect to keep in on screen
-	if(sDialog.rDialogRect.right >= 640)
+	// set the dialog rect to keep it on screen using runtime logical bounds
 	{
-		sDialog.rDialogRect.left = 630 - (sDialog.rDialogRect.right - sDialog.rDialogRect.left);
-		sDialog.rDialogRect.right = 630;
-	}
+		LONG const logicalW = (gLogicalWidth > 0) ? gLogicalWidth : ((screen_buffer_width > 0) ? screen_buffer_width : 640);
+		LONG const logicalH = (gLogicalHeight > 0) ? gLogicalHeight : ((screen_buffer_height > 0) ? screen_buffer_height : 480);
+		LONG const maxRight = (logicalW > 10) ? (logicalW - 10) : logicalW;
+		LONG const maxBottom = (logicalH > 10) ? (logicalH - 10) : logicalH;
+		LONG const dialogW = sDialog.rDialogRect.right - sDialog.rDialogRect.left;
+		LONG const dialogH = sDialog.rDialogRect.bottom - sDialog.rDialogRect.top;
 
-	if(sDialog.rDialogRect.bottom >= 480)
-	{
-		sDialog.rDialogRect.top = 470 - (sDialog.rDialogRect.bottom - sDialog.rDialogRect.top);
-		sDialog.rDialogRect.bottom = 470;
+		if(sDialog.rDialogRect.right >= logicalW)
+		{
+			sDialog.rDialogRect.left = maxRight - dialogW;
+			sDialog.rDialogRect.right = maxRight;
+		}
+
+		if(sDialog.rDialogRect.bottom >= logicalH)
+		{
+			sDialog.rDialogRect.top = maxBottom - dialogH;
+			sDialog.rDialogRect.bottom = maxBottom;
+		}
 	}
 }
 

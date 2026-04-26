@@ -645,7 +645,9 @@ void PaintActiveMenu(LONG AMenu)
 								if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 								{
 									SysHideCursor();
-									DrawBitm(0, 0, hSaveBkgnd, 0, 0, 640, 480);
+									DrawBitm(0, 0, hSaveBkgnd, 0, 0,
+										(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+										(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 									SysShowCursor();
 									update_screen();
 									DisposBlock(hSaveBkgnd);
@@ -706,9 +708,13 @@ void PaintActiveMenu(LONG AMenu)
 							{
 								if (hSaveBkgnd == fERROR)
 								{
-									hSaveBkgnd = SaveBitmap(0,0,640,480);
+									hSaveBkgnd = SaveBitmap(0, 0,
+										(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+										(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 									SysHideCursor();
-									shade_rect(0,0,640,480,13);
+									shade_rect(0, 0,
+										(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+										(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), 13);
 									SysShowCursor();
 								}
 								cntSaveBkgnd++;
@@ -770,7 +776,9 @@ logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 									if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 									{
 										SysHideCursor();
-										DrawBitm(0, 0, hSaveBkgnd, 0, 0, 640, 480);
+										DrawBitm(0, 0, hSaveBkgnd, 0, 0,
+											(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+											(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 										SysShowCursor();
 										update_screen();
 										DisposBlock(hSaveBkgnd);
@@ -835,11 +843,15 @@ logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 //									{
 										if (hSaveBkgnd == fERROR)
 										{
-											hSaveBkgnd = SaveBitmap(0,0,640,480);
+											hSaveBkgnd = SaveBitmap(0, 0,
+												(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+												(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 											SysHideCursor();
 											if (!Menus[CurMenu].Buttons[0].Flags & D_DONT_SHADE)
 											{
-												shade_rect(0,0,640,480,13);
+												shade_rect(0, 0,
+													(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+													(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), 13);
 											}
 											SysShowCursor();
 										}
@@ -905,7 +917,9 @@ logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 									if (hSaveBkgnd != fERROR && cntSaveBkgnd < 1)
 									{
 										SysHideCursor();
-										DrawBitm(0, 0, hSaveBkgnd, 0, 0, 640, 480);
+										DrawBitm(0, 0, hSaveBkgnd, 0, 0,
+											(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+											(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 										SysShowCursor();
 										update_screen();
 										DisposBlock(hSaveBkgnd);
@@ -970,11 +984,15 @@ logInfo("MENU.C -	 SpinOut - cntSaveBkgnd: %d",cntSaveBkgnd);
 //									{
 										if (hSaveBkgnd == fERROR)
 										{
-											hSaveBkgnd = SaveBitmap(0,0,640,480);
+											hSaveBkgnd = SaveBitmap(0, 0,
+												(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+												(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480));
 											SysHideCursor();
 											if (!Menus[CurMenu].Buttons[0].Flags & D_DONT_SHADE)
 											{
-												shade_rect(0,0,640,480,13);
+												shade_rect(0, 0,
+													(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+													(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), 13);
 											}
 											SysShowCursor();
 										}

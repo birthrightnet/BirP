@@ -21,7 +21,7 @@
 	- a "span" is a portion of a scanline
 	- a "post" is a portion of a column
 
-   =®RM250¯====================================================================== */
+   =ï¿½RM250ï¿½====================================================================== */
 /* ------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
@@ -229,9 +229,13 @@ void clear_spans (void)
 	// GWP UNUSED gLastSpan[i] = 0;
 	// GWP UNUSED memset(&gLastSpan[0], 0, sizeof(gLastSpan));	// pulled out of lower for loop.
 	
-	for(i=0; i<MAX_VIEW_HEIGHT; ++i)
+	{
+	ULONG const clearH = ((ULONG)render_height > 0 && (ULONG)render_height <= MAX_VIEW_HEIGHT)
+		? (ULONG)render_height : MAX_VIEW_HEIGHT;
+	for(i=0; i < clearH; ++i)
 	{
 		gJustClosedSpan[i].sector = ABSURD_SECTOR;
+	}
 	}
 	
 	if (prev_camera_x != camera.x ||
@@ -755,12 +759,16 @@ void draw_spans (void)
 	}
 	
 	// Now go through and draw any spans still left open.
-	for (y=0; y<MAX_VIEW_HEIGHT; ++y)
+	{
+	ULONG const closeH = ((ULONG)render_height > 0 && (ULONG)render_height <= MAX_VIEW_HEIGHT)
+		? (ULONG)render_height : MAX_VIEW_HEIGHT;
+	for (y=0; y < closeH; ++y)
 	{
 		if (gSpans[y].status == SPAN_CLOSED)
 			continue;
 			
 		closeout_span(y);
+	}
 	}
 }
 

@@ -88,7 +88,7 @@ void set_view()
 	view_sin=sin_table[a];
 	view_cos=cos_table[a];
 
-	render_center_y = render_top + (render_height/2) + ((camera.p * render_height)/480);
+	render_center_y = render_top + (render_height/2) + ((camera.p * render_height)/(gLogicalHeight > 0 ? gLogicalHeight : MAX_VIEW_HEIGHT));
 
 #if 0
 		//set view frust origin

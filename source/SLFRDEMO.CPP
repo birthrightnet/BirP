@@ -616,7 +616,9 @@ void SRDEMO_DATA::dmpToPath()
 	sprintf(n, "%s\\%s", fDmpPath, szFileName);
 
 	// dump build buffer to a .pcx file
-	PutScreen(iDispBuffer, 0, 0, 640, 480, n);
+	PutScreen(iDispBuffer, 0, 0,
+		(SHORT)((screen_buffer_width > 0) ? screen_buffer_width : 640),
+		(SHORT)((screen_buffer_height > 0) ? screen_buffer_height : 480), n);
 	
 	// increment screen number
 	

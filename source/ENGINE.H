@@ -1,4 +1,4 @@
-/* ®RM250¯ */
+/* ï¿½RM250ï¿½ */
 /* ========================================================================
    Copyright (c) 1990,1996	Synergistic Software
    All Rights Reserved
@@ -58,6 +58,22 @@
 #define SVGA 			1
 #define MAX_VIEW_WIDTH 	640
 #define MAX_VIEW_HEIGHT	480
+
+#define RESOLUTION_MODE_OG			0
+#define RESOLUTION_MODE_MODERN		1
+
+#define RESOLUTION_PRESET_640X480	0
+#define RESOLUTION_PRESET_800X600	1
+#define RESOLUTION_PRESET_1024X768	2
+#define RESOLUTION_PRESET_1280X960	3
+#define RESOLUTION_PRESET_1400X1050	4
+#define RESOLUTION_PRESET_1600X1200	5
+#define RESOLUTION_PRESET_1920X1440	6
+#define RESOLUTION_PRESET_COUNT		7
+
+#define RESOLUTION_SCALE_ASPECT_FIT	0
+#define RESOLUTION_SCALE_INTEGER	1
+#define RESOLUTION_SCALE_STRETCH	2
 //#define VIEW_WIDTH 	MAX_VIEW_WIDTH
 //#define VIEW_HEIGHT 	MAX_VIEW_HEIGHT
 
@@ -469,6 +485,19 @@ extern LONG			render_perspect;
 extern LONG			render_center_x, render_center_y;
 extern LONG			window_width;
 extern LONG			window_height;
+extern LONG			gLogicalWidth;
+extern LONG			gLogicalHeight;
+extern LONG			gDisplayWidth;
+extern LONG			gDisplayHeight;
+extern LONG			gViewportX;
+extern LONG			gViewportY;
+extern LONG			gViewportW;
+extern LONG			gViewportH;
+extern SHORT			gResolutionMode;
+extern SHORT			gResolutionPreset;
+extern SHORT			gScaleMode;
+
+void SetRuntimeResolutionState(SHORT resolutionMode, SHORT resolutionPreset, SHORT scaleMode);
 
 
 #ifdef _WINDOWS
