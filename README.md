@@ -98,13 +98,21 @@ The available logging levels are listed below. Each logging level will log messa
 * `WARN`: Errors or things that didn't go as expected, but aren't a major problem.
 * `FATAL`: Errors that break the game and will cause a crash.
 
-## Changelog
+## Keeping Documentation Updated
 
-The [Changelog](./CHANGELOG.md) contains a log of changes made to the project, including bug fixes and new features.
+Several files should be kept updated as the project evolves. This includes:
 
-Keep this file up to date with any notable changes you make to the project. Follow the existing format there when updating it.
+- The [Developer CHANGELOG.md](./CHANGELOG.md) file, which contains a log of changes made to the project, including bug fixes and new features. The standard format we follow is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). If a changelog line matches a GitHub Issue from the `https://github.com/Shiryou/BirP/issues` repository, it should include a hyperlink to the corresponding issue.
 
-### Updating Version Numbers
+- This [Project README.md](./README.md) file, which contains an overview of the project, instructions for getting started, and other important information for developers and users.
+
+- The [Player README.txt](./README.txt) file, which contains user-facing instructions and notes on how to use the new version of the patch. This should be kept in sync with the [Developer CHANGELOG.md](./CHANGELOG.md) file, but should be focused on the user experience and should not include changes relevant only to developers (scripting, refactoring, logging, dependencies, etc).
+
+- The [PVERSION.HXX](./source/PVERSION.HXX) file, which contains the version information for the project. This should be updated only at release time according to the versioning rules outlined in the comments there.
+
+- The [BUILD-OPTIONS.md](./BUILD-OPTIONS.md) file, which contains documentation on the various build options available for the project, including how to use them and what they do. Keep this updated if you modify or add build options.
+
+## Updating Version Numbers
 
 Internal version numbers are set in `VERSION.CPP`. These should only be updated when functionality changes might cause issues in multiplayer. The patch version numbers are set in `PVERSION.H`.
 

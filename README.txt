@@ -1,45 +1,29 @@
 Birthright: The Gorgons Alliance Preservation Patch
-1.4.0.4
-11/02/2025
+Version: 1.4.0.4
+Date: 2026-04-25
 
 TABLE OF CONTENTS
 
-[1] WHAT THE PATCH FIXES
-[2] HOW TO INSTALL THE PATCH
+[1] HOW TO INSTALL THE PATCH
+[2] WHAT THE PATCH FIXES / CHANGES
 [3] ADDITIONAL INFORMATION
 [4] IF YOU STILL EXPERIENCE PROBLEMS
 
-[1] WHAT THE PATCH FIXES
-====================================
-
-* Removes the requirement for the CD to be present in the drive (including the
-  character editor)
-* Fixes picking up the quest goal item in custom adventures
-
-!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!
-
-For the patch to work, you must follow the installation instructions carefully!
-This applies to both the Windows and DOS versions.
-
-/!\ The instructions have changed since the previous release. /!\
-If you have applied the patch in the past, please check step 8 for new
-configuration instructions. The previous instructions still work, but
-may cause issues using the original Scenario Editor.
-
-[2] HOW TO INSTALL THE PATCH
-====================================
+[1] HOW TO INSTALL THE PATCH
+============================
 It is recommended to start with a fresh installation to reduce any potential
 problems with overwriting files. These instructions focus only on getting the
 basic game going. For information on the Character Editor, Scenario Editor, or
 multiplayer, please see https://www.kiranwelle.com/birthright/
 
-You only need a few things to get started:
+Things you need:
 
  * A Birthright: The Gorgon's Alliance CD or an ISO image of the CD.
- * Patch 1.4 to update the game to the latest version.
+ * Last official Patch 1.4 to update the game to the latest version.
  * 7-zip to extract the game files from the 1.4 patch. This is necessary for
    operating systems newer than Windows ME.
 
+Steps to install:
 
 1. Insert the CD into the CD-ROM drive or mount the ISO image of the CD by
    double-clicking it.
@@ -61,8 +45,46 @@ You only need a few things to get started:
 9. Double-click WINBR.EXE to start the game in Windows or run NOVA.EXE in DOS.
    Run CHARED.EXE to start the Character Editor
 
+[2] WHAT THE PATCH FIXES / CHANGES
+==================================
+
+[Unreleased]
+
+Added
+
+- Added "modern mode" in-game resolution options with support for `800x600`, `1024x768`, `1280x960`, `1400x1050`, `1600x1200`, and `1920x1440`. The original "OG mode" remains available.
+
+Removed
+
+- Removed DirectDraw as a supported display mode and removed related options and hotkeys; GDI is now the only supported rendering path.
+- Removed the deprecated `Auto Resolution` graphics option.
+
+Fixed
+
+- Fixed game window position resetting after restart by persisting last moved coordinates between sessions.
+
+1.4.0.4 - 2025-11-02
+
+Changed
+
+- Allow calling all files from game directory instead of CD; the CD is no longer required in this mode (all files must first be copied from the CD to the game directory). (#2)
+
+Fixed
+
+- Custom adventures no longer crash the game when picking up the quest goal item. (#3)
+
+!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!
+
+For the patch to work, you must follow the installation instructions carefully!
+This applies to both the Windows and DOS versions.
+
+/!\ The instructions have changed since the previous release. /!\
+If you have applied the patch in the past, please check step 8 for new
+configuration instructions. The previous instructions still work, but
+may cause issues using the original Scenario Editor.
+
 [3] ADDITIONAL INFORMATION
-====================================
+==========================
 For specific questions on what this patch changes or to get in touch with the
 development team, check us out at any of the following places:
 

@@ -1,4 +1,4 @@
-# Build Scripts
+# Scripts Overview
 
 This folder contains scripts for helping configure the development environment and for building and deploying the project. For more detailed instructions on setting up your development environment and building the project, please see the [birp-dev/README.md](../README.md).
 
