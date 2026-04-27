@@ -34,8 +34,6 @@
 #define iMPT_PING		6
 
 
-static int		DumpString				( char *s );
-
 enum
 {
 	iMPM_SEND,
@@ -111,7 +109,6 @@ GenericMultiPlayer::GenericMultiPlayer( void ) :
 	fAvailable( FALSE ), pnmGame( NULL, &err ), ulSndMsgNum( 0 )
 {
 	int x;
-	(void)fpOldEditWndProc;
 	(void)fpOldEditWndProc;
 
 	for ( x = 0 ; x < MAX_PLAYERS; x++ )
@@ -1567,29 +1564,5 @@ void GenericMultiPlayer::SetupChat( void )
 } // GenericMultiPlayer::SetupChat
 
 #endif
-
-
-
-
-#ifdef _MULTIMONO
-
-// -- Debug statements from NetPlay.dll
-static int DumpString( char *s )
-{
-    (void)DumpString;
-
-#ifdef _MULTIMONO
-    mono_puts( 0,19, s );
-#endif
-
-    return 1;
-
-} // DumpString
-
-#endif
-
-
-
-
 
 // GMulPlay.cpp
