@@ -130,7 +130,11 @@ extern "C" {
 #endif
 
 void *BLKPTR(LONG);
+#if defined (MEMORY_CHK)
 void * _zalloc(char * /* Name */, LONG /* lineNo */, LONG i);
+#else
+void * _zalloc(LONG i);
+#endif
 void * _zone_alloc(LONG i);
 ULONG InitMemManag (ULONG cbMinMemoryNeeded,
 					USHORT cNumBlkHeads_,
@@ -177,7 +181,7 @@ SHORT SetDebugInfo(char * /* file */, LONG /* line */, SHORT /* Hdl */);
 #define SetDebugInfo(file,line, hdl)	hdl
 #define NewBlock(x)			_NewBlock(x)
 #define NewBlockHigh(x)		_NewBlockHigh(x)
-#define zalloc(x)			_zalloc("", 0, x)
+#define zalloc(x)			_zalloc(x)
 #endif
 
 #if defined (__cplusplus)

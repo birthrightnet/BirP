@@ -41,7 +41,7 @@
 +		SetLock			- lock a block of memory in place
 
 	======================================================================== */
-/* ÔøΩRM200ÔøΩ */
+/* ùRM200ù */
 /* includes */
 
 #include <stdio.h>
@@ -156,7 +156,11 @@ static MEM_ERROR_CODE CheckBlockOverwrite(LONG i);
 static void ReportBlockError(LONG iHandle,MEM_ERROR_CODE ErrorCode);
 #endif
 
+#if defined(_DEBUG) || defined(MEMORY_CHK)
 static LONG			CheckValidBlock (LONG, LONG);
+#else
+static LONG			CheckValidBlock (LONG);
+#endif
 static LONG			ValidateBlockID (LONG);
 static SHORT		FindFreeHeader (void);
 static SHORT		FindBlock (ULONG);
@@ -388,7 +392,11 @@ struct SREGS sregs;
 /* ========================================================================
 	CheckValidBlock -
 	======================================================================== */
+#if defined(_DEBUG) || defined(MEMORY_CHK)
 static LONG CheckValidBlock (LONG i, LONG LineNo)
+#else
+static LONG CheckValidBlock (LONG i)
+#endif
 {
 	if (i < 1 || i >= cNumBlkHeads)
 	{
@@ -417,6 +425,12 @@ static LONG CheckValidBlock (LONG i, LONG LineNo)
 	}
 	return fNOERR;
 }
+
+#if defined(_DEBUG) || defined(MEMORY_CHK)
+#define CHECK_VALID_BLOCK(i) CheckValidBlock((i), __LINE__)
+#else
+#define CHECK_VALID_BLOCK(i) CheckValidBlock((i))
+#endif
 
 /* ========================================================================
 	ValidateBlockID -
@@ -1211,7 +1225,7 @@ SHORT _SetPurge (SHORT iHandle)
 	}
 
 	/* check for invalid block */
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return (SHORT)fERROR;
 
 #if defined (MEMORY_CHK)
@@ -1258,7 +1272,7 @@ SHORT _ClrPurge (SHORT iHandle)
 	#if defined (MEMORY_CHK)
 		if (iMemBlk != 0)
 		{
-			if (CheckValidBlock(iMemBlk, __LINE__) == fERROR)
+			if (CHECK_VALID_BLOCK(iMemBlk) == fERROR)
 				return fERROR;
 
 				ReportBlockError(iMemBlk,CheckBlockOverwrite(iMemBlk));
@@ -1305,7 +1319,7 @@ SHORT DisposBlock (SHORT iHandle)
 	#if defined (MEMORY_CHK)
 		if (iMemBlk != 0)
 		{
-			if (CheckValidBlock(iMemBlk, __LINE__) == fERROR)
+			if (CHECK_VALID_BLOCK(iMemBlk) == fERROR)
 				return fERROR;
 
 				ReportBlockError(iMemBlk,CheckBlockOverwrite(iMemBlk));
@@ -1317,7 +1331,7 @@ SHORT DisposBlock (SHORT iHandle)
 #endif
 
 	/* check for invalid block */
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return fERROR;
 
 #if defined (MEMORY_CHK)
@@ -1466,7 +1480,7 @@ static LONG CleanUpBlock (LONG iHandle,
 #endif
 
 	/* check for invalid block */
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return (SHORT)fERROR;
 
 	if (cBytes == 0)							/* if request is to eliminate block */
@@ -1547,7 +1561,7 @@ static LONG MergeBlocks (LONG iHandle)
 
 #if defined(_DEBUG)
 	/* check for invalid block */
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return fERROR;
 #endif
 
@@ -2119,7 +2133,7 @@ SHORT SetLock (SHORT iHandle)
 	}
 #endif
 
-	if (CheckValidBlock(i, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(i) == fERROR)
 		return (SHORT)fERROR;
 
 #if defined (MEMORY_CHK)
@@ -2750,14 +2764,20 @@ void * BLKPTR(LONG i)
    Returns     - pointer to the memory.
    ======================================================================== */
 
+#if defined(MEMORY_CHK)
 void *_zalloc(char * FileName, LONG FileLineNo, LONG size)
+#else
+void *_zalloc(LONG size)
+#endif
 {
 	SHORT iHandle = _NewBlockHigh(size);
 	if (iHandle > 0)
 	{
 		ValidateBlockID(iHandle);
 		SetBlockAttr(iHandle,LOCKED|CLASSMASK,LOCKED|CLASS1);
+		#if defined(MEMORY_CHK)
 		SetDebugInfo( FileName, FileLineNo, iHandle);
+		#endif
 	}
 	else
 	{
@@ -2946,7 +2966,7 @@ BOOL IsBlockMoldy(SHORT iBlk)
 		iHandle = iBlk;
 	}
 
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return FALSE;
 
 #if defined (MEMORY_CHK)
@@ -2993,7 +3013,7 @@ BOOL IsBlockPurgable(SHORT iBlk)
 	{
 		iHandle = iBlk;
 	}
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return Result;
 
 #if defined (MEMORY_CHK)
@@ -3036,7 +3056,7 @@ BOOL IsBlockMultiUser(SHORT iBlk)
 	{
 		iHandle = iBlk;
 	}
-	if (CheckValidBlock(iHandle, __LINE__) == fERROR)
+	if (CHECK_VALID_BLOCK(iHandle) == fERROR)
 		return TRUE;	// Return TRUE so the resource manager won't try to purge it.
 
 #if defined (MEMORY_CHK)
