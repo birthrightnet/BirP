@@ -794,6 +794,8 @@ void GameMain(void)
 	(void)vol;
 	(void)path;
 	(void)waveres;
+	(void)cpBuffer;
+	(void)i;
 	(void)&LogPrintf;
 	//SHORT splashbitm;
 

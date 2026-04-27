@@ -15,14 +15,13 @@
    mmsystem.h is not pulled in by Watcom's windows.h; digitalv.h needs it.
    LPWSTR is also absent from Watcom Win32 headers; define it as LPSTR for the
    non-Unicode (8-bit) build target this project uses.
-   digitalv.h is sourced from Windows95DDK\INC16 by explicit relative path
-   to avoid globally adding the INC16 tree to include search order.
+   digitalv.h is sourced from Windows95DDK\INC16 via INCLUDE environment setup.
 */
 #ifndef LPWSTR
 #define LPWSTR LPSTR
 #endif
 #include <mmsystem.h>
-#include "..\..\..\birp-dependencies\Windows95DDK\INC16\digitalv.h"
+#include <digitalv.h>
 
 extern BOOL fSound;
  

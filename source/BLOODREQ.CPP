@@ -150,28 +150,6 @@ BLOOD_ABILITY_ACQUISITION BloodAbilityAcquisitionTable [] = {
 			 {100, BLOOD_ABILITY_GAINED::GREAT}}}
 };
 
-/* ------------------------------------------------------------------------
-   Prototypes
-   ------------------------------------------------------------------------ */
-static CHECK_BLOODLINE_ROLL_RESULT CheckBloodlineAbilityRoll(
-	BLOOD_ABILITY_INFO::BLOOD_ABILITY/* BloodAbilityRolled */,
-	PTR_PLAYER_BLOOD_INFO			/* pPlayerBloodInfo */,
-	PTR_BLOODLINE_ACQUISITION_LIST	/* pBloodlineAcquisitionAvail */,
-	PTR_BLOOD_ABILITIES_LIST		/* pBloodAbilitiesRefused */);
-
-static void RemoveBloodlineAcquisitionItem(
-	PTR_BLOODLINE_ACQUISITION_LIST * /* pTempBloodlineAcquisitionList */,
-	PTR_BLOODLINE_ACQUISITION_LIST   /* pBloodlineAcquisitionAvail */);
-
-static void AddBloodlineAbilityAcquisition(
-	PTR_BLOODLINE_ACQUISITION_LIST * /* ppBloodAcquisitionList */,
-	BLOOD_ABILITY_GAINED::TYPE 		 /* NewStrength */);
-
-static void ModifyBloodlineAbilityAcquisition(
-	PTR_BLOODLINE_ACQUISITION_LIST * /* pBloodAcquistionList */,
-	BLOOD_ABILITY_GAINED::TYPE 		 /* OldStrength */,
-	BLOOD_ABILITY_GAINED::TYPE 		 /* NewStrength */);
-
 #if 0
 // [d2-11-97 JPC] Comment out the functions that don't compile.
 // Gary said they need work on their linked list stuff.

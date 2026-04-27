@@ -73,7 +73,9 @@ long	need_cursor_draw=FALSE;
 SHORT	cursor_bitmap;
 BOOL	fAutoRestoreCursor = FALSE;
 
+#ifndef _CHARED
 static UBYTE	st[1024];
+#endif
 static BOOL		fMouseHidden = TRUE;
 
 extern UBYTE antia_table[];

@@ -2965,7 +2965,9 @@ void PaintDiplomacy (LONG x, LONG y, LONG h)
 	if (iSelectedRealm && iSelectedRealm >= LAND_REALM_COUNT
 			&& CheckVassal((REALM::REALM_TYPE)iSelectedRealm) && !ISVASSAL(iSelectedRealm, HomeRealm) )
 	{
+	#ifdef _WINDOWS
 	DiplomacyRestart:
+	#endif
 		AddSndObj((BIRTHRT_SND)SND_UI_DID_NOT_SUCCEED,0,VOLUME_NINETY);
 		InitActionGlobals();
 		fAllowCancelButton = TRUE;

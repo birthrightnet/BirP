@@ -525,7 +525,6 @@ static void CalculateMaxSpellsSub (LONG charClass, LONG charLevel)
 // Helper of CalculateMaxSpells.
 
 	LONG			spellLevel;
-	SHORT			cSpells;
 
 	if (charLevel > 20)
 	{
@@ -820,7 +819,6 @@ static void SelectRandomItems (HWND hwnd)
 static void SelectSpell (HWND hwnd, HWND hwndCtl)
 {
 	int			index;
-	int			cItems;
 	int			retval;
 	HWND			hwndList;
 	LONG 			itemIndex;

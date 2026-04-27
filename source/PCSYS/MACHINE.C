@@ -40,7 +40,9 @@
 /* ------------------------------------------------------------------------
    Prototypes
    ------------------------------------------------------------------------ */
+#if !defined(_RELEASE)
 static void print_usage();
+#endif
 void (__interrupt __far *prev_int_08)();
 void __interrupt __far timer_routine (void);
 
@@ -329,6 +331,7 @@ void AppIdle(void)
    Description - displays command line options
    Returns     - void
    ======================================================================== */
+#if !defined(_RELEASE)
 static void print_usage()
 {
 	logInfo("Usage:NOVA <switches>");
@@ -342,6 +345,7 @@ static void print_usage()
 	logInfo("      @respfile.rsp    Read switches from DCK response file");
 #endif
 }
+#endif
 #endif
 void UpdateFPS(void)
 {

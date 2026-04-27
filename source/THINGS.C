@@ -25,7 +25,7 @@
    sort_things            - sorts things
 
    ======================================================================== */
-/* ÔøΩRM250ÔøΩ------------------------------------------------------------------------
+/* ùRM250ù------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
 #include <stdio.h>
@@ -124,11 +124,11 @@ MINMEMCONVERT MinMemAdditionalTable[] = {
 };
 SHORT MinMemAdditionalTableMax = sizeof(MinMemAdditionalTable) / sizeof(MINMEMCONVERT);
 
-/*	ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
+/*	ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù
 	Every 10000 thing_spans is another 280 K of RAM in the code! --Wes
 	Sorry Wes, I will seriously reduce this when I have an opportunity to
 	turn the actinic illumination of my intellect upon it. --Alan
-	ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ */
+	ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù */
 #define UNIT_SCALE_ADJUST		100
 
 /* ------------------------------------------------------------------------
@@ -4474,6 +4474,7 @@ SHORT LoadIData (
 	LONG  iResFileSlot)
 {
 	SHORT hiData = fERROR;
+	(void)szFileName;
 	(void)fSetPal;
 	(void)fRotated;
 	(void)iResFileSlot;
@@ -4489,9 +4490,9 @@ SHORT LoadIData (
 		piData = (I_DATA_BLK *) BLKPTR(hiData);
 
 		memset (piData->iData, -1, (NUMSEQUENCES * sizeof (SHORT)));
-#if defined (_DEBUG)
+		#if defined (_DEBUG)
 		strncpy(piData->cpType, szFileName, sizeof(piData->cpType));
-#endif
+		#endif
 		SetClass2(hiData);
 		SetModifyResource(hiData);
 	}

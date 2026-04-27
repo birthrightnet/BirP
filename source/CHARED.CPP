@@ -1401,8 +1401,6 @@ ErrExit:
 static void OnPaint (HWND hwnd)
 {
 	PAINTSTRUCT	ps;
-	HWND			hwndCtl;
-	int			index;
 
 	BeginPaint (hwnd, &ps);
 	EndPaint (hwnd, &ps);
@@ -1520,7 +1518,6 @@ static void ChangeHitPoints (HWND hwnd)
 	PLAYER_CLASS_INFO::TYPE	class1, class2;
 	int			level1, level2;
 	int			constitution;
-	int			hitPoints;
 	int			cClasses = 1;
 	int			result;
 	BOOL			fTranslated;
@@ -1630,26 +1627,6 @@ BOOL CALLBACK CharedWndProc (
 	}
 }
 
-
-static void PutStringsInRealmListBox (HWND hwnd)
-{
-	LONG			iRealm;
-	HWND			hwndCtl;
-	char			szRealm[AVA_FILE::_MAX_REALM + 1];
-
-	hwndCtl = GetDlgItem (hwnd, IDL_SELECT_REALM);
-   for (iRealm = 1; iRealm < REALM::REALM_COUNT; iRealm++)
-	{
-		if (realm[iRealm].mfIsPlayable ())
-		{
-			strncpy (szRealm, realm[iRealm].mfGetName (), AVA_FILE::_MAX_REALM);
-			ListBox_InsertString (hwndCtl, -1, szRealm);
-		}
-	}
-	ListBox_SetCurSel (hwndCtl, 0);
-}
-
-
 static BOOL SelectRegentOnInitDialog (HWND hwnd, HWND hwndFocus, LPARAM lParam)
 {
 	POINT			pt;
@@ -1714,8 +1691,6 @@ BOOL DisplayRegentsOfRealm (HWND hwnd, char * szRealm)
  	int			iRegent;
 	HWND			hwndCtl;
 	char			szNameAndRealm[256];
-	
-	FILE		*fp;
 
 	hwndCtl = GetDlgItem (hwnd, IDL_SELECT_CHARACTER);
 	ListBox_ResetContent (hwndCtl);
@@ -1770,8 +1745,6 @@ static void SelectRegentOnCommand (HWND hwnd, int id, HWND hwndCtl, UINT codeNot
 		case IDL_SELECT_CHARACTER:
 			if (codeNotify == LBN_SELCHANGE)
 			{
-				char	szRealm[AVA_FILE::_MAX_REALM + 1];
-	
 				index = ListBox_GetCurSel (hwndCtl) + 1;
 				if ( regents[index].mfGetRealm() == REALM::NO_COUNTRY
 					|| regents[index].mfGetRealm() == REALM::MIERES
