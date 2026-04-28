@@ -1555,6 +1555,12 @@ SHORT ResolveMissiles(CAvatar *pDefender)
 		)
 	{
 		CAvatar *pEnemy = (CAvatar *)BLKPTR(pDefender->hEnemy);
+		if(!IsPointerGood(pEnemy))
+		{
+			pDefender->hEnemy = fERROR;
+		}
+		else
+		{
 		
 		// if engaged with me, do no damage to myself
 		if(pEnemy->hEnemy != pDefender->hThis)
@@ -1577,6 +1583,7 @@ SHORT ResolveMissiles(CAvatar *pDefender)
 				pEnemy->KillType = NO_THING;
 				SendResults ( pEnemy, pDefender->fBtlCap.HitCount, ARROWS );
 			}
+		}
 		}
 	}
 	
@@ -1611,6 +1618,12 @@ SHORT DecodeBattleMagic( CAvatar * pAvatar )
 		{
 		case BTLCAP_MAGIC_NO_ATTACK:
 			pEnemy = (CAvatar *)BLKPTR(pAvatar->hEnemy);
+			if(!IsPointerGood(pEnemy))
+			{
+				pAvatar->hEnemy = fERROR;
+				retVal = BTL_N;
+				break;
+			}
 			// delay the enemy's next decision by 5 rounds
 			pEnemy->fBtlCap.ActionCount = 
 					5 * BattleTick + (BtlActionRate * SpeedLevel);
@@ -1769,6 +1782,12 @@ SHORT ResolveBattleMagic(CAvatar *pDefender)
 			if (pDefender->hEnemy != fERROR)
 			{
 				CAvatar *pAttacker = (CAvatar *)BLKPTR(pDefender->hEnemy);
+				if(!IsPointerGood(pAttacker))
+				{
+					pDefender->hEnemy = fERROR;
+				}
+				else
+				{
 				// check for resistance to all damage
 				if(pAttacker->hPlayerStats != fERROR)
 				{
@@ -1784,6 +1803,7 @@ SHORT ResolveBattleMagic(CAvatar *pDefender)
 				{
 					pAttacker->fDamage = result;
 					pAttacker->KillType = pDefender->KillType;
+				}
 				}
 			}
 		}
@@ -2252,30 +2272,36 @@ BOOL BATTLE_CAPTAIN_DATA::mfKillTroop(CAvatar *pAvatar, THINGTYPE KillType )
 	if(pTroop->hEnemy != fERROR)
 	{
 		CAvatar *pMyEnemy = (CAvatar *) BLKPTR(pTroop->hEnemy);
-		
-		if (pMyEnemy->fFollowBtlCap.hLeader != fERROR)
+		if(!IsPointerGood(pMyEnemy))
 		{
-			CAvatar *pEnemyLeader = 
-				(CAvatar *) BLKPTR((SHORT) pMyEnemy->fFollowBtlCap.hLeader);
-			
-			// GWP 5/18/97
-			// For all the troops attacking me, dis-enage me from them.
-			if (pEnemyLeader->fBtlCap.Leader.hdlSlotList != fERROR)
+			pTroop->hEnemy = fERROR;
+			pTroop->Engaged = 0;
+		}
+		else
+		{
+			if (pMyEnemy->fFollowBtlCap.hLeader != fERROR)
 			{
-				SHORT *pOtherList = (SHORT *)BLKPTR(pEnemyLeader->fBtlCap.Leader.hdlSlotList);
-				LONG k;
-				for (k = 0; k < pEnemyLeader->fBtlCap.Leader.sMaxFollowers; k++)
+				CAvatar *pEnemyLeader = 
+					(CAvatar *) BLKPTR((SHORT) pMyEnemy->fFollowBtlCap.hLeader);
+				if (IsPointerGood(pEnemyLeader) && pEnemyLeader->fBtlCap.Leader.hdlSlotList != fERROR)
 				{
-					if (pOtherList[k] != fERROR)
+					// GWP 5/18/97
+					// For all the troops attacking me, dis-enage me from them.
+					SHORT *pOtherList = (SHORT *)BLKPTR(pEnemyLeader->fBtlCap.Leader.hdlSlotList);
+					LONG k;
+					for (k = 0; k < pEnemyLeader->fBtlCap.Leader.sMaxFollowers; k++)
 					{
-						CAvatar * pOtherTroop = (CAvatar *)BLKPTR(pOtherList[k]);
-						pOtherTroop->hEnemy = fERROR;
+						if (pOtherList[k] != fERROR)
+						{
+							CAvatar * pOtherTroop = (CAvatar *)BLKPTR(pOtherList[k]);
+							pOtherTroop->hEnemy = fERROR;
+						}
 					}
 				}
 			}
+			pTroop->hEnemy = fERROR;
+			pTroop->Engaged = 0;
 		}
-		pTroop->hEnemy = fERROR;
-		pTroop->Engaged = 0;
 	}
 
 	// if my unit hit by some magic (not arrows), do special death
@@ -3996,6 +4022,16 @@ void CAvatar::FollowBtlCap (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 		}
 		
 		pEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
+		if(!IsPointerGood(pEnemy))
+		{
+			pAvatar->hEnemy = fERROR;
+			pAvatar->Engaged--;
+			pAvatar->Status = AI_MOVING;
+			pAvatar->fTimeLastMoved = SCENE_MGR::gTick;
+			if (pAvatar->Engaged < 0)
+				pAvatar->Engaged = 0;
+			break;
+		}
 		
 		// if my enemy is dead, go back and stand in formation
 		if( pEnemy->Status == CAvatar::AI_DEAD )
@@ -4776,6 +4812,11 @@ void SendMagic ( CAvatar *pAvatar )
 		return;
 	
 	pEnemy = (CAvatar *)BLKPTR(pAvatar->hEnemy);
+	if(!IsPointerGood(pEnemy))
+	{
+		pAvatar->hEnemy = fERROR;
+		return;
+	}
 	
 	//----  if a remote player then send magic message to them
 
