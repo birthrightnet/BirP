@@ -51,6 +51,9 @@ unsigned long FindTrackStart (unsigned char track);
 int CheckCDBusy (void);
 int PlayCDMusic (unsigned short tune);
 void LoadMusicFromCD(short);
+void SuspendMusic(void);
+void ResumeSuspendedMusic(void);
+BOOL IsMusicSuspended(void);
 
 
 #if defined (__cplusplus)

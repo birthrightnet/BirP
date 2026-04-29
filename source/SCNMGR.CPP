@@ -510,6 +510,16 @@ LONG const SCENE_MGR::mfLoadScene(
 		// no longer used: add_task(10,SectorFrameHandler,0);  //once every 10 frames check sector effects
 	}
 	ResumeSuspendedMusic();
+
+	// Adventure init requests track playback while music is suspended during
+	// scene load; replay after resume so first-entry adventure music starts.
+	SCENE_AI::STATE SceneState;
+	SCENE_AI::SCENE_TYPE SceneType;
+	pCurrentScene->mfGetSceneAIState(&SceneState, &SceneType);
+	if (SceneType == SCENE_AI::ADVENTURE_SCENE)
+	{
+		PlayTrack(ucWhichTrack);
+	}
 	//GEH ClrLock(SCENE_MGR::hCurrentScene);
 	return fNOERR;
 

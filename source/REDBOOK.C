@@ -28,6 +28,7 @@ extern HWND	hwndApp;
 #include "sound.hxx"
 #include "redbook.h"
 #include "system.h"
+#include "logger.h"
 /*#######################################################################\
 #    Prototypes
 \#######################################################################*/
@@ -150,6 +151,8 @@ int InitRedBook(void)
 		fMusic = 1;
 	else
 		fMusic = 0;
+
+	logInfo("InitRedBook complete cdAvailable=%d musicEnabled=%d installType=%d", fCDAvailible, fMusic, InstallationType);
 	
 	return 1;
 }
@@ -245,9 +248,24 @@ int StopRedBook (void)
 
 int PlayTrack (SHORT track)
 {
+	logDebug("PlayTrack request track=%d currentTrack=%d fMusic=%d suspended=%d currentSong=%d currentTag=%d volumeIndex=%d",
+		track,
+		ucWhichTrack,
+		fMusic,
+		MusicSuspended,
+		CurrentSong,
+		CurrentTag,
+		VolumeIndex);
 	
 	if(!fMusic || MusicSuspended)
+	{
+		logWarn("PlayTrack blocked track=%d fMusic=%d suspended=%d volumeIndex=%d",
+			track,
+			fMusic,
+			MusicSuspended,
+			VolumeIndex);
 		return 0;
+	}
 		
 	ucWhichTrack = track;
 	
@@ -261,6 +279,7 @@ int PlayTrack (SHORT track)
 #ifdef _WINDOWS
 		StopRedBook();
 
+		logInfo("PlayTrack using CD track=%d", track);
 		mci_PlayCD(hwndApp, track, 0, 0, 0, 0, 0, 0);
 		return 0;
 #else
@@ -313,11 +332,33 @@ int PlayTrack (SHORT track)
 				CurrentTag = AddSndObj((BIRTHRT_SND)105,0,VOLUME_FULL);
 				CurrentSong= 105;
 				break;
+			case 121:
+				CurrentTag = AddSndObj((BIRTHRT_SND)121,0,VOLUME_FULL);
+				CurrentSong= 121;
+				break;
 			default:
 				CurrentTag = AddSndObj((BIRTHRT_SND)THE_SONG_ON_THE_HARD_DRIVE,0,VOLUME_FULL);
 				CurrentSong= THE_SONG_ON_THE_HARD_DRIVE;
 				break;
 			}
+
+		if (CurrentTag == fERROR)
+		{
+			logWarn("PlayTrack failed track=%d resolvedSong=%d tag=%d fMusic=%d volumeIndex=%d",
+				track,
+				CurrentSong,
+				CurrentTag,
+				fMusic,
+				VolumeIndex);
+		}
+		else
+		{
+			logInfo("PlayTrack started track=%d resolvedSong=%d tag=%d volumeIndex=%d",
+				track,
+				CurrentSong,
+				CurrentTag,
+				VolumeIndex);
+		}
 		
 	}
 	return (0);
@@ -590,6 +631,14 @@ void UISetMusicVolume(int volume)
 	if( ( (InstallationType == INSTALL_LARGE ) && !GetCDTrack()) || (InstallationType != INSTALL_LARGE) )
 #endif
 	{
+		logInfo("UISetMusicVolume request new=%d old=%d currentTrack=%d currentSong=%d currentTag=%d fMusic=%d",
+			volume,
+			OldVolume,
+			ucWhichTrack,
+			CurrentSong,
+			CurrentTag,
+			fMusic);
+
 		VolumeIndex = volume;
 		if(volume == 0)
 		{
@@ -597,11 +646,13 @@ void UISetMusicVolume(int volume)
 				StopASound(CurrentSong,CurrentTag);
 			CurrentTag = fERROR;
 			fMusic = 0;
+			logInfo("UISetMusicVolume muted music track=%d", ucWhichTrack);
 		}
 		else
 		{
 			if(OldVolume == 0)
 			{
+				logInfo("UISetMusicVolume re-enabling music; replaying track=%d", ucWhichTrack);
 				PlayTrack(ucWhichTrack);	
 			}
 			else
@@ -610,6 +661,12 @@ void UISetMusicVolume(int volume)
 					SetMusicVolume(CurrentSong,volume_levels[VolumeIndex],CurrentTag);
 			}
 			fMusic = 1;
+			logInfo("UISetMusicVolume set track=%d song=%d tag=%d level=%d fMusic=%d",
+				ucWhichTrack,
+				CurrentSong,
+				CurrentTag,
+				VolumeIndex,
+				fMusic);
 		}
 		OldVolume = volume;
 	}
@@ -634,6 +691,11 @@ void SuspendMusic(void)
 void ResumeSuspendedMusic(void)
 {
 	MusicSuspended = FALSE;
+}
+
+BOOL IsMusicSuspended(void)
+{
+	return MusicSuspended;
 }
 
 

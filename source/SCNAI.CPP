@@ -919,8 +919,6 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 			UIPlayEnvironmentalSounds,
 			WhichEnvironmentalSound,
 			ReportFreeMem(TRUE));
-	
-		PlayTrack(ucWhichTrack);
 		
 		set_margin_size(0, 0, 0, 0);
 		

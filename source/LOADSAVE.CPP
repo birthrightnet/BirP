@@ -8,7 +8,7 @@
    ========================================================================
    Contains the following general functions:
 
-   ÔøΩRM250ÔøΩ======================================================================= */
+   ùRM250ù======================================================================= */
 
 /* ------------------------------------------------------------------------
    Includes
@@ -1620,6 +1620,9 @@ void LoadGameDo(LONG MenuCombo, LONG )
 	ReconstructMap();
 	SetRedrawMainMapLevel();
 	fFadedOut = -1;
+
+	ucWhichTrack = REDBOOK_REALM;
+	PlayTrack(REDBOOK_REALM);
 
 	if (ScenarioInfo.IsScenario)		// [abc] 10/6/97
 		NewGameConfirmed2(FALSE);

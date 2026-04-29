@@ -43,6 +43,7 @@
 
 #include "sound.hxx"
 #include "scene.hxx"
+#include "logger.h"
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
@@ -97,7 +98,7 @@ extern HINSTANCE hInstApp;
 /* ------------------------------------------------------------------------
    Global Variables
    ------------------------------------------------------------------------ */
-BOOL PlayEnvironmentalSounds = TRUE;
+BOOL PlayEnvironmentalSounds = FALSE;
 BOOL UIPlayEnvironmentalSounds = TRUE;
 SHORT WhichEnvironmentalSound = 0;
 #ifdef _WINDOWS
@@ -178,9 +179,21 @@ SHORT AddSndObj( BIRTHRT_SND  WaveID, SHORT randomCount, LONG MyThingsIndex)
 	//static SHORT numChallenges = 0;
 	LONG volume;
 	int pan = 50;
+	BIRTHRT_SND const RequestedWaveID = WaveID;
 
 	if(!AudioInitialized || (!SFXVolumeIndex && !fMusic)  )
+	{
+		if (MyThingsIndex == ENVIRON_SND || RequestedWaveID == SND_LAVA_LOOP1)
+		{
+			logWarn("AddSndObj rejected wave=%d thing=%ld audioInitialized=%d sfx=%d music=%d",
+				RequestedWaveID,
+				MyThingsIndex,
+				AudioInitialized,
+				SFXVolumeIndex,
+				fMusic);
+		}
 		return fERROR;
+	}
 
 #ifdef AUDIO_LIB
 	static SHORT InstanceTag = 1;
@@ -244,6 +257,24 @@ SHORT AddSndObj( BIRTHRT_SND  WaveID, SHORT randomCount, LONG MyThingsIndex)
 	// calculate distance from camera to thing
 	else
 	{
+		if (MyThingsIndex >= MAX_THINGS)
+		{
+			logWarn("AddSndObj invalid thing index wave=%d requestedWave=%d thing=%ld max=%d",
+				WaveID,
+				RequestedWaveID,
+				MyThingsIndex,
+				MAX_THINGS);
+			return fERROR;
+		}
+		if (mythings[MyThingsIndex].valid != TRUE)
+		{
+			logWarn("AddSndObj invalid thing reference wave=%d requestedWave=%d thing=%ld valid=%d",
+				WaveID,
+				RequestedWaveID,
+				MyThingsIndex,
+				mythings[MyThingsIndex].valid);
+			return fERROR;
+		}
 		// set the pan
 		pan = CalculatePan(MyThingsIndex);
 		volume = aprox_dist(PLAYER_INT_VAL(player.x),
@@ -278,13 +309,47 @@ SHORT AddSndObj( BIRTHRT_SND  WaveID, SHORT randomCount, LONG MyThingsIndex)
 				Instance = InstanceTag;
 				// kernel->AudioPan((int)WaveID, pan,(int)InstanceTag);
 			}
+			else if (MyThingsIndex == ENVIRON_SND || RequestedWaveID == SND_LAVA_LOOP1)
+			{
+				logWarn("AudioPlay failed wave=%d requestedWave=%d looped=%d volume=%ld pan=%d thing=%ld samples=%d limit=%d",
+					WaveID,
+					RequestedWaveID,
+					looped,
+					volume,
+					pan,
+					MyThingsIndex,
+					kernel->AudioActiveSamples(),
+					UserNumSFXPlaying);
+			}
 		}
 		else
+		{
+			if (MyThingsIndex == ENVIRON_SND || RequestedWaveID == SND_LAVA_LOOP1)
+			{
+				logDebug("AddSndObj deferred wave=%d requestedWave=%d samples=%d limit=%d volume=%ld thing=%ld",
+					WaveID,
+					RequestedWaveID,
+					kernel->AudioActiveSamples(),
+					UserNumSFXPlaying,
+					volume,
+					MyThingsIndex);
+			}
 			Instance = fERROR;
+		}
 #endif  // AUDIO_LIB
 //#ifdef WINDOWS_SOUND
 //		PlayWaveEx( WaveID, looped, pan * 32,-(MAX_VOLUME - volume) * 16,0 );
 //#endif //WINDOWS_SOUND
+	}
+	else if (MyThingsIndex == ENVIRON_SND || RequestedWaveID == SND_LAVA_LOOP1)
+	{
+		logDebug("AddSndObj skipped wave=%d requestedWave=%d volume=%ld thing=%ld min=%d max=%d",
+			WaveID,
+			RequestedWaveID,
+			volume,
+			MyThingsIndex,
+			MIN_VOLUME,
+			MAX_VOLUME);
 	}
 	return(Instance);
 
@@ -461,12 +526,37 @@ void UpdateLoopingSoundObjects(void)
 
 			else
 			{
-				distance= aprox_dist(PLAYER_INT_VAL(player.x),
-			               			  PLAYER_INT_VAL(player.y),
-			               			  mythings[LoopingSoundThing[i].ThingTypeIndex].x,
-			               			  mythings[LoopingSoundThing[i].ThingTypeIndex].y);
+				const LONG ThingIndex = LoopingSoundThing[i].ThingTypeIndex;
+				if (ThingIndex >= 0 && ThingIndex < MAX_THINGS && mythings[ThingIndex].valid == TRUE)
+				{
+					distance= aprox_dist(PLAYER_INT_VAL(player.x),
+				               		  PLAYER_INT_VAL(player.y),
+				               		  mythings[ThingIndex].x,
+				               		  mythings[ThingIndex].y);
 
-				distance = TweakVolume(distance);
+					distance = TweakVolume(distance);
+				}
+				else
+				{
+					if (LoopingSoundThing[i].InstanceTag != fERROR)
+					{
+						logWarn("UpdateLoopingSoundObjects invalid thing index=%ld wave=%d tag=%d arrayIndex=%ld; removing stale looping sound entry",
+							ThingIndex,
+							LoopingSoundThing[i].wave,
+							LoopingSoundThing[i].InstanceTag,
+							i);
+#ifdef WINDOWS_SOUND
+						PauseWave(LoopingSoundThing[i].wave);
+#else
+#ifdef AUDIO_LIB
+						kernel->AudioStop(LoopingSoundThing[i].wave, LoopingSoundThing[i].InstanceTag);
+#endif
+#endif
+						LoopingSoundCount--;
+					}
+					RemoveLoopingSoundFromArray(i);
+					continue;
+				}
 			}
 			// check each for distance.
 			if( (distance <= MAX_VOLUME) && (distance > MIN_VOLUME) )
@@ -559,7 +649,14 @@ LONG AddLoopingSound(BIRTHRT_SND WaveID, LONG ThingIndex)
 		TotalLoopingSounds++;
 	}
 	else
+	{
+		logWarn("AddLoopingSound overflow wave=%d thing=%ld total=%ld max=%d",
+			WaveID,
+			ThingIndex,
+			TotalLoopingSounds,
+			MAX_SOUND_THINGS);
 		total = fERROR;
+	}
 	return(total);
 }
 /*******************************************************************************
@@ -571,9 +668,22 @@ extern "C"
 void RemoveLoopingSound(LONG ArrayIndex)
 {
 	//int i;
+	if (ArrayIndex < 0 || ArrayIndex >= MAX_SOUND_THINGS)
+	{
+		logWarn("RemoveLoopingSound invalid index=%ld total=%ld max=%d",
+			ArrayIndex,
+			TotalLoopingSounds,
+			MAX_SOUND_THINGS);
+		return;
+	}
 
 	if(LoopingSoundThing[ArrayIndex].InstanceTag != fERROR)
 	{
+		logDebug("RemoveLoopingSound stopping wave=%d tag=%d arrayIndex=%ld thing=%ld",
+			LoopingSoundThing[ArrayIndex].wave,
+			LoopingSoundThing[ArrayIndex].InstanceTag,
+			ArrayIndex,
+			LoopingSoundThing[ArrayIndex].ThingTypeIndex);
 		StopASound((int) LoopingSoundThing[ArrayIndex].wave,LoopingSoundThing[ArrayIndex].InstanceTag);
 	}	
 		// remove the sound from the array
@@ -687,6 +797,14 @@ Purpose  prevent breakup up sound in DOS
 void ServiceSOLAudio(void)
 {
 	static SHORT FramesTilNextSound = 300;
+	static BOOL LoggedEnvironmentalState = FALSE;
+	static BOOL LastPlayEnvironmentalSounds = FALSE;
+	static BOOL LastUIPlayEnvironmentalSounds = FALSE;
+	static SHORT LastWhichEnvironmentalSound = -1;
+	static SHORT LastSFXVolumeIndex = -1;
+	BOOL const EnvironmentalSoundEnabled =
+		(BOOL)(PlayEnvironmentalSounds && UIPlayEnvironmentalSounds && SFXVolumeIndex);
+
 	if(!AudioInitialized )
 		return;
 
@@ -699,32 +817,84 @@ void ServiceSOLAudio(void)
 	ServiceMusicWave(FALSE);
 #endif
 
-	if(PlayEnvironmentalSounds && UIPlayEnvironmentalSounds && SFXVolumeIndex)
+	if (!LoggedEnvironmentalState ||
+		LastPlayEnvironmentalSounds != PlayEnvironmentalSounds ||
+		LastUIPlayEnvironmentalSounds != UIPlayEnvironmentalSounds ||
+		LastWhichEnvironmentalSound != WhichEnvironmentalSound ||
+		LastSFXVolumeIndex != SFXVolumeIndex)
+	{
+		logInfo("Environmental sound state play=%d ui=%d which=%d sfx=%d enabled=%d nextFrames=%d",
+			PlayEnvironmentalSounds,
+			UIPlayEnvironmentalSounds,
+			WhichEnvironmentalSound,
+			SFXVolumeIndex,
+			EnvironmentalSoundEnabled,
+			FramesTilNextSound);
+		if (EnvironmentalSoundEnabled && WhichEnvironmentalSound <= 0)
+		{
+			logWarn("Environmental sounds enabled without a scene profile; suppressing ambient requests play=%d ui=%d which=%d sfx=%d",
+				PlayEnvironmentalSounds,
+				UIPlayEnvironmentalSounds,
+				WhichEnvironmentalSound,
+				SFXVolumeIndex);
+		}
+		LoggedEnvironmentalState = TRUE;
+		LastPlayEnvironmentalSounds = PlayEnvironmentalSounds;
+		LastUIPlayEnvironmentalSounds = UIPlayEnvironmentalSounds;
+		LastWhichEnvironmentalSound = WhichEnvironmentalSound;
+		LastSFXVolumeIndex = SFXVolumeIndex;
+	}
+
+	if(EnvironmentalSoundEnabled && WhichEnvironmentalSound > 0)
 	{
 		// play random environmental sounds at random number of frames
 		FramesTilNextSound--;
 		if(FramesTilNextSound == 0)
 		{
+			SHORT AmbientSoundIndex = fERROR;
+			BIRTHRT_SND AmbientSound = (BIRTHRT_SND)0;
+			BOOL QueueAmbientSound = FALSE;
+
 			// set the number of frames til the next sound
 			FramesTilNextSound = (SHORT)(10 + SndRandom(300));
 			// play a sound
 			switch(WhichEnvironmentalSound)
 			{
 				case 1:
-					AddSndObj((BIRTHRT_SND)AmbientSoundScene1[SndRandom(AMBIENT_SOUND_SCENE_1_TOTAL)],NULL, ENVIRON_SND);
+					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_1_TOTAL);
+					AmbientSound = (BIRTHRT_SND)AmbientSoundScene1[AmbientSoundIndex];
+						QueueAmbientSound = TRUE;
 					break;
 				case 2:
-					AddSndObj((BIRTHRT_SND)AmbientSoundScene2[SndRandom(AMBIENT_SOUND_SCENE_2_TOTAL)],NULL, ENVIRON_SND);
+					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_2_TOTAL);
+					AmbientSound = (BIRTHRT_SND)AmbientSoundScene2[AmbientSoundIndex];
+						QueueAmbientSound = TRUE;
 					break;
 				case 3:
-					AddSndObj((BIRTHRT_SND)AmbientSoundScene3[SndRandom(AMBIENT_SOUND_SCENE_3_TOTAL)],NULL, ENVIRON_SND);
+					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_3_TOTAL);
+					AmbientSound = (BIRTHRT_SND)AmbientSoundScene3[AmbientSoundIndex];
+						QueueAmbientSound = TRUE;
 					break;
 				case 4:
-					AddSndObj((BIRTHRT_SND)AmbientSoundScene4[SndRandom(AMBIENT_SOUND_SCENE_4_TOTAL)],NULL, ENVIRON_SND);
+					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_4_TOTAL);
+					AmbientSound = (BIRTHRT_SND)AmbientSoundScene4[AmbientSoundIndex];
+						QueueAmbientSound = TRUE;
 					break;
 				case 5:
-					AddSndObj((BIRTHRT_SND)AmbientSoundScene5[SndRandom(AMBIENT_SOUND_SCENE_5_TOTAL)],NULL, ENVIRON_SND);
+					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_5_TOTAL);
+					AmbientSound = (BIRTHRT_SND)AmbientSoundScene5[AmbientSoundIndex];
+						QueueAmbientSound = TRUE;
 					break;
+			}
+
+				if (QueueAmbientSound)
+			{
+				logDebug("Queueing environmental sound scene=%d index=%d sound=%d nextFrames=%d",
+					WhichEnvironmentalSound,
+					AmbientSoundIndex,
+					AmbientSound,
+					FramesTilNextSound);
+				AddSndObj(AmbientSound, NULL, ENVIRON_SND);
 			}
 		}
 	}
@@ -846,13 +1016,35 @@ Purpose
 void	StopASound (int reqSound, int SoundTag)
 {
 	if(!AudioInitialized)
+	{
+		if (reqSound == SND_LAVA_LOOP1)
+		{
+			logWarn("StopASound ignored reqSound=%d tag=%d because audio is not initialized",
+				reqSound,
+				SoundTag);
+		}
 		return;
+	}
 #ifdef WINDOWS_SOUND
 	PauseWave( reqSound );
 #else
 #ifdef AUDIO_LIB
 	if( (SoundTag > 0) &&(reqSound > 0))
+	{
+		if (reqSound == SND_LAVA_LOOP1)
+		{
+			logDebug("StopASound reqSound=%d tag=%d",
+				reqSound,
+				SoundTag);
+		}
 		kernel->AudioStop(reqSound,SoundTag);
+	}
+	else if (reqSound == SND_LAVA_LOOP1)
+	{
+		logWarn("StopASound rejected reqSound=%d tag=%d",
+			reqSound,
+			SoundTag);
+	}
 #endif
 #endif
 }

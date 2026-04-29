@@ -1003,6 +1003,19 @@ void GameMain(void)
 	clear_key_status(0);
 	ResumeSuspendedMusic();
 
+#if !defined(_DEMO)
+	if (fMusic)
+	{
+		ucWhichTrack = REDBOOK_REALM;
+		logInfo("GameMain starting initial menu music track=%d", ucWhichTrack);
+		PlayTrack(ucWhichTrack);
+	}
+	else
+	{
+		logWarn("GameMain initial menu music skipped because fMusic=0");
+	}
+#endif
+
 #ifdef _DEMO
 	PlayTrack(REDBOOK_REALM);
 	SlideShowPlaying = FALSE;
@@ -1978,8 +1991,44 @@ void CheckTheCDMusic(void)
 {
 	static LONG StartTime = 0;
 	static SHORT delayTicks;
+	static LONG LastMusicGateLogTime = 0;
+	static LONG SuspendedStartTime = 0;
+	LONG const Now = get_time();
 
-	if(fMusic && !CheckCDBusy() && 	(ucWhichTrack != 100) )
+	if (IsMusicSuspended())
+	{
+		if (fMusic && (ucWhichTrack != 100) &&
+			((master_game_type == GAME_ADVENTURE) || gfInCombat))
+		{
+			if (SuspendedStartTime == 0)
+			{
+				SuspendedStartTime = Now;
+			}
+			else if ((Now - SuspendedStartTime) > (18 * 12))
+			{
+				logInfo("CheckTheCDMusic auto-resume after long suspend track=%d gameType=%d combat=%d",
+					ucWhichTrack,
+					master_game_type,
+					gfInCombat);
+				ResumeSuspendedMusic();
+				SuspendedStartTime = 0;
+			}
+		}
+		return;
+	}
+
+	SuspendedStartTime = 0;
+
+	if (!fMusic || (ucWhichTrack == 100))
+	{
+		if (Now - LastMusicGateLogTime > 182)
+		{
+			logDebug("CheckTheCDMusic gated fMusic=%d track=%d startTime=%ld", fMusic, ucWhichTrack, StartTime);
+			LastMusicGateLogTime = Now;
+		}
+	}
+
+	if(fMusic && !CheckCDBusy() && (ucWhichTrack != 100) && !IsMusicSuspended())
 	{
 		if( (ucWhichTrack == REDBOOK_REALM) ||	(ucWhichTrack == REDBOOK_PERSCOMBAT) )
 			PlayTrack(ucWhichTrack);

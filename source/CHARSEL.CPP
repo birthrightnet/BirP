@@ -15,7 +15,7 @@
    void BeginRule(LONG, LONG)
    void SelectAdvParty(void)
 
-   ÔøΩRM250ÔøΩ======================================================================= */
+   ùRM250ù======================================================================= */
 /* ------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
@@ -581,6 +581,9 @@ void NewGameConfirmed(LONG,LONG lMultiFlag)
 	LoadGameFiles(fp);
 	fclose(fp);
 	date = 0;
+
+	ucWhichTrack = REDBOOK_REALM;
+	PlayTrack(REDBOOK_REALM);
 
 	NewGameConfirmed2( FALSE );
 

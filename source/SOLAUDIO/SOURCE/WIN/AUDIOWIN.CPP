@@ -114,8 +114,6 @@ int		activeSamples		= 0;
 #define AUDIO_TEMP MOVEABLE+TRANSITORY
 #define AUDIO_PERM MOVEABLE+PERSIST
 
-AudioMgr	*audioMgr;
-
 
 AudioMgrWin::AudioMgrWin()
 {
