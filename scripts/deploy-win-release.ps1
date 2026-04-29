@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Deploys the WIN95 release executable to C:\BIRTHRT.
+Deploys the WIN (RELEASE) executable to BIRTHRT_INSTALL_DIR.
 #>
 
 [CmdletBinding()]
@@ -8,5 +8,5 @@ param()
 
 $helper = Join-Path (Split-Path -Parent $MyInvocation.MyCommand.Path) 'deploy-helper.ps1'
 
-& $helper -Name 'WIN95 release deploy' -RelativeSourcePath 'build-artifacts\binaries\Release\Windows\nova95.exe'
+& $helper -Name 'Deploying WIN (RELEASE)...' -RelativeSourcePath 'build-artifacts\binaries\Release\Windows\nova95.exe'
 exit $LASTEXITCODE

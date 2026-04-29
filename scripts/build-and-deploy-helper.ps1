@@ -1,6 +1,28 @@
 <#
 .SYNOPSIS
 Runs one build wrapper and then its matching deploy wrapper.
+
+.DESCRIPTION
+Shared helper used by build-and-deploy wrapper scripts.
+Runs a build wrapper first and, if successful, runs the matching deploy wrapper.
+
+.PARAMETER BuildScript
+Build wrapper script file name in the same directory.
+
+.PARAMETER DeployScript
+Deploy wrapper script file name in the same directory.
+
+.PARAMETER SkipToolchainCheck
+Passes -SkipToolchainCheck to the build wrapper.
+
+.PARAMETER MakeBatPath
+Optional MAKE.BAT override path passed to the build wrapper.
+
+.PARAMETER ShowInformationalOutput
+When set, passes -ShowInformationalOutput to the build wrapper.
+
+.EXAMPLE
+& .\build-and-deploy-helper.ps1 -BuildScript 'build-win-release.ps1' -DeployScript 'deploy-win-release.ps1'
 #>
 
 [CmdletBinding()]
@@ -12,7 +34,8 @@ param(
     [string]$DeployScript,
 
     [switch]$SkipToolchainCheck,
-    [string]$MakeBatPath
+    [string]$MakeBatPath,
+    [switch]$ShowInformationalOutput
 )
 
 $ErrorActionPreference = 'Stop'
@@ -38,6 +61,9 @@ if ($SkipToolchainCheck) {
 if (-not [string]::IsNullOrWhiteSpace($MakeBatPath)) {
     $buildArgs += '-MakeBatPath'
     $buildArgs += $MakeBatPath
+}
+if ($ShowInformationalOutput) {
+    $buildArgs += '-ShowInformationalOutput'
 }
 
 & powershell @buildArgs

@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Copies one built executable from birp-dev\build-artifacts\binaries to C:\BIRTHRT.
+Copies one built executable from birp-dev\build-artifacts\binaries to BIRTHRT_INSTALL_DIR (or C:\BIRTHRT fallback).
 #>
 
 [CmdletBinding()]
@@ -11,10 +11,26 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$RelativeSourcePath,
 
-    [string]$DestinationDirectory = 'C:\BIRTHRT'
+    [string]$DestinationDirectory
 )
 
 $ErrorActionPreference = 'Stop'
+
+function Resolve-InstallDirectory {
+    $scopes = @('Process', 'User', 'Machine')
+    foreach ($scope in $scopes) {
+        $value = [Environment]::GetEnvironmentVariable('BIRTHRT_INSTALL_DIR', $scope)
+        if (-not [string]::IsNullOrWhiteSpace($value)) {
+            return $value
+        }
+    }
+
+    return 'C:\BIRTHRT'
+}
+
+if ([string]::IsNullOrWhiteSpace($DestinationDirectory)) {
+    $DestinationDirectory = Resolve-InstallDirectory
+}
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)

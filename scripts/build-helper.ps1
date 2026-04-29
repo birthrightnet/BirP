@@ -1,6 +1,42 @@
 <#
 .SYNOPSIS
 Runs one MAKE.BAT build-output validation scenario.
+
+.DESCRIPTION
+Shared helper used by scenario wrappers to run a MAKE.BAT scenario, capture
+terminal output, validate expected markers/artifacts, and emit a single-scenario
+report under birp-dev\build-artifacts\logs.
+
+.PARAMETER Name
+Display name for the scenario.
+
+.PARAMETER OsTarget
+OS token used to locate scenario build logs (for example, WIN95 or DOS).
+
+.PARAMETER ScenarioTokens
+Arguments passed to MAKE.BAT for the scenario.
+
+.PARAMETER ExpectedArtifacts
+Relative artifact paths that must exist after a successful run.
+
+.PARAMETER ExpectCleanStep
+When true, requires a clean-step marker in the build log.
+
+.PARAMETER ExpectBuildExitCodeMarker
+When true, requires a build exit code marker in the build log.
+
+.PARAMETER SkipToolchainCheck
+Skips required toolchain command checks (wmake/wcc386/wpp386).
+
+.PARAMETER MakeBatPath
+Optional path override to MAKE.BAT.
+
+.PARAMETER ShowInformationalOutput
+When set, prints informational build output to the terminal.
+By default, only warnings and errors are printed.
+
+.EXAMPLE
+& .\build-helper.ps1 -Name 'WIN95 release install' -OsTarget 'WIN95' -ScenarioTokens @('WIN95','--release') -ExpectedArtifacts @('build-artifacts\binaries\Release\Windows\nova95.exe') -ExpectCleanStep $true -ExpectBuildExitCodeMarker $true
 #>
 
 [CmdletBinding()]
@@ -25,7 +61,9 @@ param(
 
     [switch]$SkipToolchainCheck,
 
-    [string]$MakeBatPath
+    [string]$MakeBatPath,
+
+    [switch]$ShowInformationalOutput
 )
 
 $ErrorActionPreference = 'Stop'
@@ -57,7 +95,7 @@ if (-not $SkipToolchainCheck) {
     }
 
     if ($missing.Count -gt 0) {
-        throw "Missing required toolchain commands in PATH: $($missing -join ', '). Run birp-dev\scripts\setup-env-vars-for-birthright-preservation-patch.ps1 first."
+        throw "Missing required toolchain commands in PATH: $($missing -join ', '). Run birp-dev\scripts\setup-env-vars-for-building.ps1 first."
     }
 }
 
@@ -86,13 +124,25 @@ $cmdLine = "$quotedMakeBat $scenarioText"
 
 Push-Location $birpDevRoot
 try {
-    $cmdOutput = @(& cmd.exe /c $cmdLine)
+    $savedErrorActionPreference = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    $cmdOutputRaw = @(& cmd.exe /c $cmdLine *>&1)
+    $ErrorActionPreference = $savedErrorActionPreference
+    $cmdOutput = @($cmdOutputRaw | ForEach-Object { $_.ToString() })
     $exitCode = $LASTEXITCODE
+
+    $warningLines = @($cmdOutput | Where-Object { $_ -match 'Warning!|Warning\(' })
+    $errorLines = @($cmdOutput | Where-Object { $_ -match 'Error!|Error\(' })
+    $informationalLines = @($cmdOutput | Where-Object { $_ -notmatch 'Warning!|Warning\(|Error!|Error\(' })
+
     foreach ($line in $cmdOutput) {
-        Write-Host $line
+        if ($ShowInformationalOutput -or ($line -match 'Warning!|Warning\(|Error!|Error\(')) {
+            Write-Host $line
+        }
     }
 }
 finally {
+    $ErrorActionPreference = $savedErrorActionPreference
     Pop-Location
 }
 
@@ -185,7 +235,7 @@ else {
 
 $scenarioSlug = ($Name.ToLowerInvariant() -replace '[^a-z0-9]+', '-') -replace '(^-+|-+$)', ''
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
-$reportPath = Join-Path $buildLogsDir ("make-bat-test-report-" + $scenarioSlug + "-" + $stamp + ".txt")
+$reportPath = Join-Path $buildLogsDir ("build-report-" + $scenarioSlug + "-" + $stamp + ".txt")
 
 $summaryLines = New-Object 'System.Collections.Generic.List[string]'
 $summaryLines.Add('MAKE.BAT single-scenario test report') | Out-Null
@@ -195,8 +245,32 @@ $summaryLines.Add(("MAKE.BAT: " + $MakeBatPath)) | Out-Null
 $summaryLines.Add(("Status: " + $status)) | Out-Null
 $summaryLines.Add(("ExitCode: " + $exitCode)) | Out-Null
 $summaryLines.Add(("LogFile: " + $selectedLog)) | Out-Null
+$summaryLines.Add(("Warnings: " + $warningLines.Count)) | Out-Null
+$summaryLines.Add(("Errors: " + $errorLines.Count)) | Out-Null
+$summaryLines.Add(("Informational: " + $informationalLines.Count)) | Out-Null
 if ($errors.Count -gt 0) {
     $summaryLines.Add(("Issues: " + [string]::Join('; ', $errors))) | Out-Null
+}
+
+if ($informationalLines.Count -gt 0) {
+    $summaryLines.Add('InformationalLines:') | Out-Null
+    foreach ($line in $informationalLines) {
+        $summaryLines.Add(("  - " + $line)) | Out-Null
+    }
+}
+
+if ($warningLines.Count -gt 0) {
+    $summaryLines.Add('WarningLines:') | Out-Null
+    foreach ($line in $warningLines) {
+        $summaryLines.Add(("  - " + $line)) | Out-Null
+    }
+}
+
+if ($errorLines.Count -gt 0) {
+    $summaryLines.Add('ErrorLines:') | Out-Null
+    foreach ($line in $errorLines) {
+        $summaryLines.Add(("  - " + $line)) | Out-Null
+    }
 }
 
 Set-Content -Path $reportPath -Value $summaryLines -Encoding ASCII
