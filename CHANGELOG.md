@@ -27,8 +27,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Resolved warning-producing code paths in memory manager, selected platform-specific source modules, and SOLAUDIO CUSTMSYS linkage across WIN/DOS and DEBUG/RELEASE builds.
+- Removed an unused `_MULTIMONO` `DumpString` prototype in `WINSYS/GMULPLAY.CPP` that produced W014 "no reference to symbol" warnings in WIN and CHARED debug builds.
 - Hardened `PrepareBuildDirs` SOLAUDIO/RES staging cleanup with retry logic to reduce intermittent `Access denied` failures while restaging under `build-artifacts`.
 - Fixed DOS audio driver detection so `audioDrv` parsing in `resource.cfg` is whitespace-tolerant and falls back to `DACBLAST.DRV` instead of forced silent `DACNONE.DRV` when no valid entry is found.
+- Reduced random Adventure Mode crash risk by validating adventure bump indices before dereferencing `mythings[]`, correcting the scene 5 ambient sound table bound, preventing adventure-team joins when breadcrumb path state is missing, hardening team-iterator avatar-handle checks, adding stale enemy-handle guards in follow-player and combat attack routines, hardening scene avatar loops against invalid current-scene/avatar handles, and expanding adventure/environmental sound diagnostics around sound queueing, looping lava audio, stale looping-sound thing indices, and invalid scene/avatar handles. [#4](https://github.com/Shiryou/BirP/issues/4)
+- Hardened battle AI enemy/leader handle validation across captain combat flows to prevent stale-handle dereferences during engagements.
+- Restored initial menu/adventure music startup and improved suspend/resume handling so music no longer waits for first combat or fails to restart reliably. [#10](https://github.com/Shiryou/BirP/issues/10) [#32](https://github.com/Shiryou/BirP/issues/32)
+- Fixed no-CD bypass startup handling so release builds honor explicit `brsetup.cfg` bypass configuration (`[CD]=.` or `[CD_BYPASS]=1`).
 
 ### Removed
 
@@ -45,3 +50,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Custom adventures no longer crash the game when picking up the quest goal item. [#3](https://github.com/Shiryou/BirP/issues/3)
+- Fixed many legacy C and C++ errors that were intolerable by our modern Open Watcom toolchain.

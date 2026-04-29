@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0.4
-Date: 2026-04-26
+Version: 1.4.0.12
+Date: 2026-04-29
 
 TABLE OF CONTENTS
 
@@ -62,6 +62,11 @@ Removed
 Fixed
 
 - Fixed game window position resetting after restart by persisting last moved coordinates between sessions.
+- Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling.
+- Hardened battle AI enemy/leader handle checks to prevent rare tactical battle crashes caused by stale references.
+- Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume.
+- Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.
+- Fixed DOS audio driver fallback parsing so invalid or missing `audioDrv` entries no longer force silent output.
 
 1.4.0.4 - 2025-11-02
 

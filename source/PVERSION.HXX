@@ -14,12 +14,13 @@
 // The BUILD_MINOR should always be 4, to reflect the last official game patch (1.4).
 #define BUILD_MINOR 4
 
-// The BUILD_PATCH is manually incremented by 1 for every new public patch release. It began as 0 for the first beta public release.
+// The BUILD_PATCH is manually incremented by 1 during promotion to Prod.
+// Do not update this unless you are promoting to Prod.
 #define BUILD_PATCH 0
 
-// The BUILD_BUILD is auto-computed as 2 (base 1 + 1 for this branch PR) plus the total number of successful PRs merged or rebased into the birp-dev develop branch.
-// Do not include cancelled or abandoned PRs in the count, only include successful PRs.
-#define BUILD_BUILD 11
+// The BUILD_BUILD is auto-computed from latest commit at promotion to Prod.
+// You should update this field to the number of successful PRs in GitHub against the `develop` branch + 2, but keep in mind this will likely be replaced.
+#define BUILD_BUILD 12
 
 // These are for the Character Editor only.
 #define CHARED_BUILD_MAJOR 1
