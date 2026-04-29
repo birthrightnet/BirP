@@ -21,10 +21,11 @@
 #include <io.h>
 //#include <malloc.h>
 #include <string.h>
+#include "logger.h"
 #ifdef _WINDOWS
 #include <windows.h>
 //#include <mmsystem.h>	 //if you want to use the code in GetElapsedTicks, bring these back in
-extern void mMBox(char *,char *);
+void mMBox(char *,char *);
 DWORD		AudioFeedMSec = 2000;
 DWORD		AudioIOBytes = 65535;
 DWORD		DSoundMSec = 1000;
@@ -240,10 +241,10 @@ char* GetAudioDriverName()
 {
 	FILE *fp;
 	LONG fileResult;
-	char cpBuffer[40];
-	//char result[20];
+	char cpBuffer[80];
+	char *value;
+	char *end;
 
-//	strcpy(result,"DACNONE.drv");
 	fp=fopen("resource.cfg", "r");
 
 	if(fp != NULL)
@@ -253,58 +254,74 @@ char* GetAudioDriverName()
 			fileResult = GetNextLine(fp, cpBuffer, sizeof(cpBuffer));
 
 			if(fileResult == EOF)
-				return "DACNONE.DRV";
+				break;
 
 			if(strncmp(cpBuffer,"audioDrv", 8) == 0)
 				break;
 		}
 
-		if(stricmp(cpBuffer, "audioDrv  = DACBLAST.DRV")== 0)
+		if(strncmp(cpBuffer,"audioDrv", 8) == 0)
 		{
-			fclose(fp);
-			return "DACBLAST.DRV";
+			value = strchr(cpBuffer, '=');
+			if(value != NULL)
+			{
+				value++;
+				while((*value == ' ') || (*value == '\t'))
+					value++;
+
+				end = value + strlen(value);
+				while((end > value) && ((end[-1] == ' ') || (end[-1] == '\t') || (end[-1] == '\r') || (end[-1] == '\n')))
+					end--;
+				*end = '\0';
+
+				if(stricmp(value, "DACBLAST.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACBLAST.DRV";
+				}
+				else if(stricmp(value, "DACMSSYS.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACMSSYS.DRV";
+				}
+				else if(stricmp(value, "DACPRO.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACPRO.DRV";
+				}
+				else if(stricmp(value, "DACPRO8.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACPRO8.DRV";
+				}
+				else if(stricmp(value, "DACPRO16.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACPRO16.DRV";
+				}
+				else if(stricmp(value, "DACRRA.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACRRA.DRV";
+				}
+				else if(stricmp(value, "DACTHUND.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACTHUND.DRV";
+				}
+				else if(stricmp(value, "DACNONE.DRV") == 0)
+				{
+					fclose(fp);
+					return "DACNONE.DRV";
+				}
+			}
 		}
 
-		else if(stricmp(cpBuffer, "audioDrv  =	DACMSSYS.DRV") == 0)
-		{
-			fclose(fp);
-			return "DACMSSYS.DRV";
-		}
-
-		else if(stricmp(cpBuffer, "audioDrv  = DACPRO.DRV")== 0)
-		{
-			fclose(fp);
-			return "DACPRO.DRV";
-		}
-
-		else if(stricmp(cpBuffer, "audioDrv  = DACPRO8.DRV") == 0)
-		{
-			fclose(fp);
-			return "DACPRO8.DRV";
-		}
-
-		else if(stricmp(cpBuffer, "audioDrv  = DACPRO16.DRV") == 0)
-		{
-			fclose(fp);
-			return "DACPRO16.DRV";
-		}
-
-		else if(stricmp(cpBuffer, "audioDrv  = DACRRA.DRV") == 0)
-		{
-			fclose(fp);
-			return "DACRRA.DRV";
-		}
-
-		else if(strcmp(cpBuffer, "audioDrv  = DACTHUND.DRV") == 0)
-		{
-			fclose(fp);
-			return "DACTHUND.DRV";
-		}
+		fclose(fp);
 	}
-// xxxx change this for the release
-	return "DACNONE.DRV";
 
-	//return "DACBLAST.DRV";
+	// Prefer Sound Blaster emulation (DOSBox/PCem/real DOS) when no valid audioDrv is present.
+	return "DACBLAST.DRV";
 }
 
 //-------------------------------------------------------------------------------
@@ -325,11 +342,7 @@ MemID::MemID(void* h) : handle(h), len(GetDataBlkSize(Query_iResBlock((SHORT)h))
 {
 }
 
-#if defined (_WINDOWS)
 void MemID::Get(int /* type */, size_t size, int /* resHandle */, int /* flag */)
-#else
-void MemID::Get(size_t size)
-#endif
 {
 	//type = type;
 	//resHandle = resHandle;
@@ -349,6 +362,11 @@ void MemID::Get(size_t size)
 		handle = 0;
 		len = 0;
 	}
+}
+
+void MemID::Get(size_t size)
+{
+	Get(0, size, 0, 0);
 }
 
 void MemID::Realloc(size_t size)
@@ -556,6 +574,12 @@ MsgMgr::MsgMgr()
 }
 
 void
+mMBox(char* text, char* title)
+{
+	MessageBox(NULL, text, title, MB_OK | MB_TASKMODAL);
+}
+
+void
 MsgMgr::Fatal(char* fmt, ...) const
 {
 	char buf[200];
@@ -564,14 +588,39 @@ MsgMgr::Fatal(char* fmt, ...) const
 	va_start(args, fmt);
 	sprintf(buf, fmt, args);
 	va_end(args);
+    logFatal("%s", buf);
 #ifdef WINDOWS
 	mMBox (buf, "FATAL");
-#else
-	logFatal(buf);
 #endif
 	exit(1);
 }
 MsgMgr*	msgMgr;
+
+void
+Fatal(int code, int num)
+{
+	char buf[128];
+
+	switch (code)
+	{
+		case BAD_FORMAT:
+			sprintf(buf, "Invalid audio file format: %d", num);
+			break;
+		case COMPRESSED_WAVE:
+			sprintf(buf, "Cannot play compressed WAVE audio: %d", num);
+			break;
+		case SUBMIT:
+			sprintf(buf, "Audio submit error: %d", num);
+			break;
+		default:
+			sprintf(buf, "Unknown audio error: %d (%d)", code, num);
+			break;
+	}
+
+	logFatal("%s", buf);
+	mMBox(buf, "FATAL");
+	exit(1);
+}
 
 #else
 //-------------------------------------------------------------------------------
@@ -585,20 +634,22 @@ MsgMgr*	msgMgr;
 void
 Fatal(int code,int num)
 {
+	char buf[128];
+
 	switch (code) {
 		case BAD_FORMAT:
-//			printf("Unrecognized audio format for sample#%u\n",num);
+			sprintf(buf, "Unrecognized audio format for sample#%u", num);
 			break;
 		case COMPRESSED_WAVE:
-//			printf("Can't play compressed waves; sample#%u\n",num);
+			sprintf(buf, "Can't play compressed waves; sample#%u", num);
 			break;
 		case SUBMIT:
-//			printf("Error submitting audio\n");
+			sprintf(buf, "Error submitting audio");
 			break;
 		default:
-			num=num;
-//			printf("Unknown audio error\n");
+			sprintf(buf, "Unknown audio error: %d (%d)", code, num);
 	}
+	logFatal("%s", buf);
 	exit(1);
 }
 

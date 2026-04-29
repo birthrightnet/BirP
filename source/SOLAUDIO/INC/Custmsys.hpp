@@ -75,11 +75,8 @@ public:
 	MemID();
 	MemID(const MemID& id);
 	MemID(void* h); 
-#ifdef _WINDOWS
 	void Get(int type, size_t size, int resHandle = 0, int flag = 0);
-#else
 	void Get(size_t size);
-#endif
 	void Realloc(size_t size);
 	void Free();
 	int Read(int fd, size_t ofs, size_t size) const;

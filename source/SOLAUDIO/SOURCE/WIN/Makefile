@@ -23,7 +23,6 @@ DBG_OBJECTS = &
 	$(OBJ_DBG)\AUDIOWIN.obj &
 	$(OBJ_DBG)\AUDIODIR.obj &
 	$(OBJ_DBG)\AUDIODIX.obj &
-	$(OBJ_DBG)\CUSTMSYS.obj &
 	$(OBJ_DBG)\DSOUND.obj &
 	$(OBJ_DBG)\INTRPTW.obj &
 	$(OBJ_DBG)\KERNAUD.obj &
@@ -35,7 +34,6 @@ REL_OBJECTS = &
 	$(OBJ_REL)\AUDIOWIN.obj &
 	$(OBJ_REL)\AUDIODIR.obj &
 	$(OBJ_REL)\AUDIODIX.obj &
-	$(OBJ_REL)\CUSTMSYS.obj &
 	$(OBJ_REL)\DSOUND.obj &
 	$(OBJ_REL)\INTRPTW.obj &
 	$(OBJ_REL)\KERNAUD.obj &

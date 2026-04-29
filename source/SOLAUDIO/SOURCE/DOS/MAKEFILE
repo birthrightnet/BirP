@@ -20,7 +20,6 @@ REL_LIB = $(OUT_DIR)\SOLAUDD.LIB
 DBG_OBJECTS = &
 	$(OBJ_DBG)\AUDIOA.obj &
 	$(OBJ_DBG)\AUDIO.obj &
-	$(OBJ_DBG)\CUSTMSYS.obj &
 	$(OBJ_DBG)\CUSTMSYX.obj &
 	$(OBJ_DBG)\KERNAUD.obj &
 	$(OBJ_DBG)\FATAL.obj &
@@ -29,7 +28,6 @@ DBG_OBJECTS = &
 REL_OBJECTS = &
 	$(OBJ_REL)\AUDIOA.obj &
 	$(OBJ_REL)\AUDIO.obj &
-	$(OBJ_REL)\CUSTMSYS.obj &
 	$(OBJ_REL)\CUSTMSYX.obj &
 	$(OBJ_REL)\KERNAUD.obj &
 	$(OBJ_REL)\FATAL.obj &

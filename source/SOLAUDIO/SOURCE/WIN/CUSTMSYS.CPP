@@ -21,6 +21,7 @@
 #include <io.h>
 #include <malloc.h>
 #include <string.h>
+#include "logger.h"
 #ifdef WINDOWS
 #include <windows.h>  
 //#include <mmsystem.h>	 //if you want to use the code in GetElapsedTicks, bring these back in
@@ -294,13 +295,6 @@ MsgMgr::MsgMgr()
 {
 }
 
-// Change note (before/after/why):
-// - Before: WIN release links relied on extern declarations for mMBox and
-//   Fatal(int,int), but no implementation was linked in this library build.
-// - After: Provide local WIN implementations of mMBox and Fatal(int,int)
-//   in CUSTMSYS.CPP for the stand-alone SOLAUDIO build.
-// - Why: Resolve undefined symbol linker failures in WIN95 release builds
-//   while preserving fatal-error behavior (message box then exit).
 void
 mMBox(char* text, char* title)
 {
@@ -328,6 +322,7 @@ Fatal(int code, int num)
 			break;
 	}
 
+	logFatal("%s", buf);
 	mMBox(buf, "FATAL");
 	exit(1);
 }
@@ -341,10 +336,9 @@ MsgMgr::Fatal(char* fmt, ...) const
 	va_start(args, fmt);
 	sprintf(buf, fmt, args);
 	va_end(args);
+    logFatal("%s", buf);
 #ifdef WINDOWS
 	mMBox (buf, "FATAL");
-#else
-	printf(buf);
 #endif
 	exit(1);
 }

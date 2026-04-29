@@ -30,7 +30,7 @@ To Do:
 #ifdef AUDIO_LIB
 
 #include "custmsys.hpp"
-AudioMgr	*audioMgr;
+extern AudioMgr	*audioMgr;
 
 #else	 // !AUDIO_LIB
 

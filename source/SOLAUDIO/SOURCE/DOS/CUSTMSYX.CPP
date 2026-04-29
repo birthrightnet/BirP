@@ -24,6 +24,8 @@
 #include <malloc.h>
 #include <string.h>
 
+extern "C" void logFatal(const char *message, ...);
+
 #include "custmsys.hpp"
 #include "audio.hpp"
 
@@ -115,20 +117,22 @@ int Read(int fd, void* buf, int n)
 void
 Fatal(int code,int num)
 {
+	char buf[128];
+
 	switch (code) {
 		case BAD_FORMAT:
-//			printf("Unrecognized audio format for sample#%u\n",num);
+			sprintf(buf, "Unrecognized audio format for sample#%u", num);
 			break;
 		case COMPRESSED_WAVE:
-//			printf("Can't play compressed waves; sample#%u\n",num);
+			sprintf(buf, "Can't play compressed waves; sample#%u", num);
 			break;
 		case SUBMIT:
-//			printf("Error submitting audio\n");
+			sprintf(buf, "Error submitting audio");
 			break;
 		default:
-			num=num;
-//			printf("Unknown audio error\n");
+			sprintf(buf, "Unknown audio error: %d (%d)", code, num);
 	}
+	logFatal("%s", buf);
 	exit(1);
 }
 
