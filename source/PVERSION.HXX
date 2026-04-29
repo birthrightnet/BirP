@@ -17,7 +17,8 @@
 // The BUILD_PATCH is manually incremented by 1 for every new public patch release. It began as 0 for the first beta public release.
 #define BUILD_PATCH 0
 
-// The BUILD_BUILD should be incremented for every change to the build. It resets when BUILD_PATCH is incremented. This ties the build a player is using to the exacty point in history it was created from. Re-building from that commit should produce the same build. For more information, see: https://en.wikipedia.org/wiki/Reproducible_builds
+// The BUILD_BUILD is auto-computed as 2 (base 1 + 1 for this branch PR) plus the total number of successful PRs merged or rebased into the birp-dev develop branch.
+// Do not include cancelled or abandoned PRs in the count, only include successful PRs.
 #define BUILD_BUILD 11
 
 // These are for the Character Editor only.

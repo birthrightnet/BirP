@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
 Version: 1.4.0.4
-Date: 2026-04-25
+Date: 2026-04-26
 
 TABLE OF CONTENTS
 

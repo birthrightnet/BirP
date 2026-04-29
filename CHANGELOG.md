@@ -22,6 +22,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Reorganized documentation into `CHANGELOG.md` for developer-facing changelog, `readme.txt` for user-facing instructions and notes on how to use the new version, and `BUILD-OPTIONS.md` for build options documentation.
 - Many updates to `MAKE.BAT` to support new build options and targets, and to be the primary build script for the project. See `BUILD-OPTIONS.md` for details on new build options and targets.
 - Replaced and unified logging [#8](https://github.com/Shiryou/BirP/issues/8).
+- Updated build, deploy, and test scripts to reduce console noise while improving warning/error summaries and visibility.
+
+### Fixed
+
+- Resolved warning-producing code paths in memory manager, selected platform-specific source modules, and SOLAUDIO CUSTMSYS linkage across WIN/DOS and DEBUG/RELEASE builds.
+- Hardened `PrepareBuildDirs` SOLAUDIO/RES staging cleanup with retry logic to reduce intermittent `Access denied` failures while restaging under `build-artifacts`.
+- Fixed DOS audio driver detection so `audioDrv` parsing in `resource.cfg` is whitespace-tolerant and falls back to `DACBLAST.DRV` instead of forced silent `DACNONE.DRV` when no valid entry is found.
 
 ### Removed
 
