@@ -127,7 +127,8 @@ int main(int argc,char * argv[])
 			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
-				BypassCD = (atoi(cpBuffer) == 1) ? TRUE : FALSE;
+				if(atoi(cpBuffer) == 1)
+					BypassCD = TRUE;
 			}
 			else if(strcmp(cpBuffer,"[LOG_LEVEL]") == 0)
 			{
@@ -155,12 +156,9 @@ int main(int argc,char * argv[])
 	//Parse the command line
 	parse_cmdline(argc,argv);
 	init_statistics();
-
-#if defined (_RELEASE)
 	SetInt24();
 	CheckCD();
 	ClearInt24();
-#endif
 
 	// Install a kbrd handler.. check_regions will call key_status
 	// on PC this uses key_stat array. On PC keyint will fill in array
@@ -255,6 +253,7 @@ void ProcessResponseFile (char * szArgument)
 	}
 }
 #endif
+#endif
 
 /* =======================================================================
    Function    - parse_cmdline
@@ -331,7 +330,7 @@ void AppIdle(void)
    Description - displays command line options
    Returns     - void
    ======================================================================== */
-#if !defined(_RELEASE)
+#if !defined (_RELEASE)
 static void print_usage()
 {
 	logInfo("Usage:NOVA <switches>");
@@ -345,7 +344,6 @@ static void print_usage()
 	logInfo("      @respfile.rsp    Read switches from DCK response file");
 #endif
 }
-#endif
 #endif
 void UpdateFPS(void)
 {

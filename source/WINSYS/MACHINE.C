@@ -445,7 +445,8 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
-				BypassCD = (atoi(cpBuffer) == 1) ? TRUE : FALSE;
+				if(atoi(cpBuffer) == 1)
+					BypassCD = TRUE;
 			}
 			else if(strcmp(cpBuffer,"[LOG_LEVEL]") == 0)
 			{
@@ -482,13 +483,10 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	//GEH GEH GEH!!!!!!!!!!!!!!!!!!!!!!!!!
 	//GEH SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 
-
-#if defined (_RELEASE)
 	// make sure the cd is in
 	CheckCD();
 	if(fQuitting == TRUE)
 		return (FALSE);
-#endif
 
 	// [ABC] 12-16-97
 	joyGetDevCaps(JOYSTICKID1, &joyCaps, sizeof(joyCaps));

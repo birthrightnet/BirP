@@ -154,16 +154,14 @@ void ClearInt24(void)
 
 void CheckCD(void)
 {
-
-#if defined (_RELEASE)
 #if !defined (_JUNEDEMO)
 	char	chFileName[_MAX_PATH];
-	#ifndef _WINDOWS
+#ifndef _WINDOWS
 	int fFadeOut;
 	char szText[80];
 	SHORT w, h, x, y;
 	int c;
-	#endif
+#endif
 
 	if( '\0' != CDDrive[0] )
 		#if defined(_MULTIPLAY_ONLY)
@@ -261,7 +259,6 @@ checkit:
 		goto checkit;
 	}
 #endif // _JUNEDEMO
-#endif // _RELEASE
 }
 
 

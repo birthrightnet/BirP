@@ -2502,8 +2502,8 @@ static void draw_thing (LONG t)
 						iHead = piData->iData[iSeq];
 						if (iHead <= 0)
 						{
-							logWarn("Unable to get stand animation %s seq: %c !!",
-							GetThingName(t), cAction[mythings[t].iSequence]);
+							logWarn("Unable to get stand animation type=%ld name=%s thing=%ld seq=%c",
+							type, GetThingName(type), t, cAction[mythings[t].iSequence]);
 							return;	// couldn't load the stand.
 						}
 					}
@@ -2666,8 +2666,8 @@ static void draw_thing (LONG t)
 						if (iHead <= 0)
 						{
 							// unable to load stand.
-							logWarn("Unable to get stand animation %s seq: %c !!",
-							GetThingName(t), cAction[mythings[t].iSequence]);
+							logWarn("Unable to get stand animation type=%ld name=%s thing=%ld seq=%c",
+							type, GetThingName(type), t, cAction[mythings[t].iSequence]);
 							return;
 						}
 					}
@@ -4478,6 +4478,9 @@ SHORT LoadIData (
 	(void)fSetPal;
 	(void)fRotated;
 	(void)iResFileSlot;
+#if !defined(_DEBUG)
+	(void)szFileName;
+#endif
 
 	hiData = NewBlock(sizeof(I_DATA_BLK));
 	if (hiData > 0)

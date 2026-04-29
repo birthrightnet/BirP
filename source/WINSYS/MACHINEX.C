@@ -429,7 +429,8 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 			else if(strcmp(cpBuffer,"[CD_BYPASS]") == 0)
 			{
 				fileResult = GetNextLine(fp,cpBuffer,sizeof(cpBuffer));
-				BypassCD = (atoi(cpBuffer) != 0) ? TRUE : FALSE;
+				if(atoi(cpBuffer) == 1)
+					BypassCD = TRUE;
 			}
 		}
 	}while(fileResult != EOF);
@@ -454,13 +455,10 @@ BOOL AppInit( HINSTANCE hInst, HINSTANCE hPrev, LPSTR szCmdLine, int sw )
 	//GEH GEH GEH!!!!!!!!!!!!!!!!!!!!!!!!!
 	//GEH SetPriorityClass(GetCurrentProcess(), HIGH_PRIORITY_CLASS);
 
-
-#if defined (_RELEASE)
 	// make sure the cd is in
 	CheckCD();
 	if(fQuitting == TRUE)
 		return (FALSE);
-#endif
 
 
 	GameMain();
