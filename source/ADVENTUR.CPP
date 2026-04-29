@@ -22,6 +22,7 @@
 #include "sound.hxx"
 #include "scene.hxx"
 #include "playstat.hxx"
+#include "logger.h"
 
 /* ------------------------------------------------------------------------
    Notes
@@ -122,11 +123,23 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 				if (!fLavaSoundOn)
 				{
 					fLavaSoundID = AddSndObj (SND_LAVA_LOOP1, 0, VOLUME_FULL);
+					logInfo("Adventure lava sound start sector=%d soundId=%d pos=%ld,%ld,%ld",
+						pPlayer->currentSector,
+						fLavaSoundID,
+						pPlayer->x,
+						pPlayer->y,
+						pPlayer->z);
 					fLavaSoundOn = TRUE;
 				}
 			}
 			else if (fLavaSoundOn)
 			{
+				logInfo("Adventure lava sound stop sector=%d soundId=%d pos=%ld,%ld,%ld",
+					pPlayer->currentSector,
+					fLavaSoundID,
+					pPlayer->x,
+					pPlayer->y,
+					pPlayer->z);
 				if (fLavaSoundID != fERROR)
 					StopASound (SND_LAVA_LOOP1, fLavaSoundID);
 				fLavaSoundOn = FALSE;
@@ -143,7 +156,10 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 			if (SCENE_MGR::gTick > SoundDelay + fTimeLastBump)
 			{
 				fTimeLastBump = SCENE_MGR::gTick;
-				if (pPlayer->BumpIndex >= 0 && GAME_TTYPE::mfIsAvatarType(mythings[pPlayer->BumpIndex].type))
+				if (pPlayer->BumpIndex >= 0 &&
+					pPlayer->BumpIndex < MAX_THINGS &&
+					mythings[pPlayer->BumpIndex].valid == TRUE &&
+					GAME_TTYPE::mfIsAvatarType(mythings[pPlayer->BumpIndex].type))
 				{
 					if (CAvatar::mfDeadFlicSeq(pPlayer->BumpIndex))
 					{
@@ -156,6 +172,26 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 				}
 				else
 				{
+					if (pPlayer->BumpIndex >= MAX_THINGS)
+					{
+						logWarn("Adventure bump index out of range: bump=%d index=%ld sector=%d pos=%ld,%ld,%ld",
+							pPlayer->bump,
+							pPlayer->BumpIndex,
+							pPlayer->currentSector,
+							pPlayer->x,
+							pPlayer->y,
+							pPlayer->z);
+					}
+					else if (pPlayer->BumpIndex >= 0 && mythings[pPlayer->BumpIndex].valid != TRUE)
+					{
+						logWarn("Adventure bump index references invalid thing: bump=%d index=%ld sector=%d pos=%ld,%ld,%ld",
+							pPlayer->bump,
+							pPlayer->BumpIndex,
+							pPlayer->currentSector,
+							pPlayer->x,
+							pPlayer->y,
+							pPlayer->z);
+					}
 					AddSndObj(SND_HIT_WALL1,SND_HIT_WALL_TOTAL, -1);
 				}
 			}
@@ -221,6 +257,17 @@ void ADVENTURER::mfInitAdventureTeam(PLAYER const * const pPlayer)
 	fTimeLastBump = 0;
 	
 	fhdlPathPositions = NewBlock(sizeof(ADVENTURER_POSITION) * MAX_TRAIL_POINTS);
+	if (fhdlPathPositions == fERROR)
+	{
+		logError("mfInitAdventureTeam failed to allocate %lu bytes; freeMem=%ld",
+			(ULONG)(sizeof(ADVENTURER_POSITION) * MAX_TRAIL_POINTS),
+			ReportFreeMem(TRUE));
+		return;
+	}
+	logInfo("mfInitAdventureTeam allocated path handle=%d trailPoints=%d freeMem=%ld",
+		fhdlPathPositions,
+		MAX_TRAIL_POINTS,
+		ReportFreeMem(TRUE));
 	DumbAutoLockArray<ADVENTURER_POSITION> const pPath(fhdlPathPositions);
 	
 	pPath[fFirstAdventurerIndex].mfUpdatePosition(pPlayer);
@@ -300,6 +347,11 @@ BOOL const ADVENTURER::mfIsAdventureTeam(CAvatar_pmfv pmfv)
 	     AdvItor++)
 	{
 		CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
+		if (pAvatar == NULL)
+		{
+			logWarn("mfIsAdventureTeam skipping invalid avatar handle=%d", *AdvItor);
+			continue;
+		}
 		if (TRUE == (pAvatar->*pmfv)())
 		{
 			Result = TRUE;
@@ -324,6 +376,11 @@ SHORT const ADVENTURER::mfFirstAdventurerIs(CAvatar_pmfv pmfv)
 	     AdvItor++)
 	{
 		CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
+		if (pAvatar == NULL)
+		{
+			logWarn("mfFirstAdventurerIs skipping invalid avatar handle=%d", *AdvItor);
+			continue;
+		}
 		
 		if (TRUE == (pAvatar->*pmfv)())
 		{
@@ -343,9 +400,14 @@ SHORT const ADVENTURER::mfFirstAdventurerIs(CAvatar_pmfv pmfv)
 void ADVENTURER::mfReleaseAdventureTeam()
 {
 	LONG i;
+	LONG const AdventureCount = fAdventurerCount;
 	
 	if (fhdlPathPositions != fERROR)
 	{
+		logInfo("mfReleaseAdventureTeam releasing path handle=%d adventurers=%ld freeMem=%ld",
+			fhdlPathPositions,
+			AdventureCount,
+			ReportFreeMem(TRUE));
 		DisposBlock(fhdlPathPositions);
 		fhdlPathPositions = fERROR;
 	}
@@ -362,6 +424,8 @@ void ADVENTURER::mfReleaseAdventureTeam()
 
 	if (fLavaSoundOn)
 	{
+		logInfo("mfReleaseAdventureTeam shutting down lava sound id=%d",
+			fLavaSoundID);
 		if (fLavaSoundID != fERROR)
 			StopASound (SND_LAVA_LOOP1, fLavaSoundID);
 		fLavaSoundOn = FALSE;
@@ -377,6 +441,12 @@ void ADVENTURER::mfReleaseAdventureTeam()
 BOOL const ADVENTURER::mfJoinAdventureTeam(SHORT const hdlAvatar)
 {
 	BOOL Result = FALSE;
+
+	if (fhdlPathPositions == fERROR)
+	{
+		logError("mfJoinAdventureTeam called without valid path positions avatar=%d", hdlAvatar);
+		return FALSE;
+	}
 	
 	if (hdlAvatar != fERROR)
 	{
@@ -391,6 +461,11 @@ BOOL const ADVENTURER::mfJoinAdventureTeam(SHORT const hdlAvatar)
 				LONG NewA;
 				
 				CAvatar * const pAvatar = (CAvatar * const) BLKPTR(hdlAvatar);
+				if (pAvatar == NULL)
+				{
+					logWarn("mfJoinAdventureTeam received invalid avatar handle=%d", hdlAvatar);
+					break;
+				}
 				
 				fhAvatar = hdlAvatar;
 				if (i == 0)
@@ -411,6 +486,14 @@ BOOL const ADVENTURER::mfJoinAdventureTeam(SHORT const hdlAvatar)
 				// give the avatar an initial position.
 				mfGetMyPosition(&NewX, &NewY, &NewZ, &NewA);
 				pAvatar->mfMoveToXYZA(NewX, NewY, NewZ, NewA);
+				logInfo("mfJoinAdventureTeam avatar=%d slot=%d pathIndex=%d pos=%ld,%ld,%ld angle=%ld",
+					hdlAvatar,
+					i,
+					fAdventurerPathIndex,
+					NewX,
+					NewY,
+					NewZ,
+					NewA);
 				
 				fAdventurerCount++;
 				
@@ -495,6 +578,11 @@ static BOOL const ADVENTURER::mfDoesAdventureTeamHave(THINGTYPE const ThingType)
 	     AdvItor++)
 	{
 		CAvatar const * const  pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
+		if (pAvatar == NULL)
+		{
+			logWarn("mfDoesAdventureTeamHave encountered invalid avatar handle=%d", *AdvItor);
+			continue;
+		}
 		
 		if (!pAvatar->mfAmIImmoblized() && pAvatar->hPlayerStats != fERROR)
 		{
@@ -524,6 +612,11 @@ void ADVENTURER::mfDoToAllAdventurers(CAvatar_pmf pmf)
 	     AdvItor++)
 	{
 		CAvatar * const  pAvatar = (CAvatar * const) BLKPTR(*AdvItor);
+		if (pAvatar == NULL)
+		{
+			logWarn("mfDoToAllAdventurers encountered invalid avatar handle=%d", *AdvItor);
+			continue;
+		}
 		(pAvatar->*pmf)();
 	}
 }

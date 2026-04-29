@@ -43,6 +43,7 @@
 #include "slfrdemo.hxx"
 #include "tutrmenu.hxx"
 #include "loadsave.hxx"
+#include "logger.h"
 //#include "sound.hxx"
 #include "units.hxx"
 
@@ -910,6 +911,14 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 	if (TRUE == AdventureAllocateData(rScene))
 	{
 		LONG 	i;
+		logInfo("mfAdventureInit begin home=%d away=%d sceneType=%d envPlay=%d envUI=%d envWhich=%d freeMem=%ld",
+			SCENE_MGR::HomeIndex,
+			SCENE_MGR::AwayIndex,
+			SCENE_MGR::SceneType,
+			PlayEnvironmentalSounds,
+			UIPlayEnvironmentalSounds,
+			WhichEnvironmentalSound,
+			ReportFreeMem(TRUE));
 	
 		PlayTrack(ucWhichTrack);
 		
@@ -945,14 +954,33 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 			// Initialize the Regent to be the current picker up of things
 			// clicked on.
 			CAvatar *pAvatar = (CAvatar *) BLKPTR(units[UnitIndex].iHandle);
+			if (pAvatar == NULL)
+			{
+				logError("mfAdventureInit invalid home avatar handle=%d unitIndex=%d",
+					units[UnitIndex].iHandle,
+					UnitIndex);
+			}
+			else
+			{
 			pAvatar->mfSetMeToThePlayer();
+			}
 			
 			do
 			{
 				pAvatar = (CAvatar *) BLKPTR(units[UnitIndex].iHandle);
-				pAvatar->SetAIFuncIndex(CAvatar::AI_FUNC_FOLLOW_PLAYER);
-				pAvatar->mfInitVals();
-				pAvatar->fFollowPlayer.mfJoinAdventureTeam();
+				if (pAvatar == NULL)
+				{
+					logError("mfAdventureInit invalid party avatar handle=%d unitIndex=%d nextUnit=%d",
+						units[UnitIndex].iHandle,
+						UnitIndex,
+						units[UnitIndex].NextUnit);
+				}
+				else
+				{
+					pAvatar->SetAIFuncIndex(CAvatar::AI_FUNC_FOLLOW_PLAYER);
+					pAvatar->mfInitVals();
+					pAvatar->fFollowPlayer.mfJoinAdventureTeam();
+				}
 				UnitIndex = (SHORT) units[UnitIndex].NextUnit;
 			} while(UnitIndex != -1);
 		}
@@ -978,7 +1006,16 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 			{
 				//GEH SetBlockAttr(rScene.Avatars[i], LOCKED, LOCKED);
 				CAvatar * const pAvatar = (CAvatar * const) BLKPTR(rScene.Avatars[i]);
-				pAvatar->DoAI(CAvatar::AI_INIT);
+				if (pAvatar == NULL)
+				{
+					logError("mfAdventureInit invalid scene avatar handle=%d slot=%ld",
+						rScene.Avatars[i],
+						i);
+				}
+				else
+				{
+					pAvatar->DoAI(CAvatar::AI_INIT);
+				}
 				
 				// Hey he could have died!
 				//GEH if (rScene.Avatars[i] != fERROR)
@@ -993,6 +1030,7 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 	}
 	else
 	{
+		logError("mfAdventureInit failed to allocate adventure scene data; freeMem=%ld", ReportFreeMem(TRUE));
 		// If not enough memory, skip out.
 		SCENE_MGR::mfReleaseSceneToMap(0,0);
 	}
@@ -1006,6 +1044,12 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
    ======================================================================== */
 void SCENE_AI::mfAdventureRelease (SCENE &rScene)
 {
+	logInfo("mfAdventureRelease begin adventurers=%ld envPlay=%d envUI=%d envWhich=%d freeMem=%ld",
+		ADVENTURER::mfNumberOfAdventurers(),
+		PlayEnvironmentalSounds,
+		UIPlayEnvironmentalSounds,
+		WhichEnvironmentalSound,
+		ReportFreeMem(TRUE));
 	AdventureFixUnitsArray(SCENE_MGR::HomeIndex);
 	
 	// GWP We'll disconnect these player stats when we delete the avatars.
@@ -1032,6 +1076,7 @@ void SCENE_AI::mfAdventureRelease (SCENE &rScene)
 	SetSoundDecay(100, 200);
 	
 	pop_regions();
+	logInfo("mfAdventureRelease complete freeMem=%ld", ReportFreeMem(TRUE));
 	
 #ifdef _WINDOWS
 #ifdef OLD_SOUND
@@ -1051,6 +1096,7 @@ void SCENE_AI::mfAdventureRelease (SCENE &rScene)
    ======================================================================== */
 void SCENE_AI::mfAdventurePlay (SCENE &rScene)
 {
+	static ULONG LastInvalidAdventureAvatarLogTick = 0;
 	UpdateTime();
 	
 	MovePlayer(CheckMoveKeys());
@@ -1086,8 +1132,25 @@ void SCENE_AI::mfAdventurePlay (SCENE &rScene)
 				{
 					//GEH SetBlockAttr(rScene.Avatars[i], LOCKED, LOCKED);
 					CAvatar * const pAvatar = (CAvatar * const ) BLKPTR(rScene.Avatars[i]);
-					
-					pAvatar->DoAI();
+					if (pAvatar == NULL)
+					{
+						if (SCENE_MGR::gTick > LastInvalidAdventureAvatarLogTick + 18)
+						{
+							SCENE_AI::STATE SceneState;
+							SCENE_AI::SCENE_TYPE SceneType;
+							rScene.mfGetSceneAIState(&SceneState, &SceneType);
+							logError("mfAdventurePlay invalid scene avatar handle=%d slot=%ld tick=%lu sceneState=%d",
+								rScene.Avatars[i],
+								i,
+								SCENE_MGR::gTick,
+								SceneState);
+							LastInvalidAdventureAvatarLogTick = SCENE_MGR::gTick;
+						}
+					}
+					else
+					{
+						pAvatar->DoAI();
+					}
 					
 					// Hey he could have died!
 					//GEH if (rScene.Avatars[i] != fERROR)

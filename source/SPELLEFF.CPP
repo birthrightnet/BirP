@@ -1043,6 +1043,8 @@ static LONG ItemEffects::DeathSpell(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					DICE			dice={0,0,0};
@@ -1123,6 +1125,8 @@ static LONG ItemEffects::Blindness(LONG Combo,LONG Arg,LONG Action)
 	
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					
@@ -1152,6 +1156,8 @@ static LONG ItemEffects::Blindness(LONG Combo,LONG Arg,LONG Action)
 #endif
 
 				DumbHandlePtr<CAvatar>		pEnemy(*phEnemy);
+				if (pEnemy->hPlayerStats == fERROR)
+					return CANT_COMPLETE;
 				DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 				
 				Item.mfMessage(STR_DEACTIVATE_BLINDNESS);
@@ -1241,6 +1247,8 @@ static LONG ItemEffects::PowerBlindSpell(LONG Combo,LONG Arg,LONG Action)
 	
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 			
 					OldhEnemies.mfAddEffect(hAvatarStats,pAvatar->hEnemy);
@@ -1269,6 +1277,8 @@ static LONG ItemEffects::PowerBlindSpell(LONG Combo,LONG Arg,LONG Action)
 #endif
 
 				DumbHandlePtr<CAvatar>		pEnemy(*phEnemy);
+				if (pEnemy->hPlayerStats == fERROR)
+					return CANT_COMPLETE;
 				DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 				
 				
@@ -1440,6 +1450,8 @@ static LONG ItemEffects::PowerKillSpell(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS const> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					mfSound(SND_POWER_KILL1,NULL,pAvatar->ThingIndex);
@@ -1888,6 +1900,8 @@ static LONG ItemEffects::TurnUndead(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS > const pEnemyStats(pEnemy->hPlayerStats);
 			
 					DICE			DamageDice;
@@ -1969,6 +1983,8 @@ static LONG ItemEffects::StoneUndead(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					if(ThingIsEvil(pEnemy->ThingType) &&
@@ -2034,6 +2050,8 @@ static LONG ItemEffects::FleshToStone(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 	
 					if (!SaveVs(pEnemy->hPlayerStats,ST_SPELL,0))
 					{
@@ -2165,7 +2183,6 @@ static LONG ItemEffects::SpritualHammer(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
-					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					LONG PriestLevel=0;
 					
@@ -2247,9 +2264,12 @@ static LONG ItemEffects::ProtectionFromEvil(LONG Combo,LONG Arg,LONG Action)
 				     AdvItor != ADVENTURER::end();
 				     AdvItor++)
 				{
-					CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
-					SHORT hStats=pAvatar->hPlayerStats;
-					PLAYER_STATS* const pAvatarStats=(PLAYER_STATS* const)BLKPTR(hStats);
+					if (*AdvItor == fERROR)
+						continue;
+					DumbHandlePtr<CAvatar> const pAvatar(*AdvItor);
+					if (pAvatar->hPlayerStats == fERROR)
+						continue;
+					DumbAutoLockPtr<PLAYER_STATS> const pAvatarStats(pAvatar->hPlayerStats);
 					
 					pAvatarStats->StatsMod.mfModifyStats(STATSMOD::EVIL_RESIST_MOD,2);
 
@@ -2268,9 +2288,12 @@ static LONG ItemEffects::ProtectionFromEvil(LONG Combo,LONG Arg,LONG Action)
 				     AdvItor != ADVENTURER::end();
 				     AdvItor++)
 				{
-					CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(*AdvItor);
-					SHORT hStats=pAvatar->hPlayerStats;
-					PLAYER_STATS* const pAvatarStats=(PLAYER_STATS* const)BLKPTR(hStats);
+					if (*AdvItor == fERROR)
+						continue;
+					DumbHandlePtr<CAvatar> const pAvatar(*AdvItor);
+					if (pAvatar->hPlayerStats == fERROR)
+						continue;
+					DumbAutoLockPtr<PLAYER_STATS> const pAvatarStats(pAvatar->hPlayerStats);
 					
 					pAvatarStats->StatsMod.mfModifyStats(STATSMOD::EVIL_RESIST_MOD,-2);
 
@@ -2339,6 +2362,8 @@ static LONG ItemEffects::Disintigrate(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 	
 					if (!SaveVs(pEnemy->hPlayerStats,ST_SPELL,0))
@@ -2480,6 +2505,8 @@ static LONG ItemEffects::FlameStrike(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 					
 					DICE			const DamageDice = {6,8,0};
@@ -2705,6 +2732,8 @@ static LONG ItemEffects::ShockingGrasp(LONG Combo,LONG Arg,LONG Action)
 						return CANT_COMPLETE;
 					
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
+					if (pEnemy->hPlayerStats == fERROR)
+						return CANT_COMPLETE;
 					DumbAutoLockPtr<PLAYER_STATS> const pEnemyStats(pEnemy->hPlayerStats);
 					DICE						DamageDice = {1,8,0};
 	
@@ -2945,13 +2974,15 @@ static LONG ItemEffects::UndeadTurn(LONG Combo,LONG Arg,LONG Action)
 		{
 			case ACTIVATE:
 				{
-				PLAYER_STATS * const pPlayerStats=(PLAYER_STATS* const)BLKPTR(hPlayerStats);
+				if (hPlayerStats == fERROR)
+					return NOT_SUPPORTED;
+				DumbAutoLockPtr<PLAYER_STATS> const pPlayerStats(hPlayerStats);
 				SHORT 		const hAvatar = pPlayerStats->hAvatar;
 				
 				if (hAvatar == fERROR)
 					return NOT_SUPPORTED;
 					
-				CAvatar			*pAvatar=(CAvatar*)BLKPTR((SHORT)hAvatar);
+				DumbHandlePtr<CAvatar>		pAvatar(hAvatar);
 				
 				SBYTE	level = 1;
 				DICE	dice;
@@ -2977,7 +3008,7 @@ static LONG ItemEffects::UndeadTurn(LONG Combo,LONG Arg,LONG Action)
 				if(pAvatar->hEnemy == fERROR)
 					return NOT_SUPPORTED;
 				
-				CAvatar const * const pEnemy=(CAvatar const * const)BLKPTR((SHORT)pAvatar->hEnemy);
+				DumbHandlePtr<CAvatar> const pEnemy(pAvatar->hEnemy);
 				if( ThingIsEvil (pEnemy->ThingType))
 				{
 					pAvatar->mfSetDamageDealt( damage);
@@ -3216,6 +3247,9 @@ static void ResurrectionMenu::Paint(LONG MenuCombo, LONG Arg)
 	LONG ButtonID;
 	SPLIT_LONG(MenuCombo,MenuIdx,ButtonID);
 
+	for (i = 0; i < 4; ++i)
+		StatsHdls[i] = fERROR;
+
 
 	ADVENTURER_TEAM_ITOR AdvItor;
 
@@ -3260,7 +3294,7 @@ static void ResurrectionMenu::Paint(LONG MenuCombo, LONG Arg)
 static void ResurrectionMenu::Resurrect(LONG MenuCombo, LONG Arg)
 {	
 		
-	if (StatsHdls[Arg]==fERROR)
+	if (Arg < 0 || Arg >= 4 || StatsHdls[Arg]==fERROR)
 		return;
 
 	HideSubMenu(0,D_RESURRECT_MENU);

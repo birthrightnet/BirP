@@ -26,6 +26,7 @@
 #include "invntory.hxx"
 #include "special.h"
 #include "handle.hxx"
+#include "logger.h"
 #include "units.hxx"
 #include "scene.hxx"
 
@@ -2111,6 +2112,13 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 
 	//GEH SetBlockAttr(hEnemyTarget, LOCKED, LOCKED);
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
+	if (pEnemyTarget == NULL)
+	{
+		logWarn("mfWackEm invalid enemy target handle=%d attacker=%d", hEnemyTarget, hThis);
+		mfSethEnemy(fERROR);
+		fDamageFlag = 0;
+		return FALSE;
+	}
 
 	if (pEnemyTarget->mfAmIImmoblized())
 	{
@@ -2420,6 +2428,12 @@ void CAvatar::mfFightSounds(HDL_AVATAR const hEnemyTarget)
 
 	//GEH SetBlockAttr(hEnemyTarget, LOCKED, LOCKED);
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
+	if (pEnemyTarget == NULL)
+	{
+		logWarn("mfFightSounds invalid enemy target handle=%d attacker=%d", hEnemyTarget, hThis);
+		mfSethEnemy(fERROR);
+		return;
+	}
 
 	if (pEnemyTarget->mfAmIImmoblized())
 	{
@@ -3583,6 +3597,11 @@ LONG const CAvatar::mfCalculateAttackModifier( SHORT const hEnemyTarget) const
 	}
 
 	CAvatar const * const pEnemyTarget = (CAvatar const * const) BLKPTR(hEnemyTarget);
+	if (pEnemyTarget == NULL)
+	{
+		logWarn("mfCalculateAttackModifier invalid enemy target handle=%d attacker=%d", hEnemyTarget, hThis);
+		return 0;
+	}
 
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
@@ -3636,6 +3655,11 @@ LONG const CAvatar::mfToHitEnemy(SHORT const hEnemyTarget) const
 	}
 
 	CAvatar * const pEnemyTarget = (CAvatar * const) BLKPTR(hEnemyTarget);
+	if (pEnemyTarget == NULL)
+	{
+		logWarn("mfToHitEnemy invalid enemy target handle=%d attacker=%d", hEnemyTarget, hThis);
+		return 0;
+	}
 
 	if (pEnemyTarget->hPlayerStats != fERROR && hPlayerStats != fERROR)
 	{
@@ -3663,6 +3687,13 @@ void CAvatar::mfSetMyTurnToAttack()
 	if (hEnemy != fERROR)	// I have an enemy.
 	{
 		CAvatar * const pEnemy = (CAvatar * const) BLKPTR(hEnemy);
+		if (pEnemy == NULL)
+		{
+			logWarn("mfSetMyTurnToAttack invalid enemy handle=%d attacker=%d", hEnemy, hThis);
+			hEnemy = fERROR;
+			mfClearTurnToAttack();
+			return;
+		}
 
 		// I am attacking and they're attacking me back.
 		if (Status == AI_ATTACK && pEnemy->hEnemy == hThis)
@@ -3729,6 +3760,13 @@ void CAvatar::mfDecideWhoseTurnToAttack()
 	    if (fAttackTurnFlag == ATTACK_TURN_NOT_DECIDED)
 	    {
 			CAvatar * const pEnemy = (CAvatar * const) BLKPTR(hEnemy);
+			if (pEnemy == NULL)
+			{
+				logWarn("mfDecideWhoseTurnToAttack invalid enemy handle=%d attacker=%d", hEnemy, hThis);
+				hEnemy = fERROR;
+				mfClearTurnToAttack();
+				return;
+			}
 			if (pEnemy->hEnemy != hThis || pEnemy->Status != AI_ATTACK)
 			{
 				// If we are not paired off, I can hit any the time.
@@ -3799,6 +3837,16 @@ void CAvatar::mfStartNextFightSequence()
 			if (mfIsMyTurnToAttack() && hEnemy != fERROR)
 			{
 				CAvatar * const pEnemy = (CAvatar * const) BLKPTR(hEnemy);
+				if (pEnemy == NULL)
+				{
+					logWarn("mfStartNextFightSequence invalid enemy handle=%d attacker=%d", hEnemy, hThis);
+					hEnemy = fERROR;
+					mfSetAttackMode(fFightSeq.mfGetNextSequence(mfType()));
+					mfSetAttackSequence(mfGetAttackMode());
+					mfClearTurnToAttack();
+				}
+				else
+				{
 				if (pPlayerStats->mfGetCurHitPoints() > 3  ||
 				    pEnemy->hEnemy != hThis)
 				{
@@ -3819,6 +3867,7 @@ void CAvatar::mfStartNextFightSequence()
 				}
 				mfSetAttackSequence(mfGetAttackMode());
 				mfSetMyTurnToAttack();
+				}
 			}
 			else
 			{
@@ -3828,7 +3877,16 @@ void CAvatar::mfStartNextFightSequence()
 				if (hEnemy != fERROR)
 				{
 					CAvatar * const pEnemy = (CAvatar * const) BLKPTR(hEnemy);
-					pEnemy->mfSetMyTurnToAttack();
+					if (pEnemy == NULL)
+					{
+						logWarn("mfStartNextFightSequence defend invalid enemy handle=%d attacker=%d", hEnemy, hThis);
+						hEnemy = fERROR;
+						mfClearTurnToAttack();
+					}
+					else
+					{
+						pEnemy->mfSetMyTurnToAttack();
+					}
 				}
 			}
 			// Make an weapon swing/whoosh noise.
@@ -3857,20 +3915,38 @@ void CAvatar::mfSethEnemy(SHORT const EnemyHdl)
 	if (hEnemy != fERROR)
 	{
 		CAvatar * pEnemy = (CAvatar *) BLKPTR(hEnemy);
-		pEnemy->mfDisEngage();
-		if ( mfAmIBeingControled())
+		if (pEnemy != NULL)
 		{
-			pEnemy->mfTurnHighlightOff();
+			pEnemy->mfDisEngage();
+			if ( mfAmIBeingControled())
+			{
+				pEnemy->mfTurnHighlightOff();
+			}
+		}
+		else
+		{
+			logWarn("mfSethEnemy stale current enemy handle=%d avatar=%d", hEnemy, hThis);
 		}
 	}
 
 	if (EnemyHdl != fERROR)
 	{
 		CAvatar * pEnemy = (CAvatar *) BLKPTR(EnemyHdl);
-		pEnemy->mfEngage();
-		if ( mfAmIBeingControled())
+		if (pEnemy != NULL)
 		{
-			pEnemy->mfSetHighlightEnemy();
+			pEnemy->mfEngage();
+			if ( mfAmIBeingControled())
+			{
+				pEnemy->mfSetHighlightEnemy();
+			}
+		}
+		else
+		{
+			logWarn("mfSethEnemy invalid new enemy handle=%d avatar=%d", EnemyHdl, hThis);
+			hEnemy = fERROR;
+			mfClearTurnToAttack();
+			mfDecideWhoseTurnToAttack();
+			return;
 		}
 	}
 	else
@@ -3901,6 +3977,10 @@ BOOL const CAvatar::mfIsMyTurnToAttack() const
 		else if (fAttackTurnFlag == 0)
 		{
 			CAvatar const * const pEnemy = (CAvatar const * const) BLKPTR(hEnemy);
+			if (pEnemy == NULL)
+			{
+				return TRUE;
+			}
 			if (pEnemy->hEnemy != hThis ||
 			    pEnemy->Status != AI_ATTACK)
 			{

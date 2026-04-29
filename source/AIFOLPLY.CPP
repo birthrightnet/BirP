@@ -18,6 +18,7 @@
 #include "scnmgr.hxx"
 #include "scene.hxx"
 #include "sound.hxx"
+#include "logger.h"
 
 // [MDB] HACK for inventory
 extern "C" {
@@ -43,11 +44,18 @@ void FOLLOW_PLAYER_DATA::mfFollowPlayer()
 	if (fhAvatar != fERROR)
 	{
 		CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(fhAvatar);
-		SetPlayer(pAvatar->mfX(),
-		          pAvatar->mfY(),
-		          pAvatar->mfZ(),
-		          pAvatar->mfAngle(),
-		          0);
+		if (pAvatar == NULL)
+		{
+			logWarn("FOLLOW_PLAYER_DATA::mfFollowPlayer invalid avatar handle=%d", fhAvatar);
+		}
+		else
+		{
+			SetPlayer(pAvatar->mfX(),
+			          pAvatar->mfY(),
+			          pAvatar->mfZ(),
+			          pAvatar->mfAngle(),
+			          0);
+		}
 	}
 }
 /* ========================================================================
@@ -138,9 +146,17 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				{
 					
 					CAvatar * pEnemy = (CAvatar *) BLKPTR (pAvatar->hEnemy);
-				
+					if (pEnemy == NULL)
+					{
+						logWarn("FollowPlayer AI_CASTSPELL invalid enemy handle=%d avatarThing=%ld",
+							pAvatar->hEnemy,
+							pAvatar->ThingIndex);
+						pAvatar->mfSethEnemy(fERROR);
+					}
+					else
+					{
 					pAvatar->FaceTo(pEnemy->mfX(), pEnemy->mfY());
-					
+					}
 				}
 				
 				if (pAvatar->hPlayerStats == fERROR)
@@ -205,6 +221,15 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				if (pAvatar->hEnemy != fERROR)
 				{
 					CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
+					if (pAvatarEnemy == NULL)
+					{
+						logWarn("FollowPlayer AI_FALLBACK invalid enemy handle=%d avatarThing=%ld",
+							pAvatar->hEnemy,
+							pAvatar->ThingIndex);
+						pAvatar->mfSethEnemy(fERROR);
+						pAvatar->Status = AI_SEARCH;
+						break;
+					}
 					const LONG distance = aprox_dist(pAvatar->mfX(),
 					                                 pAvatar->mfY(),
 					                                 pAvatarEnemy->mfX(),
@@ -320,6 +345,15 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
+				if (pAvatarEnemy == NULL)
+				{
+					logWarn("FollowPlayer AI_MOVING invalid enemy handle=%d avatarThing=%ld",
+						pAvatar->hEnemy,
+						pAvatar->ThingIndex);
+					pAvatar->mfSethEnemy(fERROR);
+					pAvatar->Status = AI_SEARCH;
+					break;
+				}
 				
 				if (pAvatarEnemy->mfAmIImmoblized())
 				{
@@ -427,6 +461,14 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar * const pAvatarEnemy = (CAvatar * const) BLKPTR(pAvatar->hEnemy);
+				if (pAvatarEnemy == NULL)
+				{
+					logWarn("FollowPlayer AI_SEARCH invalid enemy handle=%d avatarThing=%ld",
+						pAvatar->hEnemy,
+						pAvatar->ThingIndex);
+					pAvatar->mfSethEnemy(fERROR);
+					break;
+				}
 				const LONG distance = aprox_dist(pAvatar->mfX(),
 				                                 pAvatar->mfY(),
 				                                 pAvatarEnemy->mfX(),
@@ -475,7 +517,17 @@ Start_Attack:
 				if (pAvatar->hEnemy != fERROR)
 				{
 					CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
-					pAvatarEnemy->mfEngage();
+					if (pAvatarEnemy == NULL)
+					{
+						logWarn("FollowPlayer AI_ATTACK acquire invalid enemy handle=%d avatarThing=%ld",
+							pAvatar->hEnemy,
+							pAvatar->ThingIndex);
+						pAvatar->mfSethEnemy(fERROR);
+					}
+					else
+					{
+						pAvatarEnemy->mfEngage();
+					}
 				}
 				else
 				{
@@ -490,6 +542,15 @@ Start_Attack:
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
+				if (pAvatarEnemy == NULL)
+				{
+					logWarn("FollowPlayer AI_ATTACK invalid enemy handle=%d avatarThing=%ld",
+						pAvatar->hEnemy,
+						pAvatar->ThingIndex);
+					pAvatar->mfSethEnemy(fERROR);
+					pAvatar->Status = AI_SEARCH;
+					break;
+				}
 				
 				if (pAvatarEnemy->mfAmIImmoblized())
 				{
@@ -532,7 +593,18 @@ Start_Attack:
 						else
 						{
 							CAvatar const * const pAvatarEnemy = (CAvatar const * const) BLKPTR(pAvatar->hEnemy);
-							pAvatar->FaceTo(pAvatarEnemy->mfX(), pAvatarEnemy->mfY());
+							if (pAvatarEnemy == NULL)
+							{
+								logWarn("FollowPlayer AI_ATTACK face invalid enemy handle=%d avatarThing=%ld",
+									pAvatar->hEnemy,
+									pAvatar->ThingIndex);
+								pAvatar->mfSethEnemy(fERROR);
+								pAvatar->Status = AI_SEARCH;
+							}
+							else
+							{
+								pAvatar->FaceTo(pAvatarEnemy->mfX(), pAvatarEnemy->mfY());
+							}
 						}
 						
 						if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
@@ -588,6 +660,15 @@ StartDefend:
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
+				if (pAvatarEnemy == NULL)
+				{
+					logWarn("FollowPlayer AI_DEFEND invalid enemy handle=%d avatarThing=%ld",
+						pAvatar->hEnemy,
+						pAvatar->ThingIndex);
+					pAvatar->mfSethEnemy(fERROR);
+					pAvatar->Status = AI_SEARCH;
+					break;
+				}
 				if (pAvatarEnemy->mfAmIImmoblized())
 				{
 					// Got'm

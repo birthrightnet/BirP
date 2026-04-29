@@ -34,6 +34,7 @@
 #include "fileutil.h"
 #include "gamemap.hxx"
 #include "battleui.hxx"
+#include "logger.h"
 #include "scndlgs.hxx"
 #include "scnexit.hxx"
 #include "scnkey.hxx"
@@ -1006,6 +1007,10 @@ LONG SCENE::mfReadAmbientSound(FILE *fp)
 		else
 			PlayEnvironmentalSounds = FALSE;
 
+		logInfo("Scene ambient sound setting=%d play=%d",
+			WhichEnvironmentalSound,
+			PlayEnvironmentalSounds);
+
 
 	}
  		return Result;
@@ -1388,6 +1393,13 @@ void SCENE::mfDeleteAvatar(SHORT hAvatar)
 {
 	LONG i;
 	PTR_SCENE pScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+	if (pScene == NULL)
+	{
+		logWarn("mfDeleteAvatar invalid current scene handle=%d avatar=%d",
+			SCENE_MGR::hCurrentScene,
+			hAvatar);
+		return;
+	}
 
 	for (i=0; i<MAX_AVATARS; i++)
 	{
@@ -1415,6 +1427,12 @@ void SCENE::mfReleaseAvatars()
 		if( Avatars[i] != fERROR)
 		{
 			pAvatar = (CAvatar *) BLKPTR(Avatars[i]);
+			if (pAvatar == NULL)
+			{
+				logWarn("mfReleaseAvatars invalid avatar handle=%d slot=%ld", Avatars[i], i);
+				Avatars[i] = fERROR;
+				continue;
+			}
 			pAvatar->DoAI(CAvatar::AI_RELEASE);
 		}
 	}
@@ -1434,6 +1452,11 @@ LONG SCENE::mfAvatarIndex( LONG Id )
 		if (Avatars[i] != fERROR)
 		{
 			CAvatar *pAvatar = (CAvatar *) BLKPTR(Avatars[i]);
+			if (pAvatar == NULL)
+			{
+				logWarn("mfAvatarIndex invalid avatar handle=%d slot=%ld", Avatars[i], i);
+				continue;
+			}
 			if (pAvatar->Id == Id)
 				return (i);
 		}
@@ -1461,12 +1484,25 @@ void SCENE::mfSceneButtonObject(
 
 		SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 		PTR_SCENE pScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+		if (pScene == NULL)
+		{
+			logWarn("mfSceneButtonObject invalid current scene handle=%d",
+				SCENE_MGR::hCurrentScene);
+			return;
+		}
 
 		for (i = 0; i < MAX_AVATARS; i++)
 		{
 			if (pScene->Avatars[i] != fERROR)
 			{
 				CAvatar *pAvatar = (CAvatar *) BLKPTR(pScene->Avatars[i]);
+				if (pAvatar == NULL)
+				{
+					logWarn("mfSceneButtonObject invalid avatar handle=%d slot=%ld",
+						pScene->Avatars[i],
+						i);
+					continue;
+				}
 				if (pAvatar->ThingIndex == objClicked)
 				{
 					bObjFound = TRUE;
@@ -1997,12 +2033,24 @@ void SCENE::mfDrawMapStuff ( void )
 	if (SCENE_MGR::hCurrentScene != fERROR)
 	{
 		PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+		if (pCurrentScene == NULL)
+		{
+			logWarn("mfDrawMapStuff invalid current scene handle=%d", SCENE_MGR::hCurrentScene);
+			return;
+		}
 
  		for(i = 0; i < MAX_AVATARS; i++ )
  		{
  			if(pCurrentScene->Avatars[i] != fERROR )
  			{
  				CAvatar *pAvatar = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
+				if (pAvatar == NULL)
+				{
+					logWarn("mfDrawMapStuff invalid avatar handle=%d slot=%ld",
+						pCurrentScene->Avatars[i],
+						i);
+					continue;
+				}
 				if (pAvatar->Status!=CAvatar::AI_DEAD)
 					HandleMapAvatar(pAvatar->ThingIndex,pCurrentScene->Avatars[i],MAP_RED,MAP_SCALED);
  			}
