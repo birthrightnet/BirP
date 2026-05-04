@@ -1,5 +1,5 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0.14
+Version: 1.4.0.15
 Date: 2026-05-03
 
 TABLE OF CONTENTS
@@ -69,6 +69,7 @@ Fixed
 - Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.
 - Fixed DOS audio driver fallback parsing so invalid or missing `audioDrv` entries no longer force silent output.
 - Fixed spell learning from tomes so newly learned adventure spells are inserted in proper level order in Prepare Magic lists instead of being appended at the end. (#25)
+- Expanded spell book sorting fix to retroactively fix pre-patch save games with spell books already out of order. (#25)
 - Fixed two inventory quantity corruption paths that could incorrectly add dozens of consumable items. (#27)
 
 1.4.0.4 - 2025-11-02
