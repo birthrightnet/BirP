@@ -131,6 +131,37 @@ static LONG	lTime = 0;
 extern SHORT sfxvol;
 extern SHORT musvol;
 
+#define MAX_DISABLED_SFX_WAVES 64
+static BIRTHRT_SND DisabledSfxWaves[MAX_DISABLED_SFX_WAVES];
+static SHORT DisabledSfxWaveCount = 0;
+
+static BOOL IsSfxWaveDisabled(BIRTHRT_SND wave)
+{
+	SHORT i;
+	for (i = 0; i < DisabledSfxWaveCount; ++i)
+	{
+		if (DisabledSfxWaves[i] == wave)
+		{
+			return TRUE;
+		}
+	}
+	return FALSE;
+}
+
+static void DisableSfxWave(BIRTHRT_SND wave)
+{
+	if (IsSfxWaveDisabled(wave))
+	{
+		return;
+	}
+
+	if (DisabledSfxWaveCount < MAX_DISABLED_SFX_WAVES)
+	{
+		DisabledSfxWaves[DisabledSfxWaveCount++] = wave;
+		logInfo("Disabling problematic SFX wave=%d after playback failure", wave);
+	}
+}
+
 typedef struct _LOOPING_SOUND_THING{
 	LONG ThingTypeIndex;
 	int InstanceTag;
@@ -180,6 +211,13 @@ SHORT AddSndObj( BIRTHRT_SND  WaveID, SHORT randomCount, LONG MyThingsIndex)
 	LONG volume;
 	int pan = 50;
 	BIRTHRT_SND const RequestedWaveID = WaveID;
+
+	if ((MyThingsIndex == ENVIRON_SND || RequestedWaveID == SND_LAVA_LOOP1) &&
+		IsSfxWaveDisabled(RequestedWaveID))
+	{
+		logDebug("AddSndObj skipping disabled wave=%d thing=%ld", RequestedWaveID, MyThingsIndex);
+		return fERROR;
+	}
 
 	if(!AudioInitialized || (!SFXVolumeIndex && !fMusic)  )
 	{
@@ -320,6 +358,7 @@ SHORT AddSndObj( BIRTHRT_SND  WaveID, SHORT randomCount, LONG MyThingsIndex)
 					MyThingsIndex,
 					kernel->AudioActiveSamples(),
 					UserNumSFXPlaying);
+				DisableSfxWave(RequestedWaveID);
 			}
 		}
 		else
@@ -640,6 +679,27 @@ extern "C"
 LONG AddLoopingSound(BIRTHRT_SND WaveID, LONG ThingIndex)
 {
 	LONG total;
+
+	if (ThingIndex != -2)
+	{
+		if (ThingIndex < 0 || ThingIndex >= MAX_THINGS)
+		{
+			logWarn("AddLoopingSound rejected invalid thing index wave=%d thing=%ld max=%d",
+				WaveID,
+				ThingIndex,
+				MAX_THINGS);
+			return fERROR;
+		}
+
+		if (mythings[ThingIndex].valid != TRUE)
+		{
+			logDebug("AddLoopingSound skipped invalid thing reference wave=%d thing=%ld valid=%d",
+				WaveID,
+				ThingIndex,
+				mythings[ThingIndex].valid);
+			return fERROR;
+		}
+	}
 
 	if(TotalLoopingSounds + 1 <= MAX_SOUND_THINGS)
 	{

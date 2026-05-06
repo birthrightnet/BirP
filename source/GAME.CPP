@@ -106,6 +106,7 @@ void BeginRule(LONG, LONG);
 void DoneHelpKeys(LONG, LONG);
 void PaintQuestItemFound(LONG,LONG);
 void QuestItemFoundProc(LONG,LONG);
+void ShowQuestItemVictoryScreen(void);
 void Sinners(LONG, LONG);
 BOOL BattlePrep(void);
 
@@ -2395,7 +2396,7 @@ int PaintInputField(LONG lButtonId, char *szBuffer, LONG lBufLen, LONG lFont,
 					)
 				{
 					InputHideMenu();
-					VictoryScreen(PaintQuestItemFound,QuestItemFoundProc);
+					ShowQuestItemVictoryScreen();
 					return 2;
 				}
 				//activates the specified item

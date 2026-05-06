@@ -79,6 +79,7 @@ int fMusic = 1;
 static int CurrentSong = fERROR;
 static int CurrentTag = fERROR;
 static BOOL MusicSuspended = FALSE;
+static SHORT PendingTrack = fERROR;
 SHORT UserCDVolume = 100;
 
 SHORT ucWhichTrack = 0;
@@ -259,13 +260,22 @@ int PlayTrack (SHORT track)
 	
 	if(!fMusic || MusicSuspended)
 	{
-		logWarn("PlayTrack blocked track=%d fMusic=%d suspended=%d volumeIndex=%d",
-			track,
-			fMusic,
-			MusicSuspended,
-			VolumeIndex);
+		if (!fMusic)
+		{
+			logDebug("PlayTrack blocked track=%d because music is disabled volumeIndex=%d",
+				track,
+				VolumeIndex);
+		}
+		else
+		{
+			PendingTrack = track;
+			ucWhichTrack = track;
+			logInfo("PlayTrack deferred track=%d while music is suspended", track);
+		}
 		return 0;
 	}
+
+	PendingTrack = fERROR;
 		
 	ucWhichTrack = track;
 	
@@ -691,6 +701,13 @@ void SuspendMusic(void)
 void ResumeSuspendedMusic(void)
 {
 	MusicSuspended = FALSE;
+	if (fMusic && PendingTrack != fERROR)
+	{
+		SHORT const DeferredTrack = PendingTrack;
+		PendingTrack = fERROR;
+		logInfo("ResumeSuspendedMusic replaying deferred track=%d", DeferredTrack);
+		PlayTrack(DeferredTrack);
+	}
 }
 
 BOOL IsMusicSuspended(void)

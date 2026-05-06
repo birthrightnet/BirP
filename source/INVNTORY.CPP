@@ -66,6 +66,7 @@
 #include "scnmgr.hxx"
 #include "spell.hxx"
 #include "spellpro.hxx"
+#include "redbook.h"
 
 #ifdef _WINDOWS
 #include "winsys\mulplay.hxx"
@@ -110,6 +111,28 @@ extern BOOL fQuietItems;
 extern SHORT BARelicFound;			// from practice.cpp
 
 extern void VictoryScreen(PFVLL,PFVLL);
+void PaintQuestItemFound(LONG MenuCombo,LONG b);
+void QuestItemFoundProc(LONG MenuCombo,LONG b);
+
+static SHORT gQuestItemPrevTrack = fERROR;
+static BOOL gQuestItemTrackRestorePending = FALSE;
+
+static SHORT ResolveQuestItemResumeTrack(void)
+{
+	if (gQuestItemPrevTrack == fERROR || gQuestItemPrevTrack == 100)
+	{
+		return REDBOOK_PERSCOMBAT;
+	}
+
+	return gQuestItemPrevTrack;
+}
+
+void ShowQuestItemVictoryScreen(void)
+{
+	gQuestItemPrevTrack = ucWhichTrack;
+	gQuestItemTrackRestorePending = TRUE;
+	VictoryScreen(PaintQuestItemFound,QuestItemFoundProc);
+}
 
 extern BOOL fStartMultiGame;
 
@@ -204,6 +227,20 @@ void QuestItemFoundProc(LONG MenuCombo,LONG b)
 	TickDelay(4);
 	HideMenu(MenuId);
 	RunMenus();
+
+	if (gQuestItemTrackRestorePending)
+	{
+		if (master_game_type == GAME_ADVENTURE)
+		{
+			SHORT const ResumeTrack = ResolveQuestItemResumeTrack();
+			ucWhichTrack = ResumeTrack;
+			ResumeSuspendedMusic();
+			PlayTrack(ResumeTrack);
+		}
+
+		gQuestItemTrackRestorePending = FALSE;
+		gQuestItemPrevTrack = fERROR;
+	}
 }
 
 extern "C"
@@ -522,7 +559,7 @@ void ObjectList::mfMouseCallback(LONG but,LONG obj,LONG /* WadThingtype */)
 				else
 #endif
 				{
-					VictoryScreen(PaintQuestItemFound,QuestItemFoundProc);
+					ShowQuestItemVictoryScreen();
 				}
 
 				RunMenus();
