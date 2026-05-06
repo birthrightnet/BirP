@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0
-Date: 2026-05-15
+Version: 1.4.1.0
+Date: 2026-05-18
 
 TABLE OF CONTENTS
 
@@ -70,6 +70,7 @@ Fixed
 
 - Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling. (#4)
 - Fixed auto-battle resolution so regents and lieutenants on the overwhelmingly stronger side are no longer valid casualties unless they are dueling an opposing regent or lieutenant. (#19)
+- Updated assassination reports to include the assassinated unit type, so reports now identify what unit was lost. (#33)
 - Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume. (#10)
 - Fixed issue where adventure music would not resume after finding quest item (#35)
 - Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.

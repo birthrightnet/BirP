@@ -116,6 +116,7 @@
 void BattlePrepProc(LONG, LONG);
 void SetCommandBattlePaint(LONG, LONG);
 void SetCommandBattleProc(LONG, LONG button);
+void DebugTriggerRealmAssassination(LONG, LONG);
 SHORT UnitPower( SHORT UnitIndex );
 
 void WriteRealmStartData ( void );

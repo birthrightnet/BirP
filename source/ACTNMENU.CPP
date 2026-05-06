@@ -4485,16 +4485,35 @@ spyexit:	;
 					if (j > 150 && assassin_roll==0) // do final roll for assassination
 					{
 						assassin_roll = random(20)+1;
+						logInfo("PaintActionMenu - assassination final roll:%ld required:%ld targetUnit:%ld targetRealm:%s homeRealm:%s",
+							(LONG)assassin_roll,
+							(LONG)a_chance,
+							(LONG)iSelectedUnit,
+							realm[units[iSelectedUnit].Realm].mfGetName(),
+							realm[HomeRealm].mfGetName());
 						if (assassin_roll >= a_chance)
 						{
 							// give experience points
 							ActionExpPoints(ActiveRegent, RLM_EXP_ESPIONAGE_ASSASSINATE, 0, TRUE );
 							REALM::REALM_TYPE const whichRealm = (REALM::REALM_TYPE)units[iSelectedUnit].Realm;
 							PROVINCE const whichProv = (PROVINCE) units[GetUnitLeader(iSelectedUnit)].province;
+							logInfo("PaintActionMenu - assassination succeeded attacker:%s targetRealm:%s targetProvince:%ld victimUnit:%s victimUnitIndex:%ld",
+								realm[HomeRealm].mfGetName(),
+								realm[whichRealm].mfGetName(),
+								(LONG)whichProv,
+								STRMGR_GetStr(gsUnitTitle[units[iSelectedUnit].Icon]),
+								(LONG)iSelectedUnit);
 
 							AddSndObj((BIRTHRT_SND)SND_UI_SUCCEEDED,0,VOLUME_NINETY);
 							if (whichProv > NO_PROVINCE && whichProv < NO_PROVINCE2)
-								SendReportTo(whichRealm, IMMEDIATE_NPC_ASSASSIN, HomeRealm, whichProv, 0);
+							{
+								logInfo("PaintActionMenu - SendReportTo IMMEDIATE_NPC_ASSASSIN attacker:%s province:%s victimUnit:%s victimUnitIndex:%ld",
+									realm[HomeRealm].mfGetName(),
+									province[whichProv].name,
+									STRMGR_GetStr(gsUnitTitle[units[iSelectedUnit].Icon]),
+									(LONG)iSelectedUnit);
+								SendReportTo(whichRealm, IMMEDIATE_NPC_ASSASSIN, HomeRealm, whichProv, units[iSelectedUnit].Icon);
+							}
 							SetScrewed(whichRealm, HomeRealm, TRUE );
 				  			DeleteUnit(iSelectedUnit, TRUE );
 // 							AddReport(IMMEDIATE_ASSASSIN, 1, 0, 0);	// assassinate succeeds
@@ -4502,6 +4521,12 @@ spyexit:	;
 						}
 						else
 						{
+							logInfo("PaintActionMenu - assassination failed attacker:%s targetRealm:%s targetUnit:%ld roll:%ld required:%ld",
+								realm[HomeRealm].mfGetName(),
+								realm[units[iSelectedUnit].Realm].mfGetName(),
+								(LONG)iSelectedUnit,
+								(LONG)assassin_roll,
+								(LONG)a_chance);
 							AddSndObj((BIRTHRT_SND)SND_UI_DID_NOT_SUCCEED,0,VOLUME_NINETY);
 // 							AddReport(IMMEDIATE_ASSASSIN_FAIL, 0, 0, 0);	// assassinate fails
 						}

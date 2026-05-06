@@ -3389,7 +3389,6 @@ BOOL RecursiveRoadBuilder (PROVINCE cur_prov)
 		if (province[cur_prov].Border[best_border].MoveCost != PLAINS_ROAD
 			&& province[cur_prov].Border[best_border].MoveCost != RIVER_ROAD)
 		{
-//printf("�");
 			// set border one direction
 			province[cur_prov].Border[best_border].MoveCost = PLAINS_ROAD;
 			//SetGameData(MP_PROVINCE, MPPROV_BORDER0+best_border, cur_prov, PLAINS_ROAD, TRUE);
@@ -5616,8 +5615,21 @@ CreateHldng:
 
 			npc_ai[rlm].CurrentAction = action;
 			//if (!RollNPCSuccess(action)) break;
+			logInfo("DoNPCAction - assassination success path attacker:%s targetRealm:%s targetUnit:%ld targetProvince:%ld homeRealm:%s",
+				realm[CurrentRealm].mfGetName(),
+				realm[units[TargetUnit].Realm].mfGetName(),
+				(LONG)TargetUnit,
+				(LONG)TargetProvince,
+				realm[HomeRealm].mfGetName());
 			if(units[TargetUnit].Realm == HomeRealm && TargetProvince > NO_PROVINCE && TargetProvince < NO_PROVINCE2)
-				AddReport(	IMMEDIATE_NPC_ASSASSIN, CurrentRealm, TargetProvince, 0);
+			{
+				logInfo("DoNPCAction - queue IMMEDIATE_NPC_ASSASSIN attacker:%s province:%s victimUnit:%s victimUnitIndex:%ld",
+					realm[CurrentRealm].mfGetName(),
+					province[TargetProvince].name,
+					STRMGR_GetStr(gsUnitTitle[units[TargetUnit].Icon]),
+					(LONG)TargetUnit);
+				AddReport(	IMMEDIATE_NPC_ASSASSIN, CurrentRealm, TargetProvince, units[TargetUnit].Icon);
+			}
 
 			SetScrewed((REALM::REALM_TYPE)units[TargetUnit].Realm, CurrentRealm, FALSE );
 			DeleteUnit(TargetUnit, FALSE );

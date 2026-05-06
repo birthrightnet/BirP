@@ -56,6 +56,7 @@
 #include "tutor.hxx"
 #include "places.hxx"
 #include "handle.hxx"
+#include "units.hxx"
 
 #ifdef _WINDOWS
 #include "winsys\mulplay.hxx"
@@ -1417,6 +1418,84 @@ void ShowFor (LONG timer, SHORT * control)
 {
 	ShowForTimer = timer + get_time();
 	ShowForControl = control;
+}
+
+/* ========================================================================
+	Function	- DebugTriggerRealmAssassination
+	Description - Debug key handler (F11): force an NPC-style assassination
+				  against one of the player's troop units while in realm mode.
+	Returns	-
+	======================================================================== */
+void DebugTriggerRealmAssassination(LONG, LONG)
+{
+#if defined(_DEBUG)
+	LONG i;
+	LONG victimUnit = -1;
+	LONG victimProvince = NO_PROVINCE;
+	REALM::REALM_TYPE attackerRealm = REALM::NO_COUNTRY;
+
+	if (master_game_type == GAME_ADVENTURE || master_game_type == GAME_BATTLE
+		|| gfInCombat || HomeRealm >= LAND_REALM_COUNT)
+		return;
+
+	for (i = 0; i < MAX_UNITS; ++i)
+	{
+		if (units[i].Realm == HomeRealm
+			&& units[i].province > NO_PROVINCE
+			&& units[i].province < NO_PROVINCE2
+			&& units[i].Icon < FIRST_CHARACTER_TYPE)
+		{
+			victimUnit = i;
+			break;
+		}
+	}
+
+	if (victimUnit < 0)
+	{
+		logWarn("[DEBUG] DebugTriggerRealmAssassination: no player troop unit available to assassinate for realm:%s",
+			realm[HomeRealm].mfGetName());
+		return;
+	}
+
+	victimProvince = units[GetUnitLeader(victimUnit)].province;
+	if (victimProvince <= NO_PROVINCE || victimProvince >= NO_PROVINCE2)
+	{
+		logWarn("[DEBUG] DebugTriggerRealmAssassination: victim unit %ld has invalid province %ld",
+			victimUnit,
+			victimProvince);
+		return;
+	}
+
+	for (i = 0; i < LAND_REALM_COUNT; ++i)
+	{
+		if (i != HomeRealm
+			&& realm[i].mfExists()
+			&& !realm[i].mfIsPlayerCtrl())
+		{
+			attackerRealm = (REALM::REALM_TYPE)i;
+			break;
+		}
+	}
+
+	if (attackerRealm == REALM::NO_COUNTRY)
+	{
+		logWarn("[DEBUG] DebugTriggerRealmAssassination: no NPC realm exists to use as attacker");
+		return;
+	}
+
+	logInfo("[DEBUG] DebugTriggerRealmAssassination: attacker:%s victimRealm:%s province:%s victimUnit:%s victimUnitIndex:%ld",
+		realm[attackerRealm].mfGetName(),
+		realm[HomeRealm].mfGetName(),
+		province[victimProvince].name,
+		STRMGR_GetStr(gsUnitTitle[units[victimUnit].Icon]),
+		victimUnit);
+
+	AddReport(IMMEDIATE_NPC_ASSASSIN, attackerRealm, victimProvince, units[victimUnit].Icon);
+	SetScrewed(HomeRealm, attackerRealm, FALSE);
+	DeleteUnit(victimUnit, FALSE);
+	fUpdateDataArea = TRUE;
+	fRedrawAll = TRUE;
+#endif
 }
 
 void TestShowFor (void)
@@ -6541,9 +6620,9 @@ BOOL UpdateDataArea (void)
 			{
 				CHAR	temp1[80];
 				CHAR	temp2[80];
-				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	//  occupied
+				line(158-4, y-40, 158-4, y-40+58, DKBROWN);	// ï¿½ occupied
 				line(158-4, y+18, 182,	y+18,	DKBROWN);
-				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	//  castles
+				line(177-4, y-40, 177-4, y-40+46, DKBROWN);	// ï¿½ castles
 				line(177-4, y+6,  182,	y+6,	DKBROWN);
 				print_textf(190, y+3, DKBROWN, STRMGR_GetStr(STR_GM_MAINT_CASTLES), cCastles);
 				y += 12;

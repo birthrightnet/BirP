@@ -296,7 +296,7 @@ DEFINE_VECTOR_DATA(SUBJECT,Subject) = {
 /*SUBJ_NPC_BLIGHT*/    	    {WIZARD + 70, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_BLIGHT,STR_RPT_NPC_BLIGHT,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_NPC_WARDING*/    	{WIZARD + 71, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_WARDING,STR_RPT_NPC_WARDING,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_NPC_STRONGHOLD*/    	{WIZARD + 72, REALM_NAME, PROV_NAME,   NO_ARRAY,  {STR_RPT_NPC_STRONGHOLD,STR_RPT_NPC_STRONGHOLD,STR_NULL,STR_NULL,STR_NULL}},
-/*SUBJ_NPC_ASSASSIN*/       {GENERAL + 73, REALM_NAME, PROV_NAME, NO_ARRAY, {STR_RPT_NPC_ASSASSIN, STR_RPT_NPC_ASSASSIN, STR_NULL, STR_NULL, STR_NULL}},
+/*SUBJ_NPC_ASSASSIN*/       {GENERAL + 73, REALM_NAME, PROV_NAME, UNIT_ICON, {STR_RPT_NPC_ASSASSIN, STR_RPT_NPC_ASSASSIN, STR_NULL, STR_NULL, STR_NULL}},
 /*SUBJ_NPC_CONTEST_DESTROY*/ {GENERAL + 74, REALM_NAME, HOLDING_TYP,PROV_NAME,  {STR_RPT_NPC_CONTEST_DESTROY, STR_RPT_NPC_CONTEST_DESTROY,STR_NULL, STR_NULL, STR_NULL}},
 /*SUBJ_ALLY_DECLARE_WAR*/	{GENERAL +  75, ALLY_LEVEL, REALM_NAME,   REALM_NAME,   {STR_RPT_ALLY_DECLARE_WAR,STR_RPT_ALLY_DECLARE_WAR,STR_NULL,STR_NULL,STR_NULL}},
 /*SUBJ_USED_FREEACTION*/	{CHAMBER +  76, NO_ARRAY, NO_ARRAY,   NO_ARRAY,   {STR_RPT_USED_FREEACTION,STR_NULL,STR_NULL,STR_NULL,STR_NULL}},
@@ -733,6 +733,13 @@ void CheckForImmediateReports(void)
 		if(report[i].imm == 1)
 		{
 			report[i].imm = 2;
+			if (report[i].subject == SUBJ_NPC_ASSASSIN)
+			{
+				logInfo("CheckForImmediateReports - SUBJ_NPC_ASSASSIN index1(attackerRealm):%ld index2(province):%ld index3(victimUnit):%ld",
+					report[i].index1,
+					report[i].index2,
+					report[i].index3);
+			}
 
 			iWhichFace = Subject[report[i].subject].subj_class/100;
 
@@ -742,6 +749,17 @@ void CheckForImmediateReports(void)
 			strcpy(str0, STRMGR_GetStr(Subject[report[i].subject].sz[0]));
 
 			sprintf(n, str0, str1, str2, str3);
+
+			/* For SUBJ_NPC_ASSASSIN the runtime string data (strdat.dat) uses
+			   only two %s args (realm, province).  Append the unit type directly
+			   so the message is correct regardless of which strdat.dat is deployed. */
+			if (report[i].subject == SUBJ_NPC_ASSASSIN && str3[0] != '\0')
+			{
+				int len = (int)strlen(n);
+				if (len > 0 && n[len - 1] == '.')
+					len--;
+				sprintf(n + len, ": %s.", str3);
+			}
 
 			// setup for generic statement box
 			SetButtonProc (D_QUESTION1, 0, PaintImmediateReport, 0, 0);
@@ -784,12 +802,23 @@ void AddReport (LONG subject, LONG index1, LONG index2, LONG index3)
 {
 	LONG	i;
 	int		iSubImm = FALSE;
+	LONG	originalSubject = subject;
 
 	// is this an immediate report?
 	if(subject >= IMMEDIATE)
 	{
 		subject -= IMMEDIATE;
 		iSubImm = TRUE;
+	}
+
+	if (subject == SUBJ_NPC_ASSASSIN)
+	{
+		logInfo("AddReport - SUBJ_NPC_ASSASSIN queued originalSubject:%ld immediate:%ld attackerRealm:%ld province:%ld victimUnit:%ld",
+			originalSubject,
+			(LONG)iSubImm,
+			index1,
+			index2,
+			index3);
 	}
 
 	for (i=iNewReports; i<iNextReport; i++)
@@ -933,6 +962,10 @@ static char const * const ReportString (LONG str_typ, LONG index)
 			if(index > MAX_UNITS)
 				index = 0;
 			return STRMGR_GetStr(gsUnitTitle[units[index].Icon]);
+		case UNIT_ICON:
+			if (index >= MAP_ICON_COUNT)
+				index = NO_MAP_ICON;
+			return STRMGR_GetStr(gsUnitTitle[index]);
 		case ALLY_LEVEL:
 			if(index > 4)
 				index = 0;
