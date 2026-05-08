@@ -1,5 +1,5 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0.15
+Version: 1.4.0
 Date: 2026-05-03
 
 TABLE OF CONTENTS
@@ -102,4 +102,4 @@ development team, check us out at any of the following places:
  * https://kiranwelle.com/birthright
  * https://github.com/Shiryou/BirP
  * https://moddb.com/mods/birthright-preservation-patch
- * http://www.birthright.net/forums/showthread.php?29331-Birthright-The-Gorgon-s-Alliance-Preservation-Patch
+ * https://forum.birthright.net/t/birthright-the-gorgons-alliance-preservation-patch/24699
