@@ -18,15 +18,18 @@
 // Do not update this unless you are promoting to Prod.
 #define BUILD_PATCH 0
 
-// The BUILD_BUILD is auto-computed from latest commit at promotion to Prod.
-// You should update this field to the number of successful PRs in GitHub against the `develop` branch + 2, but keep in mind this will likely be replaced.
-#define BUILD_BUILD 15
+// The BUILD_BUILD and CHARED_BUILD_BUILD is auto-computed from latest commit at promotion to Prod. Do not update manually.
+#ifndef BUILD_BUILD
+#define BUILD_BUILD 0
+#endif
 
 // These are for the Character Editor only.
 #define CHARED_BUILD_MAJOR 1
 #define CHARED_BUILD_MINOR 0
 #define CHARED_BUILD_PATCH 0
-#define CHARED_BUILD_BUILD 10
+#ifndef CHARED_BUILD_BUILD
+#define CHARED_BUILD_BUILD 0
+#endif
 
 #define BUILD_VERSION MAKEVER(BUILD_MAJOR,BUILD_MINOR,BUILD_PATCH,BUILD_BUILD)
 #define CHARED_BUILD_VERSION MAKEVER(CHARED_BUILD_MAJOR,CHARED_BUILD_MINOR,CHARED_BUILD_PATCH,CHARED_BUILD_BUILD)

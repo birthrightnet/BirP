@@ -66,6 +66,10 @@ Vec_Check =
 !endif
 !endif
 
+!ifdef BUILD_BUILD
+Build_Number = -dBUILD_BUILD=$(BUILD_BUILD) -dCHARED_BUILD_BUILD=$(BUILD_BUILD)
+!endif
+
 LogComments = -d_LOGCOMMENT
 
 soundsys = on
@@ -340,17 +344,17 @@ dos_production_Linker_Options = option stack=32k option map=$*.map
 
 
 RCCompiler = wrc
-RSC_FLAGS = -q -ad -bt=nt
-RES_OPTIONS = -r -q -ad -bt=nt
+RSC_FLAGS = -q -ad -bt=nt $(Build_Number)
+RES_OPTIONS = -r -q -ad -bt=nt $(Build_Number)
 
 !ifeq CHARED ON
-RSC_FLAGS = -q -ad -bt=nt -d=_CHARED
-RES_OPTIONS = -r -q -ad -bt=nt -d=_CHARED
+RSC_FLAGS = -q -ad -bt=nt -d=_CHARED $(Build_Number)
+RES_OPTIONS = -r -q -ad -bt=nt -d=_CHARED $(Build_Number)
 !endif
 
 !ifeq MULTIPLAY ON
-RSC_FLAGS = -q -ad -bt=nt -d=_MULTIPLAY_ONLY
-RES_OPTIONS = -r -q -ad -bt=nt -d=_MULTIPLAY_ONLY
+RSC_FLAGS = -q -ad -bt=nt -d=_MULTIPLAY_ONLY $(Build_Number)
+RES_OPTIONS = -r -q -ad -bt=nt -d=_MULTIPLAY_ONLY $(Build_Number)
 !endif
 
 !ifdef PREPROCESS
@@ -677,17 +681,15 @@ PrepareBuildDirs : .SYMBOLIC
 	@cmd /c "if not exist $(OBJD) mkdir $(OBJD)"
 	@cmd /c "if not exist $(BIND) mkdir $(BIND)"
 	@cmd /c "if not exist $(ERRLOG_DIR) mkdir $(ERRLOG_DIR)"
-	@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) rd /s /q $(SOLAUDIO_STAGE_ROOT) >nul 2>&1"
-	@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) (ping -n 2 127.0.0.1 >nul & rd /s /q $(SOLAUDIO_STAGE_ROOT) >nul 2>&1)"
-	@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) (ping -n 2 127.0.0.1 >nul & rd /s /q $(SOLAUDIO_STAGE_ROOT) >nul 2>&1)"
-	@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) (echo Error: Could not clear $(SOLAUDIO_STAGE_ROOT) before restaging SOLAUDIO.>&2 & exit /b 1) else exit /b 0"
+	-@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT).bak rd /s /q $(SOLAUDIO_STAGE_ROOT).bak >nul 2>&1"
+	-@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT) ren $(SOLAUDIO_STAGE_ROOT) SOLAUDIO.bak >nul 2>&1"
+	-@cmd /c "if exist $(SOLAUDIO_STAGE_ROOT).bak rd /s /q $(SOLAUDIO_STAGE_ROOT).bak >nul 2>&1"
 	@cmd /c "xcopy /E /I /Y SOLAUDIO\INC $(SOLAUDIO_STAGE_ROOT)\INC >nul & if errorlevel 2 exit /b 1 & exit /b 0"
 	@cmd /c "xcopy /E /I /Y SOLAUDIO\SOURCE\DOS $(SOLAUDIO_STAGE_DOS_SRC_DIR) >nul & if errorlevel 2 exit /b 1 & exit /b 0"
 	@cmd /c "xcopy /E /I /Y SOLAUDIO\SOURCE\WIN $(SOLAUDIO_STAGE_WIN_SRC_DIR) >nul & if errorlevel 2 exit /b 1 & exit /b 0"
-	@cmd /c "if exist $(RES_STAGE_ROOT) rd /s /q $(RES_STAGE_ROOT) >nul 2>&1"
-	@cmd /c "if exist $(RES_STAGE_ROOT) (ping -n 2 127.0.0.1 >nul & rd /s /q $(RES_STAGE_ROOT) >nul 2>&1)"
-	@cmd /c "if exist $(RES_STAGE_ROOT) (ping -n 2 127.0.0.1 >nul & rd /s /q $(RES_STAGE_ROOT) >nul 2>&1)"
-	@cmd /c "if exist $(RES_STAGE_ROOT) (echo Error: Could not clear $(RES_STAGE_ROOT) before restaging resources.>&2 & exit /b 1) else exit /b 0"
+	-@cmd /c "if exist $(RES_STAGE_ROOT).bak rd /s /q $(RES_STAGE_ROOT).bak >nul 2>&1"
+	-@cmd /c "if exist $(RES_STAGE_ROOT) ren $(RES_STAGE_ROOT) RES.bak >nul 2>&1"
+	-@cmd /c "if exist $(RES_STAGE_ROOT).bak rd /s /q $(RES_STAGE_ROOT).bak >nul 2>&1"
 	@cmd /c "if exist ..\RES (xcopy /E /I /Y ..\RES $(RES_STAGE_ROOT) >nul) else (xcopy /E /I /Y ..\..\birp-dependencies\RES $(RES_STAGE_ROOT) >nul) & if errorlevel 2 exit /b 1 & exit /b 0"
 !ifeq OS WIN95
 	@echo Building SOLAUDIO WIN libraries...
@@ -766,19 +768,19 @@ CleanVersion : .SYMBOLIC
 .asm: RESUTIL;.
 
 .c.obj: .AUTODEPEND
-	*$(CCompiler) $($(op_sys)_$(version)_Compiler_Options) $<
+	*$(CCompiler) $(Build_Number) $($(op_sys)_$(version)_Compiler_Options) $<
 
 .cpp.obj: .AUTODEPEND
-	*$(CPPCompiler) $($(op_sys)_$(version)_Compiler_Options) $<
+	*$(CPPCompiler) $(Build_Number) $($(op_sys)_$(version)_Compiler_Options) $<
 
 .rc.res: .AUTODEPEND
 	*$(RCCompiler) $(RES_OPTIONS) $<
 
 .c.mbr: .AUTODEPEND
-	*$(CCompiler) $($(op_sys)_browser_options) $<
+	*$(CCompiler) $(Build_Number) $($(op_sys)_browser_options) $<
 
 .cpp.mbr: .AUTODEPEND
-	*$(CPPCompiler) $($(op_sys)_browser_options) $<
+	*$(CPPCompiler) $(Build_Number) $($(op_sys)_browser_options) $<
 
 .asm.obj: .SYMBOLIC
 	@cmd /c "if not exist $(OBJD) mkdir $(OBJD)"
