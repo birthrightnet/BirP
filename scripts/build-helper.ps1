@@ -69,8 +69,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 $scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-$repoRoot = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$birpDevRoot = Join-Path $repoRoot 'birp-dev'
+$birpDevRoot = (Resolve-Path (Join-Path $scriptDir '..')).Path
 $buildLogsDir = Join-Path $birpDevRoot 'build-artifacts\logs'
 
 if ([string]::IsNullOrWhiteSpace($MakeBatPath)) {
@@ -117,10 +116,45 @@ function Get-LogSnapshot {
 
 Write-Host "[RUN] $Name" -ForegroundColor Yellow
 
+# Get first 2 bytes (4 hex chars) of current commit and convert to int
+# Change: ensure git runs with repository as working directory (cd to repo root)
+try {
+    Push-Location $repoRoot
+    $shortHex = (& git rev-parse --short=4 HEAD 2>$null).Trim()
+    Pop-Location
+} catch {
+    Pop-Location -ErrorAction SilentlyContinue
+    Write-Error "Failed to get git commit hash. Ensure git is installed and this is a git repo."
+    exit 1
+}
+
+if ([string]::IsNullOrWhiteSpace($shortHex) -or $shortHex.Length -lt 1) {
+    Write-Error "Unexpected git short hash: '$shortHex'"
+    exit 1
+}
+
+# git --short=4 may return a longer prefix to avoid ambiguity; truncate to the first 4 hex chars (first 2 bytes)
+if ($shortHex.Length -gt 4) {
+    Write-Host "Note: git returned a longer short hash '$shortHex'; truncating to first 4 chars"
+    $shortHex = $shortHex.Substring(0,4)
+}
+
+if ($shortHex.Length -lt 4) {
+    Write-Error "Unexpected git short hash length after truncation: '$shortHex'"
+    exit 1
+}
+
+try {
+    $buildBuild = [Convert]::ToInt32($shortHex, 16)
+} catch {
+    Write-Error "Failed to convert hex '$shortHex' to int: $_"
+    exit 1
+}
+
 $beforeLogs = Get-LogSnapshot -ScenarioOsTarget $OsTarget
 $quotedMakeBat = '"' + $MakeBatPath + '"'
 $scenarioText = ($ScenarioTokens | ForEach-Object { $_ }) -join ' '
-$cmdLine = "$quotedMakeBat $scenarioText"
+$cmdLine = "$quotedMakeBat $scenarioText ""BUILD_BUILD=$buildBuild"""
 
 Push-Location $birpDevRoot
 try {
