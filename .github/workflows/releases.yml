@@ -1,0 +1,136 @@
+name: Releases
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      refToBuild:
+        description: 'Tag or branch to build'
+        type: string
+        default: 'main'
+
+env:
+  TAG: ${{ inputs.refToBuild || github.ref_name }}
+
+jobs:
+  build:
+    name: Build Release
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        ref: ${{ env.TAG }}
+
+    - name: Get commit hash
+      id: get_commit
+      shell: pwsh
+      run: |
+        $COMMIT_HASH = git rev-parse HEAD
+        Write-Host "Commit hash: $COMMIT_HASH"
+        "commit_hash=$COMMIT_HASH" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+   
+    - name: Setup Open Watcom
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: "2.0"
+
+    - name: Download UASM
+      shell: powershell
+      run: |
+        $url = "https://terraspace.co.uk/uasm257_x64.zip"
+        Write-Host "Downloading UASM from $url"
+        Invoke-WebRequest -Uri $url -OutFile "uasm.zip"
+        Expand-Archive -Path "uasm.zip" -DestinationPath "..\UASM" -Force
+
+    - name: Download birp-dependencies
+      shell: powershell
+      run: |
+        $url = "https://www.appypedia.com/h/birp-dependencies.zip"
+        Write-Host "Downloading birp-dependencies from $url"
+        try {
+            Invoke-WebRequest -Uri $url -OutFile "birp-dependencies.zip"
+        } catch {
+            Write-Warning "Failed to download birp-dependencies from placeholder URL."
+        }
+
+    - name: Extract birp-dependencies
+      shell: powershell
+      run: |
+        if (Test-Path "birp-dependencies.zip") {
+            Expand-Archive -Path "birp-dependencies.zip" -DestinationPath "..\BirP-Dependencies" -Force
+        }
+
+    - name: Setup Project Dependencies
+      shell: powershell
+      run: |
+        $uasmRoot = Resolve-Path "..\UASM"
+        $depsRoot = Resolve-Path "..\BirP-Dependencies"
+        
+        # Add UASM to PATH safely
+        if (Test-Path $uasmRoot) {
+            Add-Content -Path $env:GITHUB_PATH -Value $uasmRoot
+        }
+
+        # Append project-specific INCLUDEs
+        $extraIncludes = @(
+            Join-Path $depsRoot "Windows95DDK\INC32"
+            Join-Path $depsRoot "Windows95DDK\INC16"
+            Join-Path $depsRoot "Windows95DDK-INC16-DIGITALV"
+            Join-Path $depsRoot "DirectXSDK\sdk\inc"
+            Join-Path $env:WATCOM "h\nt\directx"
+            Join-Path $env:WATCOM "h\nt\ddk"
+        ) | Where-Object { Test-Path $_ }
+        
+        if ($extraIncludes.Count -gt 0) {
+            $currentInclude = if ([string]::IsNullOrWhiteSpace($env:INCLUDE)) { @() } else { $env:INCLUDE -split ';' }
+            $newInclude = ($currentInclude + $extraIncludes) -join ';'
+            Add-Content -Path $env:GITHUB_ENV -Value "INCLUDE=$newInclude"
+        }
+
+        # Append project-specific LIBs
+        $extraLibs = @(
+            Join-Path $depsRoot "Windows95DDK\LIB"
+            Join-Path $depsRoot "DirectXSDK\sdk\lib"
+        ) | Where-Object { Test-Path $_ }
+        
+        if ($extraLibs.Count -gt 0) {
+            $currentLib = if ([string]::IsNullOrWhiteSpace($env:LIB)) { @() } else { $env:LIB -split ';' }
+            $newLib = ($currentLib + $extraLibs) -join ';'
+            Add-Content -Path $env:GITHUB_ENV -Value "LIB=$newLib"
+        }
+
+        # Set game install dir for build scripts
+        Add-Content -Path $env:GITHUB_ENV -Value "BIRTHRT_INSTALL_DIR=C:\SIERRA\BIRTHRT"
+
+    - name: Build Release Package
+      shell: powershell
+      run: |
+        # Ensure build-artifacts directories exist
+        New-Item -ItemType Directory -Path "build-artifacts\binaries\Installer" -Force | Out-Null
+        ./scripts/build-release-package.ps1
+
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: birp-release-${{ env.TAG }}
+        path: |
+          build-artifacts/binaries/Installer/Birthrt-*.exe
+          build-artifacts/binaries/Installer/Birthrt-*.zip
+
+    - name: Update Release
+      uses: ncipollo/release-action@v1
+      if: startsWith(github.ref, 'refs/tags/') || github.event_name == 'workflow_dispatch'
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        artifacts: "build-artifacts/binaries/Installer/*.exe,build-artifacts/binaries/Installer/*.zip"
+        tag: ${{ env.TAG }}
+        commit: ${{ steps.get_commit.outputs.commit_hash }}
+        name: "📦 Release ${{ env.TAG }}"
+        draft: true
+        allowUpdates: true
+        replacesArtifacts: true
