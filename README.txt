@@ -53,6 +53,7 @@ Steps to install:
 Added
 
 - Added "modern mode" in-game resolution options with support for `800x600`, `1024x768`, `1280x960`, `1400x1050`, `1600x1200`, and `1920x1440`. The original "OG mode" remains available. (#6)
+- Pressing F11 in an adventure successfully completes the adventure, if playing a DEBUG build of the game. (#35)
 
 Removed
 

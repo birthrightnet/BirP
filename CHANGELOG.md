@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Added "modern mode" in-game resolution options while preserving the original "OG mode" option. [#6](https://github.com/Shiryou/BirP/issues/6)
 - Added build [scripts](../birp-dev/scripts) to automate building, testing, validating, and packaging the project.
+- Pressing F11 while in an adventure completes the current quest, for testing purposes. Only works in DEBUG builds.[#35](https://github.com/Shiryou/BirP/issues/35)
 
 ### Changed
 
