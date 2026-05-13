@@ -20,7 +20,7 @@
 
 // The BUILD_BUILD and CHARED_BUILD_BUILD is auto-computed from latest commit at promotion to Prod. Do not update manually.
 #ifndef BUILD_BUILD
-#define BUILD_BUILD 0
+#define BUILD_BUILD 19
 #endif
 
 // These are for the Character Editor only.
