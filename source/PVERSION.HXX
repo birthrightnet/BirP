@@ -16,11 +16,11 @@
 
 // The BUILD_PATCH is manually incremented by 1 during promotion to Prod.
 // Do not update this unless you are promoting to Prod.
-#define BUILD_PATCH 0
+#define BUILD_PATCH 1
 
 // The BUILD_BUILD and CHARED_BUILD_BUILD is auto-computed from latest commit at promotion to Prod. Do not update manually.
 #ifndef BUILD_BUILD
-#define BUILD_BUILD 19
+#define BUILD_BUILD 0
 #endif
 
 // These are for the Character Editor only.

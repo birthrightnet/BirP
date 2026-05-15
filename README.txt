@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.0.19
-Date: 2026-05-13
+Version: 1.4.0
+Date: 2026-05-15
 
 TABLE OF CONTENTS
 
@@ -11,6 +11,13 @@ TABLE OF CONTENTS
 
 [1] HOW TO INSTALL THE PATCH
 ============================
+This ZIP archive requires manual installation. It is not recommended for new
+players. Instead, please download the latest installer from ModDB for a
+simplified installation experience.
+
+If you'd like to continue with a manual installation, follow the instructions
+below.
+
 It is recommended to start with a fresh installation to reduce any potential
 problems with overwriting files. These instructions focus only on getting the
 basic game going. For information on the Character Editor, Scenario Editor, or
@@ -48,12 +55,11 @@ Steps to install:
 [2] WHAT THE PATCH FIXES / CHANGES
 ==================================
 
-[Unreleased]
+1.4.1
 
 Added
 
 - Added "modern mode" in-game resolution options with support for `800x600`, `1024x768`, `1280x960`, `1400x1050`, `1600x1200`, and `1920x1440`. The original "OG mode" remains available. (#6)
-- Pressing F11 in an adventure successfully completes the adventure, if playing a DEBUG build of the game. (#35)
 
 Removed
 
@@ -62,18 +68,16 @@ Removed
 
 Fixed
 
-- Fixed game window position resetting after restart by persisting last moved coordinates between sessions. (#6)
 - Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling. (#4)
-- Hardened battle AI enemy/leader handle checks to prevent rare tactical battle crashes caused by stale references. (#4)
 - Fixed auto-battle resolution so regents and lieutenants on the overwhelmingly stronger side are no longer valid casualties unless they are dueling an opposing regent or lieutenant. (#19)
 - Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume. (#10)
 - Fixed issue where adventure music would not resume after finding quest item (#35)
 - Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.
 - Fixed DOS audio driver fallback parsing so invalid or missing `audioDrv` entries no longer force silent output.
 - Fixed spell learning from tomes so newly learned adventure spells are inserted in proper level order in Prepare Magic lists instead of being appended at the end. (#25)
-- Expanded spell book sorting fix to retroactively fix pre-patch save games with spell books already out of order. (#25)
 - Fixed two inventory quantity corruption paths that could incorrectly add dozens of consumable items. (#27)
-- Fixed an uncommon fatal end-of-turn crash (`units[-1]`) by validating map and multiplayer unit indices before dereferencing unit records. (#30)
+- Hardened battle AI enemy/leader handle checks to prevent rare tactical battle crashes caused by stale references. (#4)
+- Fixed an uncommon fatal end-of-turn crash (`units[-1]`). (#30)
 
 1.4.0.4 - 2025-11-02
 
