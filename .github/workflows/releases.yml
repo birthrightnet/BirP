@@ -42,7 +42,7 @@ jobs:
     - name: Download UASM
       shell: powershell
       run: |
-        $url = "https://terraspace.co.uk/uasm257_x64.zip"
+        $url = "https://www.appypedia.com/h/uasm257_x64.zip"
         Write-Host "Downloading UASM from $url"
         Invoke-WebRequest -Uri $url -OutFile "uasm.zip"
         Expand-Archive -Path "uasm.zip" -DestinationPath "..\UASM" -Force
