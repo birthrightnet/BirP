@@ -13,6 +13,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Updated assassination reports to include the assassinated unit type, so the report now identifies what unit was lost. [#33](https://github.com/Shiryou/BirP/issues/33)
 
+### Changed
+
+- Updated Lieutenant Action cancel behavior so canceling out of sub-windows no longer exits Lieutenant Action, and pressing Lieutenant Action again now explicitly toggles back to normal regent action. Lieutenant Action button is highlighted during Lieutenant Action to indicate its active state. [#21](https://github.com/Shiryou/BirP/issues/21)
+
 ## [1.4.1] - 2026-05-15
 
 ### Added

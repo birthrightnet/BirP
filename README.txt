@@ -55,6 +55,12 @@ Steps to install:
 [2] WHAT THE PATCH FIXES / CHANGES
 ==================================
 
+Unreleased
+
+Changed
+
+- While in the realm lieutenant action mode: cancelling a sub-action no longer cancels the lieutenant action, instead the lieutenant action button (which is now highlighted) must be pressed to leave lieutenant action mode. (#21)
+
 1.4.1
 
 Added

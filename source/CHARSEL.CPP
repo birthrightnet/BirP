@@ -15,7 +15,7 @@
    void BeginRule(LONG, LONG)
    void SelectAdvParty(void)
 
-   ùRM250ù======================================================================= */
+   ÔøΩRM250ÔøΩ======================================================================= */
 /* ------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
@@ -1583,11 +1583,7 @@ void EndAdvParty(LONG i, LONG j)
 			//action_turn--;
 			//AddSndObj((BIRTHRT_SND)SND_UI_STATUS_REPORT,0,VOLUME_NINETY);
 			dturn_mode = ACTN_MODE;
-			if (fLTAction == DURING_LTACTION)
-			{
-				ActiveRegent = realm[HomeRealm].mfGetRegent();
-  				fLTAction = BEFORE_LTACTION;
-			}
+			// Keep lieutenant action context active when backing out of adventure setup.
 
 			DataAreaMode (ACTN_MODE, 0);
 		}

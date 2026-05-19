@@ -8001,9 +8001,17 @@ void DoneDomainAction (LONG MenuCombo, LONG)
 
 		case LIEUTENANT_ACTION:
 			/* FREE ACTION */
-			ActiveRegent = iSelectedRealm;
-			fLTAction = DURING_LTACTION;
-			lAction = TRUE;
+			if (fLTAction == DURING_LTACTION)
+			{
+				ActiveRegent = realm[HomeRealm].mfGetRegent();
+				fLTAction = BEFORE_LTACTION;
+			}
+			else
+			{
+				ActiveRegent = iSelectedRealm;
+				fLTAction = DURING_LTACTION;
+				lAction = TRUE;
+			}
 			break;
 
 		case DECLARE_WAR:			// Declare War
@@ -8650,11 +8658,7 @@ void CancelDomainAction (LONG MenuCombo, LONG)
 
 	CleanupAfterActnMenu();
 
-	if (fLTAction == DURING_LTACTION)
-	{
-		ActiveRegent = realm[HomeRealm].mfGetRegent();
-		fLTAction = BEFORE_LTACTION;
-	}
+	// Keep lieutenant action context active when canceling a sub-window.
 
 	ResumeTimeLimit();
 }
