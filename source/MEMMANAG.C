@@ -41,7 +41,7 @@
 +		SetLock			- lock a block of memory in place
 
 	======================================================================== */
-/* ùRM200ù */
+/* ÔøΩRM200ÔøΩ */
 /* includes */
 
 #include <stdio.h>
@@ -154,6 +154,7 @@ typedef enum {
 #if defined (MEMORY_CHK)
 static MEM_ERROR_CODE CheckBlockOverwrite(LONG i);
 static void ReportBlockError(LONG iHandle,MEM_ERROR_CODE ErrorCode);
+static void LogMemDiagBlock(char const *label, LONG i);
 #endif
 
 #if defined(_DEBUG) || defined(MEMORY_CHK)
@@ -2535,6 +2536,53 @@ static MEM_ERROR_CODE CheckBlockOverwrite(LONG i)
    ======================================================================== */
 
 #if defined(MEMORY_CHK)
+static void LogMemDiagBlock(char const *label, LONG i)
+{
+	if (i < 1 || i > cNumBlkHeads)
+	{
+		logError("MEMMANAG DIAG %s block=%ld out of range (1..%u)",
+			label,
+			i,
+			cNumBlkHeads);
+		return;
+	}
+
+	logError("MEMMANAG DIAG %s block=%ld attr=0x%02x prev=%d next=%d ptr=0x%lx size=%lu",
+		label,
+		i,
+		(unsigned int)abBlockAttr[i],
+		aiPrevBlk[i],
+		aiNextBlk[i],
+		(ULONG)apBlocks[i],
+		GetBlockSize(i));
+
+	if ((abBlockAttr[i] & BLKTYPEMASK) != BLKTYPE4)
+	{
+		ULONG const size = GetBlockSize(i);
+		if (size > MARKER_SPACE && apBlocks[i] != 0)
+		{
+			MEMORY_DEBUG_INFO * const pHeader = (MEMORY_DEBUG_INFO *)apBlocks[i];
+			char fileName[MAX_HEADER_NAME_LEN_SIZE];
+			char blockName[MAX_HEADER_NAME_LEN_SIZE];
+			LONG const tailMarker = *((LONG *)((PTR)(apBlocks[i]) + size - sizeof(LONG)));
+
+			strncpy(fileName, pHeader->FileName, MAX_HEADER_NAME_LEN);
+			fileName[MAX_HEADER_NAME_LEN] = 0;
+			strncpy(blockName, pHeader->BlockName, MAX_HEADER_NAME_LEN);
+			blockName[MAX_HEADER_NAME_LEN] = 0;
+
+			logError("MEMMANAG DIAG %s owner=%s:%ld blockName=%s reqSize=%ld head=0x%lx tail=0x%lx",
+				label,
+				fileName,
+				pHeader->FileLineNo,
+				blockName,
+				pHeader->BlockSize,
+				pHeader->HeadMarker,
+				tailMarker);
+		}
+	}
+}
+
 static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 {
 	switch (ErrorCode)
@@ -2544,6 +2592,10 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 		break;
 	case MEM_ERROR_BAD_HEAD:
 		{
+		logError("MEMMANAG DIAG detected BAD_HEAD block=%ld", i);
+		LogMemDiagBlock("bad-head/current", i);
+		LogMemDiagBlock("bad-head/prev", aiPrevBlk[i]);
+		LogMemDiagBlock("bad-head/next", aiNextBlk[i]);
 
   		if ((abBlockAttr[i] & BLKTYPEMASK) != ENDBLK)
 		{
@@ -2608,6 +2660,7 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 				}
 
 				fclose(fp);
+				logError("MEMMANAG DIAG wrote memdmp.txt for BAD_HEAD block=%ld", i);
 			}
 		}
 
@@ -2616,6 +2669,10 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 		break;
 	case MEM_ERROR_BAD_TAIL:
 		{
+		logError("MEMMANAG DIAG detected BAD_TAIL block=%ld", i);
+		LogMemDiagBlock("bad-tail/current", i);
+		LogMemDiagBlock("bad-tail/prev", aiPrevBlk[i]);
+		LogMemDiagBlock("bad-tail/next", aiNextBlk[i]);
 
 		if ((abBlockAttr[i] & BLKTYPEMASK) != ENDBLK)
 		{
@@ -2681,6 +2738,7 @@ static void ReportBlockError(LONG i, MEM_ERROR_CODE ErrorCode)
 				}
 
 				fclose(fp);
+				logError("MEMMANAG DIAG wrote memdmp.txt for BAD_TAIL block=%ld", i);
 			}
 		}
 

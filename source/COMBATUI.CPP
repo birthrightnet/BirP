@@ -1429,6 +1429,28 @@ void InitCombatUI(SCENE & rScene)
 	LONG i;
 	(void)i;
 
+	// FIX: Validate all avatars in scene before initializing combat UI
+	// This catches stale handles that may have persisted from previous combat or scene transitions
+	logInfo("InitCombatUI validating %d scene avatars before combat initialization", MAX_AVATARS);
+	for (i = 0; i < MAX_AVATARS; i++)
+	{
+		if (rScene.Avatars[i] != fERROR)
+		{
+			CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(rScene.Avatars[i]);
+			if (pAvatar == NULL)
+			{
+				logError("InitCombatUI INVALID avatar handle at scene index %d hdl=%d",
+					i, rScene.Avatars[i]);
+			}
+			else
+			{
+				logDebug("InitCombatUI avatar[%d] hdl=%d type=%d status=%d hEnemy=%d engaged=%d",
+					i, rScene.Avatars[i], pAvatar->mfType(), pAvatar->Status,
+					pAvatar->hEnemy, pAvatar->Engaged);
+			}
+		}
+	}
+
 	pcsdData->mfInitCombatVals();
 
 	if (gCombatMenuIsUp == FALSE)
@@ -1439,7 +1461,7 @@ void InitCombatUI(SCENE & rScene)
 
 	CONTROL_PANELS::mfSetBeginCombatAll();
 
-	PlayEnvironmentalSounds = FALSE;
+	ResetEnvironmentalSoundState("combat-ui");
 
 	if (COMBAT_MODE::mfIsModeRPG())
 	{
@@ -1495,12 +1517,29 @@ void ReleaseCombatUI(SCENE &rScene)
 {
 	LONG i;
 
+	// FIX: Log final combat state before releasing UI
+	logInfo("ReleaseCombatUI begin - ending combat UI session, validating final avatar state");
 	for (i = 0; i < MAX_AVATARS; i++)
 	{
 		if (rScene.Avatars[i] != fERROR)
 		{
 			//GEH SetBlockAttr(rScene.Avatars[i], LOCKED, LOCKED);
 			CAvatar * const pAvatar = (CAvatar * const) BLKPTR(rScene.Avatars[i]);
+
+			// FIX: Validate avatar pointer before using
+			if (pAvatar == NULL)
+			{
+				logError("ReleaseCombatUI invalid avatar handle=%d at index %d",
+					rScene.Avatars[i], i);
+				continue;
+			}
+
+			// Log final combat state
+			if (pAvatar->Engaged > 0)
+			{
+				logDebug("ReleaseCombatUI avatar[%d] hdl=%d still engaged=%d hEnemy=%d",
+					i, rScene.Avatars[i], pAvatar->Engaged, pAvatar->hEnemy);
+			}
 
 			// Clear the Pause mode (if set)
 			pAvatar->DoAI(CAvatar::AI_END_PAUSE);
@@ -1538,6 +1577,9 @@ void ReleaseCombatUI(SCENE &rScene)
 
 	// Stop removing the draw from the things engine.
 	ClearDontDrawCloser();
+
+	// FIX: Log completion of combat UI release
+	logInfo("ReleaseCombatUI complete - combat UI session ended");
 }
 
 /* ========================================================================

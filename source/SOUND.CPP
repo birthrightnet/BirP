@@ -122,6 +122,7 @@ static BOOL AudioInitialized = FALSE;
 //static SHORT FrameCount;
 static LONG TotalEnvironSnds = 0;
 static LONG TotalLoopingSounds = 0;
+static SHORT FramesTilNextSound = 300;
 
 #define FADE_TO_RESET_COUNT 20;
 static LONG SoundFade = 0;
@@ -851,17 +852,35 @@ void InitSoundThings(void)
 }
 
 /*************************************************************************
+Function ResetEnvironmentalSoundState
+Purpose  clear the ambient sound selectors and timer between levels
+**************************************************************************/
+extern "C"
+void ResetEnvironmentalSoundState(char const * reason)
+{
+	PlayEnvironmentalSounds = FALSE;
+	WhichEnvironmentalSound = 0;
+	FramesTilNextSound = 300;
+	logDebug("Environmental sound state reset reason=%s play=%d ui=%d which=%d nextFrames=%d",
+		reason,
+		PlayEnvironmentalSounds,
+		UIPlayEnvironmentalSounds,
+		WhichEnvironmentalSound,
+		FramesTilNextSound);
+}
+
+/*************************************************************************
 Function ServiceDosAudio
 Purpose  prevent breakup up sound in DOS
 **************************************************************************/
 void ServiceSOLAudio(void)
 {
-	static SHORT FramesTilNextSound = 300;
 	static BOOL LoggedEnvironmentalState = FALSE;
 	static BOOL LastPlayEnvironmentalSounds = FALSE;
 	static BOOL LastUIPlayEnvironmentalSounds = FALSE;
 	static SHORT LastWhichEnvironmentalSound = -1;
 	static SHORT LastSFXVolumeIndex = -1;
+	static BOOL LastEnvironmentalSoundEnabled = FALSE;
 	BOOL const EnvironmentalSoundEnabled =
 		(BOOL)(PlayEnvironmentalSounds && UIPlayEnvironmentalSounds && SFXVolumeIndex);
 
@@ -890,6 +909,16 @@ void ServiceSOLAudio(void)
 			SFXVolumeIndex,
 			EnvironmentalSoundEnabled,
 			FramesTilNextSound);
+		if (EnvironmentalSoundEnabled != LastEnvironmentalSoundEnabled ||
+			LastWhichEnvironmentalSound != WhichEnvironmentalSound)
+		{
+			FramesTilNextSound = 300;
+			logDebug("Environmental sound timer reset play=%d ui=%d which=%d enabled=%d",
+				PlayEnvironmentalSounds,
+				UIPlayEnvironmentalSounds,
+				WhichEnvironmentalSound,
+				EnvironmentalSoundEnabled);
+		}
 		if (EnvironmentalSoundEnabled && WhichEnvironmentalSound <= 0)
 		{
 			logWarn("Environmental sounds enabled without a scene profile; suppressing ambient requests play=%d ui=%d which=%d sfx=%d",
@@ -903,6 +932,7 @@ void ServiceSOLAudio(void)
 		LastUIPlayEnvironmentalSounds = UIPlayEnvironmentalSounds;
 		LastWhichEnvironmentalSound = WhichEnvironmentalSound;
 		LastSFXVolumeIndex = SFXVolumeIndex;
+		LastEnvironmentalSoundEnabled = EnvironmentalSoundEnabled;
 	}
 
 	if(EnvironmentalSoundEnabled && WhichEnvironmentalSound > 0)
@@ -944,6 +974,10 @@ void ServiceSOLAudio(void)
 					AmbientSoundIndex = (SHORT)SndRandom(AMBIENT_SOUND_SCENE_5_TOTAL);
 					AmbientSound = (BIRTHRT_SND)AmbientSoundScene5[AmbientSoundIndex];
 						QueueAmbientSound = TRUE;
+					break;
+				default:
+					logWarn("Environmental sound profile %d is not supported; suppressing ambient request",
+						WhichEnvironmentalSound);
 					break;
 			}
 

@@ -310,11 +310,17 @@ void SCENE::mfLoadScene(char * cpSceneFile,
 // after the load is complete.)
 	SysHideCursor ();
 #endif
+	logInfo("SCENE::mfLoadScene begin scene=%s playerStart=%ld",
+		cpSceneFile,
+		playerStartLocation);
+	ResetEnvironmentalSoundState("scene-load");
+	logDebug("SCENE::mfLoadScene cleared inherited ambient profile before loading scene=%s", cpSceneFile);
 	// Re-initialize the internal variables.
 	// fpData = 0;
 	StopRedBook();
 	TurnOffAllSounds();
 	SuspendMusic();
+	logDebug("SCENE::mfLoadScene reset runtime state scene=%s", cpSceneFile);
 	fVersion.mfInitVals();
 
 	fMaxPlaces = 0;
@@ -336,6 +342,11 @@ void SCENE::mfLoadScene(char * cpSceneFile,
 
 	// Load the .scn file.
 	mfReadSceneFile(cpSceneFile, playerStartLocation);
+	logInfo("SCENE::mfLoadScene finished reading scene=%s versionSet=%d envSound=%d playEnv=%d",
+		cpSceneFile,
+		fVersion.mfIsSet(),
+		WhichEnvironmentalSound,
+		UIPlayEnvironmentalSounds);
 
 	if (!fVersion.mfIsSet())
 	{
@@ -349,6 +360,7 @@ void SCENE::mfLoadScene(char * cpSceneFile,
 	}
 #endif
 	fSceneAI.mfSetSceneState(SCENE_AI::INIT);
+	logDebug("SCENE::mfLoadScene scene=%s state set to INIT", cpSceneFile);
 }
 
 
@@ -391,6 +403,11 @@ void SCENE::mfReadSceneFile(char *szName,
 
 		if (fileResult != EOF)
 		{
+			if (cpBuffer[0] == '[')
+			{
+				logDebug("SCENE::mfReadSceneFile scene=%s section=%s", szName, cpBuffer);
+			}
+
 			if (strcmp(cpBuffer, "[Version]") == 0)
 			{
 				fileResult = fVersion.mfReadVersion(fp);
@@ -502,7 +519,15 @@ void SCENE::mfReadSceneFile(char *szName,
 			cpSceneFileName);
 	}
 
-	logInfo("Done loading scene.");
+	logInfo("SCENE::mfReadSceneFile complete scene=%s wadSeen=%d versionSet=%d places=%d sectors=%d dialogs=%d envSound=%d playEnv=%d",
+		szName,
+		WadSeen,
+		fVersion.mfIsSet(),
+		fMaxPlaces,
+		fMaxSectors,
+		fMaxDialogTriplines,
+		WhichEnvironmentalSound,
+		PlayEnvironmentalSounds);
 }
 
 /* ========================================================================
@@ -873,7 +898,6 @@ LONG SCENE::mfReadAvatars(FILE *fp)
 						// GWP We call this instead of DeleteAvatar for Debug purposes
 						DisposBlock(Avatars[i]);
 						Avatars[i] = fERROR;
-						i--;
 						continue;
 					}
 
@@ -892,7 +916,10 @@ LONG SCENE::mfReadAvatars(FILE *fp)
 			{
 				// Keep reading them from the scene file so we can read
 				// the other data sections.
-				logWarn("Exceeded number of avatars!.");
+				logWarn("Exceeded avatar slots while reading scene avatars count=%ld loadedIndex=%ld max=%d",
+					count,
+					i,
+					MAX_AVATARS);
 			}
 		}
 		else
@@ -2108,12 +2135,15 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 				// Find the first available Avatar slot.
 				// Note: Since I don't reset i, we start looking from the
 				//       last open spot we found.
-				for (; Avatars[i] != fERROR && i < MAX_AVATARS;i++)
+				for (; i < MAX_AVATARS && Avatars[i] != fERROR; i++)
 				{};
 
 				if (i >= MAX_AVATARS)
 				{
-					logWarn("Out of Avatars slots while loading AutoAI's!");
+					logWarn("Out of avatar slots while loading AutoAI thingIndex=%ld type=%ld max=%d",
+						ThingIndex,
+						ttype,
+						MAX_AVATARS);
 					return;	// Stop looking thru the mythings array.
 				}
 
@@ -2135,7 +2165,6 @@ void SCENE::mfAttachAutoAIsAndThingSnds ( void )
 						logWarn("Unable to load Avatar %d", ttype);
 						pAvatar->DeleteAvatar(pAvatar->hThis);
 						Avatars[i] = fERROR;
-						i--;
 						continue;
 					}
 					pAvatar->attrib.RuntimeCreated = TRUE;	// Don't save!

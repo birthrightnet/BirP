@@ -59,7 +59,13 @@ Unreleased
 
 Changed
 
-- While in the realm lieutenant action mode: cancelling a sub-action no longer cancels the lieutenant action, instead the lieutenant action button (which is now highlighted) must be pressed to leave lieutenant action mode. (#21)
+- Cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
+- Lieutenant action realm button now highlights during lieutenant action, and if pressed cancels the lieutenant action. (#21) 
+- Assassination reports now include the assassinated unit type. (#33)
+
+Fixed
+
+- Fixed some crashes that could occur during two-part adventures. (#52)
 
 1.4.1
 
@@ -76,7 +82,6 @@ Fixed
 
 - Reduced random Adventure Mode crash opportunities by adding defensive validity checks across adventure avatar/team, AI follow/combat, and spell effect handling. (#4)
 - Fixed auto-battle resolution so regents and lieutenants on the overwhelmingly stronger side are no longer valid casualties unless they are dueling an opposing regent or lieutenant. (#19)
-- Updated assassination reports to include the assassinated unit type, so reports now identify what unit was lost. (#33)
 - Fixed music startup and resume behavior in main menu and adventures so music no longer waits until after first combat and recovers more reliably after suspend/resume. (#10)
 - Fixed issue where adventure music would not resume after finding quest item (#35)
 - Fixed release startup CD bypass handling so explicit `BRSETUP.CFG` bypass settings are honored.

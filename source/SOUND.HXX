@@ -183,6 +183,7 @@ void ShutDownSoundSystem(void);
 void TurnOffAllSounds(void);
 void KillSoundsNoFade(void);
 void	StopASound (int reqSound, int SoundTag);
+void ResetEnvironmentalSoundState(char const * reason);
 
 //#ifndef _WINDOWS
 void ServiceSOLAudio(void);

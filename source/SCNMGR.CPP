@@ -221,6 +221,16 @@ LONG const SCENE_MGR::mfLoadScene(
 	BOOL		bFirstTime = FALSE;
 	CHAR		SceneName[FILENAME_LEN + 1];
 	CHAR		btl_char;
+	logInfo("SCENE_MGR::mfLoadScene request scene=%s start=%ld currentScene=%d home=%d away=%d sceneType=%d pause=%d render=%d freeze=%d",
+		cpNewSceneName,
+		playerStartLocation,
+		hCurrentScene,
+		SCENE_MGR::HomeIndex,
+		SCENE_MGR::AwayIndex,
+		SCENE_MGR::SceneType,
+		fPause,
+		fRender,
+		fFreeze);
 
 	SuspendMusic();
 	// Check for first time thru this.
@@ -236,6 +246,7 @@ LONG const SCENE_MGR::mfLoadScene(
 			//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 
 			bFirstTime = TRUE;
+			logDebug("SCENE_MGR::mfLoadScene allocating first scene block for %s", cpNewSceneName);
 			pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
 			pCurrentScene->mfInitializeData();
 		}
@@ -245,6 +256,7 @@ LONG const SCENE_MGR::mfLoadScene(
 		//GEH SetBlockAttr(SCENE_MGR::hCurrentScene, LOCKED, LOCKED);
 
 		pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+		logDebug("SCENE_MGR::mfLoadScene releasing current scene before loading %s", cpNewSceneName);
 		pCurrentScene->mfSetSceneState(SCENE_AI::RELEASE);
 		pCurrentScene->mfCallSceneAI();
 	}
@@ -406,7 +418,9 @@ LONG const SCENE_MGR::mfLoadScene(
 	SCENE_MGR::fNewSceneRequested = FALSE;
 
 	// load the new scene
+	logInfo("SCENE_MGR::mfLoadScene loading scene file=%s type=%d", SceneName, SCENE_MGR::SceneType);
 	pCurrentScene->mfLoadScene(SceneName, playerStartLocation);
+	logInfo("SCENE_MGR::mfLoadScene loaded scene file=%s home=%d away=%d", SceneName, SCENE_MGR::HomeIndex, SCENE_MGR::AwayIndex);
 
 #ifdef _WINDOWS
 	LookMessages();
@@ -424,6 +438,7 @@ LONG const SCENE_MGR::mfLoadScene(
 		if(!LoadSceneAvatars( pCurrentScene, SCENE_MGR::AwayIndex))
 			goto Error;
 	}
+	logDebug("SCENE_MGR::mfLoadScene loaded scene avatars scene=%s home=%d away=%d", SceneName, SCENE_MGR::HomeIndex, SCENE_MGR::AwayIndex);
 
 	if (fShowProgressBar)
 	{
@@ -455,6 +470,7 @@ LONG const SCENE_MGR::mfLoadScene(
 	}
 
 	// Execute the init state
+	logInfo("SCENE_MGR::mfLoadScene entering initial scene AI state scene=%s firstTime=%d", SceneName, bFirstTime);
 	pCurrentScene->mfCallSceneAI ();
 
 	// always clear this for the next guy.  If he doesn't specify, dont show
@@ -520,6 +536,7 @@ LONG const SCENE_MGR::mfLoadScene(
 	{
 		PlayTrack(ucWhichTrack);
 	}
+	logInfo("SCENE_MGR::mfLoadScene complete scene=%s firstTime=%d", SceneName, bFirstTime);
 	//GEH ClrLock(SCENE_MGR::hCurrentScene);
 	return fNOERR;
 
@@ -614,7 +631,7 @@ void SCENE_MGR::mfReleaseSceneToMap(LONG,LONG)
 #if defined (_EDIT)
 	return;										// [d8-09-96 JPC] can't get to map
 #endif											// from editor.
-	PlayEnvironmentalSounds = FALSE;
+	ResetEnvironmentalSoundState("scene-to-map");
 	SuspendMusic();
 	if (hCurrentScene != fERROR)
 	{
@@ -667,6 +684,7 @@ void SCENE_MGR::mfDoAI()
 		// Note: Many places in the game can request a new scene to be loaded.
 		if (SCENE_MGR::fNewSceneRequested)
 		{
+			logDebug("SCENE_MGR::mfDoAI processing queued scene request name=%s start=%ld", SCENE_MGR::fcpNewSceneName, SCENE_MGR::fNewScenePlayerStart);
 			if(fERROR == SCENE_MGR::mfLoadScene(SCENE_MGR::fcpNewSceneName, SCENE_MGR::fNewScenePlayerStart))
 				SCENE_MGR::mfReleaseSceneToMap(0,0);
 
@@ -683,6 +701,7 @@ void SCENE_MGR::mfDoAI()
 
 			if (fExitLevel != 0)
 			{
+				logDebug("SCENE_MGR::mfDoAI processing exit level request=%ld", fExitLevel);
 			    // Note: Request is called instead of LoadScene so that we get a copy
 			    //       of the new scene name. Because it will be tossed when the old
 			    //       scene is purged.

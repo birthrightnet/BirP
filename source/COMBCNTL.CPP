@@ -724,6 +724,15 @@ void CONTROL_PANELS::CURRENT_CONTROL::mfSetBeginCombat(BOOL const AutoAttack)
 		LONG i;
 		CAvatar * const pAvatar = (CAvatar * const) BLKPTR(fhAvatar);
 		
+		// FIX: Validate avatar handle after BLKPTR to catch stale handles from control panel cache
+		if (pAvatar == NULL)
+		{
+			logError("mfSetBeginCombat invalid avatar handle=%d in combat control panel; clearing cache and returning",
+				fhAvatar);
+			fhAvatar = fERROR;  // Clear stale handle
+			return;  // Exit early, don't proceed with invalid avatar
+		}
+		
 		fOriginalAngle = pAvatar->mfAngle();
 		fOriginalStatus = pAvatar->Status;
 		fOriginalLeftButtonFn = pAvatar->mfSetLeftButtonFn(CombatSelectThisAdventurer);
@@ -796,6 +805,13 @@ BOOL const CONTROL_PANELS::CURRENT_CONTROL::mfNeedToUpdatePanel()
 	if (fhAvatar != fERROR)
 	{
 		CAvatar const * const pAvatar = (CAvatar *const) BLKPTR(fhAvatar);
+		
+		// FIX: Validate avatar handle to catch stale references
+		if (pAvatar == NULL)
+		{
+			logError("mfNeedToUpdatePanel invalid avatar handle=%d in control panel", fhAvatar);
+			return FALSE;  // Panel doesn't need update if avatar is invalid
+		}
 		
 		if (pAvatar->Status != fPrevStatus)
 		{

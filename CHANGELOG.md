@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- Hardened Adventure/Combat transition flows for two-part adventures to reduce crash risk during part-two progression and combat UI/control handoffs. [#52](https://github.com/Shiryou/BirP/issues/52)
 - Updated assassination reports to include the assassinated unit type, so the report now identifies what unit was lost. [#33](https://github.com/Shiryou/BirP/issues/33)
 
 ### Changed

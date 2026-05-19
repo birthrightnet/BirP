@@ -1515,10 +1515,28 @@ void CAvatar::mfCheckSnds()
 			// Play the sound.
 			if(SndData[i].SndId != 0)
 			{
-				AddSndObj(
+				SHORT const soundTag = AddSndObj(
 					SndData[i].SndId,
 					SndData[i].Range,
 					ThingIndex);
+				logDebug("mfCheckSnds avatar=%d queue=%ld sound=%d range=%d loop=%d trigger=%lu frame=%lu tag=%d",
+					ThingIndex,
+					i,
+					SndData[i].SndId,
+					SndData[i].Range,
+					SndData[i].Loop,
+					SndData[i].TriggerFrame,
+					SCENE_MGR::gFrame,
+					soundTag);
+				if (soundTag == fERROR)
+				{
+					logWarn("mfCheckSnds failed to queue sound avatar=%d queue=%ld sound=%d range=%d frame=%lu",
+						ThingIndex,
+						i,
+						SndData[i].SndId,
+						SndData[i].Range,
+						SCENE_MGR::gFrame);
+				}
 			}
 			// clear the tick
 			if(SndData[i].Loop == FALSE)

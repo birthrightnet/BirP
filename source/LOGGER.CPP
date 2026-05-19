@@ -13,8 +13,10 @@
 BOOL logBufferingStarted = FALSE;
 BOOL logBufferingDisabled = FALSE;
 FILE *logFile;
-char *logFileName = "debug.log";
-size_t logFileNameLength = strlen("debug.log");
+static char defaultLogFileName[] = "debug.log";
+char *logFileName = defaultLogFileName;
+size_t logFileNameLength = sizeof(defaultLogFileName) - 1;
+BOOL logFileNameHeapAllocated = FALSE;
 #if defined(_DEBUG)
 LogLevel currentLogLevel = LogDebug;
 #else
@@ -24,20 +26,28 @@ LogLevel currentLogLevel = LogWarn;
 // Sets the log destination file and writes an initial metadata line.
 void initializeLogging(const char *filename)
 {
-	delete[] logFileName;
+	if (logFileNameHeapAllocated)
+	{
+		delete[] logFileName;
+		logFileName = defaultLogFileName;
+		logFileNameLength = sizeof(defaultLogFileName) - 1;
+		logFileNameHeapAllocated = FALSE;
+	}
+
 	if (filename == NULL) {
-		logFileName = "debug.log";
-		logFileNameLength = strlen("debug.log");
+		logFileName = defaultLogFileName;
+		logFileNameLength = sizeof(defaultLogFileName) - 1;
 	} else {
 		logFileNameLength = strlen(filename);
 		logFileName = new char[logFileNameLength+1];
 		strcpy(logFileName, filename);
+		logFileNameHeapAllocated = TRUE;
 	}
 
 	logFile = fopen(logFileName, "w");
 	closeLogging();
 
-	logMeta("Initialized logging to %s.", logLevelToString(currentLogLevel));
+	logMeta("Initialized logging file=%s level=%s.", logFileName, logLevelToString(currentLogLevel));
 }
 
 // Opens the file unless buffering keeps it open across calls.

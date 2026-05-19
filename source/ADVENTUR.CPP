@@ -77,6 +77,16 @@ static const LONG SoundDelay = 7;
 void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 {
 	SHORT			oldSector;					// add a ker-splash when entering water or acid
+		logDebug("ADVENTURER::mfUpdateAdventureTeam begin bump=%d index=%ld sector=%d pos=%ld,%ld,%ld lavaOn=%d lavaSound=%d trailPts=%ld",
+			pPlayer->bump,
+			pPlayer->BumpIndex,
+			pPlayer->currentSector,
+			pPlayer->x,
+			pPlayer->y,
+			pPlayer->z,
+			fLavaSoundOn,
+			fLavaSoundID,
+			fNumberOfGoodTrailPts);
 
 	if (fhdlPathPositions != fERROR)
 	{
@@ -107,11 +117,24 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 				{
 					// Add an extra delay between the first ker-splash and
 					// the water walking sounds.
+					logInfo("Adventure splash start oldSector=%d newSector=%d pos=%ld,%ld,%ld trailPts=%ld",
+						oldSector,
+						pPlayer->currentSector,
+						pPlayer->x,
+						pPlayer->y,
+						pPlayer->z,
+						fNumberOfGoodTrailPts);
 					fTimeLastSplash = SCENE_MGR::gTick + SPLASH_DELAY;
 					AddSndObj (SND_SPLASH1, 0, VOLUME_FULL);
 				}
 				else if (SCENE_MGR::gTick > SPLASH_DELAY + fTimeLastSplash)
 				{
+					logDebug("Adventure water-walk sound sector=%d pos=%ld,%ld,%ld nextSplashTick=%lu",
+						pPlayer->currentSector,
+						pPlayer->x,
+						pPlayer->y,
+						pPlayer->z,
+						fTimeLastSplash);
 					fTimeLastSplash = SCENE_MGR::gTick;
 					AddSndObj (SND_WALK_ON_WATER1, SND_WALK_ON_WATER_TOTAL, VOLUME_FULL);
 				}
@@ -161,6 +184,13 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 					mythings[pPlayer->BumpIndex].valid == TRUE &&
 					GAME_TTYPE::mfIsAvatarType(mythings[pPlayer->BumpIndex].type))
 				{
+					logDebug("Adventure bump object index=%ld thingType=%ld deadSeq=%d pos=%ld,%ld,%ld",
+						pPlayer->BumpIndex,
+						mythings[pPlayer->BumpIndex].type,
+						CAvatar::mfDeadFlicSeq(pPlayer->BumpIndex),
+						pPlayer->x,
+						pPlayer->y,
+						pPlayer->z);
 					if (CAvatar::mfDeadFlicSeq(pPlayer->BumpIndex))
 					{
 						AddSndObj(SND_BUMP_DEAD_BODY1,SND_BUMP_DEAD_BODY_TOTAL, -1);
@@ -207,6 +237,7 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 		case iEDGE_OF_WORLD:
 			if (SCENE_MGR::gTick > SoundDelay + fTimeLastBump)
 			{
+					logDebug("Adventure bump edge-of-world sector=%d pos=%ld,%ld,%ld", pPlayer->currentSector, pPlayer->x, pPlayer->y, pPlayer->z);
 				fTimeLastBump = SCENE_MGR::gTick;
 				AddSndObj(SND_UI_NOT_PERMITTED, 0, -1);
 			}
@@ -223,6 +254,7 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 			// You are too tall.
 			if (SCENE_MGR::gTick > SoundDelay + fTimeLastBump)
 			{
+				logDebug("Adventure bump ceiling sector=%d pos=%ld,%ld,%ld", pPlayer->currentSector, pPlayer->x, pPlayer->y, pPlayer->z);
 				fTimeLastBump = SCENE_MGR::gTick;
 				AddSndObj(SND_HIT_CEILING1,SND_HIT_CEILING_TOTAL, -1);
 			}
@@ -231,12 +263,21 @@ void ADVENTURER::mfUpdateAdventureTeam(PLAYER const * const pPlayer )
 			// Step too high
 			if (SCENE_MGR::gTick > SoundDelay + fTimeLastBump)
 			{
+				logDebug("Adventure bump floor sector=%d pos=%ld,%ld,%ld", pPlayer->currentSector, pPlayer->x, pPlayer->y, pPlayer->z);
 				fTimeLastBump = SCENE_MGR::gTick;
 				AddSndObj(SND_JUMP_BUMP1,SND_JUMP_BUMP_TOTAL, -1);
 			}
 			break;
 		}
 	}
+	logDebug("ADVENTURER::mfUpdateAdventureTeam complete bump=%d sector=%d pos=%ld,%ld,%ld trailPts=%ld lavaOn=%d",
+		pPlayer->bump,
+		pPlayer->currentSector,
+		pPlayer->x,
+		pPlayer->y,
+		pPlayer->z,
+		fNumberOfGoodTrailPts,
+		fLavaSoundOn);
 }
 
 /* ========================================================================

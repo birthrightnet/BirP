@@ -36,6 +36,7 @@
 #include "gamekey.hxx"
 #include "invntory.hxx"
 #include "margin.hxx"
+#include "playstat.hxx"
 #include "player.hxx"
 #include "panel.h"
 #include "scene.hxx"
@@ -942,6 +943,7 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 		add_key(GAME_KEYS::mfGetKey(GAME_KEYS::PLAYER_SHOW_INVENTORY), AdventureShowInventory,0 ,0);
 		
 		ADVENTURER::mfInitAdventureTeam(&player);
+		logDebug("mfAdventureInit initialized adventure team path and sound state");
 		
 	 	// now add the game unit avatars to the scene
 		if(SCENE_MGR::HomeIndex != -1)
@@ -1002,6 +1004,7 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 		{
 			if (rScene.Avatars[i] != fERROR)
 			{
+				logDebug("mfAdventureInit running AI_INIT for avatar slot=%ld handle=%d", i, rScene.Avatars[i]);
 				//GEH SetBlockAttr(rScene.Avatars[i], LOCKED, LOCKED);
 				CAvatar * const pAvatar = (CAvatar * const) BLKPTR(rScene.Avatars[i]);
 				if (pAvatar == NULL)
@@ -1024,6 +1027,7 @@ void SCENE_AI::mfAdventureInit ( SCENE &rScene)
 		//Resize the screen with the combat menu etc.
 		InitAdventureUI(rScene);
 		
+		logInfo("mfAdventureInit entering PLAY state home=%d away=%d sceneType=%d", SCENE_MGR::HomeIndex, SCENE_MGR::AwayIndex, SCENE_MGR::SceneType);
 		rScene.mfSetSceneState(SCENE_AI::PLAY);
 	}
 	else
@@ -1048,6 +1052,43 @@ void SCENE_AI::mfAdventureRelease (SCENE &rScene)
 		UIPlayEnvironmentalSounds,
 		WhichEnvironmentalSound,
 		ReportFreeMem(TRUE));
+	ResetEnvironmentalSoundState("adventure-release");
+	logDebug("mfAdventureRelease cleared ambient selector before scene teardown");
+	
+	// FIX: Clear all combat-related state before releasing scene
+	// This prevents stale enemy handles from persisting across scene transitions (e.g., dungeon part 1→part 2)
+	logInfo("mfAdventureRelease clearing combat handles before scene transition");
+	for (LONG avi = 0; avi < MAX_AVATARS; avi++)
+	{
+		if (rScene.Avatars[avi] != fERROR)
+		{
+			CAvatar * const pAvatar = (CAvatar * const) BLKPTR(rScene.Avatars[avi]);
+			if (pAvatar == NULL)
+			{
+				logError("mfAdventureRelease invalid avatar handle=%d at index %d",
+					rScene.Avatars[avi], avi);
+				continue;
+			}
+
+			// Clear stale enemy references before scene reload
+			if (pAvatar->hEnemy != fERROR)
+			{
+				logDebug("mfAdventureRelease clearing stale hEnemy=%d from avatar=%d before scene transition",
+					pAvatar->hEnemy, rScene.Avatars[avi]);
+				pAvatar->mfSethEnemy(fERROR);
+			}
+
+			// Reset combat status for next scene
+			if (pAvatar->Status == CAvatar::AI_ATTACK || pAvatar->Status == CAvatar::AI_CASTSPELL)
+			{
+				logDebug("mfAdventureRelease resetting combat status=%d for avatar=%d",
+					pAvatar->Status, rScene.Avatars[avi]);
+				pAvatar->Status = CAvatar::AI_INIT;
+			}
+		}
+	}
+	logInfo("mfAdventureRelease combat handle cleanup complete - all avatars ready for transition");
+	
 	AdventureFixUnitsArray(SCENE_MGR::HomeIndex);
 	
 	// GWP We'll disconnect these player stats when we delete the avatars.
@@ -1096,6 +1137,21 @@ void SCENE_AI::mfAdventurePlay (SCENE &rScene)
 {
 	static ULONG LastInvalidAdventureAvatarLogTick = 0;
 	UpdateTime();
+	SCENE_AI::STATE SceneState;
+	SCENE_AI::SCENE_TYPE SceneType;
+	rScene.mfGetSceneAIState(&SceneState, &SceneType);
+	logDebug("mfAdventurePlay tick=%lu frame=%lu sceneState=%d sceneType=%d opening=%ld dialog=%ld bump=%d pos=%ld,%ld,%ld sector=%d",
+		SCENE_MGR::gTick,
+		SCENE_MGR::gFrame,
+		SceneState,
+		SceneType,
+		rScene.mfGetOpeningDialog(),
+		gDialogFlag,
+		player.bump,
+		player.x,
+		player.y,
+		player.z,
+		player.currentSector);
 	
 	MovePlayer(CheckMoveKeys());
 	SCENE_MGR::fgCamera.mfUpdateCamera();
@@ -1121,6 +1177,7 @@ void SCENE_AI::mfAdventurePlay (SCENE &rScene)
 		}
 		else
 		{
+			logDebug("mfAdventurePlay updating adventure team tick=%lu frame=%lu", SCENE_MGR::gTick, SCENE_MGR::gFrame);
 			ADVENTURER::mfUpdateAdventureTeam(&player);
 			
 			for(LONG i = 0; i < MAX_AVATARS; i++ )
@@ -1165,7 +1222,6 @@ void SCENE_AI::mfAdventurePlay (SCENE &rScene)
 	{
 		AdventureEndDialog(0);
 	}
-
 
 
 #ifdef _WINDOWS
