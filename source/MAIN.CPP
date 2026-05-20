@@ -40,6 +40,7 @@
 
 #include "gamemap.hxx"
 
+#include "dbgwind.hxx"
 #include "main.hxx"
 #include "findfile.hxx"
 #include "scene.hxx"
@@ -1186,7 +1187,7 @@ void AddGameKeys(void)
 	add_key(KEY_3, PlayGorgon,3,0);
 	add_key(KEY_4, ShowChatDisplayWindow,0,0);
 	add_key(KEY_5, HideChatDisplayWindow,0,0);
-	add_key(VK_F11, DebugTriggerRealmAssassination, 0, 0);
+	add_key(VK_F11, DebugShowTestWindow, 0, 0);
 #endif
 
 	// GWP Remove cheat keys

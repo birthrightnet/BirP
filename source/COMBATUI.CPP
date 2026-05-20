@@ -67,9 +67,6 @@ extern LONG CountRegions (void);
 
 
 #define FRAMES_TO_WAIT	10
-#if !defined(VK_F11)
-#define VK_F11			0x7A
-#endif
 /* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
@@ -132,10 +129,6 @@ void ForceHires ();
 
 extern void SetRelicFound( SHORT PlacesIndex );
 extern void ShowQuestItemVictoryScreen(void);
-
-#if defined(_DEBUG)
-static void DebugTriggerQuestItemVictory(LONG, LONG);
-#endif /* _DEBUG */
 
 BOOL GetCombatMenuUp()
 {
@@ -1337,11 +1330,6 @@ static void ShowCombatUIMenu(SCENE & rScene)
 		add_key(GAME_KEYS::mfGetKey(GAME_KEYS::EXPAND_VIEWING_AREA), IncreaseAdventureScreen, 0, 0);
 		add_key(GAME_KEYS::mfGetKey(GAME_KEYS::SHRINK_VIEWING_AREA), DecreaseAdventureScreen, 0, 0);
 
-#if defined(_DEBUG)
-		// F11: trigger the quest item victory screen immediately for music testing.
-		add_key(VK_F11, DebugTriggerQuestItemVictory, 0, 0);
-#endif /* _DEBUG */
-
 		add_key(GAME_KEYS::mfGetKey(GAME_KEYS::COMBAT_TOGGLEMODE), ToggleCombatMode, 0, 0);
 		add_key(GAME_KEYS::mfGetKey(GAME_KEYS::COMBAT_RETURN_TO_MAP), CombatReturnToMap, 0, 0);
 
@@ -1848,21 +1836,6 @@ void PauseCombatUI(SCENE & rScene )
 		pcsdData->mfPauseUpdateData();
 	}
 }
-
-#if defined(_DEBUG)
-/* ========================================================================
-   Function    - DebugTriggerQuestItemVictory
-   Description - Debug key handler (F11): immediately triggers the quest
-                 item found victory screen so the post-quest music flow
-                 can be tested without playing through the dungeon.
-   Returns     -
-   ======================================================================== */
-static void DebugTriggerQuestItemVictory(LONG, LONG)
-{
-	logDebug("[DEBUG] DebugTriggerQuestItemVictory: triggering quest item victory screen");
-	ShowQuestItemVictoryScreen();
-}
-#endif /* _DEBUG */
 
 /* ========================================================================
    Function    - DecreaseAdventureScreen

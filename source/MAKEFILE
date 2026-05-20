@@ -547,6 +547,7 @@ GAME_OBJ =	&
 	$(OBJD)\combopts.obj &
 	$(OBJD)\combtarg.obj &
 	$(OBJD)\charsel.obj &
+	$(OBJD)\dbgwind.obj &
 	$(OBJD)\describe.obj    &
 	$(OBJD)\demoflic.obj    &
 	$(OBJD)\dice.obj  &

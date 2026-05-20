@@ -114,13 +114,19 @@ Some examples:
 - test-all-builds.ps1: builds ALL scenarios (WIN|DOS, RELEASE|DEBUG, CHARED) and summarizes all results together.
 - build-chared-release.ps1: builds the Character Editor in RELEASE mode (only available on WIN, not DOS).
 
-## Deploying your build and testing
+## Building, Testing, and Deploying
 
-To deploy the application after building, you can either manually copy the compiled binaries from the [build-artifacts/binaries](build-artifacts/binaries) folder into your installed game directory (e.g. `C:\SIERRA\BIRTHRT`), or run one of the various build-and-deploy-*.ps1 scripts from the [scripts folder](./scripts).
+To deploy the application after building, you can either manually copy the compiled binaries from the [build-artifacts/binaries](build-artifacts/binaries) folder into your installed game directory (e.g. `C:\SIERRA\BIRTHRT`), or run one of the various `build-and-deploy-*.ps1` scripts from the [scripts folder](./scripts).
 
 For WIN builds you are looking for `nova95.exe`. For DOS builds you are lookig for `nova.exe`. For the Character Editor builds you are looking for `chared.exe`.
 
 It's highly recommended that you run the [test-all-builds.ps1](./scripts/test-all-builds.ps1) script as as you commit changes to ensure that all build scenarios are working properly and to catch any issues early on. This script will build and deploy all scenarios (WIN|DOS, RELEASE|DEBUG, CHARED) and give you a summary of the results, including any warnings or errors that were found during the build process.
+
+## Testing In-Game
+
+A custom test window is available in DEBUG builds that can be opened with the `F11` key. This window contains various buttons that trigger test actions in the game, such as granting items, triggering events, and simulating realm actions. This can be a useful tool for testing your changes in-game without having to go through the normal gameplay flow to trigger certain actions or events.
+
+The code for this can be found in the [DBGWINDOW.CPP](./source/DBGWINDOW.CPP) ("Debug Window") file. You can add new buttons and test actions to this window as needed to help with your testing.
 
 ## Logging
 

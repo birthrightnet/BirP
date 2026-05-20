@@ -57,6 +57,10 @@ Steps to install:
 
 Unreleased
 
+Added
+
+- Pressing F11 in WIN DEBUG builds shows a pop-up window with a list of testing/cheating functions.
+
 Changed
 
 - Cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)

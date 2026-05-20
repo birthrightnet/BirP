@@ -9,6 +9,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Consolidated debug test actions behind a dedicated F11 test window in DEBUG builds, replacing separate direct debug hotkeys for adventure item grant, realm assassination test, and end-of-adventure event trigger.
+
 ### Fixed
 
 - Hardened Adventure/Combat transition flows for two-part adventures to reduce crash risk during part-two progression and combat UI/control handoffs. [#52](https://github.com/Shiryou/BirP/issues/52)

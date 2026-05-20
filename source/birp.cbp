@@ -729,6 +729,14 @@
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
+		<Unit filename="DBGWIND.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="DBGWIND.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
 		<Unit filename="DEMOFLIC.CPP">
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
