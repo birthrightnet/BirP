@@ -2953,7 +2953,7 @@ void ClearAllMoldyBits()
 	// Start at 1 past the head to use the first real block.
 
 	for (iHandle = aiNextBlk[START_BLOCK];
-		 iHandle >= 0;
+		 iHandle >= 0 && iHandle < (LONG)cNumBlkHeads;
 		 iHandle = aiNextBlk[iHandle])
 	{
 		ATTR_BLK_TYPE * const pabBlockAttr = &abBlockAttr[iHandle];

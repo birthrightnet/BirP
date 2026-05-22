@@ -309,7 +309,7 @@ void OptAdjLevel(LONG which, LONG what)
             musvol += what;
             if (musvol > 10)
                 musvol = 10;
-            if (musvol < 0 || fMinMemory)
+            if (musvol < 0)
                 musvol = 0;
 			UISetMusicVolume(musvol);
             break;
@@ -335,7 +335,7 @@ void OptAdjLevel(LONG which, LONG what)
             sfxenv = (ENV_SETTING) (sfxenv + what);
             if (sfxenv > ENV_ON)
                 sfxenv = ENV_ON;
-            if (sfxenv < ENV_OFF || fMinMemory)
+            if (sfxenv < ENV_OFF)
                 sfxenv = ENV_OFF;
             break;
 
@@ -554,6 +554,7 @@ void UpdateOptionSettings(void)
 	
 	SetGlobalVolume(sfxvol);
     UserCDVolume = musvol * 10;
+    UISetMusicVolume(musvol);
     UserNumSFXPlaying = sfxchan;
     UIPlayEnvironmentalSounds = sfxenv;
 	COMBAT_ARCADE_SPEED::mfSetNewValue((SBYTE) (10 - combat_speed));

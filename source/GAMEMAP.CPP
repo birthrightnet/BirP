@@ -5790,13 +5790,24 @@ BOOL UpdateDataArea (void)
 			if (fLTAction == DURING_LTACTION)
 			{
 				LONG const pulseColor = (get_time() & 8) ? DKPURPLE : LTBLUE;
+
 				// In control mode 2, Lieutenant Action is action index 14 at (col=1,row=6).
 				LONG const x = 9 + (1*48);
-				LONG const y = 64 + (6*46);
-				line(x-1, y-1, x+48, y-1, pulseColor);
-				line(x-1, y+46, x+48, y+46, pulseColor);
-				line(x-1, y-1, x-1, y+46, pulseColor);
-				line(x+48, y-1, x+48, y+46, pulseColor);
+				LONG const y = 64 + (6*46);				
+
+				// This makes a two-line thick box with a bit of missing corners to give illusion of rounding...
+
+				// Outer lines...
+				line(x-1, y-2, x+46, y-2, pulseColor);   // outer top
+				line(x-1, y+45, x+46, y+45, pulseColor); // outer bottom				
+				line(x-2, y-1, x-2, y+44, pulseColor);   // outer left				
+				line(x+47, y-1, x+47, y+44, pulseColor); // outer right
+
+				// Inner lines...
+				line(x, y-1, x+45, y-1, pulseColor);   // inner top
+				line(x, y+44, x+45, y+44, pulseColor); // inner bottom
+				line(x-1, y-1, x-1, y+45, pulseColor);   // inner left
+				line(x+46, y-1, x+46, y+44, pulseColor); // inner right
 			}
 		}
 

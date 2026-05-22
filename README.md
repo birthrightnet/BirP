@@ -14,7 +14,7 @@ This repository is for **developers** of the Birthright Preservation Patch, and 
   - [4) Set up your environment variables for building](#4-set-up-your-environment-variables-for-building)
   - [5) Validate your environment variables](#5-validate-your-environment-variables)
 - [Building the game](#building-the-game)
-- [Deploying your build and testing](#deploying-your-build-and-testing)
+- [Building, Testing, and Deploying](#building-testing-and-deploying)
 - [Logging](#logging)
 - [Team standards and contribution guidelines](#team-standards-and-contribution-guidelines)
   - [Coding style](#coding-style)

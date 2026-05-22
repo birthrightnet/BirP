@@ -26,6 +26,13 @@ LogLevel currentLogLevel = LogWarn;
 // Sets the log destination file and writes an initial metadata line.
 void initializeLogging(const char *filename)
 {
+	// Close any previously open log file before reinitializing.
+	if (logFile != NULL) {
+		fflush(logFile);
+		fclose(logFile);
+		logFile = NULL;
+	}
+
 	if (logFileNameHeapAllocated)
 	{
 		delete[] logFileName;
@@ -56,6 +63,11 @@ int openLogging()
 	if (logBufferingStarted) {
 		return 1;
 	}
+	// In flush-mode (diagnostics enabled) the file stays open across calls;
+	// each write is followed by fflush in closeLogging instead of fclose.
+	if (logBufferingDisabled && logFile != NULL) {
+		return 1;
+	}
 	logFile = fopen(logFileName, "a");
 	if (logFile == NULL) {
 		perror("Unable to initialize logging.");
@@ -65,6 +77,8 @@ int openLogging()
 }
 
 // Flushes/closes the file unless buffering mode is active.
+// When logBufferingDisabled is set, the file is kept open and only flushed
+// so that diagnostics runs do not exhaust the runtime stream-slot pool.
 int closeLogging()
 {
 	if (logBufferingStarted) {
@@ -72,7 +86,10 @@ int closeLogging()
 	}
 	if (logFile != NULL) {
 		fflush(logFile);
-		fclose(logFile);
+		if (!logBufferingDisabled) {
+			fclose(logFile);
+			logFile = NULL;
+		}
 		return 1;
 	}
 	return 0;
@@ -147,7 +164,7 @@ void logTrace(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -160,7 +177,7 @@ void logDebug(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -173,7 +190,7 @@ void logInfo(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -186,7 +203,7 @@ void logWarn(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -199,7 +216,7 @@ void logError(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -212,7 +229,7 @@ void logFatal(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
@@ -225,7 +242,7 @@ void logMeta(const char *message, ...) {
 	{
 		return;
 	}
-	char buffer[256];
+	char buffer[2048];
 	va_list args;
 	va_start(args, message);
 	vsprintf(buffer, message, args);
