@@ -366,9 +366,15 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				                                 pAvatarEnemy->mfX(),
 				                                 pAvatarEnemy->mfY());
 				
-				if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
+				const BOOL movCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
+				if (movCanSee)
+					pAvatarEnemy->bSpotted = TRUE;
+				if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) &&
+					(movCanSee || distance <= CAvatar::NearActivationDistance))
 				{
 					pAvatar->mfRestartFightSequence();
+					logDebug("FOLPLY AI: hero=%ld AI_MOVING->AI_ATTACK target=%ld dist=%ld canSee=%d",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance, (int)movCanSee);
 					// GWP HACK HACK
 					goto Start_Attack;
 				}
@@ -419,9 +425,6 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						}
 						break;
 					case iWALL:
-						pAvatar->mfStartAnimationOnce(STANDSEQ);
-						pAvatar->mfSethEnemy(fERROR);
-						
 						if (SCENE_MGR::gTick > SoundDelay + pAvatar->fFollowPlayer.fTimeLastBump)
 						{
 							pAvatar->fFollowPlayer.fTimeLastBump = SCENE_MGR::gTick;
@@ -452,12 +455,55 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						// Step too high
 						break;
 					}
-					
+
+					// Wall-steering: try progressively wider offset angles around obstacles.
+					// Oscillates +/- dAngle (widening by 8 each full cycle) up to a give-up at dAngle > 64.
+					if (Bump == iWALL || Bump == iCEILING || Bump == iFLOOR)
+					{
+						if (pAvatar->fFollowPlayer.dAngle > 64)
+						{
+							pAvatar->fFollowPlayer.dAngle = 8;
+							pAvatar->mfSethEnemy(fERROR);
+							pAvatar->Status = AI_SEARCH;
+							pAvatar->mfStartAnimationOnce(STANDSEQ);
+						}
+						else
+						{
+							const LONG MoveAngle = AngleFromPoint2(
+								pAvatar->mfX(), pAvatar->mfY(),
+								pAvatarEnemy->mfX(), pAvatarEnemy->mfY(), 0);
+							FIXED_VECTOR_3D tp;
+							tp.dx = 0;
+							tp.dy = (LONG)(pAvatar->mfGetMarchRate()) << PLAYER_FIXEDPT;
+							tp.dz = 0;
+							Rotate((POINT*)&tp, MoveAngle + pAvatar->fFollowPlayer.dAngle);
+							if (pAvatar->mfCheckNewPosition2(&tp, pAvatar->mfGetMarchRate()) == iNOTHING
+								&& !pAvatar->mfIsNastySector(
+										pAvatar->mfX() + PLAYER_INT_VAL(tp.dx),
+										pAvatar->mfY() + PLAYER_INT_VAL(tp.dy)))
+							{
+								pAvatar->FaceTo(pAvatarEnemy->mfX(), pAvatarEnemy->mfY());
+								pAvatar->mfMoveToXYA(
+									pAvatar->mfX() + PLAYER_INT_VAL(tp.dx),
+									pAvatar->mfY() + PLAYER_INT_VAL(tp.dy),
+									pAvatar->mfAngle());
+							}
+							if (pAvatar->fFollowPlayer.dAngle > 0)
+								pAvatar->fFollowPlayer.dAngle = -(pAvatar->fFollowPlayer.dAngle);
+							else
+								pAvatar->fFollowPlayer.dAngle = -(pAvatar->fFollowPlayer.dAngle) + 8;
+						}
+					}
+					else
+					{
+						pAvatar->fFollowPlayer.dAngle = 8;
+					}
+
 				}
 			}
 			break;
 	case AI_SEARCH:		// Stay in this mode until activated.
-			pAvatar->hEnemy = pAvatar->mfFindClosestVisibleFoe();
+			pAvatar->hEnemy = pAvatar->mfFindClosestFoe();
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar * const pAvatarEnemy = (CAvatar * const) BLKPTR(pAvatar->hEnemy);
@@ -473,9 +519,41 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				                                 pAvatar->mfY(),
 				                                 pAvatarEnemy->mfX(),
 				                                 pAvatarEnemy->mfY());
-				
-				if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
+
+				if (distance > MaxChaseDistance)
 				{
+					// Enemy found by sector reject but too far to chase — ignore it.
+					logTrace("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld>MaxChase, ignoring",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					pAvatar->mfSethEnemy(fERROR);
+					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
+					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
+					     pAvatar->mfGetArtSequence() != DEFENDSEQ)
+					      || pAvatar->mfTestSequenceDone()
+					   )
+					{
+						pAvatar->mfStartAnimationOnce(STANDSEQ);
+					}
+				}
+				else if (!pAvatarEnemy->bSpotted)
+				{
+					// Enemy visible by sector reject but never seen by any party member — ignore.
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not yet spotted, ignoring",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					pAvatar->mfSethEnemy(fERROR);
+					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
+					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
+					     pAvatar->mfGetArtSequence() != DEFENDSEQ)
+					      || pAvatar->mfTestSequenceDone()
+					   )
+					{
+						pAvatar->mfStartAnimationOnce(STANDSEQ);
+					}
+				}
+				else if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
+				{
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable→AI_DEFEND",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 					pAvatar->Status = AI_DEFEND;
 					pAvatarEnemy->mfEngage();
 					// GWP HACK HACK!
@@ -483,6 +561,9 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else
 				{
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not hittable→AI_MOVING",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					pAvatar->Status = AI_MOVING;
 					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
 					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
 					     pAvatar->mfGetArtSequence() != DEFENDSEQ)
@@ -495,6 +576,8 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 			else
 			{
+				logTrace("FOLPLY AI: hero=%ld AI_SEARCH no enemy in sector",
+					pAvatar->ThingIndex);
 				if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
 				     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
 				     pAvatar->mfGetArtSequence() != DEFENDSEQ)
@@ -513,7 +596,7 @@ Start_Attack:
 			if (pAvatar->hEnemy == fERROR)
 			{
 				// Find nearest un-engaged foe.
-				pAvatar->mfSethEnemy (pAvatar->mfFindClosestVisibleFoe());
+				pAvatar->mfSethEnemy(pAvatar->mfFindClosestFoe());
 				if (pAvatar->hEnemy != fERROR)
 				{
 					CAvatar *pAvatarEnemy = (CAvatar *) BLKPTR(pAvatar->hEnemy);
@@ -526,14 +609,32 @@ Start_Attack:
 					}
 					else
 					{
-						pAvatarEnemy->mfEngage();
+						const LONG acquireDist = aprox_dist(
+							pAvatar->mfX(), pAvatar->mfY(),
+							pAvatarEnemy->mfX(), pAvatarEnemy->mfY());
+						if (acquireDist > MaxChaseDistance)
+						{
+							// Enemy found by sector reject but too far — ignore, prefer nearby targets.
+							logDebug("FOLPLY AI: hero=%ld AI_ATTACK found target=%ld dist=%ld>MaxChase, ignoring",
+								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, acquireDist);
+							pAvatar->mfSethEnemy(fERROR);
+						}
+						else
+						{
+							logDebug("FOLPLY AI: hero=%ld AI_ATTACK acquired target=%ld dist=%ld",
+								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, acquireDist);
+							pAvatarEnemy->mfEngage();
+						}
 					}
 				}
-				else
+
+				if (pAvatar->hEnemy == fERROR)
 				{
-					//pAvatar->Status = AI_SEARCH;
-					//pAvatar->mfStartAnimationOnce(STANDSEQ);
-					pAvatar->mfFreezeFrame(ATTACK1SEQ, 0);
+					// No usable target in range (none found or all too far to chase).
+					logDebug("FOLPLY AI: hero=%ld AI_ATTACK no usable target→AI_SEARCH",
+						pAvatar->ThingIndex);
+					pAvatar->Status = AI_SEARCH;
+					pAvatar->mfStartAnimationOnce(STANDSEQ);
 				}
 			}
 			// GWP END DEMO HACK
@@ -570,16 +671,26 @@ Start_Attack:
 					if (distance > MaxChaseDistance)
 					{
 						// Too far to chase
+						logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld>MaxChase→AI_SEARCH",
+							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 						pAvatar->Status = AI_SEARCH;
-						pAvatarEnemy->mfDisEngage();
-					}
-					else if (!pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
-					{
-						pAvatar->Status = AI_MOVING;
 						pAvatarEnemy->mfDisEngage();
 					}
 					else
 					{
+						const BOOL atkCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
+						if (atkCanSee)
+							pAvatarEnemy->bSpotted = TRUE;
+						if (!pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) ||
+						    !(atkCanSee || distance <= CAvatar::NearActivationDistance))
+						{
+							logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld not hittable/visible→AI_MOVING",
+								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+							pAvatar->Status = AI_MOVING;
+							pAvatarEnemy->mfDisEngage();
+						}
+						else
+						{
 						if (pAvatar->hEnemy == fERROR)
 						{
 							pAvatar->Status = AI_SEARCH;
@@ -640,8 +751,9 @@ Start_Attack:
 					}
 				}
 			}
+		}
 			break;
-			
+
 	case AI_DEFEND:
 StartDefend:
 			// Hold your position as best you can.
@@ -690,11 +802,13 @@ StartDefend:
 					
 					if (distance > pAvatar->fContactDistance)
 					{
-						// we've disengaged.
-						pAvatar->Status = AI_SEARCH;
-						//pAvatar->mfStartAnimationOnce(STANDSEQ);
+						// Enemy backed away — hold position, don't chase.
+						// Stay in AI_DEFEND so mfFindClosestVisibleFoe() re-acquires if they return.
+						logDebug("FOLPLY AI: hero=%ld AI_DEFEND lost contact target=%ld dist=%ld, holding position",
+							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 						pAvatar->mfSethEnemy(fERROR);
 						pAvatarEnemy->mfDisEngage();
+						pAvatar->mfFreezeFrame(ATTACK1SEQ, 0);
 					}
 					else
 					{

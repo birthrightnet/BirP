@@ -344,6 +344,7 @@ public:				// Public for the dialog editor
 	
 	WadThingType    lastBump;	
 	LONG            bumpTimer;			// For movement.
+	BOOL            bSpotted;			// TRUE once any party member has had LOS to this enemy this adventure.
 	LONG			dAngle;
 	LONG			fTimeLastChanged;
 	LONG			fFrameLastChanged;
@@ -530,6 +531,7 @@ public:				// Public for the dialog editor
 	
 	static SHORT PlayerAvatarHandle;	// The avatar that is following the player structure
 	static const LONG	ActivationDistance;
+	static const LONG	NearActivationDistance;	// Activate without LOS when closer than this
 	static const LONG	fgTauntDelay;	// How long to wait for the next taunt.
 	
 	// Which avatar is being controled by the keyboard "player."

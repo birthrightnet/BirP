@@ -16,6 +16,7 @@
 #include "playstat.hxx"
 #include "sndvox.hxx"
 #include "sound.hxx"
+#include "logger.h"
 
 
 // [d11-26-96 JPC] Changed all mfMoveToXYZA calls to mfMoveToXYA calls.
@@ -421,20 +422,26 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			if (pAvatar->hEnemy != fERROR)
 			{
 				CAvatar * pAvatarTarget = (CAvatar *) BLKPTR(pAvatar->hEnemy);
-			
-				if (pAvatar->mfCanSeeAvatar(pAvatarTarget))
+
+				if (pAvatarTarget == NULL)
 				{
-					// check to see if this guy is too far to see
+					logWarn("AIPONG AI_SEARCH invalid enemy handle=%d enemy=%ld",
+						pAvatar->hEnemy, pAvatar->ThingIndex);
+					pAvatar->hEnemy = fERROR;
+				}
+				else
+				{
 					const LONG distance = aprox_dist(
 						pAvatar->mfX(), pAvatar->mfY(),
 						pAvatarTarget->mfX(), pAvatarTarget->mfY());
-						
-					if (distance <= CAvatar::ActivationDistance)
+
+					const BOOL canSee = pAvatar->mfCanSeeAvatar(pAvatarTarget);
+					if (canSee && distance <= CAvatar::ActivationDistance)
 					{
-					   //	pAvatar->mfStartAnimationOnce(STANDSEQ);
-					   //   break;
-					
-						
+						// Enemy can see party member — by symmetry, party can see this enemy.
+						pAvatar->bSpotted = TRUE;
+						logDebug("AIPONG AI: enemy=%ld->AI_MOVING target=%ld dist=%ld",
+							pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance);
 						pAvatar->Status = AI_MOVING;
 						pAvatar->bumpTimer = 100;
 						if(pAvatar->attrib.IssuedChallange == FALSE)
@@ -444,12 +451,19 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						}
 						break;
 					}
+					logTrace("AIPONG AI: enemy=%ld not activating target=%ld dist=%ld canSee=%d",
+						pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance, (int)canSee);
 				}
 			}
 		
 			pAvatar->hEnemy = fERROR;
 			pAvatar->bumpTimer++;
 			// No foes seen yet.
+			if ((pAvatar->bumpTimer % 100) == 1)
+			{
+				logDebug("AIPONG AI: enemy=%ld AI_SEARCH no target (allies/sector-blocked)",
+					pAvatar->ThingIndex);
+			}
 			if (pAvatar->mfStandWaiting())
 			{
 				pAvatar->mfStartAnimationOnce(STANDSEQ);
@@ -593,25 +607,26 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 			
 
-			// if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance))
-			// [d4-28-97 JPC] Added mfCanSeeAvatar test here to prevent fighting
-			// through walls.  (mfCanIHitHim only checks distance and relative
-			// Z coordinate, not walls.)
-			// Potential problem: this might prevent some fights that should
-			// occur.  (GWP brought up the problem of attacking or being
-			// attacked from behind.)
-			// If some fights that SHOULD happen DON'T happen, suspect this code.
-			if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
-				pAvatar->mfCanSeeAvatar(pAvatarTarget)) // [d4-28-97 JPC]
+			// [d4-28-97 JPC] mfCanSeeAvatar prevents fighting through walls.
+			// (mfCanIHitHim only checks distance and relative Z, not walls.)
+			// Exception: within NearActivationDistance enemies can swing at close range
+			// even if a thin wall sliver occludes the ray-cast.
 			{
-				pAvatar->Status = AI_ATTACK;
-				pAvatar->mfGetSectorInfo(&FloorHeight, &CeilingHeight, &Special);
-				pAvatar->mfMoveToXYA(pAvatar->mfX(),
-									  pAvatar->mfY(),
-									  pAvatar->mfAngle());
-				pAvatarTarget->mfEngage();
-				// GWP May want to add a Bleech Goto here.
-				break;
+				const BOOL attackCanSee = pAvatar->mfCanSeeAvatar(pAvatarTarget);
+				if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
+					(attackCanSee || distance <= CAvatar::NearActivationDistance))
+				{
+					logDebug("AIPONG AI: enemy=%ld→AI_ATTACK target=%ld dist=%ld canSee=%d",
+						pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance, (int)attackCanSee);
+					pAvatar->Status = AI_ATTACK;
+					pAvatar->mfGetSectorInfo(&FloorHeight, &CeilingHeight, &Special);
+					pAvatar->mfMoveToXYA(pAvatar->mfX(),
+										  pAvatar->mfY(),
+										  pAvatar->mfAngle());
+					pAvatarTarget->mfEngage();
+					// GWP May want to add a Bleech Goto here.
+					break;
+				}
 			}
 			
 			if (GAME_TTYPE::mfHasMagicAnimation(pAvatar->mfType()))

@@ -72,7 +72,8 @@ public:
 	// GWP LONG		fPrevA;
 	
 	LONG	fTimeLastBump;
-	
+	LONG	dAngle;		// Wall-steering offset angle; widens each retry, resets on clear move
+
 private:
 	ADVENTURER		fAdventurer;
 	PLAYER			*fpPlayer;
@@ -116,6 +117,7 @@ inline void FOLLOW_PLAYER_DATA::mfInitVals(PLAYER * pPlayer, SHORT const hAvatar
 	fAdventurer.mfInitData();
 	fFollowState = THE_PLAYER;
 	fhAvatar = hAvatar;
+	dAngle = 8;
 }
 
 // Connect up to an adventure team

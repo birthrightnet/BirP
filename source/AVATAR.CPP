@@ -50,6 +50,7 @@
 
 SHORT CAvatar::PlayerAvatarHandle=fERROR;
 const LONG CAvatar::ActivationDistance = 1000;
+const LONG CAvatar::NearActivationDistance = 300;
 const LONG CAvatar::fgTauntDelay = 50;
 
 // [d11-05-96 JPC] Experiment for keeping dead things from clipping so badly.
@@ -1085,6 +1086,7 @@ SHORT CAvatar::NewAvatar(void)
 		pAvatar->hPlayerStats = fERROR;
 		pAvatar->Realm.HomeRealm	= REALM::NO_COUNTRY;
 		pAvatar->Engaged	= 0;
+		pAvatar->bSpotted	= FALSE;
 		pAvatar->hEnemy	= fERROR;
 		pAvatar->KillType	= NO_THING;
 		pAvatar->fDamage = -1;
@@ -1851,6 +1853,19 @@ HDL_AVATAR CAvatar::mfFindClosestFoe() const
 						prevDistance = distance;
 					}
 				}
+				else
+				{
+					logTrace("mfFindClosestFoe: thing=%ld skipping sector-blocked thing=%ld",
+						ThingIndex, pAvatar->ThingIndex);
+				}
+			}
+			else if (hThis != pCurrentScene->Avatars[i] &&
+				mfIsAlly(pAvatar))
+			{
+				logTrace("mfFindClosestFoe: thing=%ld skipping ally thing=%ld myRealm=%d theirRealm=%d aiFunc=%d",
+					ThingIndex, pAvatar->ThingIndex,
+					(int)Realm.HomeRealm, (int)pAvatar->Realm.HomeRealm,
+					(int)pAvatar->AIFuncIndex);
 			}
 		}
 	}
