@@ -677,7 +677,11 @@ MEM_OBJ = $(OBJD)\mem.obj
 ## Makefile rules ##
 ####################
 
+!ifeq OS WIN95
+install : clean $(resource_dependency) version.cpp CleanVersion PrepareBuildDirs strdat.dat $(Exe_file)
+!else
 install : clean $(resource_dependency) version.cpp CleanVersion PrepareBuildDirs $(Exe_file)
+!endif
 
 PrepareBuildDirs : .SYMBOLIC
 	@cmd /c "if not exist $(BUILD_ARTIFACTS_ROOT) mkdir $(BUILD_ARTIFACTS_ROOT)"
@@ -754,9 +758,15 @@ strenum.h: strdat.txt strmake.exe
 
 strmake.exe: $(STRMGR_OBJ)
 	echo Making $^.
+!ifeq OS WIN95
+	*wlink system nt $(win_$(version)_Linker_Options) name $^. &
+		file {$(STRMGR_OBJ) } &
+		$(LIBPATH) $(LIBRARIES)
+!else
 	*wlink system $(System) $(dos_$(version)_Linker_Options) name $^. &
 		file {$(STRMGR_OBJ) } &
 		$(LIBPATH) $(LIBRARIES)
+!endif
 
 CleanVersion : .SYMBOLIC
 	@if exist $(OBJD)\version.obj del $(OBJD)\version.obj

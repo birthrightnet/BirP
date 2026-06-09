@@ -53,3 +53,14 @@ Write-Host "Destination : $destinationPath" -ForegroundColor Cyan
 Copy-Item -LiteralPath $sourcePath -Destination $destinationPath -Force
 
 Write-Host "[OK] Deployed: $destinationPath" -ForegroundColor Green
+
+$strdatSource = Join-Path $repoRoot 'birp-dev\source\strdat.dat'
+if (Test-Path -LiteralPath $strdatSource) {
+    $strdatDest = Join-Path $DestinationDirectory 'strdat.dat'
+    Write-Host "Source      : $strdatSource" -ForegroundColor Cyan
+    Write-Host "Destination : $strdatDest" -ForegroundColor Cyan
+    Copy-Item -LiteralPath $strdatSource -Destination $strdatDest -Force
+    Write-Host "[OK] Deployed: $strdatDest" -ForegroundColor Green
+} else {
+    Write-Warning "strdat.dat not found at '$strdatSource'. Run a WIN95 build to regenerate it."
+}

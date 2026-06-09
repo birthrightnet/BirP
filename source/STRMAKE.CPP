@@ -6,7 +6,6 @@
 #include <fcntl.h>
 #include <ctype.h>
 #include <process.h>
-#include <dos.h>
 
 #include "typedefs.h"
 
@@ -98,7 +97,7 @@ int main(int argc,char * argv[])
 	LONG lNewPosition;
 	LONG lNewStringPos;
 	LONG lCurBlock = 0;
-	LONG lDataSize;
+
 	STR_FILE_HEADER fileHeader;
 	LONG lBlockLocation;
 
@@ -314,9 +313,11 @@ int GetToken(FILE *fFile)
 		memset(szLabel, 0, sizeof(szLabel));
 		i = 0;
 
-		while((c = *p++) && !isspace(c))
+		c = *p++;
+		while(c && !isspace(c))
 		{
 			szLabel[i++] = c;
+			c = *p++;
 		}
 		szLabel[i] = 0;
 

@@ -12,6 +12,7 @@ scripts/env-backups/
 *.map
 *.obj
 *.res
+*.sym
 *.layout
 desktop.ini
 .DS_Store
