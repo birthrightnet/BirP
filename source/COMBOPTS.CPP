@@ -81,14 +81,23 @@ void RECHECK_OPTIONS::mfUpDateOptions()
 	if (COMBAT_MODE::mfIsModeRPG() == TRUE)
 	{
 		replace_key(GAME_KEYS::mfGetKey(GAME_KEYS::COMBAT_DONE), CombatTurnDoneKey, 0, &oldKey);
-		
+
 		SetButtonLabel(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, COMBAT_STR_DONE, 223);
+		// [Issue 36] The BUTNO_RPG_DONE button's click proc is hardwired to CombatTurnDoneKey
+		// in GAMEMENU.H.  Restore it explicitly so the RPG button works after an arcade switch.
+		SetButtonProc(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, CombatTurnDoneKey, 0, 0);
 	}
 	else
 	{
 		replace_key(GAME_KEYS::mfGetKey(GAME_KEYS::COMBAT_DEFEND), CombatDefendKey, 0, &oldKey);
-		
-		SetButtonLabel(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, STR_NULL, 0);
+		replace_key(GAME_KEYS::mfGetKey(GAME_KEYS::COMBAT_DONE), CombatHaltKey, 0, &oldKey);
+
+		SetButtonLabel(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, COMBAT_STR_HALT, 223);
+		// [Issue 36] Repoint the on-screen button's click proc to CombatHaltKey.  Changing only
+		// the label and the keyboard key left the button itself still calling CombatTurnDoneKey
+		// (its GAMEMENU.H proc), which no-ops in arcade mode -- so clicking "Halt" did nothing
+		// but play the button click sound.  This is what makes the button actually halt the party.
+		SetButtonProc(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, CombatHaltKey, 0, 0);
 	}
 	
 	

@@ -1952,6 +1952,19 @@ COMBAT_STR_HELP_DONE_TITLE		RPG Done
 COMBAT_STR_HELP_DONE			Indicate that you have completed your choices for turn based combat.
 COMBAT_STR_HELP_LEADER_TITLE	Change Leader
 COMBAT_STR_HELP_LEADER			Place this adventurer at the head of the party.
+COMBAT_STR_TARGET				Target: %s
+COMBAT_STR_HALT				Halt
+COMBAT_STR_HELP_HALT_TITLE		Halt
+COMBAT_STR_HELP_HALT			Sets all party members to Defend, stopping pursuit and holding position. Combat will end automatically a few seconds after the last attack.
+COMBAT_STR_ATTACKING_NPC		Attacking %s (AC%hd)
+COMBAT_STR_ATTACKING_MON		Attacking %s
+COMBAT_STR_ENGAGING			Engaging %s
+COMBAT_STR_DEFENDING_AGAINST		Defending against %s
+COMBAT_STR_DEFENDING_PLAIN		Defending
+COMBAT_STR_RETREATING			Retreating
+COMBAT_STR_TOHIT			%ld%% chance to hit
+COMBAT_STR_TOHIT_HIT			%ld%% chance to hit... hits for %ld damage!
+COMBAT_STR_TOHIT_MISS			%ld%% chance to hit... missed!
 
 
 NEWBLOCK
@@ -2448,6 +2461,7 @@ STR_OPT_OFF2			(Off)
 STR_OPT_DIF_EASY		Easy
 STR_OPT_DIF_MEDIUM		Medium
 STR_OPT_DIF_HARD		Hard
+STR_OPT_SPD_TURNS		Turns
 STR_OPT_SPD_SLOW		Slow
 STR_OPT_SPD_MEDIUM		Medium
 STR_OPT_SPD_FAST		Fast
@@ -3774,7 +3788,9 @@ STR_GMMAP_NO_GOLD				^F02^a031^W310   My Liege, the realm's finances are insuffi
 // added for patch1
 
 COMBAT_STR_END_MSG_20	survived.
+COMBAT_STR_END_MSG_20_2	survived.
 COMBAT_STR_END_MSG_21	died.
+COMBAT_STR_END_MSG_21_2	died.
 COMBAT_STR_END_MSG_22	^W300Your regent, %s, died and will be resurrected at some expense.
 
 // added for patch 1 8/18/97
@@ -3790,6 +3806,22 @@ STR_ARMOR_WORN		^F02Armor:
 STR_WEAPON_CARRIED	^F02Weapon: 
 STR_GOLD_CARRIED		^F02Gold: 
 STR_LOAD_SCENE		^F07Loading Scene:
+STR_INV_GIVE_ITEM	Select character to receive item.
+STR_DEMO_NOADV		^W300^F03Adventure mode is not available in the demo version of this game.  The full version of Birthright includes 25 challenging adventures, set in an immersive 3D environment.  Your adventure party (up to four members) will face deadly foes and unearth fabulous treasure.
+STR_DEMO_NOBATTLE	^W300^F03Battle mode is not available in the demo version of this game.  The full version of Birthright includes full 3D battlefields set in terrains such as mountains, forests, plains, and swamps.  Command 30 different troop types, including archers, knights, and wizards!
+STR_DEMO_KEEPPLAY1	^c^F04Thank you for playing
+STR_DEMO_KEEPPLAY2	^c^F08^NThe Gorgons's Alliance
+STR_DEMO_KEEPPLAY3	^c^F04Available in stores Summer, 1997.
+STR_DEMO_KEEPPLAY4	^c^F04To order yours today, call Sierra On-Line at
+STR_DEMO_KEEPPLAY5	^c^F041-800-757-7707
+STR_DEMO_KEEPPLAY6	^c^F04or contact us on-line at
+STR_DEMO_KEEPPLAY7	^c^F04http://www.sierra.com/store/
+STR_DEMO_KEEPPLAY8	^c^F04Come visit the Birthright web site at
+STR_DEMO_KEEPPLAY9	^c^F04http://www.sierra.com/titles/birthright/
+STR_DP_IPX IPX
+STR_DP_TCP TCP/IP
+STR_DP_MODEM Modem
+STR_SAVEGAME	current.sav
 
 
 END

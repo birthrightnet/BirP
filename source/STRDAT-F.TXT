@@ -1950,6 +1950,19 @@ COMBAT_STR_HELP_DONE_TITLE	Mode JdR : OK
 COMBAT_STR_HELP_DONE	Indique que vous avez terminé de paramétrer le combat en mode tour.
 COMBAT_STR_HELP_LEADER_TITLE	Changer de leader
 COMBAT_STR_HELP_LEADER	Place cet aventurier à la tête de vos hommes.
+COMBAT_STR_TARGET				Cible : %s
+COMBAT_STR_HALT				Halte
+COMBAT_STR_HELP_HALT_TITLE		Halte
+COMBAT_STR_HELP_HALT			Met tous les membres du groupe en défense : ils cessent la poursuite et restent sur place. Le combat se termine automatiquement quelques secondes après la dernière attaque.
+COMBAT_STR_ATTACKING_NPC		Attaque %s (CA%hd)
+COMBAT_STR_ATTACKING_MON		Attaque %s
+COMBAT_STR_ENGAGING			Engage %s
+COMBAT_STR_DEFENDING_AGAINST		Défense contre %s
+COMBAT_STR_DEFENDING_PLAIN		Défense
+COMBAT_STR_RETREATING			Retraite
+COMBAT_STR_TOHIT			%ld%% de chances de toucher
+COMBAT_STR_TOHIT_HIT			%ld%% de chances de toucher... %ld dégâts !
+COMBAT_STR_TOHIT_MISS			%ld%% de chances de toucher... raté !
 
 
 NEWBLOCK
@@ -2445,6 +2458,7 @@ STR_OPT_OFF2	Sans
 STR_OPT_DIF_EASY	Facile
 STR_OPT_DIF_MEDIUM	Moyenne
 STR_OPT_DIF_HARD	Difficile
+STR_OPT_SPD_TURNS		Tours
 STR_OPT_SPD_SLOW	Lent
 STR_OPT_SPD_MEDIUM	Moyen
 STR_OPT_SPD_FAST	Rapide

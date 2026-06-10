@@ -1947,6 +1947,19 @@ COMBAT_STR_HELP_DONE_TITLE	RPG fertig
 COMBAT_STR_HELP_DONE	Signalisiert, daß Sie Ihre Auswahl für rundenbasierte Kämpfe getroffen haben.
 COMBAT_STR_HELP_LEADER_TITLE	Führerwechsel
 COMBAT_STR_HELP_LEADER	Dieser Held wird zum Anführer der Party.
+COMBAT_STR_TARGET				Ziel: %s
+COMBAT_STR_HALT				Halt
+COMBAT_STR_HELP_HALT_TITLE		Halt
+COMBAT_STR_HELP_HALT			Versetzt alle Gruppenmitglieder in die Verteidigung: sie stoppen die Verfolgung und bleiben an Ort und Stelle. Der Kampf endet automatisch einige Sekunden nach dem letzten Angriff.
+COMBAT_STR_ATTACKING_NPC		Angriff auf %s (RK%hd)
+COMBAT_STR_ATTACKING_MON		Angriff auf %s
+COMBAT_STR_ENGAGING			Greift %s an
+COMBAT_STR_DEFENDING_AGAINST		Verteidigung gegen %s
+COMBAT_STR_DEFENDING_PLAIN		Verteidigung
+COMBAT_STR_RETREATING			Rückzug
+COMBAT_STR_TOHIT			%ld%% Trefferchance
+COMBAT_STR_TOHIT_HIT			%ld%% Trefferchance... %ld Schaden!
+COMBAT_STR_TOHIT_MISS			%ld%% Trefferchance... verfehlt!
 
 
 NEWBLOCK
@@ -2443,6 +2456,7 @@ STR_OPT_OFF2	(Aus)
 STR_OPT_DIF_EASY	Leicht
 STR_OPT_DIF_MEDIUM	Mittel
 STR_OPT_DIF_HARD	Schwer
+STR_OPT_SPD_TURNS		Runden
 STR_OPT_SPD_SLOW	Langsam
 STR_OPT_SPD_MEDIUM	Mittel
 STR_OPT_SPD_FAST	Schnell

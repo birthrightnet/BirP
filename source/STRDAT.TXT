@@ -1953,6 +1953,20 @@ COMBAT_STR_HELP_DONE			Indicate that you have completed your choices for turn ba
 COMBAT_STR_HELP_LEADER_TITLE	Change Leader
 COMBAT_STR_HELP_LEADER			Place this adventurer at the head of the party.
 
+COMBAT_STR_TARGET				Target: %s
+COMBAT_STR_HALT				Halt
+COMBAT_STR_HELP_HALT_TITLE		Halt
+COMBAT_STR_HELP_HALT			Sets all party members to Defend, stopping pursuit and holding position. Combat will end automatically a few seconds after the last attack.
+COMBAT_STR_ATTACKING_NPC		Attacking %s (AC%hd)
+COMBAT_STR_ATTACKING_MON		Attacking %s
+COMBAT_STR_ENGAGING			Engaging %s
+COMBAT_STR_DEFENDING_AGAINST		Defending against %s
+COMBAT_STR_DEFENDING_PLAIN		Defending
+COMBAT_STR_RETREATING			Retreating
+COMBAT_STR_TOHIT			%ld%% chance to hit
+COMBAT_STR_TOHIT_HIT			%ld%% chance to hit... hits for %ld damage!
+COMBAT_STR_TOHIT_MISS			%ld%% chance to hit... missed!
+
 
 NEWBLOCK
 

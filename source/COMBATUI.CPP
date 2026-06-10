@@ -2761,6 +2761,125 @@ void CombatTurnDoneKey(LONG /* unused */, LONG /* unused */ )
 }
 
 /* ========================================================================
+   Function    - CombatHaltKey
+   Description - Set all PCs to Defend, stopping pursuit and holding
+                 position. Allows auto-end of combat to trigger.
+   Returns     -
+   ======================================================================== */
+void CombatHaltKey(LONG /* unused */, LONG /* unused */)
+{
+	// [Issue 36] Diagnostics: confirm the Halt button actually reaches this handler and which
+	// branch it takes.  The button plays a click on press regardless, so without these logs we
+	// cannot tell a "button never fired" from an "early-returned" from a "ran but did nothing".
+	logInfo("HALT: CombatHaltKey entered mouse_button=%d mouse_click=%d rpg=%d",
+		(int)mouse_button, (int)mouse_click, (int)COMBAT_MODE::mfIsModeRPG());
+
+	if (COMBAT_MODE::mfIsModeRPG() == TRUE)
+	{
+		logInfo("HALT: ignored - RPG mode (Halt is arcade-only)");
+		return;
+	}
+
+	if (mouse_button == 2)
+	{
+		mouse_click = 0;
+		logInfo("HALT: right-click -> showing help dialog");
+		SystemHelp(COMBAT_STR_HELP_HALT_TITLE, COMBAT_STR_HELP_HALT, H_Adventure_Done_Button, 0, 0);
+	}
+	else if ((mouse_click == 1 && mouse_button == 1) || mouse_click == 0)
+	{
+		mouse_click = 0;
+
+		if (SCENE_MGR::hCurrentScene == fERROR)
+		{
+			logWarn("HALT: ignored - no current scene");
+			return;
+		}
+
+		SCENE * const pCurrentScene = (SCENE * const) BLKPTR(SCENE_MGR::hCurrentScene);
+
+		SCENE_AI::STATE SceneState;
+		SCENE_AI::SCENE_TYPE SceneType;
+		pCurrentScene->mfGetSceneAIState(&SceneState, &SceneType);
+
+		if (SceneType != SCENE_AI::COMBAT_SCENE)
+		{
+			logInfo("HALT: ignored - not in combat (sceneType=%d, only COMBAT_SCENE=%d acts)",
+				(int)SceneType, (int)SCENE_AI::COMBAT_SCENE);
+			return;
+		}
+
+		// Log each PC's AI state before halting so we can see what Halt is acting on.
+		for (LONG i = 0; i < MAX_NUMBER_CONTROLS; i++)
+		{
+			SHORT const hAvatar = CONTROL_PANELS::mfGetPanelAvatarHdl(i);
+			if (hAvatar != fERROR)
+			{
+				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(hAvatar);
+				logInfo("HALT: pre  panel=%ld avatarThing=%ld Status=%d attackMode=%d immobilized=%d",
+					i, pAvatar->ThingIndex, (int)pAvatar->Status,
+					(int)pAvatar->mfGetAttackMode(), (int)pAvatar->mfAmIImmoblized());
+			}
+		}
+
+		SetButtonHilight(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, TRUE);
+		for (LONG i = 0; i < MAX_NUMBER_CONTROLS; i++)
+		{
+			SHORT const hPanel = CONTROL_PANELS::mfGetPanelMenuHdl(i);
+			if (hPanel != fERROR)
+				SetButtonHilight(hPanel, BUTNO_DEF_FALL_BTN, TRUE);
+		}
+		fUpdatePanels = TRUE;
+		RunPanels();
+		RunMenus();
+		update_screen();
+		TickDelay(4);
+		SetButtonHilight(D_COMBAT_RPGBOTTOM_BAR, BUTNO_RPG_DONE, FALSE);
+		for (LONG i = 0; i < MAX_NUMBER_CONTROLS; i++)
+		{
+			SHORT const hPanel = CONTROL_PANELS::mfGetPanelMenuHdl(i);
+			if (hPanel != fERROR)
+				SetButtonHilight(hPanel, BUTNO_DEF_FALL_BTN, FALSE);
+		}
+		fUpdatePanels = TRUE;
+		RunPanels();
+		RunMenus();
+		update_screen();
+		TickDelay(4);
+
+		logInfo("HALT: applying defend to all PCs (mfHaltAllToDefend)");
+		CONTROL_PANELS::mfHaltAllToDefend();
+
+		// Log each PC's AI state after halting so we can confirm the transition took effect.
+		for (LONG i = 0; i < MAX_NUMBER_CONTROLS; i++)
+		{
+			SHORT const hAvatar = CONTROL_PANELS::mfGetPanelAvatarHdl(i);
+			if (hAvatar != fERROR)
+			{
+				CAvatar const * const pAvatar = (CAvatar const * const) BLKPTR(hAvatar);
+				logInfo("HALT: post panel=%ld avatarThing=%ld Status=%d attackMode=%d",
+					i, pAvatar->ThingIndex, (int)pAvatar->Status,
+					(int)pAvatar->mfGetAttackMode());
+			}
+		}
+
+		if (pCurrentScene->fhData != fERROR)
+		{
+			DumbAutoLockPtr<COMBAT_SCENE_DATA> const pcsdData(pCurrentScene->fhData);
+			pcsdData->mfInitCombatTimer();
+		}
+	}
+	else
+	{
+		// Neither the help (right-click) nor the action branch matched: the button fired but
+		// the mouse state gated the action out.  Surfacing this distinguishes "did nothing"
+		// from "never fired".
+		logWarn("HALT: no action taken - mouse state did not match (mouse_button=%d mouse_click=%d)",
+			(int)mouse_button, (int)mouse_click);
+	}
+}
+
+/* ========================================================================
    Function    - CombatNewLeaderKey
    Description - Put a new avatar in the lead of the group.
    				 Shouldn't be able to put dead guys in front, or

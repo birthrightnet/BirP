@@ -150,6 +150,9 @@ public:
 	inline	static void mfCurrentSpeakAcknowledgement();
 	inline	static void mfSetCurrentToLeader();
 	inline	static void mfSetAllDefend();
+	inline	static void mfHaltAllToDefend();
+	inline	static SHORT mfGetPanelMenuHdl(LONG const i);
+	inline	static SHORT mfGetPanelAvatarHdl(LONG const i);
 			static void mfInitAllPanels();
 			static void mfCycleToNextPanel();
 			static void mfUpdateOptions();
@@ -379,9 +382,64 @@ inline void CONTROL_PANELS::mfSetAllDefend()
 			if (!pAvatar->mfAmIImmoblized())
 			{
 				pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
+				pAvatar->mfSetAttackSequence(FIGHT_SEQUENCE::ATM_DEFEND);
 			}
 		}
 	}
+}
+
+inline void CONTROL_PANELS::mfHaltAllToDefend()
+{
+	// [Issue 36] Halt = press Defend on the whole party at once.  First set every PC's
+	// current and last fighting style to defend.
+	mfSetAllDefend();
+
+	// Then force any actively engaged PC into AI_DEFEND.  The chase/attack states
+	// (AI_MOVING/AI_ATTACK/AI_FALLBACK) do not re-read the fighting style mid-action, and
+	// AI_SEARCH only honours it on its next decision, so without this a PC that was
+	// pursuing a target would keep chasing after Halt and only start defending once it
+	// dropped back to AI_SEARCH (on reaching the target or the 15s chase give-up).  Forcing
+	// AI_DEFEND stops the pursuit immediately: the PC holds position and defends an adjacent
+	// enemy if one is in melee range.  States that must not be interrupted (casting, dead,
+	// stoned, paused, etc.) are left untouched.
+	for (LONG i = 0; i < MAX_NUMBER_CONTROLS; i++)
+	{
+		if (fccActive[i].fhAvatar != fERROR)
+		{
+			CAvatar * const pAvatar = (CAvatar * const) BLKPTR(fccActive[i].fhAvatar);
+			if (!pAvatar->mfAmIImmoblized())
+			{
+				switch (pAvatar->Status)
+				{
+				case CAvatar::AI_MOVING:
+				case CAvatar::AI_ATTACK:
+				case CAvatar::AI_SEARCH:
+				case CAvatar::AI_FALLBACK:
+					// A fresh pursuit later re-inits the give-up timer via AI_SEARCH; clear it
+					// now so a halted chase leaves no stale start tick behind.
+					pAvatar->fChaseStartTick = 0;
+					pAvatar->Status = CAvatar::AI_DEFEND;
+					break;
+				default:
+					break;
+				}
+			}
+		}
+	}
+}
+
+inline SHORT CONTROL_PANELS::mfGetPanelMenuHdl(LONG const i)
+{
+	if (i >= 0 && i < MAX_NUMBER_CONTROLS && fccActive[i].fhAvatar != fERROR)
+		return fccActive[i].fhMenu;
+	return fERROR;
+}
+
+inline SHORT CONTROL_PANELS::mfGetPanelAvatarHdl(LONG const i)
+{
+	if (i >= 0 && i < MAX_NUMBER_CONTROLS && fccActive[i].fhAvatar != fERROR)
+		return fccActive[i].fhAvatar;
+	return fERROR;
 }
 
 
