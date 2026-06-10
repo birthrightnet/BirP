@@ -402,11 +402,14 @@ Defend_Yourself:
 						const LONG distance = aprox_dist(pAvatar->mfX(), pAvatar->mfY(),
 														 pAvatarTarget->mfX(), pAvatarTarget->mfY());
 						
-						if(	pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance))
+						// [Issue 36] Require current LOS to damage -- mfCanIHitHim ignores
+						// walls.  No LOS drops back to AI_MOVING (else branch) to pathfind.
+						if(	pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance)
+							&& pAvatar->mfCanSeeAvatar(pAvatarTarget))
 						{
 							pAvatar->FaceTo(pAvatarTarget->mfX(),
 							                pAvatarTarget->mfY());
-							
+
 							pAvatar->mfTestAndGiveDamage(pAvatar->hEnemy);
 							
 							if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
@@ -760,7 +763,9 @@ Defend_Yourself:
 				}
 			}
 			else
-			if(	pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance))
+			// [Issue 36] Only enter AI_ATTACK with current LOS to the target.
+			if(	pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance)
+				&& pAvatar->mfCanSeeAvatar(pAvatarTarget))
 			{
 				pAvatar->Status = AI_ATTACK;
 				pAvatarTarget->mfEngage();
@@ -782,15 +787,23 @@ Defend_Yourself:
 				// GWP If we hit something do we care?
 				// GWP maybe we should try a slightly offset angle from 
 				// GWP the first try and try again.
+				LONG moveTargetX = pAvatarTarget->mfX();
+				LONG moveTargetY = pAvatarTarget->mfY();
+				ApplySectorPath(&pAvatar->fAiPath,
+				                pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
+				                pAvatar->mfX(), pAvatar->mfY(),
+				                pAvatarTarget->mfX(), pAvatarTarget->mfY(),
+				                &moveTargetX, &moveTargetY);
+				const LONG moveDist = aprox_dist(pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 				pAvatar->mfStartAnimationOnce(WALKSEQ);
 				pAvatar->attrib.IsFlying = FALSE;
 				const WadThingType bump = pAvatar->mfMoveTowardWithBump(
-				                            distance,
-											pAvatarTarget->mfX(),
-						                    pAvatarTarget->mfY(),
+				                            moveDist,
+											moveTargetX,
+						                    moveTargetY,
 						                    pAvatar->fContactDistance/3,	// GWP HACK VALUE
 						                    pAvatar->mfGetWalkRate(),
-						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox()) 
+						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox())
 									                 ? CHECKLINE_MONSTER : 0),
 						                    &Angle,
 						                    &myThingBumped);
@@ -805,7 +818,12 @@ Defend_Yourself:
 					tp.dy = (pAvatar->mfGetMarchRate())<<PLAYER_FIXEDPT;
 					tp.dz = 0;
 					if(pAvatar->dAngle > 64)
-					{	
+					{
+						// Steering exhausted: clear the cached A* path and reset the
+						// steering angle so the next pursuit starts fresh.
+						pAvatar->fAiPath.fPathWaypointCount = 0;
+						pAvatar->fAiPath.fPathTargetSector  = -1;
+						pAvatar->dAngle = 8;
 						pAvatar->Status = AI_SEARCH;
 
 						if(pAvatar->attrib.IsFollowPath == TRUE)
@@ -863,23 +881,31 @@ Defend_Yourself:
 				// GWP maybe we should try a slightly offset angle from 
 				// GWP the first try and try again.
 				
+				LONG moveTargetX = pAvatarTarget->mfX();
+				LONG moveTargetY = pAvatarTarget->mfY();
+				ApplySectorPath(&pAvatar->fAiPath,
+				                pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
+				                pAvatar->mfX(), pAvatar->mfY(),
+				                pAvatarTarget->mfX(), pAvatarTarget->mfY(),
+				                &moveTargetX, &moveTargetY);
+				const LONG moveDist = aprox_dist(pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 				pAvatar->mfStartAnimationOnce(MARCHSEQ);
 				pAvatar->mfQueueSnd(waveId, waveRange, WingFlappingFrame);
-		   		pAvatar->mfSetLoopingSnd(waveId, 9); 
+				pAvatar->mfSetLoopingSnd(waveId, 9);
 
 				const WadThingType bump = pAvatar->mfFlyTowardWithBump(
-				                            distance,
-											pAvatarTarget->mfX(),
-						                    pAvatarTarget->mfY(),
+				                            moveDist,
+											moveTargetX,
+						                    moveTargetY,
 											pAvatarTarget->mfZ() + ((distance > FlyDownDistance) ? flyHeight : 0),
 						                    FlyDownDistance,
 											pAvatar->mfGetMarchRate(),
-						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox()) 
+						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox())
 									                 ? CHECKLINE_MONSTER : 0),
 						                    &Angle,
-											&MythingBumped);		
+											&MythingBumped);
 				switch(bump)
-				{			 
+				{
 				case iNOTHING:
 				case iSHALLOW_WATER:
 				case iDEEP_WATER:
@@ -892,17 +918,21 @@ Defend_Yourself:
 					pAvatar->dAngle = 8;
 					break;
 				default:
-			   		// we're stuck.
-										// we're stuck.
+					// we're stuck.
 					tp.dx = 0;
 					tp.dy = (pAvatar->mfGetMarchRate())<<PLAYER_FIXEDPT;
 					tp.dz = 0;
 					if(pAvatar->dAngle > 64)
-					{	
+					{
+						// Steering exhausted: clear the cached A* path and reset the
+						// steering angle so the next pursuit starts fresh.
+						pAvatar->fAiPath.fPathWaypointCount = 0;
+						pAvatar->fAiPath.fPathTargetSector  = -1;
+						pAvatar->dAngle = 8;
 						Rotate((POINT*)&tp, pAvatar->mfAngle()+128);
 						pAvatar->mfStartAnimationOnce(MARCHSEQ);
 						pAvatar->mfQueueSnd(waveId, waveRange, WingFlappingFrame);
-						pAvatar->mfSetLoopingSnd(waveId, 9); 
+						pAvatar->mfSetLoopingSnd(waveId, 9);
 
 						pAvatar->Status = AI_SEARCH;
 						if(pAvatar->attrib.IsFollowPath == TRUE)

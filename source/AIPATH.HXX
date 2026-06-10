@@ -133,11 +133,55 @@ void FreeSectorGraph();
  *          -1 means no path exists (impassable geometry or graph not built).
  *
  * @note    The caller should navigate to each waypoint in sequence, advancing
- *          to the next waypoint when within WaypointReachDistance of the current
- *          one.  After all waypoints are consumed, switch to direct movement
- *          toward the enemy.
+ *          to the next waypoint when within AIPATH_WAYPOINT_REACH_DISTANCE of the
+ *          current one.  After all waypoints are consumed, switch to direct movement
+ *          toward the enemy.  Prefer calling ApplySectorPath() rather than this
+ *          function directly; it wraps the full per-frame update logic.
  */
 int FindSectorPath(LONG fromSector, LONG toSector,
                    LONG *waypointsX, LONG *waypointsY, int maxWaypoints);
+
+/**
+ * @brief Apply sector-graph A* navigation for one AI character on a single frame.
+ *
+ * Encapsulates the complete per-frame path update used in every AI_MOVING
+ * case that needs obstacle-aware navigation:
+ *
+ *   1. If fromSector == toSector: clear cached path, leave target unchanged.
+ *   2. If toSector changed since last call: rerun FindSectorPath() and reset
+ *      the waypoint index.
+ *   3. If a valid path exists: override the pMoveTargetX and pMoveTargetY outputs with the
+ *      next waypoint's coordinates.  Advance the waypoint index automatically
+ *      when the character comes within AIPATH_WAYPOINT_REACH_DISTANCE.
+ *   4. After all waypoints are consumed or if no path was found: the output
+ *      target remains the direct (targetX, targetY) coordinates.
+ *
+ * Call site pattern:
+ * @code
+ *   LONG moveTargetX = pAvatarTarget->mfX();
+ *   LONG moveTargetY = pAvatarTarget->mfY();
+ *   ApplySectorPath(&pAvatar->fAiPath,
+ *                   pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
+ *                   pAvatar->mfX(), pAvatar->mfY(),
+ *                   pAvatarTarget->mfX(), pAvatarTarget->mfY(),
+ *                   &moveTargetX, &moveTargetY);
+ *   pAvatar->mfMoveTowardWithBump(moveDist, moveTargetX, moveTargetY, ...);
+ * @endcode
+ *
+ * @param pPath         Pointer to the character's AI_PATH_STATE (pAvatar->fAiPath).
+ * @param fromSector    Character's current sector index.
+ * @param toSector      Target's current sector index.
+ * @param avatarX       Character's current X world-coordinate.
+ * @param avatarY       Character's current Y world-coordinate.
+ * @param targetX       Target's current X world-coordinate.
+ * @param targetY       Target's current Y world-coordinate.
+ * @param pMoveTargetX  In/out: set to targetX on entry; overridden with waypoint X if applicable.
+ * @param pMoveTargetY  In/out: set to targetY on entry; overridden with waypoint Y if applicable.
+ */
+void ApplySectorPath(AI_PATH_STATE *pPath,
+                     LONG fromSector, LONG toSector,
+                     LONG avatarX, LONG avatarY,
+                     LONG targetX, LONG targetY,
+                     LONG *pMoveTargetX, LONG *pMoveTargetY);
 
 #endif /* _AIPATH_HXX */

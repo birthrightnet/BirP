@@ -333,11 +333,14 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						const LONG distance = aprox_dist(pAvatar->mfX(), pAvatar->mfY(),
 														 pAvatarTarget->mfX(), pAvatarTarget->mfY());
 						
-						if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance))
+						// [Issue 36] Require current LOS to damage -- mfCanIHitHim ignores
+						// walls.  No LOS drops back to AI_MOVING (else branch) to pathfind.
+						if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
+						    pAvatar->mfCanSeeAvatar(pAvatarTarget))
 						{
 							pAvatar->FaceTo(pAvatarTarget->mfX(),
 							                pAvatarTarget->mfY());
-							
+
 							pAvatar->mfTestAndGiveDamage(pAvatar->hEnemy);
 								
 							if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
@@ -561,7 +564,9 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				pAvatar->Status = AI_FALLING;
 			}
 			else
-			if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance))
+			// [Issue 36] Only enter AI_ATTACK with current LOS to the target.
+			if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
+			    pAvatar->mfCanSeeAvatar(pAvatarTarget))
 			{
 				pAvatar->Status = AI_ATTACK;
 				pAvatar->mfGetSectorInfo(&FloorHeight, &CeilingHeight, &Special);
@@ -584,14 +589,22 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				// GWP If we hit something do we care?
 				// GWP maybe we should try a slightly offset angle from 
 				// GWP the first try and try again.
+				LONG moveTargetX = pAvatarTarget->mfX();
+				LONG moveTargetY = pAvatarTarget->mfY();
+				ApplySectorPath(&pAvatar->fAiPath,
+				                pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
+				                pAvatar->mfX(), pAvatar->mfY(),
+				                pAvatarTarget->mfX(), pAvatarTarget->mfY(),
+				                &moveTargetX, &moveTargetY);
+				const LONG moveDist = aprox_dist(pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 				pAvatar->mfStartAnimationOnce(MARCHSEQ);
 				const WadThingType bump = pAvatar->mfMoveTowardWithBump(
-				                            distance,
-											pAvatarTarget->mfX(),
-						                    pAvatarTarget->mfY(),
+				                            moveDist,
+											moveTargetX,
+						                    moveTargetY,
 						                    pAvatar->fContactDistance/3,	// GWP HACK VALUE
 						                    pAvatar->mfGetMarchRate(),
-						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox()) 
+						                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox())
 									                 ? CHECKLINE_MONSTER : 0),
 						                    &Angle,
 						                    &myThingBumped);
@@ -605,7 +618,12 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					tp.dy = (pAvatar->mfGetMarchRate())<<PLAYER_FIXEDPT;
 					tp.dz = 0;
 					if(pAvatar->dAngle > 64)
-					{	
+					{
+						// Steering exhausted: clear the cached A* path and reset the
+						// steering angle so the next pursuit starts fresh.
+						pAvatar->fAiPath.fPathWaypointCount = 0;
+						pAvatar->fAiPath.fPathTargetSector  = -1;
+						pAvatar->dAngle = 8;
 						pAvatar->Status = AI_SEARCH;
 						if(pAvatar->attrib.IsFollowPath == TRUE)
 						{
@@ -615,7 +633,7 @@ void CAvatar::Spiders (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							break;
 						}
 						pAvatar->mfStartAnimationOnce(STANDSEQ);
-		
+
 					}
 					else
 					{

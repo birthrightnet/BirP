@@ -50,7 +50,6 @@
 
 SHORT CAvatar::PlayerAvatarHandle=fERROR;
 const LONG CAvatar::ActivationDistance = 1000;
-const LONG CAvatar::NearActivationDistance = 300;
 const LONG CAvatar::fgTauntDelay = 50;
 
 // [d11-05-96 JPC] Experiment for keeping dead things from clipping so badly.
@@ -2157,6 +2156,18 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 	{
 		// Hey you're hitting a dead thing.
 		mfSethEnemy(fERROR);
+		fDamageFlag = 0;
+		return FALSE;
+	}
+
+	// [Issue 36] Never land a melee blow through a wall.  The AI attack gates use
+	// mfCanIHitHim(), which only checks distance and relative Z -- not line of sight --
+	// so this is the final guarantee that an actual hit requires current LOS to the
+	// target.  At melee contact range (<= 90 units, below the 100-unit hearing
+	// threshold) mfCanSeeAvatar() reduces to a pure ray-cast wall test.  Spectres and
+	// wraiths are exempt: their AI intentionally phases through walls to attack.
+	if (AIFuncIndex != AI_FUNC_SPECTRE && !mfCanSeeAvatar(pEnemyTarget))
+	{
 		fDamageFlag = 0;
 		return FALSE;
 	}

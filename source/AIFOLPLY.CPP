@@ -30,11 +30,6 @@ int iHackHasKey = FALSE;
 const LONG SoundDelay = 7;
 static const LONG MaxChaseDistance = 1000;
 
-// Distance (world units) at which an AI character is considered to have
-// "reached" a sector-graph waypoint and should advance to the next one.
-// Portal midpoints lie at the centre of doorway/corridor openings; 80 units
-// provides comfortable tolerance without overshooting narrow passages.
-static const LONG WaypointReachDistance = 80;
 
 /* ========================================================================
    Function    - mfFollowPlayer
@@ -375,8 +370,12 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				const BOOL movCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
 				if (movCanSee)
 					pAvatarEnemy->bSpotted = TRUE;
+				// [Issue 36] Only begin attacking when we currently have LOS to the
+				// enemy.  mfCanIHitHim() ignores walls, so without the LOS gate a hero
+				// would swing through a wall at a target on the far side; instead we
+				// stay in AI_MOVING and pathfind around the obstacle.
 				if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) &&
-					(movCanSee || distance <= CAvatar::NearActivationDistance))
+					movCanSee)
 				{
 					pAvatar->mfRestartFightSequence();
 					logDebug("FOLPLY AI: hero=%ld AI_MOVING->AI_ATTACK target=%ld dist=%ld canSee=%d",
@@ -392,72 +391,17 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					pAvatar->mfStartAnimationLoop(MARCHSEQ);
 
 					// Determine movement target: a sector-graph waypoint or the enemy directly.
-					//
-					// When the avatar and enemy are in different sectors, the sector graph provides
-					// a sequence of portal midpoints that routes around walls and corners.  Once all
-					// waypoints are consumed (or the avatar reaches the enemy's sector), movement
-					// reverts to a direct line toward the enemy.
+					// Sector-graph A* pathfinding: route through portals toward the enemy.
+					// ApplySectorPath() computes a fresh A* path when the enemy changes sectors,
+					// then advances through portal waypoints until all are consumed, after which
+					// movement reverts to direct line-of-sight toward the enemy.
 					LONG moveTargetX = pAvatarEnemy->mfX();
 					LONG moveTargetY = pAvatarEnemy->mfY();
-
-					const LONG mySector    = pAvatar->mfGetSector();
-					const LONG enemySector = pAvatarEnemy->mfGetSector();
-
-					if (mySector != enemySector)
-					{
-						FOLLOW_PLAYER_DATA &fpd = pAvatar->fFollowPlayer;
-
-						// Recompute the A* path whenever the enemy moves to a different sector
-						// or no path has been computed yet for the current target sector.
-						if (fpd.fPathTargetSector != enemySector)
-						{
-							fpd.fPathWaypointCount = FindSectorPath(
-								mySector, enemySector,
-								fpd.fPathWaypointsX, fpd.fPathWaypointsY,
-								AIPATH_MAX_WAYPOINTS);
-							fpd.fPathWaypointIndex = 0;
-							fpd.fPathTargetSector  = enemySector;
-							logDebug("FOLPLY AI: hero=%ld sector path from=%ld to=%ld waypoints=%d",
-								pAvatar->ThingIndex, mySector, enemySector, fpd.fPathWaypointCount);
-						}
-
-						if (fpd.fPathWaypointCount > 0 &&
-							fpd.fPathWaypointIndex < fpd.fPathWaypointCount)
-						{
-							moveTargetX = fpd.fPathWaypointsX[fpd.fPathWaypointIndex];
-							moveTargetY = fpd.fPathWaypointsY[fpd.fPathWaypointIndex];
-
-							// Advance to the next waypoint when close enough to the current one.
-							const LONG wpDist = aprox_dist(
-								pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
-							if (wpDist <= WaypointReachDistance)
-							{
-								++fpd.fPathWaypointIndex;
-								if (fpd.fPathWaypointIndex < fpd.fPathWaypointCount)
-								{
-									// Update target to the newly-current waypoint immediately.
-									moveTargetX = fpd.fPathWaypointsX[fpd.fPathWaypointIndex];
-									moveTargetY = fpd.fPathWaypointsY[fpd.fPathWaypointIndex];
-								}
-								else
-								{
-									// All waypoints consumed — fall through to direct movement.
-									moveTargetX = pAvatarEnemy->mfX();
-									moveTargetY = pAvatarEnemy->mfY();
-								}
-							}
-						}
-						// else: fPathWaypointCount == -1 (no path found) or 0 (cleared) —
-						// direct movement is used and the sector-graph gave up cleanly.
-					}
-					else
-					{
-						// Avatar and enemy are in the same sector: no path needed.
-						// Clear any stale path state so a fresh A* is issued if the
-						// enemy moves away and then returns.
-						pAvatar->fFollowPlayer.fPathWaypointCount = 0;
-						pAvatar->fFollowPlayer.fPathTargetSector  = -1;
-					}
+					ApplySectorPath(&pAvatar->fAiPath,
+					                pAvatar->mfGetSector(), pAvatarEnemy->mfGetSector(),
+					                pAvatar->mfX(), pAvatar->mfY(),
+					                pAvatarEnemy->mfX(), pAvatarEnemy->mfY(),
+					                &moveTargetX, &moveTargetY);
 
 					// Move toward the chosen target (waypoint or enemy).
 					const LONG moveDist = aprox_dist(
@@ -545,8 +489,8 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 							// Steering exhausted.  Clear the stored path so A* recomputes on the
 							// next AI_SEARCH -> AI_MOVING transition, then give up this target.
 							pAvatar->fFollowPlayer.dAngle = 8;
-							pAvatar->fFollowPlayer.fPathWaypointCount = 0;
-							pAvatar->fFollowPlayer.fPathTargetSector  = -1;
+							pAvatar->fAiPath.fPathWaypointCount = 0;
+							pAvatar->fAiPath.fPathTargetSector  = -1;
 							pAvatar->mfSethEnemy(fERROR);
 							pAvatar->Status = AI_SEARCH;
 							pAvatar->mfStartAnimationOnce(STANDSEQ);
@@ -765,8 +709,11 @@ Start_Attack:
 						const BOOL atkCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
 						if (atkCanSee)
 							pAvatarEnemy->bSpotted = TRUE;
+						// [Issue 36] Keep attacking only while we currently have LOS.
+						// If the enemy slips behind a wall, drop back to AI_MOVING and
+						// pathfind rather than continuing to swing through the wall.
 						if (!pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) ||
-						    !(atkCanSee || distance <= CAvatar::NearActivationDistance))
+						    !atkCanSee)
 						{
 							logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld not hittable/visible->AI_MOVING",
 								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);

@@ -609,12 +609,13 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 
 			// [d4-28-97 JPC] mfCanSeeAvatar prevents fighting through walls.
 			// (mfCanIHitHim only checks distance and relative Z, not walls.)
-			// Exception: within NearActivationDistance enemies can swing at close range
-			// even if a thin wall sliver occludes the ray-cast.
+			// [Issue 36] Require current LOS to begin attacking -- no close-range
+			// exception, so an enemy on the far side of a wall keeps pathfinding
+			// instead of swinging through it.
 			{
 				const BOOL attackCanSee = pAvatar->mfCanSeeAvatar(pAvatarTarget);
 				if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
-					(attackCanSee || distance <= CAvatar::NearActivationDistance))
+					attackCanSee)
 				{
 					logDebug("AIPONG AI: enemy=%ld->AI_ATTACK target=%ld dist=%ld canSee=%d",
 						pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance, (int)attackCanSee);
@@ -682,11 +683,19 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			// GWP If we hit something do we care?
 			// GWP maybe we should try a slightly offset angle from
 			// GWP the first try and try again.
+			LONG moveTargetX = pAvatarTarget->mfX();
+			LONG moveTargetY = pAvatarTarget->mfY();
+			ApplySectorPath(&pAvatar->fAiPath,
+			                pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
+			                pAvatar->mfX(), pAvatar->mfY(),
+			                pAvatarTarget->mfX(), pAvatarTarget->mfY(),
+			                &moveTargetX, &moveTargetY);
+			const LONG moveDist = aprox_dist(pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 			pAvatar->mfStartAnimationOnce(MARCHSEQ);
 			const WadThingType bump = pAvatar->mfMoveTowardWithBump(
-			                            distance,
-										pAvatarTarget->mfX(),
-					                    pAvatarTarget->mfY(),
+			                            moveDist,
+										moveTargetX,
+					                    moveTargetY,
 					                    pAvatar->fContactDistance/3,	// GWP HACK VALUE
 					                    pAvatar->mfGetMarchRate(),
 					                    (SHORT)((TRUE == pAvatar->mfStayInMonsterBox())
@@ -706,7 +715,12 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				tp.dy = (pAvatar->mfGetMarchRate())<<PLAYER_FIXEDPT;
 				tp.dz = 0;
 				if(pAvatar->dAngle > 64)
-				{	
+				{
+					// Steering exhausted: clear the cached A* path and reset the
+					// steering angle so the next pursuit starts fresh.
+					pAvatar->fAiPath.fPathWaypointCount = 0;
+					pAvatar->fAiPath.fPathTargetSector  = -1;
+					pAvatar->dAngle = 8;
 					pAvatar->Status = AI_SEARCH;
 					if(pAvatar->attrib.IsFollowPath == TRUE)
 					{

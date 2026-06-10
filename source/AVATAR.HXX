@@ -536,7 +536,6 @@ public:				// Public for the dialog editor
 	
 	static SHORT PlayerAvatarHandle;	// The avatar that is following the player structure
 	static const LONG	ActivationDistance;
-	static const LONG	NearActivationDistance;	// Activate without LOS when closer than this
 	static const LONG	fgTauntDelay;	// How long to wait for the next taunt.
 	
 	// Which avatar is being controled by the keyboard "player."
@@ -942,6 +941,9 @@ inline void CAvatar::mfStandAndFidget()
 inline void CAvatar::mfInitVals()
 {
 	attrib.KilledByLava=0;
+	fAiPath.fPathWaypointCount = 0;
+	fAiPath.fPathWaypointIndex = 0;
+	fAiPath.fPathTargetSector  = -1;
 	switch(GetAIFuncIndex())
 	{
 #if 0 // UNUSED
