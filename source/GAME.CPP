@@ -33,6 +33,7 @@
 
 #include "actnmenu.hxx"
 #include "ai_utils.h"
+#include "aipath.hxx"
 #include "dlg_edit.h"
 #include "game.h"
 #include "gametype.hxx"
@@ -631,6 +632,9 @@ void init_game()
 	else
 	{
 		load_new_wad(pwad, TYPE_PLAYERSTART1);
+		// Build the sector-graph pathfinding data for the command-line WAD,
+		// mirroring the SCENE::mfReadWad lifecycle (see AIPATH.HXX).
+		BuildSectorGraph();
 		add_task(1,handle_doors,0);  	//once every frame see if any doors moving
 		add_task(1,HandleLifts,0);  	//once every frame see if any lifts moving
 		add_task(1,HandleFloors,0);  	//once every frame see if any floors moving

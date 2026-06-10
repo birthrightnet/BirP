@@ -378,6 +378,14 @@
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />
 		</Unit>
+		<Unit filename="AIPATH.CPP">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
+		<Unit filename="AIPATH.HXX">
+			<Option target="Debug WIN95" />
+			<Option target="Release WIN95" />
+		</Unit>
 		<Unit filename="AIPATHPT.HXX">
 			<Option target="Debug WIN95" />
 			<Option target="Release WIN95" />

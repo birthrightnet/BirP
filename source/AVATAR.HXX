@@ -379,7 +379,12 @@ public:				// Public for the dialog editor
 		HORSE_DATA			fHorse;
 	};
 	FOLLOW_PATH_DATA	fFollowPath;
-	
+
+	/* Sector-graph A* pathfinding state -- shared across all AI function types
+	   so that AIFOLPLY, AIPONG, AIHHOUND, AISPIDER, and AISPECTR can all use
+	   obstacle-aware navigation without duplicating state in the AI union. */
+	AI_PATH_STATE		fAiPath;
+
 	void Save(void);
 	void DoAI(void);
 	inline AISTATUS DoAI(AISTATUS st);

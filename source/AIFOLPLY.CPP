@@ -30,6 +30,12 @@ int iHackHasKey = FALSE;
 const LONG SoundDelay = 7;
 static const LONG MaxChaseDistance = 1000;
 
+// Distance (world units) at which an AI character is considered to have
+// "reached" a sector-graph waypoint and should advance to the next one.
+// Portal midpoints lie at the centre of doorway/corridor openings; 80 units
+// provides comfortable tolerance without overshooting narrow passages.
+static const LONG WaypointReachDistance = 80;
+
 /* ========================================================================
    Function    - mfFollowPlayer
    Description - Switch from following the adventure team to following a
@@ -354,18 +360,18 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					pAvatar->Status = AI_SEARCH;
 					break;
 				}
-				
+
 				if (pAvatarEnemy->mfAmIImmoblized())
 				{
 					pAvatar->Status = AI_SEARCH;
 					break;
 				}
-				
+
 				const LONG distance = aprox_dist(pAvatar->mfX(),
 				                                 pAvatar->mfY(),
 				                                 pAvatarEnemy->mfX(),
 				                                 pAvatarEnemy->mfY());
-				
+
 				const BOOL movCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
 				if (movCanSee)
 					pAvatarEnemy->bSpotted = TRUE;
@@ -382,24 +388,94 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				{
 					LONG Angle;
 					LONG myThingBumped;
-					
+
 					pAvatar->mfStartAnimationLoop(MARCHSEQ);
-					
-					// Move toward your enemy.
+
+					// Determine movement target: a sector-graph waypoint or the enemy directly.
+					//
+					// When the avatar and enemy are in different sectors, the sector graph provides
+					// a sequence of portal midpoints that routes around walls and corners.  Once all
+					// waypoints are consumed (or the avatar reaches the enemy's sector), movement
+					// reverts to a direct line toward the enemy.
+					LONG moveTargetX = pAvatarEnemy->mfX();
+					LONG moveTargetY = pAvatarEnemy->mfY();
+
+					const LONG mySector    = pAvatar->mfGetSector();
+					const LONG enemySector = pAvatarEnemy->mfGetSector();
+
+					if (mySector != enemySector)
+					{
+						FOLLOW_PLAYER_DATA &fpd = pAvatar->fFollowPlayer;
+
+						// Recompute the A* path whenever the enemy moves to a different sector
+						// or no path has been computed yet for the current target sector.
+						if (fpd.fPathTargetSector != enemySector)
+						{
+							fpd.fPathWaypointCount = FindSectorPath(
+								mySector, enemySector,
+								fpd.fPathWaypointsX, fpd.fPathWaypointsY,
+								AIPATH_MAX_WAYPOINTS);
+							fpd.fPathWaypointIndex = 0;
+							fpd.fPathTargetSector  = enemySector;
+							logDebug("FOLPLY AI: hero=%ld sector path from=%ld to=%ld waypoints=%d",
+								pAvatar->ThingIndex, mySector, enemySector, fpd.fPathWaypointCount);
+						}
+
+						if (fpd.fPathWaypointCount > 0 &&
+							fpd.fPathWaypointIndex < fpd.fPathWaypointCount)
+						{
+							moveTargetX = fpd.fPathWaypointsX[fpd.fPathWaypointIndex];
+							moveTargetY = fpd.fPathWaypointsY[fpd.fPathWaypointIndex];
+
+							// Advance to the next waypoint when close enough to the current one.
+							const LONG wpDist = aprox_dist(
+								pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
+							if (wpDist <= WaypointReachDistance)
+							{
+								++fpd.fPathWaypointIndex;
+								if (fpd.fPathWaypointIndex < fpd.fPathWaypointCount)
+								{
+									// Update target to the newly-current waypoint immediately.
+									moveTargetX = fpd.fPathWaypointsX[fpd.fPathWaypointIndex];
+									moveTargetY = fpd.fPathWaypointsY[fpd.fPathWaypointIndex];
+								}
+								else
+								{
+									// All waypoints consumed — fall through to direct movement.
+									moveTargetX = pAvatarEnemy->mfX();
+									moveTargetY = pAvatarEnemy->mfY();
+								}
+							}
+						}
+						// else: fPathWaypointCount == -1 (no path found) or 0 (cleared) —
+						// direct movement is used and the sector-graph gave up cleanly.
+					}
+					else
+					{
+						// Avatar and enemy are in the same sector: no path needed.
+						// Clear any stale path state so a fresh A* is issued if the
+						// enemy moves away and then returns.
+						pAvatar->fFollowPlayer.fPathWaypointCount = 0;
+						pAvatar->fFollowPlayer.fPathTargetSector  = -1;
+					}
+
+					// Move toward the chosen target (waypoint or enemy).
+					const LONG moveDist = aprox_dist(
+						pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 					const LONG Bump = pAvatar->mfMoveTowardWithBump(
-										distance,
-					                    pAvatarEnemy->mfX(),
-										pAvatarEnemy->mfY(),
+										moveDist,
+					                    moveTargetX,
+										moveTargetY,
 										pAvatar->fContactDistance/3,
 										pAvatar->mfGetMarchRate(),
 										0,
 										&Angle,
 										&myThingBumped
 										);
-										
+
 					// Now set the player to this location.
 					//pAvatar->mfUpdatePositionOfPlayer(*pAvatar->fFollowPlayer.fpPlayer);
-					
+
 					// GWP Later play the sound for this ArtThing instead of generic noise.
 					switch( Bump)
 					{
@@ -456,13 +532,21 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						break;
 					}
 
-					// Wall-steering: try progressively wider offset angles around obstacles.
-					// Oscillates +/- dAngle (widening by 8 each full cycle) up to a give-up at dAngle > 64.
+					// Lightweight wall-steering fallback for residual bumps after waypoint navigation.
+					// With proper sector-graph routing, true wall bumps should be uncommon; this handles
+					// edge cases such as irregular portal geometry, thin doorways, or locked-door
+					// linedefs that A* cannot know about at query time.
+					// The give-up threshold of 64 matches all other AI types (~17 steering frames),
+					// giving stuck characters the most attempts to free themselves before giving up.
 					if (Bump == iWALL || Bump == iCEILING || Bump == iFLOOR)
 					{
 						if (pAvatar->fFollowPlayer.dAngle > 64)
 						{
+							// Steering exhausted.  Clear the stored path so A* recomputes on the
+							// next AI_SEARCH -> AI_MOVING transition, then give up this target.
 							pAvatar->fFollowPlayer.dAngle = 8;
+							pAvatar->fFollowPlayer.fPathWaypointCount = 0;
+							pAvatar->fFollowPlayer.fPathTargetSector  = -1;
 							pAvatar->mfSethEnemy(fERROR);
 							pAvatar->Status = AI_SEARCH;
 							pAvatar->mfStartAnimationOnce(STANDSEQ);
@@ -471,7 +555,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						{
 							const LONG MoveAngle = AngleFromPoint2(
 								pAvatar->mfX(), pAvatar->mfY(),
-								pAvatarEnemy->mfX(), pAvatarEnemy->mfY(), 0);
+								moveTargetX, moveTargetY, 0);
 							FIXED_VECTOR_3D tp;
 							tp.dx = 0;
 							tp.dy = (LONG)(pAvatar->mfGetMarchRate()) << PLAYER_FIXEDPT;
@@ -522,7 +606,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 
 				if (distance > MaxChaseDistance)
 				{
-					// Enemy found by sector reject but too far to chase — ignore it.
+					// Enemy found by sector reject but too far to chase -- ignore it.
 					logTrace("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld>MaxChase, ignoring",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 					pAvatar->mfSethEnemy(fERROR);
@@ -537,7 +621,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else if (!pAvatarEnemy->bSpotted)
 				{
-					// Enemy visible by sector reject but never seen by any party member — ignore.
+					// Enemy visible by sector reject but never seen by any party member -- ignore.
 					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not yet spotted, ignoring",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 					pAvatar->mfSethEnemy(fERROR);
@@ -552,7 +636,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
 				{
-					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable→AI_DEFEND",
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable->AI_DEFEND",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 					pAvatar->Status = AI_DEFEND;
 					pAvatarEnemy->mfEngage();
@@ -561,7 +645,7 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else
 				{
-					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not hittable→AI_MOVING",
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not hittable->AI_MOVING",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 					pAvatar->Status = AI_MOVING;
 					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
@@ -614,7 +698,7 @@ Start_Attack:
 							pAvatarEnemy->mfX(), pAvatarEnemy->mfY());
 						if (acquireDist > MaxChaseDistance)
 						{
-							// Enemy found by sector reject but too far — ignore, prefer nearby targets.
+							// Enemy found by sector reject but too far -- ignore, prefer nearby targets.
 							logDebug("FOLPLY AI: hero=%ld AI_ATTACK found target=%ld dist=%ld>MaxChase, ignoring",
 								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, acquireDist);
 							pAvatar->mfSethEnemy(fERROR);
@@ -631,7 +715,7 @@ Start_Attack:
 				if (pAvatar->hEnemy == fERROR)
 				{
 					// No usable target in range (none found or all too far to chase).
-					logDebug("FOLPLY AI: hero=%ld AI_ATTACK no usable target→AI_SEARCH",
+					logDebug("FOLPLY AI: hero=%ld AI_ATTACK no usable target->AI_SEARCH",
 						pAvatar->ThingIndex);
 					pAvatar->Status = AI_SEARCH;
 					pAvatar->mfStartAnimationOnce(STANDSEQ);
@@ -671,7 +755,7 @@ Start_Attack:
 					if (distance > MaxChaseDistance)
 					{
 						// Too far to chase
-						logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld>MaxChase→AI_SEARCH",
+						logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld>MaxChase->AI_SEARCH",
 							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 						pAvatar->Status = AI_SEARCH;
 						pAvatarEnemy->mfDisEngage();
@@ -684,7 +768,7 @@ Start_Attack:
 						if (!pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) ||
 						    !(atkCanSee || distance <= CAvatar::NearActivationDistance))
 						{
-							logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld not hittable/visible→AI_MOVING",
+							logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld not hittable/visible->AI_MOVING",
 								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
 							pAvatar->Status = AI_MOVING;
 							pAvatarEnemy->mfDisEngage();
@@ -802,7 +886,7 @@ StartDefend:
 					
 					if (distance > pAvatar->fContactDistance)
 					{
-						// Enemy backed away — hold position, don't chase.
+						// Enemy backed away -- hold position, don't chase.
 						// Stay in AI_DEFEND so mfFindClosestVisibleFoe() re-acquires if they return.
 						logDebug("FOLPLY AI: hero=%ld AI_DEFEND lost contact target=%ld dist=%ld, holding position",
 							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);

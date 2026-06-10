@@ -23,6 +23,7 @@
 #include <windows.h>
 #endif
 
+#include "aipath.hxx"
 #include "avatar.hxx"
 #include "combatui.hxx"
 #include "scnmgr.hxx"
@@ -655,6 +656,9 @@ void SCENE_MGR::mfReleaseSceneToMap(LONG,LONG)
 		DisposBlock(hCurrentScene);
 		hCurrentScene = fERROR;
 
+		// Free the sector-graph pathfinding data before the WAD it was
+		// built from is purged (see AIPATH.HXX lifecycle).
+		FreeSectorGraph();
 		PurgeLevel();
 	}
 

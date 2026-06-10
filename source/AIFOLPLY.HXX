@@ -16,6 +16,10 @@
 #include "adventur.hxx"
 #endif
 
+#if !defined(_AIPATH_HXX)
+#include "aipath.hxx"
+#endif
+
 /* -----------------------------------------------------------------
    class definition
    ----------------------------------------------------------------- */
@@ -74,6 +78,31 @@ public:
 	LONG	fTimeLastBump;
 	LONG	dAngle;		// Wall-steering offset angle; widens each retry, resets on clear move
 
+	/**
+	 * @name Sector-graph A* pathfinding state
+	 *
+	 * Computed once per target-sector acquisition and consumed frame-by-frame
+	 * in AI_MOVING.  Reset whenever the enemy changes sectors or the avatar
+	 * gives up steering.
+	 *
+	 * fPathWaypointCount:
+	 *   -1  = A* was run but no path exists (use direct movement).
+	 *    0  = no path computed yet (or path was explicitly cleared).
+	 *   >0  = number of valid waypoints in the arrays below.
+	 *
+	 * fPathTargetSector:
+	 *   The enemy sector for which the current path was computed.  -1 means
+	 *   the stored path is stale and must be recomputed.  Compared against
+	 *   the enemy's current sector each frame; a mismatch triggers recompute.
+	 * @{
+	 */
+	LONG fPathWaypointsX[AIPATH_MAX_WAYPOINTS]; /**< X world-coords of portal midpoints, travel order. */
+	LONG fPathWaypointsY[AIPATH_MAX_WAYPOINTS]; /**< Y world-coords of portal midpoints, travel order. */
+	int  fPathWaypointCount;  /**< Number of valid waypoints; -1 = no path; 0 = not computed. */
+	int  fPathWaypointIndex;  /**< Index of the next waypoint to navigate to. */
+	LONG fPathTargetSector;   /**< Enemy sector when path was computed; -1 = stale/unset. */
+	/** @} */
+
 private:
 	ADVENTURER		fAdventurer;
 	PLAYER			*fpPlayer;
@@ -118,6 +147,9 @@ inline void FOLLOW_PLAYER_DATA::mfInitVals(PLAYER * pPlayer, SHORT const hAvatar
 	fFollowState = THE_PLAYER;
 	fhAvatar = hAvatar;
 	dAngle = 8;
+	fPathWaypointCount = 0;
+	fPathWaypointIndex = 0;
+	fPathTargetSector  = -1;
 }
 
 // Connect up to an adventure team

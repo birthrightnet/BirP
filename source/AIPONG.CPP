@@ -438,7 +438,7 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					const BOOL canSee = pAvatar->mfCanSeeAvatar(pAvatarTarget);
 					if (canSee && distance <= CAvatar::ActivationDistance)
 					{
-						// Enemy can see party member — by symmetry, party can see this enemy.
+						// Enemy can see party member -- by symmetry, party can see this enemy.
 						pAvatar->bSpotted = TRUE;
 						logDebug("AIPONG AI: enemy=%ld->AI_MOVING target=%ld dist=%ld",
 							pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance);
@@ -616,7 +616,7 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				if (pAvatar->mfCanIHitHim(pAvatarTarget, distance, pAvatar->fContactDistance) &&
 					(attackCanSee || distance <= CAvatar::NearActivationDistance))
 				{
-					logDebug("AIPONG AI: enemy=%ld→AI_ATTACK target=%ld dist=%ld canSee=%d",
+					logDebug("AIPONG AI: enemy=%ld->AI_ATTACK target=%ld dist=%ld canSee=%d",
 						pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance, (int)attackCanSee);
 					pAvatar->Status = AI_ATTACK;
 					pAvatar->mfGetSectorInfo(&FloorHeight, &CeilingHeight, &Special);

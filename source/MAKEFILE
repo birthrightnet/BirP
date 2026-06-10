@@ -531,6 +531,7 @@ GAME_OBJ =	&
 	$(OBJD)\aiharpy.obj &
 	$(OBJD)\aihorse.obj &
 	$(OBJD)\aileader.obj &
+	$(OBJD)\aipath.obj &
 	$(OBJD)\aipong.obj &
 	$(OBJD)\aipthatt.obj &
 	$(OBJD)\aispider.obj &
