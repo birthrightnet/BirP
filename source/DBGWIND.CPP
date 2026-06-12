@@ -27,8 +27,12 @@
 #include "gametype.hxx"
 #include "invntory.hxx"
 #include "logger.h"
+#include "memmanag.h"
 #include "playstat.hxx"
+#include "scene.hxx"
+#include "scnmgr.hxx"
 #include "strmgr.h"
+#include "things.h"
 #include "thingtyp.h"
 #include "tmsgbox.hxx"
 
@@ -62,7 +66,22 @@ enum DEBUG_TEST_ACTION
 	DEBUG_TEST_ACTION_GRANT_ITEM,
 
 	/* Trigger the end-of-adventure quest-item victory screen. */
-	DEBUG_TEST_ACTION_SHOW_ADVENTURE_END
+	DEBUG_TEST_ACTION_SHOW_ADVENTURE_END,
+
+	/* Mark every non-party avatar in the scene as aware (refresh awareness)
+	   so the party will auto-target them without needing prior LOS. */
+	DEBUG_TEST_ACTION_SPOT_ALL_ENEMIES,
+
+	/* Clear awareness on every non-party avatar so the party stops
+	   auto-targeting enemies it has not seen since the clear. */
+	DEBUG_TEST_ACTION_CLEAR_SPOTTED,
+
+	/* Write a per-avatar AI/pathfinding state dump to the log. */
+	DEBUG_TEST_ACTION_DUMP_AI_STATE,
+
+	/* Mark all loaded FLC animation art purgable and force a memory purge,
+	   simulating the long-session memory pressure behind issue #4. */
+	DEBUG_TEST_ACTION_PURGE_ANIM_ART
 };
 
 /* ========================================================================
@@ -295,6 +314,254 @@ static BOOL DebugHasActiveAdventureContext(void)
 }
 
 /* ========================================================================
+	Function	- DebugIsAdventureTeamMember
+	Description - Returns TRUE when hAvatar is a member of the current
+				  adventure team (a player character), FALSE for NPCs,
+				  monsters, and invalid handles.
+	Parameters	- hAvatar : avatar handle to test.
+	Returns		- TRUE if the handle belongs to the adventure team.
+	======================================================================== */
+static BOOL DebugIsAdventureTeamMember(SHORT hAvatar)
+{
+	if (hAvatar == fERROR)
+		return FALSE;
+
+	for (ADVENTURER_TEAM_ITOR advItor = ADVENTURER::begin(); advItor != ADVENTURER::end(); advItor++)
+	{
+		if (*advItor == hAvatar)
+			return TRUE;
+	}
+
+	return FALSE;
+}
+
+/* ========================================================================
+	Function	- DebugAIStatusName
+	Description - Maps a CAvatar::AISTATUS value to a short human-readable
+				  name for log output.  States not relevant to combat
+				  debugging fall through to a numeric fallback handled by
+				  the caller (returns NULL).
+	Parameters	- status : the avatar's Status field.
+	Returns		- Static string name, or NULL if the value is not mapped.
+	======================================================================== */
+static char const *DebugAIStatusName(LONG status)
+{
+	switch (status)
+	{
+	case CAvatar::AI_INIT:      return "INIT";
+	case CAvatar::AI_PAUSED:    return "PAUSED";
+	case CAvatar::AI_MOVING:    return "MOVING";
+	case CAvatar::AI_RUNNING:   return "RUNNING";
+	case CAvatar::AI_SEARCH:    return "SEARCH";
+	case CAvatar::AI_ATTACK:    return "ATTACK";
+	case CAvatar::AI_DEFEND:    return "DEFEND";
+	case CAvatar::AI_FALLBACK:  return "FALLBACK";
+	case CAvatar::AI_CASTSPELL: return "CASTSPELL";
+	case CAvatar::AI_DEAD:      return "DEAD";
+	case CAvatar::AI_STONE:     return "STONE";
+	default:                    return NULL;
+	}
+}
+
+/* ========================================================================
+	Function	- DebugSetAllEnemiesSpotted
+	Description - Sets or clears `awareness` on every non-party avatar
+				  in the current scene.  Awareness gates hero auto-targeting:
+				  heroes only chase enemies the party is aware of (issue 36).
+				  Setting it lets testers exercise pathfinding to enemies
+				  around corners without first walking a hero into LOS;
+				  clearing it verifies heroes ignore enemies they are unaware of.
+	Parameters	- spotted : TRUE refreshes awareness, FALSE clears it.
+	Returns		- (void).  Reports the number of avatars changed via
+				  DebugShowResult().
+	======================================================================== */
+static void DebugSetAllEnemiesSpotted(BOOL spotted)
+{
+	LONG changed = 0;
+	char message[256];
+
+	if (SCENE_MGR::hCurrentScene == fERROR)
+	{
+		DebugShowResult("Debug Test", "No active scene. Enter an adventure first.");
+		return;
+	}
+
+	PTR_SCENE const pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+	if (pCurrentScene == NULL)
+	{
+		DebugShowResult("Debug Test", "Current scene handle is invalid.");
+		return;
+	}
+
+	for (LONG i = 0; i < MAX_AVATARS; ++i)
+	{
+		SHORT const hAvatar = pCurrentScene->Avatars[i];
+		if (hAvatar == fERROR || DebugIsAdventureTeamMember(hAvatar))
+			continue;
+
+		CAvatar * const pAvatar = (CAvatar * const) BLKPTR(hAvatar);
+		if (pAvatar == NULL)
+			continue;
+
+		if (spotted)
+			pAvatar->mfMarkAware();
+		else
+			pAvatar->mfClearAwareness();
+		changed++;
+	}
+
+	snprintf(message, sizeof(message),
+		"%s awareness on %ld non-party avatar(s).",
+		spotted ? "Set" : "Cleared",
+		changed);
+	DebugShowResult("Debug Test", message);
+}
+
+/* ========================================================================
+	Function	- DebugDumpAIState
+	Description - Writes one logInfo line per avatar in the current scene
+				  describing its AI and pathfinding state: thing index, type
+				  description, party membership, AI function index, AI
+				  status, current enemy handle, sector, position, awareness
+				  (aware / seenEnemy), the shared sector-graph path state
+				  (waypoint count/index/cached target sector), and the
+				  wall-steering angle.
+				  Read the output in winbr.log (or DOS.LOG) to diagnose
+				  stuck or idle characters.
+	Parameters	- (none)
+	Returns		- (void).  Reports the number of avatars dumped via
+				  DebugShowResult().
+	======================================================================== */
+static void DebugDumpAIState(void)
+{
+	LONG dumped = 0;
+	char message[128];
+
+	if (SCENE_MGR::hCurrentScene == fERROR)
+	{
+		DebugShowResult("Debug Test", "No active scene. Enter an adventure first.");
+		return;
+	}
+
+	PTR_SCENE const pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+	if (pCurrentScene == NULL)
+	{
+		DebugShowResult("Debug Test", "Current scene handle is invalid.");
+		return;
+	}
+
+	logInfo("[DEBUG] ---- AI state dump begin ----");
+	for (LONG i = 0; i < MAX_AVATARS; ++i)
+	{
+		SHORT const hAvatar = pCurrentScene->Avatars[i];
+		if (hAvatar == fERROR)
+			continue;
+
+		CAvatar * const pAvatar = (CAvatar * const) BLKPTR(hAvatar);
+		if (pAvatar == NULL)
+			continue;
+
+		char const *cpStatusName = DebugAIStatusName(pAvatar->Status);
+		char statusBuffer[16];
+		if (cpStatusName == NULL)
+		{
+			snprintf(statusBuffer, sizeof(statusBuffer), "%d", (int)pAvatar->Status);
+			cpStatusName = statusBuffer;
+		}
+
+		logInfo("[DEBUG] thing=%ld type=%s party=%d aiFunc=%d status=%s enemy=%d "
+			"sector=%ld x=%ld y=%ld aware=%d seenEnemy=%d path(count=%d index=%d targetSector=%ld) dAngle=%ld",
+			pAvatar->ThingIndex,
+			GAME_TTYPE::mfGetDescription(pAvatar->mfType()),
+			(int)DebugIsAdventureTeamMember(hAvatar),
+			(int)pAvatar->GetAIFuncIndex(),
+			cpStatusName,
+			(int)pAvatar->hEnemy,
+			pAvatar->mfGetSector(),
+			pAvatar->mfX(),
+			pAvatar->mfY(),
+			(int)pAvatar->mfIsAware(),
+			(int)pAvatar->mfHasSeenEnemyRecently(),
+			pAvatar->fAiPath.fPathWaypointCount,
+			pAvatar->fAiPath.fPathWaypointIndex,
+			pAvatar->fAiPath.fPathTargetSector,
+			pAvatar->dAngle);
+		dumped++;
+	}
+	logInfo("[DEBUG] ---- AI state dump end (%ld avatars) ----", dumped);
+
+	snprintf(message, sizeof(message),
+		"Dumped AI state for %ld avatar(s) to the log.",
+		dumped);
+	DebugShowResult("Debug Test", message);
+}
+
+/* ========================================================================
+	Function	- DebugPurgeAnimationArt
+	Description - Marks every loaded FLC animation sequence in the current
+				  scene purgable (the same MarkOldAnimPurgable path used
+				  between fights), then forces the memory manager to flush
+				  the purgable blocks by allocating and releasing one block
+				  spanning nearly all free-plus-purgable memory.  This
+				  reproduces on demand the long-session memory-pressure
+				  state behind the issue #4 crash-to-desktop: the next
+				  frame render and combat start must then survive flushed
+				  animation handles (degrading visuals and logging errors)
+				  instead of faulting in decode_frame.
+				  PCX-art things are skipped because NextPCXFrame raises
+				  fatal_error on flushed art in debug builds, which would
+				  mask the behaviour under test.
+	Parameters	- (none)
+	Returns		- (void)
+	======================================================================== */
+static void DebugPurgeAnimationArt(void)
+{
+	LONG marked = 0;
+	SHORT iTemp = fERROR;
+	ULONG freeMem = 0;
+	char message[256];
+
+	if (SCENE_MGR::hCurrentScene == fERROR || mythings == NULL || TTypePtr == NULL)
+	{
+		DebugShowResult("Debug Test", "No active scene. Enter an adventure first.");
+		return;
+	}
+
+	for (LONG t = 0; t < MAX_THINGS; ++t)
+	{
+		if (!mythings[t].valid || mythings[t].iAnim == fERROR)
+			continue;
+
+		if ((((TTYPE *)(TTypePtr + (G_TTypeSize * mythings[t].type)))->attrib & ART_TYPE_MASK) != FLC_ART)
+			continue;
+
+		for (ULONG seq = ANIMATION0SEQ; seq < MAX_ANIMATIONSEQ; ++seq)
+			MarkOldAnimPurgable(mythings[t].iAnim, seq);
+		marked++;
+	}
+
+	/* Allocating nearly all remaining memory makes PurgeMem_ dispose the
+	   blocks just marked purgable, the same way it would mid-session. */
+	freeMem = ReportFreeMem(TRUE);
+	if (freeMem > 8192)
+	{
+		iTemp = NewBlock(freeMem - 8192);
+		if (iTemp > 0)
+			DisposBlock(iTemp);
+	}
+
+	logInfo("[DEBUG] Purged FLC animation art for %ld thing(s), freeMem=%lu purgeBlock=%d",
+		marked, freeMem, (int)iTemp);
+
+	snprintf(message, sizeof(message),
+		"Marked FLC art purgable on %ld thing(s) and %s a memory purge. "
+		"Start a fight to exercise stale-animation handling.",
+		marked,
+		(iTemp > 0) ? "forced" : "FAILED to force");
+	DebugShowResult("Debug Test", message);
+}
+
+/* ========================================================================
 	Function	- DebugGrantAdventureItemByName
 	Description - Grants one copy of the named item to every member of the
 				  current adventure party.  The function:
@@ -463,7 +730,19 @@ enum
 	DBGWIND_CTL_ASSASSINATE_BTN = 4103,
 
 	/* "Show end-of-adventure event" push-button. */
-	DBGWIND_CTL_ADVENTURE_END_BTN = 4104
+	DBGWIND_CTL_ADVENTURE_END_BTN = 4104,
+
+	/* "Spot all enemies" push-button. */
+	DBGWIND_CTL_SPOT_ALL_BTN = 4105,
+
+	/* "Clear spotted flags" push-button. */
+	DBGWIND_CTL_CLEAR_SPOTTED_BTN = 4106,
+
+	/* "Dump AI state to log" push-button. */
+	DBGWIND_CTL_DUMP_AI_BTN = 4107,
+
+	/* "Purge animation art" push-button. */
+	DBGWIND_CTL_PURGE_ANIM_BTN = 4108
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -539,6 +818,30 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 122, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_ADVENTURE_END_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Spot all enemies - party will auto-target them (adventure only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 160, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_SPOT_ALL_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Clear spotted flags - party ignores unseen enemies (adventure only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 198, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_CLEAR_SPOTTED_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Dump AI / pathfinding state to log (adventure only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 236, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_DUMP_AI_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Purge animation art - simulate low-memory purge (adventure only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 274, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_PURGE_ANIM_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -562,6 +865,30 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_ADVENTURE_END_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_SHOW_ADVENTURE_END;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_SPOT_ALL_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_SPOT_ALL_ENEMIES;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_CLEAR_SPOTTED_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_CLEAR_SPOTTED;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_DUMP_AI_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_DUMP_AI_STATE;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_PURGE_ANIM_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_PURGE_ANIM_ART;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -646,7 +973,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 200;
+	LONG height = 360;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -778,6 +1105,29 @@ void DebugShowTestWindow(LONG, LONG)
 		{
 			ShowQuestItemVictoryScreen();
 			DebugShowResult("Debug Test", "Triggered end-of-adventure event test.");
+		}
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_SPOT_ALL_ENEMIES)
+	{
+		DebugSetAllEnemiesSpotted(TRUE);
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_CLEAR_SPOTTED)
+	{
+		DebugSetAllEnemiesSpotted(FALSE);
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_DUMP_AI_STATE)
+	{
+		DebugDumpAIState();
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_PURGE_ANIM_ART)
+	{
+		if (!DebugHasActiveAdventureContext())
+		{
+			DebugShowResult("Debug Test", "Purge animation art only works in adventures.");
+		}
+		else
+		{
+			DebugPurgeAnimationArt();
 		}
 	}
 #else
