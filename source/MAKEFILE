@@ -334,7 +334,9 @@ dos_browser_options = &
 	$(SoundFlag) $(ReleaseVer) $(Mem_Check) $(Vec_Check) $(CRC_Check) $(NetDemoVer) $(DemoVer) $(JuneDemoVer) $(ForeignVer) $(FrenchVer) $(GermanVer) $(MultiPlayOnly) $(WadBuildersVer) $($(op_sys)_$(version)_sound_$(soundsys)_Includes)
 
 # Linker_options   =
-dos_debugging_Linker_options  = debug all option stack=32k option map=$*.map
+# stack=128k (was 32k): DOS DEBUG frames overflow a 32k stack during deep AI
+# turn processing and clobber the globals below the STACK segment (issue #57).
+dos_debugging_Linker_options  = debug all option stack=128k option map=$*.map
 dos_profiling_Linker_options  = debug all option stack=32k option map=$*.map
 !ifeq DEBUGLINK ON
 dos_production_Linker_options  = debug all option stack=32k option map=$*.map

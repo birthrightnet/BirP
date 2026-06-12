@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed DOS DEBUG audio options so low-memory mode no longer forces Music Volume to `Off` or Environmental Sounds to `Off`, and saved music volume is now applied during option-load initialization.
 - Fixed a crash (`Bad file number / ABNORMAL TERMINATION`) during NPC domain-turn processing caused by the logger exhausting the DOS runtime stream-slot pool. The diagnostics path now keeps the log file open and flushes after each write instead of closing and reopening on every call.
 - Increased log message buffer size from 256 to 2048 bytes to prevent stack overflow when long TURN TRACE format strings exceeded the original buffer, which caused a divide-by-zero fault in the DOS protected-mode runtime.
+- Fixed a DOS DEBUG crash when transitioning from Collect Taxes to the first realm action: the 32 KB link stack overflowed during NPC domain-turn AI processing and corrupted adjacent globals (CRT file-stream list and the audio kernel pointer). The DOS DEBUG link stack is now 128 KB. Also added a startup `CODE ANCHOR` log line that lets DOS/4G fault addresses be resolved to functions via `nova.map`. [#57](https://github.com/Shiryou/BirP/issues/57)
 
 ### Changed
 

@@ -91,6 +91,11 @@ int main(int argc,char * argv[])
 	// moved to winsys\machine.c
 
 	initializeLogging("dos.log");
+	// Code anchor for crash triage: runtime linear address minus the symbol's
+	// nova.map offset gives the load base, letting DOS/4G fault CS:IP values
+	// be resolved to map symbols (issue #57).
+	logMeta("CODE ANCHOR: main=%08lx initializeLogging=%08lx",
+		(unsigned long)main, (unsigned long)initializeLogging);
 	if (!CheckForMouse ())
 	{
 		puts ("You must have a mouse to run Birthright.  No mouse was detected.");

@@ -70,6 +70,7 @@ Changed
 Fixed
 
 - Fixed some crashes that could occur during two-part adventures. (#52)
+- Fixed start-of-round crash for DOS DEBUG builds. (#57)
 
 1.4.1
 
