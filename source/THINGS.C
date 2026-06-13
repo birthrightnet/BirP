@@ -25,7 +25,7 @@
    sort_things            - sorts things
 
    ======================================================================== */
-/* ùRM250ù------------------------------------------------------------------------
+/* ÔøΩRM250ÔøΩ------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
 #include <stdio.h>
@@ -124,11 +124,11 @@ MINMEMCONVERT MinMemAdditionalTable[] = {
 };
 SHORT MinMemAdditionalTableMax = sizeof(MinMemAdditionalTable) / sizeof(MINMEMCONVERT);
 
-/*	ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù
+/*	ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ
 	Every 10000 thing_spans is another 280 K of RAM in the code! --Wes
 	Sorry Wes, I will seriously reduce this when I have an opportunity to
 	turn the actinic illumination of my intellect upon it. --Alan
-	ùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùùù */
+	ÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩÔøΩ */
 #define UNIT_SCALE_ADJUST		100
 
 /* ------------------------------------------------------------------------
@@ -3644,8 +3644,20 @@ SHORT NextAnimFrame (SHORT iAnim, USHORT sequence, USHORT rotation, UBYTE * pCtr
 
 			for(i=pAnim->frame; i<tmpFrame; ++i)
 			{
+				if ( pAnim->offData >= pHead->size)
+				{
+#if defined(_DEBUG)
+					logWarn("Things.c is missing %ld frames.",
+					        (LONG)(pAnim->totalFrames - pAnim->frame));
+#endif
+					pHead->frames = pAnim->frame;
+					pAnim->totalFrames = pAnim->frame;
+					break;
+				}
+
 				++pAnim->frame;
-				decode_frame(pAnim, pHead);
+				if (decode_frame(pAnim, pHead) == fERROR)
+					break;
 			}
 
 		}
@@ -3704,7 +3716,8 @@ SHORT NextAnimFrame (SHORT iAnim, USHORT sequence, USHORT rotation, UBYTE * pCtr
 		}
 
 		++pAnim->frame;
-		decode_frame(pAnim, pHead);	/* advance to next frame */
+		if (decode_frame(pAnim, pHead) == fERROR)	/* advance to next frame */
+			break;
 	}
 
 	/* set control frame number */
@@ -3745,6 +3758,20 @@ ERRCODE decode_frame (ANIMPTR pAnim, 	FLICHEADPTR pHead)
 	FRAMEHEADPTR	pFramehd;
 	CHUNKHEADPTR	pChunk;
 	PTR				pData;
+
+	// Paged out or non-existent art; a stale block here would fault on the
+	// pFramehd->size read below, crashing to desktop with no Fatal.err.
+	if (!IsPointerGood(pAnim) || !IsPointerGood(pHead))
+	{
+		logError("decode_frame bad pointer pAnim=%p pHead=%p", pAnim, pHead);
+		return fERROR;
+	}
+	if (pAnim->offData >= (ULONG)pHead->size)
+	{
+		logError("decode_frame offData out of range offData=%lu size=%ld seq=%d rot=%d frame=%u",
+		         pAnim->offData, pHead->size, pAnim->sequence, pAnim->rotation, pAnim->frame);
+		return fERROR;
+	}
 
 #if defined(_DEBUG)
 	//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
