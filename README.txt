@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
-Version: 1.4.1.0
-Date: 2026-05-18
+Version: 1.4.2.0
+Date: 2026-06-16
 
 TABLE OF CONTENTS
 
@@ -60,16 +60,27 @@ Unreleased
 Added
 
 - Pressing F11 in WIN DEBUG builds shows a pop-up window with a list of testing/cheating functions.
+- Added a "Halt" button during adventure combat that sets all party members to defend. (#36)
+- Added "awareness" system: characters gain awareness for 30 seconds for any other character they see, and can pathfind to them even if they lose sight of them.
+- Added several new pathfinding algorithms that allow characters to path between rooms, around obstacles, etc, which has significantly reduced instances of "unable to engage" and characters stuck in walls. (#36)
 
 Changed
 
-- Cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
-- Lieutenant action realm button now highlights during lieutenant action, and if pressed cancels the lieutenant action. (#21) 
+- Player characters start each fight in a sensible default fighting style for their class and remember the fighting style you last chose for the rest of that fight. (#36) (#53)
+- Player characters remember their last used fighting style and resume using it against nearby enemies after their current target dies (#36) (#53)
 - Assassination reports now include the assassinated unit type. (#33)
+- Party members give up a chase after 15 seconds (#36)
+- Cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
+- Lieutenant action realm button now highlights during lieutenant action, and lieutenant action no longer cancels if you cancel  (#21)
+- Halved the delay before an adventure returns to exploration after combat ends. (#14)
+- Improved adventure combat messages: attacks now name the target and its armor class, and chases show which enemy is being pursued.
 
 Fixed
 
+- Characters can no longer attack through walls; they must have line of sight. Spectres and wraiths still phase through walls by design. (#36)
+- Party members no longer chase enemies onto lava, acid, or deep water. (#36)
 - Fixed some crashes that could occur during two-part adventures. (#52)
+- Hardened an adventure crash point so missing visuals are skipped instead of crashing the game to the desktop. (#4)
 - Fixed start-of-round crash for DOS DEBUG builds. (#57)
 
 1.4.1

@@ -11,20 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Consolidated debug test actions behind a dedicated F11 test window in DEBUG builds, replacing separate direct debug hotkeys for adventure item grant, realm assassination test, and end-of-adventure event trigger.
-
-### Fixed
-
-- Hardened Adventure/Combat transition flows for two-part adventures to reduce crash risk during part-two progression and combat UI/control handoffs. [#52](https://github.com/Shiryou/BirP/issues/52)
-- Updated assassination reports to include the assassinated unit type, so the report now identifies what unit was lost. [#33](https://github.com/Shiryou/BirP/issues/33)
-- Fixed DOS DEBUG audio options so low-memory mode no longer forces Music Volume to `Off` or Environmental Sounds to `Off`, and saved music volume is now applied during option-load initialization.
-- Fixed a crash (`Bad file number / ABNORMAL TERMINATION`) during NPC domain-turn processing caused by the logger exhausting the DOS runtime stream-slot pool. The diagnostics path now keeps the log file open and flushes after each write instead of closing and reopening on every call.
-- Increased log message buffer size from 256 to 2048 bytes to prevent stack overflow when long TURN TRACE format strings exceeded the original buffer, which caused a divide-by-zero fault in the DOS protected-mode runtime.
-- Fixed a DOS DEBUG crash when transitioning from Collect Taxes to the first realm action: the 32 KB link stack overflowed during NPC domain-turn AI processing and corrupted adjacent globals (CRT file-stream list and the audio kernel pointer). The DOS DEBUG link stack is now 128 KB. Also added a startup `CODE ANCHOR` log line that lets DOS/4G fault addresses be resolved to functions via `nova.map`. [#57](https://github.com/Shiryou/BirP/issues/57)
+- Consolidated debug test actions behind a dedicated F11 test window in DEBUG builds, replacing separate direct debug hotkeys for adventure item grant, realm assassination test, end-of-adventure event trigger, pathfinding test functions, and an animation stress test function.
+- Added a "Halt" button to adventure combat that sets every party member to defend; pressing it also makes "defend" their remembered fighting style so they keep holding when re-engaging. It does nothing outside combat. [#36](https://github.com/Shiryou/BirP/issues/36)
+- Added an awareness system: Characters gain "awareness" of an opponent for 30 seconds if they get LOS on the opponent. Awareness of an enemy allows the character to pathfind to it, even if it has left LOS (around a corner), as long as the target is close enough. [#36](https://github.com/Shiryou/BirP/issues/36)
+- Added new pathfinding algorithms that have reduced instances of "Unable to engage" and your player characters getting stuck on walls by ~90%. New algorithms allow pathfinding around obstacles like tables and even into different rooms, as long as you have awareness of target. [#36](https://github.com/Shiryou/BirP/issues/36)
 
 ### Changed
 
+- Player characters now start combat using fighting styles based on their classes: martials start with 'slow attack 1' and magic users 'defend' (before all classes started with 'defend') [#53](https://github.com/Shiryou/BirP/issues/53)
+- Player characters remember their last used fighting style and, upon their current target being defeated, automatically attempt to pathfind to nearest enemy and continue using that attack style against it [#36](https://github.com/Shiryou/BirP/issues/36)[#53](https://github.com/Shiryou/BirP/issues/53)
+- Updated assassination reports to include the assassinated unit type, so the report now identifies what unit was lost. [#33](https://github.com/Shiryou/BirP/issues/33)
+- Party members now give up chasing a target they cannot reach after about 15 seconds and return to standing by for orders, instead of pursuing indefinitely. [#36](https://github.com/Shiryou/BirP/issues/36)
 - Updated Lieutenant Action cancel behavior so canceling out of sub-windows no longer exits Lieutenant Action, and pressing Lieutenant Action again now explicitly toggles back to normal regent action. Lieutenant Action button is highlighted during Lieutenant Action to indicate its active state. [#21](https://github.com/Shiryou/BirP/issues/21)
+- Halved the delay before an adventure returns to exploration after combat ends. [#14](https://github.com/Shiryou/BirP/issues/14)
+- Improved adventure combat messaging: attacks now name the target and show its armor class, chases show which enemy a character is pursuing, and hit/miss results read more descriptively.
+- Build now compiles and deploys `STRDAT.DAT`, allowing in-game text strings (such as the new adventure combat messages) to be changed.
+
+### Fixed
+
+- Hostile spells can no longer target your own party members and single-target projectiles (magic missile, lightning bolt) pass through allies instead of hitting them. This also means a spellcaster can no longer "lock on" to a friendly PC. Area-of-effect spells can still catch your own party in the blast. [#36](https://github.com/Shiryou/BirP/issues/36)
+- Melee attacks require LOS on target, preventing instances where characters would attack through walls. Spectres and wraiths phase through walls by design, so they may still attack through a wall and may now be struck back through a wall. [#36](https://github.com/Shiryou/BirP/issues/36)
+- Party members no longer chase enemies onto lava, acid, or deep water; a target standing in dangerous terrain is ignored. [#36](https://github.com/Shiryou/BirP/issues/36)
+- Hardened Adventure/Combat transition flows for two-part adventures to reduce crash risk during part-two progression and combat UI/control handoffs. [#52](https://github.com/Shiryou/BirP/issues/52)
+- Fixed a rare adventure-mode animation crash so missing or invalid visual art now degrades gracefully (the affected visual is skipped) instead of crashing to desktop. [#4](https://github.com/Shiryou/BirP/issues/4)
+- Fixed DOS DEBUG audio options so low-memory mode no longer forces Music Volume to `Off` or Environmental Sounds to `Off`, and saved music volume is now applied during option-load initialization. [#32](https://github.com/Shiryou/BirP/issues/32)
+- Increased log message buffer size from 256 to 2048 bytes to prevent stack overflow when long TURN TRACE format strings exceeded the original buffer, which caused a divide-by-zero fault in the DOS protected-mode runtime. [#57](https://github.com/Shiryou/BirP/issues/57)
+- Fixed a DOS DEBUG crash when transitioning from Collect Taxes to the first realm action: the 32 KB link stack overflowed during NPC domain-turn AI processing and corrupted adjacent globals. The DOS DEBUG link stack is now 128 KB. Also added a startup `CODE ANCHOR` log line that lets DOS/4G fault addresses be resolved to functions via `nova.map`. [#57](https://github.com/Shiryou/BirP/issues/57)
 
 ## [1.4.1] - 2026-05-15
 
