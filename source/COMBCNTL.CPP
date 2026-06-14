@@ -96,6 +96,21 @@ static void CombatSelectThisEnemy(CThing * pAvatar)
 	CAvatar * const pControlledAvatar = (CAvatar * const) BLKPTR(hControledAvatar);
 	CAvatar * const pTarget = (CAvatar *) pAvatar;	// the avatar the player tapped
 
+	// [Issue 36] Do not run the melee chase routine while this PC is casting a spell.
+	// When the player taps an enemy to TARGET a spell, that tap also reaches this enemy-
+	// select handler; re-applying the PC's `last fighting style` here (ATM_DEFEND for a
+	// spellcaster) overwrites the AI_CASTSPELL state the spell setup just established and
+	// silently cancels the cast.  Before issue 36 this handler only changed the stance of
+	// a passively-defending PC, so a casting PC was left alone; this guard restores that.
+	if (pControlledAvatar->Status == CAvatar::AI_CASTSPELL)
+	{
+		logInfo("SPELLCAST: CombatSelectThisEnemy ignored for casting PC=%ld (Status=AI_CASTSPELL spellBox=%d) tappedTarget=%ld",
+			pControlledAvatar->ThingIndex,
+			pControlledAvatar->fFollowPlayer.fCurrentSpellBox,
+			pTarget->ThingIndex);
+		return;
+	}
+
 	// [Issue 36] Manual targeting only engages a `valid target`: an opposing-team
 	// avatar that is alive and not standing in dangerous terrain.  If the tapped
 	// avatar is not a valid target, leave the PC doing whatever it was already

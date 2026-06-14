@@ -17,6 +17,7 @@
    ------------------------------------------------------------------------ */
 #include "2dmouse.h"
 #include "machine.h"
+#include "logger.h"
 
 #include "combatui.hxx"
 #include "combcamr.hxx"
@@ -157,6 +158,7 @@ void COMBAT_TARGETTING::mfStopTargeting()
 {
 	if (fRegionsPushed == TRUE)
 	{
+		logInfo("SPELLCAST: targetting cancelled caster=%d (no target selected)", fhAvatar);
 		SetMouseClicked(iOBJECT,fPrevObjMouseCallback);
 		SetMouseClicked(iWALL,  fPrevWallMouseCallback);
 		SetMouseClicked(iFLOOR, fPrevFloorMouseCallback);
@@ -206,6 +208,8 @@ void COMBAT_TARGETTING::TargetClick(LONG but,LONG obj,LONG WadThingtype)
 		if(WadThingtype == iOBJECT)
 		{
 			fTargetIndex = obj;
+			logInfo("SPELLCAST: target selected caster=%d targetThing=%ld",
+				fhAvatar, obj);
 			SetMouseClicked(iOBJECT,fPrevObjMouseCallback);
 			SetMouseClicked(iWALL,  fPrevWallMouseCallback);
 			SetMouseClicked(iFLOOR, fPrevFloorMouseCallback);

@@ -4138,6 +4138,22 @@ BOOL const CAvatar::mfIsMyTurnToAttack() const
 
 void CAvatar::mfSetAttackMode(FIGHT_SEQUENCE::ATTACK_MODE const newMode)
 {
+	// [Issue 36 spell diag] Catch anything that overrides a PC's pending spell cast
+	// (fCurrentSpellBox still queued) with a non-magic fighting style before AI_CASTSPELL
+	// has had a chance to fire it.
+	// NOTE: fCurrentSpellBox lives in the fFollowPlayer arm of the AI union, so it is only
+	// meaningful for hero (AI_FUNC_FOLLOW_PLAYER) avatars.  Without the AI-func guard this
+	// read aliases fPingPong data for enemies/allies with player stats, which the monster
+	// fight-sequence cycling (mfStartNextFightSequence -> mfSetAttackMode) then trips every
+	// combat frame -- spamming false-positive warnings for non-heroes.
+	if (newMode != FIGHT_SEQUENCE::ATM_MAGIC &&
+	    AIFuncIndex == AI_FUNC_FOLLOW_PLAYER &&
+	    hPlayerStats != fERROR &&
+	    fFollowPlayer.fCurrentSpellBox != -1)
+	{
+		logWarn("SPELLCAST: mfSetAttackMode PC=%ld pending cast spellBox=%d OVERRIDDEN newMode=%d Status=%d",
+			ThingIndex, fFollowPlayer.fCurrentSpellBox, (int)newMode, (int)Status);
+	}
 	attrib.AttackMode = newMode;
 	switch (newMode)
 	{

@@ -161,11 +161,14 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			break;
 
 	case AI_CASTSPELL:
+			logDebug("SPELLCAST: AI_CASTSPELL entered caster=%ld spellBox=%d hEnemy=%d seq=%d",
+				pAvatar->ThingIndex, pAvatar->fFollowPlayer.fCurrentSpellBox,
+				pAvatar->hEnemy, pAvatar->mfGetArtSequence());
 			if (pAvatar->fFollowPlayer.fCurrentSpellBox != -1)
 			{
 				if (pAvatar->hEnemy != fERROR)
 				{
-					
+
 					CAvatar * pEnemy = (CAvatar *) BLKPTR (pAvatar->hEnemy);
 					if (pEnemy == NULL)
 					{
@@ -192,6 +195,8 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				{
 					if (pAvatar->mfGetArtSequence() != MAGICSEQ)
 					{
+						logInfo("SPELLCAST: AI_CASTSPELL caster=%ld starting MAGICSEQ spellBox=%d hEnemy=%d",
+							pAvatar->ThingIndex, pAvatar->fFollowPlayer.fCurrentSpellBox, pAvatar->hEnemy);
 						pAvatar->mfStartAnimationOnce(MAGICSEQ);
 					}
 					else
@@ -199,16 +204,20 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					    //if (pAvatar->mfTestSequence2ndLastFrame())
 					    if (pAvatar->mfTestSequencePastHalf())
 					    {
+							logInfo("SPELLCAST: AI_CASTSPELL caster=%ld FIRING spellBox=%d hEnemy=%d (magic anim)",
+								pAvatar->ThingIndex, pAvatar->fFollowPlayer.fCurrentSpellBox, pAvatar->hEnemy);
 							pPlayerStats->Inventory.mfActivateSpellBox(pAvatar->fFollowPlayer.fCurrentSpellBox);
 							// Now go back into general defense mode.
 							pAvatar->fFollowPlayer.fCurrentSpellBox = -1;
 							pAvatar->fDamageFlag = FALSE;
-							
+
 					    }
 					}
 				}
 				else
 				{
+					logInfo("SPELLCAST: AI_CASTSPELL caster=%ld FIRING spellBox=%d hEnemy=%d (no magic anim)",
+						pAvatar->ThingIndex, pAvatar->fFollowPlayer.fCurrentSpellBox, pAvatar->hEnemy);
 					pPlayerStats->Inventory.mfActivateSpellBox(pAvatar->fFollowPlayer.fCurrentSpellBox);
 					// Now go back into general defense mode.
 					pAvatar->fFollowPlayer.fCurrentSpellBox = -1;
@@ -218,6 +227,11 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 			}
 			if (pAvatar->mfTestSequenceDone())
 			{
+				if (pAvatar->fFollowPlayer.fCurrentSpellBox != -1)
+				{
+					logWarn("SPELLCAST: AI_CASTSPELL caster=%ld sequence done with spellBox=%d still pending -> defend WITHOUT firing (fizzle)",
+						pAvatar->ThingIndex, pAvatar->fFollowPlayer.fCurrentSpellBox);
+				}
 				pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
 				pAvatar->mfSetDamageDealt(-1);
 			}
@@ -654,12 +668,55 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance))
 				{
-					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable->AI_DEFEND",
-						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
-					pAvatar->Status = AI_DEFEND;
 					pAvatarEnemy->mfEngage();
-					// GWP HACK HACK!
-					goto StartDefend;
+					if (pAvatar->mfGetAttackMode() == FIGHT_SEQUENCE::ATM_DEFEND)
+					{
+						// [Issue 36] A defending PC (e.g. a spellcaster, or one halted
+						// to defend) that re-acquires a target already in melee range
+						// locks on but HOLDS -- it must not swing.
+						logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable, defending->AI_DEFEND",
+							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+						pAvatar->Status = AI_DEFEND;
+						goto StartDefend;
+					}
+					else
+					{
+						// [Issue 36] An ATTACKING PC re-acquiring a target that is
+						// already in melee range (e.g. the next enemy right after it
+						// defeated its previous one) must keep fighting with its current
+						// fighting style.  The old "GWP HACK HACK" forced AI_DEFEND for
+						// every style here, so a fighter using slow attack 1 would stop
+						// attacking and just defend the instant it picked up an adjacent
+						// foe -- matching the chase routine's step 3 ("pathfind + attack
+						// when the fighting style is not defend").
+						logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld hittable->AI_ATTACK",
+							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+						pAvatar->fChaseStartTick = 0;
+						pAvatar->Status = AI_ATTACK;
+						goto Start_Attack;
+					}
+				}
+				else if (pAvatar->mfGetAttackMode() == FIGHT_SEQUENCE::ATM_DEFEND)
+				{
+					// [Issue 36] A defending PC (e.g. a spellcaster sitting in its
+					// default `defend` stance) locks on to a valid target but must HOLD
+					// position -- it must never auto-pursue into melee.  This mirrors the
+					// chase routine's step 3 ("pathfind + attack only when the fighting
+					// style is not defend") on the automatic-targeting path; previously
+					// AI_SEARCH unconditionally went to AI_MOVING, dragging defending
+					// casters into melee and out of casting range.  Attackers fall through
+					// to the AI_MOVING pursuit below.
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld defending, holding",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					pAvatar->mfSethEnemy(fERROR);
+					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
+					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
+					     pAvatar->mfGetArtSequence() != DEFENDSEQ)
+					      || pAvatar->mfTestSequenceDone()
+					   )
+					{
+						pAvatar->mfStartAnimationOnce(STANDSEQ);
+					}
 				}
 				else
 				{

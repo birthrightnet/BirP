@@ -17,6 +17,7 @@
 #include "effsepar.hxx"
 #include "itemtype.hxx"
 #include "invntory.hxx"
+#include "logger.h"
 #include "player.hxx"
 #include "playstat.hxx"
 #include "resurect.hxx"
@@ -713,6 +714,9 @@ static LONG ItemEffects::MagicMissileSpell(LONG Combo,LONG Arg,LONG Action)
 				if (pPlayerStats->hAvatar != fERROR)
 				{
 					DumbHandlePtr<CAvatar>		pAvatar(pPlayerStats->hAvatar);
+					logInfo("SPELLCAST: MagicMissile caster=%ld hEnemy=%d numMissiles=%ld damage=%ld -> fireball (%s)",
+						pAvatar->ThingIndex, pAvatar->hEnemy, numMissiles, Damage,
+						(pAvatar->hEnemy == fERROR) ? "no lock, fires straight ahead" : "homing on target");
 					pAvatar->mfSetDamageDealt(Damage);
 					pAvatar->mfCreateFireBall( GetNewId(), PLASMA_STREAK_1, Damage);
 				}
@@ -2180,10 +2184,14 @@ static LONG ItemEffects::SpritualHammer(LONG Combo,LONG Arg,LONG Action)
 					DumbHandlePtr<CAvatar>		pAvatar(pPlayerStats->hAvatar);
 			
 					if (pAvatar->hEnemy==fERROR)
+					{
+						logWarn("SPELLCAST: SpiritualHammer caster=%ld has no hEnemy -> CANT_COMPLETE (spell does nothing)",
+							pAvatar->ThingIndex);
 						return CANT_COMPLETE;
-					
+					}
+
 					DumbHandlePtr<CAvatar>		pEnemy(pAvatar->hEnemy);
-	
+
 					LONG PriestLevel=0;
 					
 					LONG PriestClass=pPlayerStats->mfGetSpellCastClass(SPELL_INFO::PRIEST);
@@ -2194,6 +2202,8 @@ static LONG ItemEffects::SpritualHammer(LONG Combo,LONG Arg,LONG Action)
 			   	
 					LONG const DamageDone=RollDice(&DamageDice);
 					
+					logInfo("SPELLCAST: SpiritualHammer caster=%ld target=%d damage=%ld -> hit",
+						pAvatar->ThingIndex, pAvatar->hEnemy, DamageDone);
 					mfSound(SND_SPIRITUAL_HAMMER,NULL,pAvatar->ThingIndex);
 					pAvatar->mfSetDamageDealt(DamageDone);
 					pAvatar->mfInflictMagicDamage(pEnemy,MAGIC_MISSILE_1,DamageDone);

@@ -1055,12 +1055,19 @@ void PlayAdventureUI(SCENE &rScene)
 				|| pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL
 				)
 			{
+				logWarn("SPELLCAST: (adventure) caster=%ld target invalid (found=%d targetThing=%ld) -> hEnemy cleared; target spells will fizzle",
+					pShootingAvatar->ThingIndex, (int)TargetFound,
+					(LONG)COMBAT_TARGETTING::mfGetTargetIndex());
 				pShootingAvatar->mfSethEnemy(fERROR);
 			}
 			else
 			{
 				// set the spell caster's hEnemy to be this object
 				pShootingAvatar->mfSethEnemy(rScene.Avatars[i]);
+				logInfo("SPELLCAST: (adventure) caster=%ld locked target=%ld spellBox=%d",
+					pShootingAvatar->ThingIndex,
+					(LONG)COMBAT_TARGETTING::mfGetTargetIndex(),
+					pShootingAvatar->fFollowPlayer.fCurrentSpellBox);
 			}
 
 
@@ -1073,6 +1080,10 @@ void PlayAdventureUI(SCENE &rScene)
 			if (pShootingAvatar->hPlayerStats != fERROR)
 			{
 				PLAYER_STATS * const pPlayerStats = (PLAYER_STATS * const) BLKPTR(pShootingAvatar->hPlayerStats);
+				logInfo("SPELLCAST: (adventure) caster=%ld activating spellBox=%d hEnemy=%d",
+					pShootingAvatar->ThingIndex,
+					pShootingAvatar->fFollowPlayer.fCurrentSpellBox,
+					pShootingAvatar->hEnemy);
 				pPlayerStats->Inventory.mfActivateSpellBox(pShootingAvatar->fFollowPlayer.fCurrentSpellBox);
 			}
 		}
@@ -1599,7 +1610,12 @@ void PlayCombatUI(SCENE &rScene)
 			BOOL TargetFound = FALSE;
 
 			// check to see if this thing index is an avatar
-			for(LONG i = 0; i < MAX_AVATARS; i++ )
+			// NOTE: use the function-scope `i` (declared at the top of PlayCombatUI) so the
+			// matched index survives the loop -- the success branch below reads
+			// rScene.Avatars[i] to set hEnemy.  A shadowing `for(LONG i ...)` here left that
+			// read using an uninitialised function-scope `i`, locking the spell onto a garbage
+			// avatar instead of the tapped target.
+			for(i = 0; i < MAX_AVATARS; i++ )
 			{
 				// This is a sparsly filled array.
 				if (rScene.Avatars[i] != fERROR)
@@ -1638,13 +1654,23 @@ void PlayCombatUI(SCENE &rScene)
 				|| pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL
 				)
 			{
+				logWarn("SPELLCAST: (combat) caster=%ld target invalid (found=%d targetThing=%ld self=%d fireball=%d) -> hEnemy cleared; target spells will fizzle",
+					pShootingAvatar->ThingIndex, (int)TargetFound,
+					(LONG)COMBAT_TARGETTING::mfGetTargetIndex(),
+					(int)(pShootingAvatar->ThingIndex == COMBAT_TARGETTING::mfGetTargetIndex()),
+					(int)(TargetFound == TRUE && pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL));
 				pShootingAvatar->mfSethEnemy(fERROR);
 			}
 			else
 			{
 				// set the spell caster's hEnemy to be this object
 				pShootingAvatar->mfSethEnemy(rScene.Avatars[i]);
-
+				logInfo("SPELLCAST: (combat) caster=%ld locked targetThing=%ld targetHandle=%d (avatar ThingIndex=%ld) spellBox=%d Status=%d",
+					pShootingAvatar->ThingIndex,
+					(LONG)COMBAT_TARGETTING::mfGetTargetIndex(),
+					rScene.Avatars[i], pTargetAvatar->ThingIndex,
+					pShootingAvatar->fFollowPlayer.fCurrentSpellBox,
+					(int)pShootingAvatar->Status);
 			}
 
 			pShootingAvatar->fDamageFlag = 1;
@@ -2134,6 +2160,12 @@ void CombatSpellKey(
 										                 &OldSceneType);
 
 						ITEMTYPE const SpellType = ObjectList::mfData(sSpell).mfType();
+						logInfo("SPELLCAST: button pressed avatar=%ld spellBox=%ld spellType=%d handwave=%d target=%d sceneType=%d rpg=%d hEnemy=%d",
+							pAvatar->ThingIndex, SpellNumber, (int)SpellType,
+							(int)(ItemTypes[SpellType].mfRequires(HANDWAVE) != 0),
+							(int)(ItemTypes[SpellType].mfRequires(TARGET) != 0),
+							(int)OldSceneType, (int)COMBAT_MODE::mfIsModeRPG(),
+							pAvatar->hEnemy);
 						// if I am required to wave my hands, switch modes
 						if (ItemTypes[SpellType].mfRequires(HANDWAVE) ||
 							ItemTypes[SpellType].mfRequires(TARGET))
@@ -2164,7 +2196,14 @@ void CombatSpellKey(
 							// to targetting mode and pause game
 							if (ItemTypes[SpellType].mfRequires(TARGET))
 							{
+								logInfo("SPELLCAST: handwave+target spell, entering targetting avatar=%ld spellBox=%ld",
+									pAvatar->ThingIndex, SpellNumber);
 								COMBAT_TARGETTING::mfSetupTargetting(pAvatar->hThis);
+							}
+							else
+							{
+								logInfo("SPELLCAST: handwave (no target) spell armed avatar=%ld spellBox=%ld; cast resolves in AI_CASTSPELL",
+									pAvatar->ThingIndex, SpellNumber);
 							}
 						}
 						else
@@ -2173,6 +2212,8 @@ void CombatSpellKey(
 							// to targetting mode.
 							if (ItemTypes[SpellType].mfRequires(TARGET))
 							{
+								logInfo("SPELLCAST: target spell, entering targetting avatar=%ld spellBox=%ld",
+									pAvatar->ThingIndex, SpellNumber);
 								pAvatar->fFollowPlayer.fCurrentSpellBox = SpellNumber;
 								COMBAT_TARGETTING::mfSetupTargetting(pAvatar->hThis);
 							}
@@ -2181,12 +2222,16 @@ void CombatSpellKey(
 								if (OldSceneType == SCENE_AI::COMBAT_SCENE &&
 								    COMBAT_MODE::mfIsModeRPG() == TRUE)
 								{
+									logInfo("SPELLCAST: RPG no-target spell -> AI_CASTSPELL avatar=%ld spellBox=%ld",
+										pAvatar->ThingIndex, SpellNumber);
 									pAvatar->fFollowPlayer.fCurrentSpellBox = SpellNumber;
 									pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_MAGIC);
 									pAvatar->mfSetAttackSequence(FIGHT_SEQUENCE::ATM_MAGIC);
 								}
 								else
 								{
+									logInfo("SPELLCAST: no-target spell cast immediately avatar=%ld spellBox=%ld",
+										pAvatar->ThingIndex, SpellNumber);
 									pPlayerStats->Inventory.mfActivateSpellBox(SpellNumber);
 								}
 							}
