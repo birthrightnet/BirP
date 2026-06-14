@@ -591,13 +591,18 @@ void CAvatar::HellHounds (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				// GWP If we hit something do we care?
 				// GWP maybe we should try a slightly offset angle from
 				// GWP the first try and try again.
+				AI_MOVER_INFO mover;
+				mover.width    = pAvatar->mfWidth();
+				mover.height   = pAvatar->mfHeight();
+				mover.z        = pAvatar->mfZ();
+				mover.isFlying = FALSE;
 				LONG moveTargetX = pAvatarTarget->mfX();
 				LONG moveTargetY = pAvatarTarget->mfY();
 				ApplySectorPath(&pAvatar->fAiPath,
 				                pAvatar->mfGetSector(), pAvatarTarget->mfGetSector(),
 				                pAvatar->mfX(), pAvatar->mfY(),
 				                pAvatarTarget->mfX(), pAvatarTarget->mfY(),
-				                &moveTargetX, &moveTargetY);
+				                &moveTargetX, &moveTargetY, &mover);
 				const LONG moveDist = aprox_dist(pAvatar->mfX(), pAvatar->mfY(), moveTargetX, moveTargetY);
 				pAvatar->mfStartAnimationOnce(MARCHSEQ);
 				const WadThingType bump = pAvatar->mfMoveTowardWithBump(

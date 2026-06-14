@@ -441,13 +441,18 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 					// ApplySectorPath() computes a fresh A* path when the enemy changes sectors,
 					// then advances through portal waypoints until all are consumed, after which
 					// movement reverts to direct line-of-sight toward the enemy.
+					AI_MOVER_INFO mover;
+					mover.width    = pAvatar->mfWidth();
+					mover.height   = pAvatar->mfHeight();
+					mover.z        = pAvatar->mfZ();
+					mover.isFlying = FALSE;
 					LONG moveTargetX = pAvatarEnemy->mfX();
 					LONG moveTargetY = pAvatarEnemy->mfY();
 					ApplySectorPath(&pAvatar->fAiPath,
 					                pAvatar->mfGetSector(), pAvatarEnemy->mfGetSector(),
 					                pAvatar->mfX(), pAvatar->mfY(),
 					                pAvatarEnemy->mfX(), pAvatarEnemy->mfY(),
-					                &moveTargetX, &moveTargetY);
+					                &moveTargetX, &moveTargetY, &mover);
 
 					// Move toward the chosen target (waypoint or enemy).
 					const LONG moveDist = aprox_dist(
