@@ -50,6 +50,9 @@
 
 SHORT CAvatar::PlayerAvatarHandle=fERROR;
 const LONG CAvatar::ActivationDistance = 1000;
+// [Issue 36] awareness lifetime: 30 seconds at the ~10-tick/second combat rate
+// (RECENT_COMBAT_TICKS = 50 == 5 seconds).  Configurable here.
+const LONG CAvatar::AwarenessTicks = 300;
 const LONG CAvatar::fgTauntDelay = 50;
 
 // [d11-05-96 JPC] Experiment for keeping dead things from clipping so badly.
@@ -1085,7 +1088,11 @@ SHORT CAvatar::NewAvatar(void)
 		pAvatar->hPlayerStats = fERROR;
 		pAvatar->Realm.HomeRealm	= REALM::NO_COUNTRY;
 		pAvatar->Engaged	= 0;
-		pAvatar->bSpotted	= FALSE;
+		// [Issue 36] awareness is transient (not saved); starts cleared every adventure.
+		pAvatar->fAwarenessTick = 0;
+		pAvatar->fSeenEnemyTick = 0;
+		pAvatar->fChaseStartTick = 0;
+		pAvatar->fLastFightingStyle = FIGHT_SEQUENCE::ATM_DEFEND;
 		pAvatar->hEnemy	= fERROR;
 		pAvatar->KillType	= NO_THING;
 		pAvatar->fDamage = -1;
@@ -2164,9 +2171,14 @@ BOOL CAvatar::mfWackEm(const HDL_AVATAR hEnemyTarget)
 	// mfCanIHitHim(), which only checks distance and relative Z -- not line of sight --
 	// so this is the final guarantee that an actual hit requires current LOS to the
 	// target.  At melee contact range (<= 90 units, below the 100-unit hearing
-	// threshold) mfCanSeeAvatar() reduces to a pure ray-cast wall test.  Spectres and
-	// wraiths are exempt: their AI intentionally phases through walls to attack.
-	if (AIFuncIndex != AI_FUNC_SPECTRE && !mfCanSeeAvatar(pEnemyTarget))
+	// threshold) mfCanSeeAvatar() reduces to a pure ray-cast wall test.  The spectre
+	// exemption is bidirectional (issue 36): a spectre/wraith may attack through a wall,
+	// AND a target spectre/wraith may be attacked through a wall (e.g. a player character
+	// striking back at a spectre that phased into the wall).  So we only require LOS when
+	// NEITHER the attacker nor the target is a spectre.
+	if (AIFuncIndex != AI_FUNC_SPECTRE &&
+	    pEnemyTarget->GetAIFuncIndex() != AI_FUNC_SPECTRE &&
+	    !mfCanSeeAvatar(pEnemyTarget))
 	{
 		fDamageFlag = 0;
 		return FALSE;
@@ -3495,6 +3507,89 @@ BOOL const CAvatar::mfAmIChasingAnEnemy() const
 {
 	return ((Status == AI_MOVING || Status == AI_ATTACK) &&
 	        hEnemy != fERROR);
+}
+
+/* ========================================================================
+   Function    - mfIsInRecentCombat
+   Description - [Issue 36] Per-player-character `recent combat` state: TRUE while
+                 this avatar has attacked, been attacked, cast a spell, or is
+                 chasing an enemy.  Combat auto-ends only once EVERY party member
+                 is out of recent combat for the RECENT_COMBAT window.
+   Returns     - TRUE or FALSE
+   ======================================================================== */
+
+BOOL const CAvatar::mfIsInRecentCombat() const
+{
+	return (mfAmIBeingAttacked() || mfAmICastingASpell() || mfAmIChasingAnEnemy());
+}
+
+/* ========================================================================
+   Function    - mfMarkAware / mfIsAware
+   Description - [Issue 36] awareness: refresh / query whether the opposing team
+                 is currently aware of THIS avatar's location.  Replaces the old
+                 permanent bSpotted flag with a configurable timeout (AwarenessTicks).
+   Returns     -
+   ======================================================================== */
+
+void CAvatar::mfMarkAware()
+{
+	fAwarenessTick = SCENE_MGR::gTick + AwarenessTicks;
+}
+
+BOOL const CAvatar::mfIsAware() const
+{
+	return (fAwarenessTick > SCENE_MGR::gTick) ? TRUE : FALSE;
+}
+
+/* ========================================================================
+   Function    - mfMarkSeenEnemy / mfHasSeenEnemyRecently
+   Description - [Issue 36] NPC side of awareness: this NPC remembers having seen
+                 the player party, allowing re-acquisition without current LOS until
+                 the timer expires.
+   Returns     -
+   ======================================================================== */
+
+void CAvatar::mfMarkSeenEnemy()
+{
+	fSeenEnemyTick = SCENE_MGR::gTick + AwarenessTicks;
+}
+
+BOOL const CAvatar::mfHasSeenEnemyRecently() const
+{
+	return (fSeenEnemyTick > SCENE_MGR::gTick) ? TRUE : FALSE;
+}
+
+/* ========================================================================
+   Function    - mfMarkVisibleFoesAware
+   Description - [Issue 36] A party member's line of sight grants the whole
+                 party awareness of EVERY enemy it can currently see -- not just
+                 its chosen target.  Refreshes awareness on each such foe, so the
+                 whole party (awareness lives on the enemy) can pursue any of them.
+   Returns     -
+   ======================================================================== */
+
+void CAvatar::mfMarkVisibleFoesAware()
+{
+	PTR_SCENE pCurrentScene = (PTR_SCENE) BLKPTR(SCENE_MGR::hCurrentScene);
+	if (pCurrentScene == NULL)
+		return;
+
+	for (SHORT i = 0; i < MAX_AVATARS; ++i)
+	{
+		if (pCurrentScene->Avatars[i] == fERROR ||
+		    pCurrentScene->Avatars[i] == hThis)
+			continue;
+
+		CAvatar * const pFoe = (CAvatar *) BLKPTR(pCurrentScene->Avatars[i]);
+		if (pFoe == NULL ||
+		    mfIsAlly(pFoe) ||
+		    pFoe->mfAmIImmoblized() ||
+		    pFoe->AIFuncIndex == AI_FUNC_FIREBALL)
+			continue;
+
+		if (mfCanSeeAvatar(pFoe))
+			pFoe->mfMarkAware();
+	}
 }
 
 /* ========================================================================

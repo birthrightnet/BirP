@@ -29,6 +29,10 @@ int iHackHasKey = FALSE;
 //const UBYTE FOLLOW_PLAYER_DATA::fMaxEntourage = 3;
 const LONG SoundDelay = 7;
 static const LONG MaxChaseDistance = 1000;
+// [Issue 36] A PC gives up chasing a target after this many ticks of pursuing without
+// successfully reaching it (15 seconds at the ~10-tick/second combat rate) and returns to
+// the await-orders (AI_SEARCH, no enemy) state.
+static const LONG ChaseGiveUpTicks = 150;
 
 
 /* ========================================================================
@@ -72,6 +76,22 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 	
 	if ((pAvatar->fFollowPlayer.mfCanIWalkThruWall() != TRUE) && (pAvatar->Status != AI_DEAD))
 		pAvatar->mfCheckCrush();
+
+	// [Issue 36] A party member's line of sight grants the whole party awareness of EVERY
+	// enemy it can currently see (not just its chosen target).  Run this once per frame in
+	// the combat states so all spotted enemies become valid targets for every party member.
+	switch (Status)
+	{
+	case AI_SEARCH:
+	case AI_MOVING:
+	case AI_ATTACK:
+	case AI_DEFEND:
+	case AI_FALLBACK:
+		pAvatar->mfMarkVisibleFoesAware();
+		break;
+	default:
+		break;
+	}
 
 	if(pAvatar->Status == AI_DEAD && Status != AI_RESURRECTION)
 		Status = AI_DEAD;
@@ -369,14 +389,21 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 
 				const BOOL movCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
 				if (movCanSee)
-					pAvatarEnemy->bSpotted = TRUE;
+					pAvatarEnemy->mfMarkAware();
 				// [Issue 36] Only begin attacking when we currently have LOS to the
 				// enemy.  mfCanIHitHim() ignores walls, so without the LOS gate a hero
 				// would swing through a wall at a target on the far side; instead we
-				// stay in AI_MOVING and pathfind around the obstacle.
+				// stay in AI_MOVING and pathfind around the obstacle.  Specters are the
+				// exception: they phase through walls, so a hero may strike one once close
+				// enough even without LOS.
+				const BOOL movTargetIsSpectre =
+					(pAvatarEnemy->GetAIFuncIndex() == AI_FUNC_SPECTRE);
 				if (pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) &&
-					movCanSee)
+					(movCanSee || movTargetIsSpectre))
 				{
+					// [Issue 36] Reached the target: this pursuit succeeded, so reset the
+					// chase give-up timer (it restarts if we later drop back to AI_MOVING).
+					pAvatar->fChaseStartTick = 0;
 					pAvatar->mfRestartFightSequence();
 					logDebug("FOLPLY AI: hero=%ld AI_MOVING->AI_ATTACK target=%ld dist=%ld canSee=%d",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance, (int)movCanSee);
@@ -385,6 +412,25 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				}
 				else
 				{
+					// [Issue 36] Still pursuing.  Start the give-up clock on the first
+					// pursuit frame, and abandon the target after ChaseGiveUpTicks of
+					// unsuccessful chasing, returning to await orders (AI_SEARCH, no enemy).
+					if (pAvatar->fChaseStartTick == 0)
+						pAvatar->fChaseStartTick = SCENE_MGR::gTick;
+					else if (SCENE_MGR::gTick - pAvatar->fChaseStartTick > ChaseGiveUpTicks)
+					{
+						logDebug("FOLPLY AI: hero=%ld AI_MOVING give up target=%ld after %ld ticks->AI_SEARCH",
+							pAvatar->ThingIndex, pAvatarEnemy->ThingIndex,
+							SCENE_MGR::gTick - pAvatar->fChaseStartTick);
+						pAvatar->fChaseStartTick = 0;
+						pAvatar->fFollowPlayer.dAngle = 8;
+						pAvatar->fAiPath.fPathWaypointCount = 0;
+						pAvatar->fAiPath.fPathTargetSector  = -1;
+						pAvatar->mfSethEnemy(fERROR);
+						pAvatar->Status = AI_SEARCH;
+						pAvatar->mfStartAnimationOnce(STANDSEQ);
+						break;
+					}
 					LONG Angle;
 					LONG myThingBumped;
 
@@ -548,6 +594,11 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				                                 pAvatarEnemy->mfX(),
 				                                 pAvatarEnemy->mfY());
 
+				// [Issue 36] Awareness of every visible enemy (including this one) is
+				// refreshed once per frame by mfMarkVisibleFoesAware() at the top of
+				// FollowPlayer, so a hero spotting an as-yet-unaware enemy has already made
+				// the whole party aware of it before this awareness gate runs.
+
 				if (distance > MaxChaseDistance)
 				{
 					// Enemy found by sector reject but too far to chase -- ignore it.
@@ -563,11 +614,29 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						pAvatar->mfStartAnimationOnce(STANDSEQ);
 					}
 				}
-				else if (!pAvatarEnemy->bSpotted)
+				else if (!pAvatarEnemy->mfIsAware())
 				{
-					// Enemy visible by sector reject but never seen by any party member -- ignore.
-					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not yet spotted, ignoring",
+					// [Issue 36] awareness gate: the party has not seen this enemy
+					// recently (or awareness has timed out) -- not a valid target, so
+					// the hero awaits orders rather than chasing an unseen enemy.
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not aware, ignoring",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					pAvatar->mfSethEnemy(fERROR);
+					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
+					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
+					     pAvatar->mfGetArtSequence() != DEFENDSEQ)
+					      || pAvatar->mfTestSequenceDone()
+					   )
+					{
+						pAvatar->mfStartAnimationOnce(STANDSEQ);
+					}
+				}
+				else if (pAvatar->mfIsNastySector(pAvatarEnemy->mfX(), pAvatarEnemy->mfY()))
+				{
+					// [Issue 36] dangerous-terrain rejection (Option H): the candidate is
+					// standing in lava/acid/deep water, so it is not a valid target.
+					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld in nasty sector, ignoring",
+						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex);
 					pAvatar->mfSethEnemy(fERROR);
 					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
 					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
@@ -591,6 +660,9 @@ void CAvatar::FollowPlayer (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 				{
 					logDebug("FOLPLY AI: hero=%ld AI_SEARCH found target=%ld dist=%ld not hittable->AI_MOVING",
 						pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);
+					// [Issue 36] Begin a fresh pursuit: reset the chase give-up timer so it
+					// does not inherit a stale start time from a previous target.
+					pAvatar->fChaseStartTick = 0;
 					pAvatar->Status = AI_MOVING;
 					if ((pAvatar->mfGetArtSequence() != ATTACK1SEQ &&
 					     pAvatar->mfGetArtSequence() != ATTACK2SEQ &&
@@ -708,12 +780,15 @@ Start_Attack:
 					{
 						const BOOL atkCanSee = pAvatar->mfCanSeeAvatar(pAvatarEnemy);
 						if (atkCanSee)
-							pAvatarEnemy->bSpotted = TRUE;
+							pAvatarEnemy->mfMarkAware();
 						// [Issue 36] Keep attacking only while we currently have LOS.
 						// If the enemy slips behind a wall, drop back to AI_MOVING and
 						// pathfind rather than continuing to swing through the wall.
+						// Specters are exempt: a hero keeps attacking a phased specter.
+						const BOOL atkTargetIsSpectre =
+							(pAvatarEnemy->GetAIFuncIndex() == AI_FUNC_SPECTRE);
 						if (!pAvatar->mfCanIHitHim(pAvatarEnemy, distance, pAvatar->fContactDistance) ||
-						    !atkCanSee)
+						    (!atkCanSee && !atkTargetIsSpectre))
 						{
 							logDebug("FOLPLY AI: hero=%ld AI_ATTACK target=%ld dist=%ld not hittable/visible->AI_MOVING",
 								pAvatar->ThingIndex, pAvatarEnemy->ThingIndex, distance);

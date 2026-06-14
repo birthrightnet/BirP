@@ -89,21 +89,36 @@ static void CombatSelectThisAdventurer(CThing *pAvatar)
 static void CombatSelectThisEnemy(CThing * pAvatar)
 {
 	SHORT const hControledAvatar = CONTROL_PANELS::mfGetCurrAvatarHdl();
-	
-	if (hControledAvatar != fERROR)
+
+	if (hControledAvatar == fERROR)
+		return;
+
+	CAvatar * const pControlledAvatar = (CAvatar * const) BLKPTR(hControledAvatar);
+	CAvatar * const pTarget = (CAvatar *) pAvatar;	// the avatar the player tapped
+
+	// [Issue 36] Manual targeting only engages a `valid target`: an opposing-team
+	// avatar that is alive and not standing in dangerous terrain.  If the tapped
+	// avatar is not a valid target, leave the PC doing whatever it was already
+	// doing (no change in behaviour).
+	if (pControlledAvatar->mfIsAlly(pTarget) ||
+	    pTarget->mfAmIImmoblized() ||
+	    pControlledAvatar->mfIsNastySector(pTarget->mfX(), pTarget->mfY()))
 	{
-		CAvatar * const pControlledAvatar = (CAvatar * const ) BLKPTR(hControledAvatar);
-		pControlledAvatar->mfSethEnemy(((CAvatar *)pAvatar)->hThis);
-		
-		if (pControlledAvatar->Status == CAvatar::AI_DEFEND ||
-		     (pControlledAvatar->Status == CAvatar::AI_PAUSED && 
-		      pControlledAvatar->fPrev.Status == CAvatar::AI_DEFEND))
-		{
-			// Just default to the first combat unless they are already
-			// using a different mode.
-			pControlledAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_HIGH);
-		}
+		return;
 	}
+
+	// The player has tapped the enemy on screen, so the party is now aware of it.
+	pTarget->mfMarkAware();
+
+	// `player chase + bonk target if aggressive` routine:
+	//  1. lock onto the valid target (fresh pursuit -> reset the chase give-up timer).
+	pControlledAvatar->fChaseStartTick = 0;
+	pControlledAvatar->mfSethEnemy(pTarget->hThis);
+	//  2. set the currently selected fighting style to the `last fighting style`.
+	//  3. mfSetAttackMode() then drives the rest of the routine: an attack style
+	//     puts the PC in AI_ATTACK (pathfind + attack), while defend puts it in
+	//     AI_DEFEND (locked on, but holds position and does not pursue).
+	pControlledAvatar->mfSetAttackMode(pControlledAvatar->mfGetLastFightingStyle());
 }
 
 /* ========================================================================
@@ -702,30 +717,33 @@ void CONTROL_PANELS::CURRENT_CONTROL::mfSetBeginCombat(BOOL const AutoAttack)
 			if (pAvatar->Status != CAvatar::AI_ATTACK &&
 				pAvatar->Status != CAvatar::AI_CASTSPELL)
 			{
-				if (pAvatar->Engaged > 0)
+				// [Issue 36] Determine this PC's class-based `default fighting style`:
+				// martial classes (fighter, paladin, ranger, thief, bard) use slow
+				// attack 1; spellcasters (wizard, magician, priest) default to defend.
+				FIGHT_SEQUENCE::ATTACK_MODE defaultMode = FIGHT_SEQUENCE::ATM_HIGH;
+				if (pAvatar->hPlayerStats != fERROR)
 				{
-					// If you are being attacked, auto Defend.
-					pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
+					PLAYER_STATS const * const pPlayerStats = (PLAYER_STATS const * const) BLKPTR(pAvatar->hPlayerStats);
+					if (pPlayerStats->mfIsType(PLAYER_CLASS_INFO::WIZARD) ||
+					    pPlayerStats->mfIsType(PLAYER_CLASS_INFO::MAGICIAN) ||
+					    pPlayerStats->mfIsType(PLAYER_CLASS_INFO::PRIEST))
+					{
+						defaultMode = FIGHT_SEQUENCE::ATM_DEFEND;
+					}
+				}
+				// Each PC starts the encounter with `last fighting style` == `default`,
+				// and (in arcade) its current fighting style synced to that default so the
+				// persisted attack mode always equals `last fighting style`.  RPG mode waits
+				// in defend for the player to issue per-turn commands.
+				pAvatar->mfSetLastFightingStyle(defaultMode);
+
+				if (AutoAttack == TRUE)
+				{
+					pAvatar->mfSetAttackMode(defaultMode);
 				}
 				else
 				{
-					if (pAvatar->hPlayerStats != fERROR)
-					{
-						PLAYER_STATS const * const pPlayerStats = (PLAYER_STATS const * const) BLKPTR(pAvatar->hPlayerStats);
-						
-						if (AutoAttack == TRUE &&
-						    (pPlayerStats->mfIsType(PLAYER_CLASS_INFO::FIGHTER) ||
-						     pPlayerStats->mfIsType(PLAYER_CLASS_INFO::PALADIN) ||
-						     pPlayerStats->mfIsType(PLAYER_CLASS_INFO::RANGER) ))
-						{
-							// If you are not being attacked, help out.
-							pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_HIGH);
-						}
-						else
-						{
-							pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
-						}
-					}
+					pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
 				}
 			}
 		}

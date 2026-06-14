@@ -342,9 +342,14 @@ public:				// Public for the dialog editor
 	
 	FIGHT_SEQUENCE	fFightSeq;			// Fight sequence for this avatar.
 	
-	WadThingType    lastBump;	
+	WadThingType    lastBump;
 	LONG            bumpTimer;			// For movement.
-	BOOL            bSpotted;			// TRUE once any party member has had LOS to this enemy this adventure.
+	// [Issue 36] awareness: replaces the old permanent bSpotted flag.  These hold the
+	// gTick up to which the relationship is still "aware" (0 = not aware / expired).
+	LONG            fAwarenessTick;		// Opposing team is aware of THIS avatar's location until this tick.
+	LONG            fSeenEnemyTick;		// This NPC stays aware of the player party it has seen until this tick.
+	LONG            fChaseStartTick;	// [Issue 36] gTick the current PC pursuit began (0 = not pursuing); drives the 15s give-up.
+	FIGHT_SEQUENCE::ATTACK_MODE fLastFightingStyle;	// Last fighting style set on this PC (issue 36).
 	LONG			dAngle;
 	LONG			fTimeLastChanged;
 	LONG			fFrameLastChanged;
@@ -500,6 +505,23 @@ public:				// Public for the dialog editor
 	BOOL const mfAmIBeingAttacked() const;
 	BOOL const mfAmICastingASpell() const;
 	BOOL const mfAmIChasingAnEnemy() const;
+	// [Issue 36] per-player-character recent combat: TRUE while this avatar has attacked,
+	// been attacked, cast a spell, or is chasing an enemy within the last RECENT_COMBAT window.
+	// Drives combat auto-end (combat ends once EVERY party member is out of recent combat).
+	BOOL const mfIsInRecentCombat() const;
+
+	// [Issue 36] awareness (timed; replaces the permanent bSpotted flag).
+	void mfMarkAware();						// Refresh: opposing team is aware of me (AwarenessTicks).
+	BOOL const mfIsAware() const;			// Is the opposing team currently aware of me?
+	void mfMarkSeenEnemy();					// Refresh: I (an NPC) have just seen the player party.
+	BOOL const mfHasSeenEnemyRecently() const;	// Do I still remember seeing the player party?
+	void mfMarkVisibleFoesAware();			// Mark EVERY foe I currently have LOS to as aware.
+	inline void mfClearAwareness();			// Forget all awareness (debug / reset).
+	inline void mfSetAwarenessTick(LONG const t);	// Set raw awareness tick (debug tools).
+
+	// [Issue 36] last fighting style.
+	inline FIGHT_SEQUENCE::ATTACK_MODE const mfGetLastFightingStyle() const;
+	inline void mfSetLastFightingStyle(FIGHT_SEQUENCE::ATTACK_MODE const m);
 	
 	inline BOOL const mfAmIImmoblized() const;
 	BOOL const mfAmIAlive() const;
@@ -536,6 +558,7 @@ public:				// Public for the dialog editor
 	
 	static SHORT PlayerAvatarHandle;	// The avatar that is following the player structure
 	static const LONG	ActivationDistance;
+	static const LONG	AwarenessTicks;	// [Issue 36] How long awareness lasts (configurable, 30s default).
 	static const LONG	fgTauntDelay;	// How long to wait for the next taunt.
 	
 	// Which avatar is being controled by the keyboard "player."
@@ -714,6 +737,28 @@ inline CAvatar::AISTATUS CAvatar::DoAI(CAvatar::AISTATUS st)
 inline CAvatar::AIFUNC CAvatar::GetAIFuncIndex() const
 {
 	return AIFuncIndex;
+}
+
+// [Issue 36] awareness / last fighting style trivial accessors.
+inline void CAvatar::mfClearAwareness()
+{
+	fAwarenessTick = 0;
+	fSeenEnemyTick = 0;
+}
+
+inline void CAvatar::mfSetAwarenessTick(LONG const t)
+{
+	fAwarenessTick = t;
+}
+
+inline FIGHT_SEQUENCE::ATTACK_MODE const CAvatar::mfGetLastFightingStyle() const
+{
+	return fLastFightingStyle;
+}
+
+inline void CAvatar::mfSetLastFightingStyle(FIGHT_SEQUENCE::ATTACK_MODE const m)
+{
+	fLastFightingStyle = m;
 }
 
 // Start a new animation. Cover func sets all our internal vars.

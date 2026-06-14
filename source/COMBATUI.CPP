@@ -1723,9 +1723,11 @@ void PlayCombatUI(SCENE &rScene)
 		{
 			gccCamera.mfUpdatePosition();
 
-			BOOL const CombatFlag = (ADVENTURER::mfIsAdventureTeam(&CAvatar::mfAmIBeingAttacked) ||
-									 ADVENTURER::mfIsAdventureTeam(&CAvatar::mfAmICastingASpell) ||
-									 ADVENTURER::mfIsAdventureTeam(&CAvatar::mfAmIChasingAnEnemy));
+			// [Issue 36] `recent combat` is per-player-character state (attacked,
+			// being attacked, casting, or chasing).  Combat stays active while ANY
+			// party member is in recent combat; once EVERY party member has been out
+			// of recent combat for RECENT_COMBAT_TICKS the timer below ends combat.
+			BOOL const CombatFlag = ADVENTURER::mfIsAdventureTeam(&CAvatar::mfIsInRecentCombat);
 
 			// test whether we are still fighting anybody.
 			if (CombatFlag)
@@ -1963,6 +1965,8 @@ void CombatDefendKey(LONG menuid, LONG )
 
 				pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_DEFEND);
 				pAvatar->mfSetAttackSequence(FIGHT_SEQUENCE::ATM_DEFEND);
+				// [Issue 36] remember the player's chosen fighting style.
+				pAvatar->mfSetLastFightingStyle(FIGHT_SEQUENCE::ATM_DEFEND);
 				if (OldSceneType == SCENE_AI::COMBAT_SCENE)
 				{
 					if (pCurrentScene->fhData != fERROR)
@@ -2551,6 +2555,8 @@ void CombatHighAttackKey(LONG menuid, LONG SwingFast)
 					{
 						pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_HIGH);
 					}
+					// [Issue 36] remember the player's chosen fighting style.
+					pAvatar->mfSetLastFightingStyle(pAvatar->mfGetAttackMode());
 					pAvatar->mfDecideWhoseTurnToAttack();
 					if (pAvatar->mfIsMyTurnToAttack())
 					{
@@ -2639,6 +2645,8 @@ void CombatLowAttackKey(LONG menuid, LONG SwingFast)
 					{
 						pAvatar->mfSetAttackMode(FIGHT_SEQUENCE::ATM_LOW);
 					}
+					// [Issue 36] remember the player's chosen fighting style.
+					pAvatar->mfSetLastFightingStyle(pAvatar->mfGetAttackMode());
 					pAvatar->mfDecideWhoseTurnToAttack();
 					if (pAvatar->mfIsMyTurnToAttack())
 					{

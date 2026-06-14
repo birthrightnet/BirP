@@ -436,12 +436,22 @@ void CAvatar::PingPong (CAvatar *pAvatar, CAvatar::AISTATUS Status)
 						pAvatarTarget->mfX(), pAvatarTarget->mfY());
 
 					const BOOL canSee = pAvatar->mfCanSeeAvatar(pAvatarTarget);
-					if (canSee && distance <= CAvatar::ActivationDistance)
+					if (canSee)
 					{
-						// Enemy can see party member -- by symmetry, party can see this enemy.
-						pAvatar->bSpotted = TRUE;
-						logDebug("AIPONG AI: enemy=%ld->AI_MOVING target=%ld dist=%ld",
-							pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance);
+						// [Issue 36] This NPC has LOS to a player character.  By symmetry
+						// the party is aware of this NPC (awareness gate for hero targeting),
+						// and the NPC now remembers the party so it can keep pursuing even
+						// after the player slips out of sight -- this replaces the old
+						// current-frame-only activation (former Option I).
+						pAvatar->mfMarkAware();
+						pAvatar->mfMarkSeenEnemy();
+					}
+					if (distance <= CAvatar::ActivationDistance &&
+					    (canSee || pAvatar->mfHasSeenEnemyRecently()))
+					{
+						logDebug("AIPONG AI: enemy=%ld->AI_MOVING target=%ld dist=%ld canSee=%d seen=%d",
+							pAvatar->ThingIndex, pAvatarTarget->ThingIndex, distance,
+							(int)canSee, (int)pAvatar->mfHasSeenEnemyRecently());
 						pAvatar->Status = AI_MOVING;
 						pAvatar->bumpTimer = 100;
 						if(pAvatar->attrib.IssuedChallange == FALSE)
