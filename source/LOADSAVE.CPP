@@ -8,7 +8,7 @@
    ========================================================================
    Contains the following general functions:
 
-   RM250======================================================================= */
+   RM250=================================================================== */
 
 /* ------------------------------------------------------------------------
    Includes
@@ -556,6 +556,10 @@ void LoadGameFiles(FILE *fp)
     fread((char *) &size, sizeof(LONG), 1, fp);
     assert(size == sizeof(PROV_TYPE));
     fread((char *) &count, sizeof(LONG), 1, fp);
+    assert(count == PROVINCE_COUNT);
+    if (count > PROVINCE_COUNT)
+        logWarn("province[] save count %ld exceeds PROVINCE_COUNT %d; extra records ignored",
+                (long) count, (int) PROVINCE_COUNT);
     pPrS = (PROV_TYPE *) buffer;
     loaded = BUFSIZE / size;
     if (loaded > count)
@@ -572,6 +576,11 @@ void LoadGameFiles(FILE *fp)
             fread(buffer, size, (loaded-tmp), fp);
             pPrS = (PROV_TYPE *) buffer;
         }
+        /* Guard against a corrupt/foreign save whose count exceeds the fixed
+           province[] array; still advance pPrS so the file stays aligned for
+           the reads that follow. */
+        if (i < PROVINCE_COUNT)
+        {
         for (j=0; j < 7; j++)
             province[i].Border[j] = pPrS->Border[j];
 
@@ -595,7 +604,9 @@ void LoadGameFiles(FILE *fp)
         province[i].Warded       = pPrS->Warded;
         province[i].Dispel       = pPrS->Dispel;
         province[i].DispelLvl    = pPrS->DispelLvl;
+        province[i].LawClaims    = pPrS->LawClaims;
         province[i].FirstPlace   = pPrS->FirstPlace;
+        }
         ++pPrS;  /* advance */
 		run_timers();
     }
