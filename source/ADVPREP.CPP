@@ -672,24 +672,23 @@ void AdvPrepDone (LONG MenuCombo, LONG )
 					{
 						SHORT const hPS = LoadStats(Id, fERROR);
 						DumbHandlePtr<PLAYER_STATS> const pPS(hPS);
-						LONG i;
-						LONG pr_spells, wiz_spells;
-	
-						pr_spells = wiz_spells = 0;
-						for (i=1; i<=7; ++i)
-							pr_spells += pPS->mfCanMemorize(SPELL_INFO::PRIEST, SPELL_INFO::LEVEL(i))
-											-  pPS->mfMemorized(SPELL_INFO::PRIEST, SPELL_INFO::LEVEL(i));
-	
-						for (i=1; i<=9; ++i)
-							wiz_spells += pPS->mfCanMemorize(SPELL_INFO::WIZARD, SPELL_INFO::LEVEL(i))
-											-	pPS->mfMemorized(SPELL_INFO::WIZARD, SPELL_INFO::LEVEL(i));
-	
-						if (pr_spells > 0 || wiz_spells > 0)
+
+						// Issue #24: restore the loadout the player committed to
+						// last time (safely, only where still valid) before the
+						// preparation screen opens so they can review/adjust it.
+						AdvLoadoutApply(Adventures[who], hPS);
+
+						// Always open the screen for spellcasters now (even if
+						// fully memorized) so a restored loadout is reviewable.
+						if (pPS->mfIsMagicUser())
 						{
 							fPreparingSpells = TRUE;
 							MagicPrep(who);
 							while (fPreparingSpells)
 								MenuLoop();
+
+							// Remember what went into the adventure.
+							AdvLoadoutCapture(Adventures[who], hPS);
 						}
 						
 						// One charge per adventure per sceptre.

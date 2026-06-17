@@ -297,6 +297,35 @@ extern DECL_VECTOR_CLASS_S(HDL_PLAYER_STATS,playerstats,CHARACTER_COUNT);
 extern BOOL playerStatsInitted;
 
 /* ------------------------------------------------------------------------
+   Adventure loadout memory (issue #24)
+   ------------------------------------------------------------------------
+   Per-regent record of the spell/item loadout the player committed to for
+   an adventure, so it can be re-applied (safely) on the next preparation.
+   Keyed by regent index (parallel to playerstats[]). Persisted as a trailing
+   section of the save-game stream (see AdvLoadout{Read,Write}All).
+
+   - spellCount[t] is the desired memorized count for spell type t.
+   - hotBox[s] is the ITEMTYPE assigned to hot box s, or fERROR if empty.
+   Both are remembered by stable identity (spell type / item type), never by
+   the unstable InvenIndex, and are re-resolved against the live inventory on
+   apply. ------------------------------------------------------------------ */
+typedef struct
+{
+	UBYTE	fValid;								// FALSE = no stored loadout
+	UBYTE	spellCount[SPELL_INFO::MAX_SPELL_INDEX];
+	SHORT	hotBox[MAX_SPELL_BOXES];			// ITEMTYPE per slot, or fERROR
+} ADV_LOADOUT;
+
+extern ADV_LOADOUT advLoadout[CHARACTER_COUNT];
+
+void AdvLoadoutClearAll();
+LONG AdvLoadoutIndexForId(LONG id);
+void AdvLoadoutCapture(LONG regentIndex, SHORT hPlayerStats);
+void AdvLoadoutApply(LONG regentIndex, SHORT hPlayerStats);
+void AdvLoadoutWriteAll(FILE *fp);
+void AdvLoadoutReadAll(FILE *fp);
+
+/* ------------------------------------------------------------------------
    Inline Functions
    ------------------------------------------------------------------------ */
 inline BOOL isGoodStats(SHORT hAvatarStats)

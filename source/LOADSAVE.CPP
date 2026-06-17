@@ -375,6 +375,10 @@ void SaveGameFiles(FILE *fp)
 		fwrite(RealmNameBuffer, 22, REALM::REALM_COUNT, fp);
 	}
 
+	/*-------------------------------------------------------------------*/
+	// Remembered adventure loadouts (issue #24). Trailing section so older
+	// saves remain loadable; must stay last in the stream.
+	AdvLoadoutWriteAll(fp);
 }
 
 
@@ -809,6 +813,10 @@ void LoadGameFiles(FILE *fp)
 		run_timers();
 		fread(RealmNameBuffer, 22, REALM::REALM_COUNT, fp);
 	}
+
+	// Remembered adventure loadouts (issue #24). Optional trailing section:
+	// pre-#24 saves simply end before it (AdvLoadoutReadAll tolerates EOF).
+	AdvLoadoutReadAll(fp);
 
 	// fix up realm names
 	for (i=REALM::FIRST_REALM; i < LAND_REALM_COUNT; i++)

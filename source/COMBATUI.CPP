@@ -544,6 +544,7 @@ static void AdventureLooseProc(LONG MenuCombo, LONG )
 	AdvPrepReturn(0,0);
 	//ReturnFromAdventure(0,0);
 	ADVENTURER::mfDoToAllAdventurers(&CAvatar::mfIfAliveRestoreHealth);
+	ADVENTURER::mfDoToAllAdventurers(&CAvatar::mfRememberAdvLoadout);	// issue #24
 	SCENE_MGR::mfReleaseSceneToMap(0,0);
 
 	AdventureOverMulti();
@@ -691,6 +692,7 @@ static void AdventureWinProc(LONG MenuCombo, LONG )
     AdvPrepReturn(0,0);
     //ReturnFromAdventure(0,0);
 	ADVENTURER::mfDoToAllAdventurers(&CAvatar::mfIfAliveRestoreHealth);
+	ADVENTURER::mfDoToAllAdventurers(&CAvatar::mfRememberAdvLoadout);	// issue #24
 	SCENE_MGR::mfReleaseSceneToMap(0,0);
 
 	AdventureOverMulti();

@@ -526,7 +526,8 @@ public:				// Public for the dialog editor
 	inline BOOL const mfAmIImmoblized() const;
 	BOOL const mfAmIAlive() const;
 	void mfIfAliveRestoreHealth();
-	
+	void mfRememberAdvLoadout();			// issue #24
+
 	inline FIGHT_SEQUENCE::ATTACK_MODE const mfGetAttackMode() const;
 	void mfSetAttackMode(FIGHT_SEQUENCE::ATTACK_MODE const);
 	void mfSetAttackSequence(FIGHT_SEQUENCE::ATTACK_MODE const);

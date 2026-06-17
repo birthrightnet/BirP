@@ -3622,6 +3622,31 @@ void CAvatar::mfIfAliveRestoreHealth()
 	}
 }
 
+/* ========================================================================
+   Function    - mfRememberAdvLoadout
+   Description - Issue #24: at the end of an adventure remember a non-caster's
+                 hot box layout so it can be restored on the next preparation.
+                 Spellcasters are captured at preparation ("what went in"), so
+                 they are skipped here. Player regents only.
+   Returns     -
+   ======================================================================== */
+
+void CAvatar::mfRememberAdvLoadout()
+{
+	if (hPlayerStats == fERROR)
+		return;
+	if (Id < 1000 || Id >= 3000)				// player regents only
+		return;
+
+	PLAYER_STATS *const pPlayerStats = (PLAYER_STATS * const) BLKPTR(hPlayerStats);
+	if (pPlayerStats->mfIsMagicUser())
+		return;									// casters captured at prep
+
+	LONG const idx = AdvLoadoutIndexForId(Id);
+	if (idx != fERROR)
+		AdvLoadoutCapture(idx, hPlayerStats);
+}
+
 #if 0 // UNUSED
 /* ========================================================================
    Function    - mfSpewAll

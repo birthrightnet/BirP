@@ -21,6 +21,7 @@
 #include "avatar.hxx"
 #include "gamemap.hxx"
 #include "invntory.hxx"
+#include "itemutil.hxx"
 #include "playstat.hxx"
 #include "spellpro.hxx"
 #include "wisdom.hxx"
@@ -53,6 +54,11 @@ extern BOOL fStartMultiGame;
 
 DECL_VECTOR_DATA(HDL_PLAYER_STATS,playerstats,CHARACTER_COUNT);
 BOOL playerStatsInitted = FALSE;
+
+// Per-regent remembered adventure loadout (issue #24).
+ADV_LOADOUT advLoadout[CHARACTER_COUNT];
+
+#define ADV_LOADOUT_MAGIC	0x4C44564Aul	// 'JVDL' tag for the save-file section
 
 // [d5-05-97 JPC] KLUDGE structure to allow users to change
 // bloodline data with the character editor program.
@@ -662,6 +668,10 @@ void StatReadAllFrom(FILE *fp)
     if (playerStatsInitted)
         PurgePS(CHARACTER_COUNT);
 
+    // Forget any remembered adventure loadouts; a loaded game re-reads its own
+    // (issue #24) from the trailing save-file section after LoadGameFiles.
+    AdvLoadoutClearAll();
+
     playerstats[0] = fERROR;
 
     if (!fp || feof(fp)) /* no overall stats file; read from *.AVA/D files */
@@ -1174,6 +1184,195 @@ void PLAYER_STATS::mfMemorizeAllInvSpells()
 	     {
 	     	(*itor)->mfGainOne();
 	     }
+	}
+}
+
+
+/* ========================================================================
+   Function    - AdvLoadoutClearAll
+   Description - Forget every remembered adventure loadout (new game / pre-load).
+   Returns     -
+   ======================================================================== */
+
+void AdvLoadoutClearAll()
+{
+	memset(advLoadout, 0, sizeof(advLoadout));
+}
+
+/* ========================================================================
+   Function    - AdvLoadoutIndexForId
+   Description - Map a regent/avatar id to its playerstats[]/regents[] index.
+   Returns     - the index, or fERROR if not a known regent.
+   ======================================================================== */
+
+LONG AdvLoadoutIndexForId(LONG id)
+{
+	for (LONG i = 1; i < CHARACTER_COUNT; ++i)
+	{
+		if (regents[i].mfGetid() == id)
+			return i;
+	}
+	return fERROR;
+}
+
+/* ========================================================================
+   Function    - AdvLoadoutCapture
+   Description - Snapshot the committed loadout (memorized spell counts and
+                 hot box assignments) for this regent, by stable identity
+                 (spell type / item type) rather than by InvenIndex.
+   Returns     -
+   ======================================================================== */
+
+void AdvLoadoutCapture(LONG regentIndex, SHORT hPlayerStats)
+{
+	if (regentIndex < 1 || regentIndex >= CHARACTER_COUNT || hPlayerStats == fERROR)
+		return;
+
+	DumbAutoLockPtr<PLAYER_STATS> const pPS(hPlayerStats);
+	ObjectList & const Inv = pPS->mfGetInventory();
+	ADV_LOADOUT & pref = advLoadout[regentIndex];
+
+	memset(pref.spellCount, 0, sizeof(pref.spellCount));
+
+	// memorized spell counts, keyed by spell type
+	InventoryItor itor(Inv);
+	for (itor.mfAdvance(IC_SPELL);
+	     itor != Inv.end();
+	     itor.mfAdvanceToNext(IC_SPELL))
+	{
+		SHORT const howMany = (*itor)->mfHowMany();
+		if (howMany <= 0)
+			continue;
+
+		SHORT const ext = ItemTypes[(*itor)->mfType()].mfGetExtendedData();
+		if (ext >= 0 && ext < SPELL_INFO::MAX_SPELL_INDEX)
+			pref.spellCount[ext] = (UBYTE) ((howMany > 255) ? 255 : howMany);
+	}
+
+	// hot box assignments, keyed by item type
+	for (SHORT s = 0; s < MAX_SPELL_BOXES; ++s)
+	{
+		InvenIndex const bi = Inv.mfGetSpellBox(s);
+		pref.hotBox[s] = (bi < 0) ? fERROR : (SHORT) ObjectList::mfData(bi).mfType();
+	}
+
+	pref.fValid = TRUE;
+}
+
+/* ========================================================================
+   Function    - AdvLoadoutApply
+   Description - Re-apply a remembered loadout to the live inventory before
+                 preparation. Defensive: only memorizes spells still known and
+                 within current capacity, and only fills a hot box if its
+                 item/spell is still present (else leaves the slot empty).
+   Returns     -
+   ======================================================================== */
+
+void AdvLoadoutApply(LONG regentIndex, SHORT hPlayerStats)
+{
+	if (regentIndex < 1 || regentIndex >= CHARACTER_COUNT || hPlayerStats == fERROR)
+		return;
+
+	ADV_LOADOUT const & pref = advLoadout[regentIndex];
+	if (!pref.fValid)
+		return;
+
+	DumbAutoLockPtr<PLAYER_STATS> const pPS(hPlayerStats);
+	ObjectList & const Inv = pPS->mfGetInventory();
+
+	// restore memorized spells, clamped to current capacity
+	for (LONG t = 0; t < SPELL_INFO::MAX_SPELL_INDEX; ++t)
+	{
+		if (pref.spellCount[t] == 0)
+			continue;
+
+		ITEMTYPE const item = SpellTypeToItemTypeIdx((SPELL_INFO::TYPE) t);
+		InventoryItor itor(Inv);
+		if (!itor.mfFind(item))
+			continue;					// spell no longer known
+
+		while ((*itor)->mfHowMany() < pref.spellCount[t] &&
+		       pPS->mfCanIMemorizeThisSpell(item))
+		{
+			(*itor)->mfGainOne();
+		}
+	}
+
+	// restore hot boxes, keyed by item type; missing items leave the slot empty
+	for (SHORT s = 0; s < MAX_SPELL_BOXES; ++s)
+	{
+		if (pref.hotBox[s] == fERROR)
+		{
+			Inv.mfChangeSpellBox(s, fERROR);
+			continue;
+		}
+
+		ITEMTYPE const want = (ITEMTYPE) pref.hotBox[s];
+		InventoryItor itor(Inv);
+		if (itor.mfFind(want) && (*itor)->mfHowMany() > 0)
+			Inv.mfChangeSpellBox(s, itor.mfGetCurrentInvIndex());
+		else
+			Inv.mfChangeSpellBox(s, fERROR);
+	}
+}
+
+/* ========================================================================
+   Function    - AdvLoadoutWriteAll
+   Description - Write the remembered loadouts as a trailing save-file section.
+   Returns     -
+   ======================================================================== */
+
+void AdvLoadoutWriteAll(FILE *fp)
+{
+	if (!fp)
+		return;
+
+	ULONG const magic     = ADV_LOADOUT_MAGIC;
+	LONG  const count     = CHARACTER_COUNT;
+	LONG  const spellSpan = SPELL_INFO::MAX_SPELL_INDEX;
+	LONG  const boxSpan   = MAX_SPELL_BOXES;
+
+	fwrite(&magic,     sizeof(ULONG), 1, fp);
+	fwrite(&count,     sizeof(LONG),  1, fp);
+	fwrite(&spellSpan, sizeof(LONG),  1, fp);
+	fwrite(&boxSpan,   sizeof(LONG),  1, fp);
+	fwrite(advLoadout, sizeof(ADV_LOADOUT), CHARACTER_COUNT, fp);
+}
+
+/* ========================================================================
+   Function    - AdvLoadoutReadAll
+   Description - Read the remembered loadouts from the trailing save-file
+                 section. Optional: pre-#24 saves simply end before it, and a
+                 layout mismatch is ignored rather than misread.
+   Returns     -
+   ======================================================================== */
+
+void AdvLoadoutReadAll(FILE *fp)
+{
+	ULONG magic = 0;
+	LONG  count, spellSpan, boxSpan;
+
+	if (!fp)
+		return;
+
+	if (fread(&magic, sizeof(ULONG), 1, fp) != 1 || magic != ADV_LOADOUT_MAGIC)
+		return;							// absent (older save) or not our section
+
+	if (fread(&count,     sizeof(LONG), 1, fp) != 1 ||
+	    fread(&spellSpan, sizeof(LONG), 1, fp) != 1 ||
+	    fread(&boxSpan,   sizeof(LONG), 1, fp) != 1)
+		return;
+
+	if (count == CHARACTER_COUNT &&
+	    spellSpan == SPELL_INFO::MAX_SPELL_INDEX &&
+	    boxSpan == MAX_SPELL_BOXES)
+	{
+		fread(advLoadout, sizeof(ADV_LOADOUT), CHARACTER_COUNT, fp);
+	}
+	else
+	{
+		logWarn("AdvLoadoutReadAll: layout mismatch count=%ld spells=%ld boxes=%ld; ignoring",
+			count, spellSpan, boxSpan);
 	}
 }
 
