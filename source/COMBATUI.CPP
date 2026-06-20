@@ -1050,14 +1050,21 @@ void PlayAdventureUI(SCENE &rScene)
 			}
 
 			// if no target found or I'm my own target, fail to get an enemy.
+			// [Issue 36] Every spell that reaches this targeting-cursor path is hostile
+			// (damage/stone/death/turn-undead); beneficial spells (cure/heal) are TouchSpell
+			// with REQUISIT 0 and never enter targeting.  So an allied target here is always a
+			// hostile spell aimed at a party member: reject it so a PC can never lock a hostile
+			// spell onto an ally (which also stops that bad hEnemy from carrying into melee).
 			if (TargetFound == FALSE
 				|| pShootingAvatar->ThingIndex == COMBAT_TARGETTING::mfGetTargetIndex()
 				|| pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL
+				|| pShootingAvatar->mfIsAlly(pTargetAvatar)
 				)
 			{
-				logWarn("SPELLCAST: (adventure) caster=%ld target invalid (found=%d targetThing=%ld) -> hEnemy cleared; target spells will fizzle",
+				logWarn("SPELLCAST: (adventure) caster=%ld target invalid (found=%d targetThing=%ld ally=%d) -> hEnemy cleared; target spells will fizzle",
 					pShootingAvatar->ThingIndex, (int)TargetFound,
-					(LONG)COMBAT_TARGETTING::mfGetTargetIndex());
+					(LONG)COMBAT_TARGETTING::mfGetTargetIndex(),
+					(int)(TargetFound == TRUE && pShootingAvatar->mfIsAlly(pTargetAvatar)));
 				pShootingAvatar->mfSethEnemy(fERROR);
 			}
 			else
@@ -1649,16 +1656,21 @@ void PlayCombatUI(SCENE &rScene)
 			}
 
 			// if no target found or I'm my own target, fail to get an enemy.
+			// [Issue 36] Reject an allied target: every spell on this targeting-cursor path is
+			// hostile (beneficial cure/heal spells are TouchSpell and never target here), so a
+			// PC must never be able to lock a hostile spell onto a party member.
 			if (TargetFound == FALSE
 				|| pShootingAvatar->ThingIndex == COMBAT_TARGETTING::mfGetTargetIndex()
 				|| pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL
+				|| pShootingAvatar->mfIsAlly(pTargetAvatar)
 				)
 			{
-				logWarn("SPELLCAST: (combat) caster=%ld target invalid (found=%d targetThing=%ld self=%d fireball=%d) -> hEnemy cleared; target spells will fizzle",
+				logWarn("SPELLCAST: (combat) caster=%ld target invalid (found=%d targetThing=%ld self=%d fireball=%d ally=%d) -> hEnemy cleared; target spells will fizzle",
 					pShootingAvatar->ThingIndex, (int)TargetFound,
 					(LONG)COMBAT_TARGETTING::mfGetTargetIndex(),
 					(int)(pShootingAvatar->ThingIndex == COMBAT_TARGETTING::mfGetTargetIndex()),
-					(int)(TargetFound == TRUE && pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL));
+					(int)(TargetFound == TRUE && pTargetAvatar->GetAIFuncIndex() == CAvatar::AI_FUNC_FIREBALL),
+					(int)(TargetFound == TRUE && pShootingAvatar->mfIsAlly(pTargetAvatar)));
 				pShootingAvatar->mfSethEnemy(fERROR);
 			}
 			else
