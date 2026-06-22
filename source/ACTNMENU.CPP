@@ -477,6 +477,110 @@ void ReconstructMap (void)
    Returns     -
    ======================================================================== */
 void NextPrev (LONG val, LONG);
+
+//--------------------------------------------------------------------------
+// Wheel-paging for the two-column action-detail province lists (issue #16,
+// Phase 3): forge ley line / build road / trade route / muster. Each visible
+// pageable column registers itself during render (from DoPageProvince, but only
+// while the D_DACTN detail menu is up, so the shared data-panel path is never
+// touched); the wheel then pages whichever column the cursor is over, mirroring
+// the column's own PREV/NEXT page buttons.
+//--------------------------------------------------------------------------
+#define ACTN_WHEEL_MAX_COLS  2
+
+typedef struct {
+	LONG  x;			// column left edge (used to route the wheel left/right)
+	LONG *pStart;		// -> that column's startProvCount paging index
+	LONG  provCount;	// entries in the column
+	LONG  step;			// entries per page (countToPrint)
+} ACTN_WHEEL_COL;
+
+static ACTN_WHEEL_COL	gActnWheelCols[ACTN_WHEEL_MAX_COLS];
+static LONG				gActnWheelColCount = 0;
+
+void ResetActnWheelCols(void)
+{
+	gActnWheelColCount = 0;
+}
+
+static void RegisterActnWheelCol(LONG *pStart, LONG provCount, LONG step, LONG x)
+{
+	ACTN_WHEEL_COL *c;
+	if (gActnWheelColCount >= ACTN_WHEEL_MAX_COLS)
+		return;
+	c = &gActnWheelCols[gActnWheelColCount++];
+	c->x = x;
+	c->pStart = pStart; c->provCount = provCount; c->step = step;
+}
+
+// Frame-loop hook: page an action-detail column with the wheel. Works anywhere
+// over the detail window (not just on the list rows): when both columns are
+// pageable, the cursor's side of the window picks the column; when only one is
+// pageable it is driven from anywhere on the window. Only consumes the wheel when
+// the detail menu is up and the cursor is over it, so notches elsewhere are left
+// for the map and other surfaces.
+BOOL ActnMenuWheelScroll(void)
+{
+	ACTN_WHEEL_COL *col;
+	LONG wx, wy, ww, wh;
+	LONG notches, n, i, dir;
+	BOOL moved = FALSE;
+
+	if (!IsMenuActive(D_DACTN) || gActnWheelColCount == 0)
+		return FALSE;
+
+	// hit-test the whole detail-menu window (button 0 = the panel background)
+	if (GetButtonPosition(D_DACTN, 0, &wx, &wy) == fERROR)
+		return FALSE;
+	GetButtonSize(D_DACTN, 0, &ww, &wh);
+	if (!cursor_in_box(wx, wy, ww, wh))
+		return FALSE;
+
+	// pick the column: split the window at the midpoint between the two columns
+	// (left half -> first/start column, right half -> second/end column); with a
+	// single pageable column, drive it from anywhere.
+	if (gActnWheelColCount == 1)
+		col = &gActnWheelCols[0];
+	else
+	{
+		LONG mid = (gActnWheelCols[0].x + gActnWheelCols[1].x) / 2;
+		col = (cursor_x < mid) ? &gActnWheelCols[0] : &gActnWheelCols[1];
+	}
+
+	notches = GetMouseWheel();		// consume only now that we own the wheel
+	if (notches == 0)
+		return FALSE;
+
+	// wheel-up (positive) = previous page, wheel-down = next page, clamped to the
+	// same bounds DoPageProvince uses for its PREV/NEXT buttons.
+	dir = (notches > 0) ? -1 : 1;
+	n   = (notches < 0) ? -notches : notches;
+	for (i = 0; i < n; ++i)
+	{
+		if (dir < 0)		// previous page
+		{
+			if (*col->pStart > 1)
+			{
+				*col->pStart -= col->step;
+				if (*col->pStart < 1)
+					*col->pStart = 1;
+				moved = TRUE;
+			}
+		}
+		else				// next page
+		{
+			if (*col->pStart <= col->provCount - col->step)
+			{
+				*col->pStart += col->step;
+				moved = TRUE;
+			}
+		}
+	}
+	if (moved)
+		SetRedrawMainMapLevel();	// repaint the detail menu with the new page
+	return moved;
+}
+
 BOOL DoPageProvince(LONG *startCount, LONG provCount, LONG countToPrint, LONG counter, LONG x, LONG y)
 {
 	BOOL rv = FALSE;
@@ -503,6 +607,14 @@ BOOL DoPageProvince(LONG *startCount, LONG provCount, LONG countToPrint, LONG co
 			rv = TRUE;
 		}
 	}
+
+	// issue #16: while the action-detail menu is up, register this pageable column
+	// so the mouse wheel can page it (see ActnMenuWheelScroll). Gated on D_DACTN so
+	// the shared data-panel callers of DoPageProvince are unaffected. Only the
+	// column's x is needed; ActnMenuWheelScroll hit-tests the whole window.
+	if (rv && IsMenuActive(D_DACTN))
+		RegisterActnWheelCol(startCount, provCount, countToPrint, x);
+
 	return rv;
 }
 
@@ -7450,6 +7562,8 @@ void PaintDomainAction (LONG MenuCombo, LONG iAction)
 	CHAR	color = 228;
 
 	DeleteActnMenuRegions();
+	ResetActnWheelCols();		// issue #16: clear last frame's wheel-paging columns;
+								// each visible pageable column re-registers below.
 	iCurAction = iAction;
 	iThisRoll = -1;
 

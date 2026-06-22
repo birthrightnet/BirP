@@ -49,6 +49,8 @@
 
 #define LIST_SIZE 30	// from advprep.cpp
 
+#define INV_WHEEL_ROWS_PER_NOTCH 3	// list rows scrolled per mouse-wheel notch (issue #16)
+
 extern DECL_VECTOR_CLASS(SHORT,Adventures);
 
 extern void BuildAdventureList();
@@ -272,6 +274,42 @@ void InventoryGUI::mfScroll(LONG a,LONG d)
 
 	if (DispStart<0)
 		DispStart=0;
+}
+
+// issue #16 (Phase 3): scroll the inventory list with the mouse wheel when the
+// cursor is over the list box, mirroring the on-screen scroll buttons. The wheel
+// is only consumed when the inventory is active and the cursor is over the list,
+// so notches elsewhere are left for the map and other surfaces. Returns TRUE when
+// it handled (consumed) the wheel.
+BOOL InventoryGUI::mfWheelScroll(void)
+{
+	LONG	x, y, w, h;
+	LONG	notches, count, i, dir, butId;
+
+	if (!IsMenuActive(D_AVATAR_INVENTORY))
+		return FALSE;
+	if (GetButtonPosition(D_AVATAR_INVENTORY, INV_BUT_LISTBOX, &x, &y) == fERROR)
+		return FALSE;
+	GetButtonSize(D_AVATAR_INVENTORY, INV_BUT_LISTBOX, &w, &h);
+	if (!cursor_in_box(x, y, w, h))
+		return FALSE;
+
+	notches = GetMouseWheel();		// consume only now that we own the wheel
+	if (notches == 0)
+		return FALSE;
+
+	// wheel-up (positive) scrolls up to earlier rows, matching the SCROLLUP button
+	// (Arg -1); wheel-down scrolls down (SCROLLDN, Arg +1).
+	dir   = (notches > 0) ? -1 : 1;
+	butId = (notches > 0) ? INV_BUT_SCROLLUP : INV_BUT_SCROLLDN;
+	count = ((notches < 0) ? -notches : notches) * INV_WHEEL_ROWS_PER_NOTCH;
+
+	// step one row at a time so the list clamps at the ends exactly like the
+	// buttons (mfScroll only advances when another row still fits).
+	for (i = 0; i < count; ++i)
+		mfScroll(BUILD_LONG(D_AVATAR_INVENTORY, butId), dir);
+
+	return TRUE;
 }
 
 

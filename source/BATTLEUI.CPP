@@ -553,6 +553,8 @@ void ReleaseBattleUI(SCENE &rScene)
    #################################################################
    ################################################################# */
 
+#define BATTLE_WHEEL_RADIUS_STEP 200	// camera radius change per mouse-wheel notch (issue #16)
+
 /* ========================================================================
    Function    - BattleMoveCamera
    Description - move the camera around the battle field
@@ -620,6 +622,23 @@ void BattleMoveCamera(void)
 		else
 		if(camera.RTarget.a > 160 )
 			camera.RTarget.a = 160;
+	}
+
+	// mouse-wheel zoom (issue #16): adjust the camera radius like the forward/back
+	// keys (smaller = zoom in), clamped to the camera's min/max distance so it can
+	// neither invert nor fly out. Radius-only -- no cursor anchoring for the 3D
+	// battle camera. Works in both FIXED and FOLLOW modes (FOLLOW re-targets x/y
+	// each frame with NO_CHANGE radius, so the wheel's radius is preserved).
+	{
+		LONG wheel = GetMouseWheel();		// + = wheel-up = zoom in
+		if (wheel != 0)
+		{
+			camera.RTarget.radius -= wheel * BATTLE_WHEEL_RADIUS_STEP;
+			if (camera.RTarget.radius < camera.RTarget.distance)
+				camera.RTarget.radius = camera.RTarget.distance;
+			if (camera.RTarget.radius > camera.RTarget.max_distance)
+				camera.RTarget.radius = camera.RTarget.max_distance;
+		}
 	}
 
 	MoveCamera(&camera,CheckMoveKeys());
@@ -876,12 +895,18 @@ void BattleCameraHighView(LONG, LONG)
 		bBattleCameraMode = BTLUI_CAMERA_FIXED;
 
 		// set up the camera rates
+		// MinDist widened from 2000 to 1500 (issue #16) so the fixed "command" view
+		// can zoom IN with the mouse wheel (and forward/back keys). MaxDist stays at
+		// 2000 (its original value and the default radius): pulling the fixed camera
+		// further out than 2000 exposes graphical glitches at the top of the screen
+		// (the camera sees past the battlefield backdrop), so 2000 remains the
+		// zoom-out limit here. The FOLLOW view targets a unit and stays clean to 2500.
 		SetCameraRotatePointRates( &camera,
 			57, 		// RadiusRate
 			8, 		// AngleRate
 			250, 		// HeightRate
 			-100, 	// PitchRate
-			2000, 	// MinDist
+			1500, 	// MinDist
 			2000 		// MaxDist
 			);
 

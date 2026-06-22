@@ -19,7 +19,7 @@
 /* ------------------------------------------------------------------------
    Includes
    ------------------------------------------------------------------------ */
-/* ®RM250¯ */
+/* ï¿½RM250ï¿½ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <dos.h>
@@ -281,6 +281,20 @@ void update_buttons()
 	inregs.w.ax = 0x0003;
 	int386( 0x33, &inregs, &outregs );
 	mouse_button = outregs.w.bx;
+}
+
+/* ========================================================================
+   Function    - GetMouseWheel
+   Description - DOS builds have no mouse-wheel input: the real-mode mouse
+                 driver reached through int 33h does not report wheel deltas.
+                 This stub always reports zero notches so the shared
+                 wheel-aware UI code (issue #16) links and behaves as if the
+                 wheel were never turned.
+   Returns     - always 0
+   ======================================================================== */
+LONG GetMouseWheel(void)
+{
+	return 0;
 }
 
 /* ========================================================================

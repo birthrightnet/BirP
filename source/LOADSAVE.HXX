@@ -54,6 +54,8 @@ void LoadGameMulti(LONG, LONG);
 
 void LoadGameDoMulti(void);
 
+BOOL LoadSaveWheelScroll(void);	// issue #16: scroll the save/load list via the mouse wheel
+
 
 BOOL GetHelpBit(SHORT bitno);	// true if user doesn't need to see this one
 void SetHelpBit(SHORT bitno);

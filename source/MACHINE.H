@@ -15,6 +15,17 @@
 /* ------------------------------------------------------------------------
    Defines and Compile Flags
    ------------------------------------------------------------------------ */
+// Mouse-wheel support (issue #16). The toolchain's winuser.h only defines these
+// under _WIN32_WINNT >= 0x0400, which this build does not set, so define them here.
+#ifndef WM_MOUSEWHEEL
+#define WM_MOUSEWHEEL 0x020A
+#endif
+#ifndef WHEEL_DELTA
+#define WHEEL_DELTA 120
+#endif
+#ifndef GET_WHEEL_DELTA_WPARAM
+#define GET_WHEEL_DELTA_WPARAM(wParam) ((short)HIWORD(wParam))
+#endif
 /* ------------------------------------------------------------------------
    Enums
    ------------------------------------------------------------------------ */
@@ -89,6 +100,7 @@ void set_mouse_max(void);
 void set_mouse_position (LONG x,LONG y);
 void read_mouse(void);
 void update_buttons(void);
+LONG GetMouseWheel(void);
 void draw_cursor(void);
 LONG cursor_in_box (LONG x1,LONG y1,LONG w,LONG h);
 
@@ -112,6 +124,7 @@ LONG keys_down(void);
 extern volatile BOOL fAnyKeyChanged;
 
 extern LONG			cursor_x,cursor_y,mouse_button;
+extern LONG			mouse_wheel;		// accumulated raw wheel delta (issue #16); see GetMouseWheel
 extern LONG			old_cursor_x,old_cursor_y;
 extern LONG			location_x,location_y;
 extern LONG			mouse_present;

@@ -4987,6 +4987,69 @@ void ResetStartCount (void)
 	startCount2 = 1;
 }
 
+//--------------------------------------------------------------------------
+// Wheel-driven paging of the data-panel province/unit lists (issue #16,
+// Phase 3). The render pass (UpdateDataArea) records which list is currently
+// shown in the left-side data panel; the mouse wheel then pages it when the
+// cursor is over the panel, mirroring the on-screen PREV/NEXT page buttons
+// (DoPageProvince / NextPrev in ACTNMENU.CPP). One list is shown per panel
+// mode, so a single registered target suffices.
+//--------------------------------------------------------------------------
+static LONG *wheelPageStart     = NULL;	// -> active list's startCount (NULL = none)
+static LONG  wheelPageProvCount = 0;	// total entries in that list
+static LONG  wheelPageStep      = 0;	// entries per page (countToPrint)
+
+static void RegisterWheelPage (LONG *startCount, LONG provCount, LONG step)
+{
+	wheelPageStart     = startCount;
+	wheelPageProvCount = provCount;
+	wheelPageStep      = step;
+}
+
+static void ResetWheelPage (void)
+{
+	wheelPageStart = NULL;
+}
+
+// Page the registered list by a signed wheel-notch count.
+// + = wheel-up = previous page, - = wheel-down = next page. Clamps to the
+// same bounds the PREV/NEXT buttons enforce, so it never pages past the ends.
+static BOOL WheelPageScroll (LONG notches)
+{
+	LONG n, i;
+	BOOL moved = FALSE;
+
+	if (wheelPageStart == NULL || notches == 0 || wheelPageStep <= 0)
+		return FALSE;
+
+	n = (notches < 0) ? -notches : notches;
+	for (i = 0; i < n; ++i)
+	{
+		if (notches > 0)	// wheel-up -> previous page
+		{
+			if (*wheelPageStart > 1)
+			{
+				*wheelPageStart -= wheelPageStep;
+				if (*wheelPageStart < 1)
+					*wheelPageStart = 1;
+				moved = TRUE;
+			}
+		}
+		else			// wheel-down -> next page
+		{
+			if (*wheelPageStart <= wheelPageProvCount - wheelPageStep)
+			{
+				*wheelPageStart += wheelPageStep;
+				moved = TRUE;
+			}
+		}
+	}
+
+	if (moved)
+		SetRedrawMainMapLevel();	// re-render the panel with the new page
+	return moved;
+}
+
 BOOL UpdateDataArea (void)
 {
 	LONG					i, j, k, l, p, q, x, xs, tribute, law_claims;
@@ -5014,6 +5077,9 @@ BOOL UpdateDataArea (void)
 	LONG		lPrint2 = FALSE;
 	LONG		lPageDone2 = FALSE;
 	(void)wait;
+
+	ResetWheelPage();	// issue #16: clear any stale wheel-paging target; the
+						// active list (if any) re-registers itself below.
 
 //printf("UpdateDataArea - dturn_mode:%s (%d)  global_action_turn:%d\n",(dturn_mode>10)?"MAX_MODE":szDomainMode[dturn_mode],dturn_mode,global_action_turn);
 
@@ -6343,6 +6409,8 @@ BOOL UpdateDataArea (void)
 			if (l_map==DATA_AREA_MAX)
 				crease(280, y, 25, 1);
 			y += 4;	 // small whitespace
+
+			RegisterWheelPage(&startCount, provCount, 21);	// issue #16: wheel pages this list
 		}
 
 		if (l_map==DATA_AREA_MAX)		 // print tax collected
@@ -6464,6 +6532,8 @@ BOOL UpdateDataArea (void)
 					}		// if occupied
 				}		// for i
 			}		// for h1
+
+			RegisterWheelPage(&startCount2, provCount2, 21);	// issue #16: wheel pages this list
 		}
 
 		if (l_map==DATA_AREA_MAX)
@@ -6637,6 +6707,8 @@ BOOL UpdateDataArea (void)
 		{
 			crease(280, y, 25, 1);
 			y += 4;	 // small whitespace
+
+			RegisterWheelPage(&startCount1, provCount1, 18);	// issue #16: wheel pages this list
 		}
 		if (l_map==DATA_AREA_MAX)		 // print payroll total
 		{	 print_textf(190, y+3, DKBROWN, STRMGR_GetStr(STR_GM_PAYROLL),	payroll); y += 12;}
@@ -8385,6 +8457,62 @@ DoSpecial:
 			map_scale = (map_scale * 11) / 10;
 		if (async_key_status(GAME_KEYS::mfGetKey(GAME_KEYS::MAP_SCALE_UP)) )		// scale up
 			map_scale = (map_scale * 10) / 11;
+
+		// mouse-wheel zoom (issue #16): wheel-up zooms in, wheel-down zooms out,
+		// keeping the tile under the cursor anchored under the cursor. Reuses the
+		// same per-step ratio as the scale keys. The wheel is always consumed, but
+		// only zooms when the cursor is over the map itself (cursor_x > l_map). When
+		// it is over the left-side data panel the notches page that panel's
+		// province/unit list instead (Phase 3, WheelPageScroll), so the wheel does
+		// not punch through a panel to zoom the map behind it.
+		{
+			LONG wheel = GetMouseWheel();		// + = wheel-up = zoom in
+			if (wheel != 0 && cursor_x > l_map)
+			{
+				const LONG steps_per_notch = 2;	// noticeable but not jarring
+				LONG s_old = map_scale;
+				LONG count = (wheel < 0 ? -wheel : wheel) * steps_per_notch;
+				LONG k;
+				LONG W = (gLogicalWidth  > 0 ? gLogicalWidth  : 640);
+				LONG H = (gLogicalHeight > 0 ? gLogicalHeight : 480);
+				LONG off_x = (cursor_x - l_map) - ((W - l_map) / 2);
+				LONG off_y = cursor_y - (H / 2);
+				LONG sw_x, sw_y, lo, hi;
+
+				for (k = 0; k < count; ++k)
+				{
+					if (wheel > 0)
+						map_scale = (map_scale * 10) / 11;	// zoom in
+					else
+						map_scale = (map_scale * 11) / 10;	// zoom out
+				}
+				if (map_scale > MAX_SCALE) map_scale = MAX_SCALE;
+				if (map_scale < MIN_SCALE) map_scale = MIN_SCALE;
+
+				// keep the world point under the cursor fixed as the scale changes.
+				// Same transform as map picking: world = map_x + off * map_scale /
+				// FULL_SCALE, so map_x += off * (s_old - s_new) / FULL_SCALE.
+				map_x += (off_x * (s_old - map_scale)) / FULL_SCALE;
+				map_y += (off_y * (s_old - map_scale)) / FULL_SCALE;
+
+				// Clamp the view center to the valid range so clipped_x/clipped_y
+				// (computed below as map_x - scaled_win_size/2) never need edge-clamping.
+				// Without this, map_x and the displayed origin desync at the map border
+				// and the anchor drifts further on every later zoom.
+				sw_x = ((W - l_map) * map_scale) / FULL_SCALE;
+				sw_y = (H * map_scale) / FULL_SCALE;
+				lo = sw_x / 2;  hi = MAP_WIDTH  - sw_x + (sw_x / 2);
+				map_x = (lo <= hi) ? (map_x < lo ? lo : (map_x > hi ? hi : map_x)) : (MAP_WIDTH  / 2);
+				lo = sw_y / 2;  hi = MAP_HEIGHT - sw_y + (sw_y / 2);
+				map_y = (lo <= hi) ? (map_y < lo ? lo : (map_y > hi ? hi : map_y)) : (MAP_HEIGHT / 2);
+
+				desired_scale = 0;	// cancel any pending click-to-zoom so it doesn't fight the wheel
+			}
+			else if (wheel != 0)	// cursor over the left-side data panel: page that
+			{						// panel's province/unit list (issue #16, Phase 3)
+				WheelPageScroll(wheel);
+			}
+		}
 	}
 	if (desired_scale && desired_scale < map_scale) // autoset scale
 		{map_scale = (map_scale * 10) / 11; if (desired_scale > map_scale) {map_scale = desired_scale; desired_scale = 0;}}

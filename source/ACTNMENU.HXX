@@ -158,9 +158,10 @@ void SetupMod (LONG x, LONG y, UBYTE * pNum, LONG NumMin, LONG Base, LONG dirFac
 void CheckHolding(LONG place, REALM::REALM_TYPE realm_, BOOL fSend);
 void CheckAndFixPlaces (PROVINCE prov);
 LONG ActionExpPoints(LONG RegentIndex, ACTION_EXPTYPE ActionType, LONG Modifier, BOOL fSend );
+BOOL ActnMenuWheelScroll(void);	// issue #16: page the action-detail list via the mouse wheel
 
 /* ------------------------------------------------------------------------
-   Inline functions   
+   Inline functions
    ------------------------------------------------------------------------ */
    
 #endif // _ACTNMENU_HXX

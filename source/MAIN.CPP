@@ -52,6 +52,8 @@
 #include "realm.hxx"            // GWP HACK addition
 #include "scnmgr.hxx"
 #include "invngui.hxx"
+#include "loadsave.hxx"
+#include "actnmenu.hxx"
 #include "menu.h"
 #include "request.h"
 #include "panel.h"
@@ -542,6 +544,14 @@ void MainLoop(void)
 		//mouse_button = 0;     // event handled, clear button
 		mouse_click = 0;
 	}
+
+	// issue #16 (Phase 3): let the mouse wheel scroll the inventory, save/load, and
+	// action-detail province lists when the cursor is over them. Each self-guards and
+	// only consumes the wheel when it owns it, so notches over the map still drive the
+	// realm-map zoom in DomainTurnUI().
+	if (!StaticInventoryGUI::mfWheelScroll()
+		&& !LoadSaveWheelScroll())
+		ActnMenuWheelScroll();
 
 	// GWP Hack to get tool tips to paint on the map.
 	if (!fRender)

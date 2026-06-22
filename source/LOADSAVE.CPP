@@ -68,6 +68,8 @@
 #define LS_SAVE 1
 #define LS_LOAD 2
 
+#define LS_WHEEL_GAMES_PER_NOTCH 3	// list rows scrolled per mouse-wheel notch (issue #16)
+
 #define BUFSIZE 2048
 #define SAVEFILE_VERSION 0x00020051
 /* ------------------------------------------------------------------------
@@ -861,6 +863,49 @@ void ScrollGame(LONG dir, LONG)
         first_displayed = num_games - 6;
     if (first_displayed < 0)
         first_displayed = 0;
+}
+
+// issue #16 (Phase 3): scroll the save/load game list with the mouse wheel when
+// the cursor is anywhere over the load/save window, mirroring the on-screen scroll
+// buttons. The wheel is only consumed when a load/save menu is up and the cursor is
+// over its window, so notches elsewhere are left for the map and other surfaces.
+// Returns TRUE when it handled (consumed) the wheel.
+BOOL LoadSaveWheelScroll(void)
+{
+    LONG menuId, menu_x, menu_y, menu_w, menu_h;
+    LONG notches, count, i, dir;
+
+    if (IsMenuActive(D_LOAD_MENU))
+        menuId = D_LOAD_MENU;
+    else if (IsMenuActive(D_SAVE_MENU))
+        menuId = D_SAVE_MENU;
+    else
+        return FALSE;
+
+    if (in_question)        // confirm/overwrite sub-dialog is up; the list is hidden
+        return FALSE;
+
+    // hit-test the whole window (button 0 = the menu background) so the wheel works
+    // anywhere over the panel, not just on the list rows.
+    if (GetButtonPosition(menuId, 0, &menu_x, &menu_y) == fERROR)
+        return FALSE;
+    GetButtonSize(menuId, 0, &menu_w, &menu_h);
+    if (!cursor_in_box(menu_x, menu_y, menu_w, menu_h))
+        return FALSE;
+
+    notches = GetMouseWheel();      // consume only now that we own the wheel
+    if (notches == 0)
+        return FALSE;
+
+    // wheel-up (positive) scrolls up to earlier games, matching the up scroll
+    // button (ScrollGame -1); wheel-down scrolls down (ScrollGame +1). ScrollGame
+    // clamps each step, so the list stops at the ends exactly like the buttons.
+    dir   = (notches > 0) ? -1 : 1;
+    count = ((notches < 0) ? -notches : notches) * LS_WHEEL_GAMES_PER_NOTCH;
+    for (i = 0; i < count; ++i)
+        ScrollGame(dir, 0);
+
+    return TRUE;
 }
 
 void SelectGame(LONG game, LONG)

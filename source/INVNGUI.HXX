@@ -154,6 +154,7 @@ class InventoryGUI
 		void mfPaint(LONG,LONG);
 		void mfDisplay(LONG,LONG);
 		void mfScroll(LONG,LONG);
+		BOOL mfWheelScroll(void);		// issue #16: scroll the list via the mouse wheel
 		void mfUseHighlightedObject(LONG,LONG);
 		void mfSetHighlightedLine(LONG,LONG d);
 		void mfChangeCurrCat(LONG,LONG c);
@@ -191,6 +192,7 @@ class StaticInventoryGUI
 		static void mfGoStatus(LONG,LONG);
 		static void mfDisplay(LONG,LONG);
 		static void mfScroll(LONG,LONG);
+		static BOOL mfWheelScroll(void);	// issue #16: scroll the list via the mouse wheel
 		static void mfUseHighlightedObject(LONG,LONG);
 		static void mfSetHighlightedLine(LONG,LONG);
 		static void mfChangeCurrCat(LONG,LONG);
@@ -288,6 +290,11 @@ inline static void StaticInventoryGUI::mfPaint(LONG a,LONG b)
 inline static void StaticInventoryGUI::mfScroll(LONG a,LONG b)
 {
 	GUI.mfScroll(a,b);
+}
+
+inline static BOOL StaticInventoryGUI::mfWheelScroll(void)
+{
+	return GUI.mfWheelScroll();
 }
 
 inline static void StaticInventoryGUI::mfSetHighlightedLine(LONG a,LONG b)

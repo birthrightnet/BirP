@@ -58,6 +58,7 @@ void SysHideCursor(void);
    ------------------------------------------------------------------------ */
 long	old_cursor_x,old_cursor_y;
 long	cursor_x,cursor_y,mouse_button;
+long	mouse_wheel = 0;		// accumulated raw wheel delta (issue #16); see GetMouseWheel
 // GWP LONG	hot_x = 0;
 // GWP LONG	hot_y = 0;
 char	chCursorName[32];
@@ -197,6 +198,20 @@ void update_buttons()
 			mouse_button = 1;
 		}
 	}
+}
+
+/* ========================================================================
+   Function    - GetMouseWheel
+   Description - returns the number of whole wheel notches accumulated since
+                 the last call and clears them, keeping any sub-notch remainder
+                 (issue #16). Positive = wheel-up (zoom-in / scroll-up).
+   Returns     - signed notch count
+   ======================================================================== */
+long GetMouseWheel(void)
+{
+	long notches = mouse_wheel / WHEEL_DELTA;
+	mouse_wheel -= notches * WHEEL_DELTA;
+	return notches;
 }
 
 /* ========================================================================

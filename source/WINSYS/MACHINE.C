@@ -48,9 +48,6 @@ extern char pwad[];
 extern char chCursorName[32];
 
 /* ------------------------------------------------------------------------
-   Defines and Compile Flags
-   ------------------------------------------------------------------------ */
-/* ------------------------------------------------------------------------
    Macros
    ------------------------------------------------------------------------ */
 /* ------------------------------------------------------------------------
@@ -858,6 +855,13 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 //			cursor_y = cursor_y * WindowHeight / rc.bottom;
 //			need_cursor_draw = FALSE;
 			mouse_button = 2;
+			return 0;
+
+		case WM_MOUSEWHEEL:
+			// Accumulate raw wheel delta (issue #16). Consumers call GetMouseWheel()
+			// to pull whole notches; the sub-notch remainder is kept for next time.
+			// Positive delta = wheel rolled away from the user = zoom-in / scroll-up.
+			mouse_wheel += (LONG)GET_WHEEL_DELTA_WPARAM(wParam);
 			return 0;
 
 //		case WM_RBUTTONUP:
