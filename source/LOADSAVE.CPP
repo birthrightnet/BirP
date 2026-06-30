@@ -824,6 +824,12 @@ void LoadGameFiles(FILE *fp)
 	for (i=REALM::FIRST_REALM; i < LAND_REALM_COUNT; i++)
 		AdjustName(i);
 
+	/*-------------------------------------------------------------------*/
+	/* Heal saves stranded by the issue-90 withdraw bug: a unit set "moving"
+	   with a destination of NO_PROVINCE can never arrive and stays engaged
+	   forever.  Backward compatible - valid/unaffected units are untouched. */
+	HealStuckMovingUnits();
+
     /*-------------------------------------------------------------------*/
     /* update regent info */
 

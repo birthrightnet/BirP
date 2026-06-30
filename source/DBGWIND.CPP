@@ -29,12 +29,14 @@
 #include "logger.h"
 #include "memmanag.h"
 #include "playstat.hxx"
+#include "regents.hxx"
 #include "scene.hxx"
 #include "scnmgr.hxx"
 #include "strmgr.h"
 #include "things.h"
 #include "thingtyp.h"
 #include "tmsgbox.hxx"
+#include "units.hxx"
 
 #ifdef _WINDOWS
 /* Main application window handle; defined in the platform layer. */
@@ -81,7 +83,11 @@ enum DEBUG_TEST_ACTION
 
 	/* Mark all loaded FLC animation art purgable and force a memory purge,
 	   simulating the long-session memory pressure behind issue #4. */
-	DEBUG_TEST_ACTION_PURGE_ANIM_ART
+	DEBUG_TEST_ACTION_PURGE_ANIM_ART,
+
+	/* Dump every occupied unit slot and live regent-table entry to the log,
+	   flagging "zombie" regent units (issue 90 investigation aid). */
+	DEBUG_TEST_ACTION_DUMP_REALM_UNITS
 };
 
 /* ========================================================================
@@ -708,6 +714,214 @@ static void DebugGrantAdventureItemByName(char const *cpItemName)
 	DebugShowResult("Debug Test", message);
 }
 
+/* ========================================================================
+	Function	- DebugUnitHasRegentIcon
+	Description - Returns TRUE when the unit slot's map icon is in one of the
+				  regent icon ranges (ordinary regents plus the Gorgon,
+				  Spider King, and Rhuobhe special-regent icons).  Unlike
+				  IsRegent(), this inspects only the icon and does not depend
+				  on the realm->regent->unit back-link, so it still recognises
+				  a unit whose regent-table link has been severed (the exact
+				  "zombie regent" condition issue 90 is chasing).
+	Parameters	- iUnit : unit-array index to inspect.
+	Returns		- TRUE if the unit carries a regent-class icon, else FALSE.
+	======================================================================== */
+static BOOL DebugUnitHasRegentIcon(LONG iUnit)
+{
+	LONG const icon = (LONG)units[iUnit].Icon;
+
+	return (icon >= (LONG)REG_LORDM1_UNIT_ICON && icon <= (LONG)REG_GLADY1_UNIT_ICON)
+		|| icon == (LONG)GORGON_UNIT_ICON
+		|| icon == (LONG)SPIDERKING_UNIT_ICON
+		|| icon == (LONG)RHUOBHE_UNIT_ICON;
+}
+
+/* ========================================================================
+	Function	- DebugFindRegentForUnit
+	Description - Reverse-looks-up the regents[] table for the entry whose
+				  mfGetunit() currently points at iUnit.
+	Parameters	- iUnit : unit-array index to search for.
+	Returns		- The regents[] index that owns this unit, or fERROR when no
+				  regent entry references it (an orphaned / zombie unit).
+	======================================================================== */
+static SHORT DebugFindRegentForUnit(LONG iUnit)
+{
+	SHORT r;
+
+	for (r = 1; r < CHARACTER_COUNT; ++r)
+	{
+		if (regents[r].mfGetunit() == (SHORT)iUnit)
+			return r;
+	}
+
+	return fERROR;
+}
+
+/* ========================================================================
+	Function	- DebugRealmName
+	Description - Safe realm-name lookup that bounds-checks the realm index
+				  before dereferencing realm[] so a corrupt unit slot cannot
+				  fault the dump.
+	Parameters	- realmIndex : realm index to name.
+	Returns		- The realm's display name, or "?" when out of range.
+	======================================================================== */
+static char const *DebugRealmName(LONG realmIndex)
+{
+	if (realmIndex < 0 || realmIndex >= REALM::REALM_COUNT)
+		return "?";
+
+	return realm[realmIndex].mfGetName();
+}
+
+/* ========================================================================
+	Function	- DebugProvinceName
+	Description - Safe province-name lookup that bounds-checks the province
+				  index before dereferencing province[].
+	Parameters	- provIndex : province index to name.
+	Returns		- The province's display name, "(none)" for NO_PROVINCE, or
+				  "?" when out of range / unnamed.
+	======================================================================== */
+static char const *DebugProvinceName(LONG provIndex)
+{
+	if (provIndex == NO_PROVINCE)
+		return "(none)";
+	if (provIndex < 0 || provIndex >= PROVINCE_COUNT)
+		return "?";
+	if (province[provIndex].name == NULL)
+		return "?";
+
+	return province[provIndex].name;
+}
+
+/* ========================================================================
+	Function	- DebugDumpRealmUnitsAndRegents
+	Description - Investigation aid for issue 90 ("killed regent does not
+				  leave the realm map").  Writes, via LOGGER.H, a full census
+				  of the realm-map state:
+				    1. Every occupied unit slot (one whose province, icon, or
+				       avatar handle is set), with the fields that matter for
+				       post-battle cleanup: realm, province, icon, Joined,
+				       NextUnit, DestProvince, MovePart, id, iHandle, and the
+				       IsRegent / IsLieutenant classification.
+				    2. Every live regents[] entry (mfGetunit() != 0), with its
+				       realm, owned unit index, id, icon, and whether the realm
+				       still points back at it as its regent.
+				    3. An anomaly pass that flags "zombie regent" units: a unit
+				       that still occupies a province and carries a regent-class
+				       icon but is no longer referenced by any regents[] entry
+				       (regent reported dead yet the unit lingers and keeps the
+				       province engaged).
+				  All detail goes to winbr.log; the caller shows a short
+				  summary (counts + anomaly total) in a message box.
+	Parameters	- pUnitCount    : receives the number of occupied unit slots.
+				  pRegentCount  : receives the number of live regent entries.
+				  pAnomalyCount : receives the number of zombie-regent flags.
+				  Any pointer may be NULL.
+	Returns		- (void)
+	======================================================================== */
+static void DebugDumpRealmUnitsAndRegents(LONG *pUnitCount, LONG *pRegentCount, LONG *pAnomalyCount)
+{
+	LONG i;
+	LONG unitCount = 0;
+	LONG regentCount = 0;
+	LONG anomalyCount = 0;
+
+	logInfo("[DEBUG] ===== Realm units & regents dump (issue 90) - HomeRealm:%s =====",
+		DebugRealmName(HomeRealm));
+
+	logInfo("[DEBUG] -- Occupied unit slots --");
+	for (i = 1; i < MAX_UNITS; ++i)
+	{
+		// A real map unit always carries a map icon; empty slots have
+		// Icon == NO_MAP_ICON.  (Do not test iHandle here: on the realm map it
+		// is the shared icon-bitmap handle, which is set for every slot.)
+		BOOL const fOccupied = (units[i].Icon != NO_MAP_ICON)
+			|| (units[i].province != NO_PROVINCE);
+
+		if (!fOccupied)
+			continue;
+
+		++unitCount;
+
+		logInfo("[DEBUG] unit[%ld] realm:%s prov:%s icon:%ld joined:%ld next:%ld dest:%s movePart:%ld id:%ld handle:%ld %s%s",
+			i,
+			DebugRealmName((LONG)units[i].Realm),
+			DebugProvinceName((LONG)units[i].province),
+			(LONG)units[i].Icon,
+			(LONG)units[i].Joined,
+			(LONG)units[i].NextUnit,
+			DebugProvinceName((LONG)units[i].DestProvince),
+			(LONG)units[i].MovePart,
+			(LONG)units[i].id,
+			(LONG)units[i].iHandle,
+			IsRegent(i) ? "[REGENT]" : "",
+			IsLieutenant(i) ? "[LIEUTENANT]" : "");
+	}
+
+	logInfo("[DEBUG] -- Live regent table entries --");
+	for (i = 1; i < CHARACTER_COUNT; ++i)
+	{
+		SHORT const regentUnit = regents[i].mfGetunit();
+		LONG const regentRealm = (LONG)regents[i].mfGetRealm();
+		BOOL fRealmPointsBack;
+
+		// unit == 0 means an unused slot; unit == -1 means a dead regent.
+		if (regentUnit == 0)
+			continue;
+
+		++regentCount;
+
+		fRealmPointsBack = (regentRealm >= 0 && regentRealm < REALM::REALM_COUNT
+			&& realm[regentRealm].mfGetRegent() == i);
+
+		logInfo("[DEBUG] regent[%ld] realm:%s unit:%ld id:%ld icon:%ld %s%s",
+			i,
+			DebugRealmName(regentRealm),
+			(LONG)regentUnit,
+			(LONG)regents[i].mfGetid(),
+			(LONG)regents[i].mfGeticon(),
+			(regentUnit == -1) ? "[DEAD]" : "",
+			fRealmPointsBack ? "[REALM-REGENT]" : "");
+	}
+
+	logInfo("[DEBUG] -- Anomaly pass: zombie regent units --");
+	for (i = 1; i < MAX_UNITS; ++i)
+	{
+		// A real map unit always carries a map icon; empty slots have
+		// Icon == NO_MAP_ICON.  (Do not test iHandle here: on the realm map it
+		// is the shared icon-bitmap handle, which is set for every slot.)
+		BOOL const fOccupied = (units[i].Icon != NO_MAP_ICON)
+			|| (units[i].province != NO_PROVINCE);
+
+		if (!fOccupied || !DebugUnitHasRegentIcon(i))
+			continue;
+
+		// A regent-class unit that no regents[] entry owns is orphaned: the
+		// regent was reported dead but the unit slot was never cleared.
+		if (DebugFindRegentForUnit(i) == fERROR)
+		{
+			++anomalyCount;
+			logInfo("[DEBUG] ANOMALY zombie regent unit[%ld] realm:%s prov:%s icon:%ld dest:%s movePart:%ld - regent-class icon with no regents[] owner",
+				i,
+				DebugRealmName((LONG)units[i].Realm),
+				DebugProvinceName((LONG)units[i].province),
+				(LONG)units[i].Icon,
+				DebugProvinceName((LONG)units[i].DestProvince),
+				(LONG)units[i].MovePart);
+		}
+	}
+
+	logInfo("[DEBUG] ===== End dump: %ld unit(s), %ld regent(s), %ld anomaly(ies) =====",
+		unitCount, regentCount, anomalyCount);
+
+	if (pUnitCount != NULL)
+		*pUnitCount = unitCount;
+	if (pRegentCount != NULL)
+		*pRegentCount = regentCount;
+	if (pAnomalyCount != NULL)
+		*pAnomalyCount = anomalyCount;
+}
+
 #ifdef _WINDOWS
 
 /* -----------------------------------------------------------------------
@@ -742,7 +956,10 @@ enum
 	DBGWIND_CTL_DUMP_AI_BTN = 4107,
 
 	/* "Purge animation art" push-button. */
-	DBGWIND_CTL_PURGE_ANIM_BTN = 4108
+	DBGWIND_CTL_PURGE_ANIM_BTN = 4108,
+
+	/* "Dump realm units & regents to log" push-button. */
+	DBGWIND_CTL_DUMP_UNITS_BTN = 4109
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -842,6 +1059,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 274, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_PURGE_ANIM_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Dump realm units & regents to log (realm only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 312, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_DUMP_UNITS_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -889,6 +1112,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_PURGE_ANIM_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_PURGE_ANIM_ART;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_DUMP_UNITS_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_DUMP_REALM_UNITS;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -973,7 +1202,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 360;
+	LONG height = 398;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -1128,6 +1357,26 @@ void DebugShowTestWindow(LONG, LONG)
 		else
 		{
 			DebugPurgeAnimationArt();
+		}
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_DUMP_REALM_UNITS)
+	{
+		if (DebugHasActiveAdventureContext() || master_game_type == GAME_BATTLE || gfInCombat)
+		{
+			DebugShowResult("Debug Test", "Dump units & regents only works in realm.");
+		}
+		else
+		{
+			LONG unitCount = 0;
+			LONG regentCount = 0;
+			LONG anomalyCount = 0;
+			char message[256];
+
+			DebugDumpRealmUnitsAndRegents(&unitCount, &regentCount, &anomalyCount);
+			snprintf(message, sizeof(message),
+				"Dumped %ld unit(s) and %ld regent(s) to winbr.log. Zombie-regent anomalies: %ld.",
+				unitCount, regentCount, anomalyCount);
+			DebugShowResult("Debug Test", message);
 		}
 	}
 #else

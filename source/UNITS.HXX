@@ -1,4 +1,4 @@
-/* =®RM254¯=======================================================================
+/* =ï¿½RM254ï¿½=======================================================================
    Copyright (c) 1990,1996	Synergistic Software
    All Rights Reserved
    ========================================================================
@@ -83,6 +83,7 @@ extern DECL_VECTOR_CLASS(UNIT_TYPE, units);
    Prototypes
    ----------------------------------------------------------------- */
 void ValidateUnitsArray(void);
+LONG HealStuckMovingUnits(void);
 BOOL ValidateUnitList(SHORT UnitIndex);
 BOOL ValidateUnit(SHORT UnitIndex);
 BOOL CheckUnitStack (LONG iUnit, BOOL fSend );

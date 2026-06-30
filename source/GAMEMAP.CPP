@@ -10511,7 +10511,8 @@ void WithdrawLosingUnit (BOOL fSend)
 			border_cost = TerrainCost[province[prov].Border[i].MoveCost];
 			fTerrainPassable = (border_cost < 100);
 
-			if (province[j].Realm == LosingRealm
+			if (j != NO_PROVINCE
+				&& province[j].Realm == LosingRealm
 				&& fTerrainPassable
 				&& CheckNotWarded(LosingUnit, (PROVINCE)j, (PROVINCE)prov) )
 			{
@@ -10544,7 +10545,8 @@ void WithdrawLosingUnit (BOOL fSend)
 			border_cost = TerrainCost[province[prov].Border[i].MoveCost];
 			fTerrainPassable = (border_cost < 100);
 
-			if (AREALLIED(LosingRealm, province[j].Realm)
+			if (j != NO_PROVINCE
+				&& AREALLIED(LosingRealm, province[j].Realm)
 				&& fTerrainPassable
 				&& CheckNotWarded(LosingUnit, (PROVINCE)j, (PROVINCE)prov) )
 			{
@@ -10577,7 +10579,8 @@ void WithdrawLosingUnit (BOOL fSend)
 			border_cost = TerrainCost[province[prov].Border[i].MoveCost];
 			fTerrainPassable = (border_cost < 100);
 
-			if (ISATWAR(LosingRealm, province[j].Realm)
+			if (j != NO_PROVINCE
+				&& ISATWAR(LosingRealm, province[j].Realm)
 				&& fTerrainPassable
 				&& CheckNotWarded(LosingUnit, (PROVINCE)j, (PROVINCE)prov) )
 			{
@@ -10610,7 +10613,9 @@ void WithdrawLosingUnit (BOOL fSend)
 			border_cost = TerrainCost[province[prov].Border[i].MoveCost];
 			fTerrainPassable = (border_cost < 100);
 
-			if (fTerrainPassable && CheckNotWarded(LosingUnit, (PROVINCE)j, (PROVINCE)prov) )
+			if (j != NO_PROVINCE
+				&& fTerrainPassable
+				&& CheckNotWarded(LosingUnit, (PROVINCE)j, (PROVINCE)prov) )
 			{
 				fFoundEnemy = FALSE;
 				for (k=1; k<MAX_UNITS; ++k)
@@ -10764,7 +10769,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	for (i=0; i<7; ++i)
 	{
 		j = province[prov].Border[i].Province;
-		if (province[j].Realm == UnitRealm)
+		if (j != NO_PROVINCE && province[j].Realm == UnitRealm)
 		{
 			fFoundEnemy = FALSE;
 			for (k=1; k<MAX_UNITS; ++k)
@@ -10794,7 +10799,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	for (i=0; i<7; ++i)
 	{
 		j = province[prov].Border[i].Province;
-		if (AREALLIED(UnitRealm, province[j].Realm))
+		if (j != NO_PROVINCE && AREALLIED(UnitRealm, province[j].Realm))
 		{
 			fFoundEnemy = FALSE;
 			for (k=1; k<MAX_UNITS; ++k)
@@ -10823,7 +10828,7 @@ BOOL CheckWithdrawPath (SHORT UnitIndex)
 	for (i=0; i<7; ++i)
 	{
 		j = province[prov].Border[i].Province;
-		if (ISATWAR(UnitRealm, province[j].Realm))
+		if (j != NO_PROVINCE && ISATWAR(UnitRealm, province[j].Realm))
 		{
 			fFoundEnemy = FALSE;
 			for (k=1; k<MAX_UNITS; ++k)

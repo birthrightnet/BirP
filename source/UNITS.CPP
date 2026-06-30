@@ -2070,6 +2070,50 @@ DEFINE_VECTOR_CLASS(UNIT_TYPE, units);
 /* ??? */
 
 /* ========================================================================
+   Function    - HealStuckMovingUnits
+   Description - Repairs save games corrupted by the issue-90 withdraw bug.
+                 A defeated, fully-encircled unit (typically a regent) could be
+                 set "moving" (MovePart != 0) with a destination of
+                 NO_PROVINCE - a move that can never complete, so the unit was
+                 stranded on its province and kept it permanently engaged.
+                 A legitimately in-transit unit always has a real DestProvince,
+                 so MovePart != 0 with DestProvince == NO_PROVINCE is
+                 unambiguously invalid and safe to clear.  Called on game load.
+                 Backward compatible: saves with no stuck units, and units in
+                 valid states, are left exactly as loaded.
+   Returns     - the number of units healed.
+   ======================================================================== */
+LONG HealStuckMovingUnits(void)
+{
+	LONG	iUnit;
+	LONG	healed = 0;
+
+	for (iUnit = 1; iUnit < MAX_UNITS; ++iUnit)
+	{
+		if (units[iUnit].MovePart != 0
+			&& units[iUnit].DestProvince == NO_PROVINCE)
+		{
+			logWarn("HealStuckMovingUnits - clearing invalid move state on unit[%ld] realm:%s prov:%s (MovePart=%ld, DestProvince=NO_PROVINCE) [issue 90]",
+				iUnit,
+				realm[units[iUnit].Realm].mfGetName(),
+				province[units[iUnit].province].name,
+				(LONG)units[iUnit].MovePart);
+
+			units[iUnit].MovePart  = 0;
+			units[iUnit].DestPath1 = 0;
+			units[iUnit].DestPath2 = 0;
+			units[iUnit].DestPath3 = 0;
+			++healed;
+		}
+	}
+
+	if (healed > 0)
+		logInfo("HealStuckMovingUnits - healed %ld stranded unit(s) [issue 90]", healed);
+
+	return healed;
+}
+
+/* ========================================================================
    Function    - ValidateUnitsArray
    Description - make a pass throught the units array and check that all
                  the links are correct and that each unit has valid data.
