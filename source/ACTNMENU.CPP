@@ -696,7 +696,7 @@ void CancelRoll (void)
    Description -
    Returns     -
    ======================================================================== */
-static UBYTE RollSuccess (UBYTE Chance, LONG x, LONG y, LONG lPrint)
+static UBYTE RollSuccess (LONG Chance, LONG x, LONG y, LONG lPrint)
 {
 
 	++iThisRoll;
@@ -764,6 +764,15 @@ static UBYTE RollSuccess (UBYTE Chance, LONG x, LONG y, LONG lPrint)
 		xRollLocation = x;
 		yRollLocation = y;
 		DispSuccess();
+		// issue #70: cap the effective success chance at 100%.  A success
+		// number below 1 corresponds to a displayed chance above 100% (see
+		// D20TOPERCENT).  Chance was formerly a UBYTE, so a negative target
+		// (e.g. high province + temple + Robes of the Masses on Agitate)
+		// wrapped to a large positive value and the roll could never meet it,
+		// making the action *always* fail.  Clamping here (after any lieutenant
+		// expertise +3 penalty) guarantees a floor of 100%.
+		if (Chance < 1)
+			Chance = 1;
 		success_roll = random(20)+1;
 		if (success_roll >= Chance || fTutorialSelected)
 		{
