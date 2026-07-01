@@ -2847,9 +2847,15 @@ LONG ProvinceInfo (PROVINCE prov, MAP_ICON holding_type)
 	}
 
 	// province tax
+	// issue #76: a province in open rebellion (Loyalty == REBEL) yields no tax,
+	// exactly as a contested province does. The REBEL guard is a direct backstop
+	// so a rebelling province never pays tax even if its Contested flag has not
+	// (yet) been re-applied this turn (e.g. an already-rebelling save, or one
+	// authored in the editor).
 	if (	(	(province[prov].Realm==HomeRealm && !province[prov].OccupRealm)
 				|| province[prov].OccupRealm == HomeRealm)
-			&& !province[prov].Contested)
+			&& !province[prov].Contested
+			&& province[prov].Loyalty != REBEL)
 	{
 		if (fFinalRoll >= cProvinces)
 		{
@@ -5286,8 +5292,11 @@ BOOL UpdateDataArea (void)
 						l += (LONG)province[i].Loyalty;
 						if (l < 0) l = 0;							 // peg at zero
 						if (l > 3) l = 3;							 // peg at max
-						if (l==0 && province[i].Loyalty)		// report on rebellion
+						if (l==0)								// province is in rebellion
 						{
+							// issue #76: keep the province contested for the whole
+							// duration of the rebellion (not just its first turn)
+							// so the owner collects no tax or regency from it.
 							province[i].Contested = TRUE;
 							SetGameData(MP_PROVINCE, MPPROV_CONTESTED, i, TRUE, FALSE );
 						}
@@ -5339,13 +5348,22 @@ BOOL UpdateDataArea (void)
 					l += (LONG)province[i].Loyalty;
 					if (l < 0) l = 0;							 // peg at zero
 					if (l > 3) l = 3;							 // peg at max
-					if (l==0 && province[i].Loyalty)		// report on rebellion
+					if (l==0)								// province is in rebellion
 					{
-						if (province[i].TaxLevel>=2)
-							AddReport(SUBJ_REBEL_SEVERE,i,0,0);
-						else
-							AddReport(SUBJ_REBELLION,i,0,0);
+						// issue #76: only announce the rebellion on the turn it
+						// actually starts (loyalty was non-zero going in).
+						if (province[i].Loyalty)
+						{
+							if (province[i].TaxLevel>=2)
+								AddReport(SUBJ_REBEL_SEVERE,i,0,0);
+							else
+								AddReport(SUBJ_REBELLION,i,0,0);
+						}
 
+						// issue #76: keep the province contested for the whole
+						// duration of the rebellion (not just its first turn) so
+						// the owner collects no tax or regency from it until the
+						// rebellion is put down.
 						province[i].Contested = TRUE;
 						SetGameData(MP_PROVINCE, MPPROV_CONTESTED, i, TRUE, FALSE );
 					}
