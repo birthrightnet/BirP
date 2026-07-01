@@ -49,6 +49,13 @@ extern void ShowQuestItemVictoryScreen(void);
 
 #if defined(_DEBUG)
 
+/* The debug test window and every helper it uses (below, through the Win32
+   window implementation) are a Windows-only facility.  DOS _DEBUG builds get
+   only the DebugShowTestWindow stub defined further down, so the whole
+   implementation is compiled for _WINDOWS only.  Without this guard the
+   helpers compile for DOS as unreferenced statics and draw W014 warnings. */
+#ifdef _WINDOWS
+
 /* ========================================================================
 	Enum		- DEBUG_TEST_ACTION
 	Description - Identifies which test action was selected by the developer
@@ -87,7 +94,12 @@ enum DEBUG_TEST_ACTION
 
 	/* Dump every occupied unit slot and live regent-table entry to the log,
 	   flagging "zombie" regent units (issue 90 investigation aid). */
-	DEBUG_TEST_ACTION_DUMP_REALM_UNITS
+	DEBUG_TEST_ACTION_DUMP_REALM_UNITS,
+
+	/* Stage the issue 38 scenario: a player stack, an allied NPC stack, and an
+	   enemy stack (all at war as needed) in one province, so the end-of-turn
+	   battle resolution can be exercised. */
+	DEBUG_TEST_ACTION_SETUP_BATTLE_TEST
 };
 
 /* ========================================================================
@@ -922,7 +934,136 @@ static void DebugDumpRealmUnitsAndRegents(LONG *pUnitCount, LONG *pRegentCount, 
 		*pAnomalyCount = anomalyCount;
 }
 
-#ifdef _WINDOWS
+/* ========================================================================
+	Function	- DebugSetupIssue38BattleTest
+	Description - Stages the issue 38 repro scenario so the fix (player battles
+				  resolve before NPC-vs-NPC battles) can be exercised in-game.
+				  In one province it places three stationary stacks:
+				    1. a player (HomeRealm) stack,
+				    2. an allied NPC stack, and
+				    3. an enemy NPC stack.
+				  and sets the diplomacy so the player and ally are full allies
+				  and both are at war with the enemy.  With the fix the player is
+				  offered the battle against the enemy on the next end-of-turn
+				  resolution instead of it being starved by the ally's NPC-vs-NPC
+				  auto-battle.  The ally stack is created first so it tends to
+				  take a lower unit-array index than the player (the ordering that
+				  starved the player pre-fix).  Ordinary military units are used
+				  (regular unit ids), so creation and battle go through the
+				  standard, well-exercised code paths.
+				  All state changes are local (fSend == FALSE); this is a
+				  single-player realm-mode test aid.
+	Parameters	- cpResult  : caller buffer that receives a human-readable
+				              summary shown in the result message box.
+				  resultLen : capacity of cpResult in bytes.
+	Returns		- (void)
+	======================================================================== */
+static void DebugSetupIssue38BattleTest(char *cpResult, LONG resultLen)
+{
+	LONG stagingProv = NO_PROVINCE;
+	REALM::REALM_TYPE allyRealm = REALM::NO_COUNTRY;
+	REALM::REALM_TYPE enemyRealm = REALM::NO_COUNTRY;
+	LONG r;
+	LONG iPlayerUnit, iAllyUnit, iEnemyUnit;
+	SHORT regentIdx;
+
+	if (cpResult == NULL || resultLen <= 0)
+		return;
+
+	// --- pick a staging province: the player's regent province, else the
+	//     first province the player owns.
+	regentIdx = realm[HomeRealm].mfGetRegent();
+	if (regentIdx > 0)
+	{
+		SHORT const regentUnit = regents[regentIdx].mfGetunit();
+		if (regentUnit > 0 && regentUnit < MAX_UNITS
+			&& units[regentUnit].province != NO_PROVINCE)
+			stagingProv = (LONG)units[regentUnit].province;
+	}
+	if (stagingProv == NO_PROVINCE)
+	{
+		LONG p;
+		for (p = 1; p < PROVINCE_COUNT; ++p)
+		{
+			if (province[p].Realm == HomeRealm)
+			{
+				stagingProv = p;
+				break;
+			}
+		}
+	}
+	if (stagingProv == NO_PROVINCE)
+	{
+		snprintf(cpResult, resultLen,
+			"Could not find a province owned by your realm to stage the test.");
+		return;
+	}
+
+	// --- pick an ally realm: an existing NPC land realm that is not the player.
+	for (r = REALM::FIRST_REALM; r < LAND_REALM_COUNT; ++r)
+	{
+		if (r == (LONG)HomeRealm || !realm[r].mfExists() || realm[r].mfIsPlayerCtrl())
+			continue;
+		allyRealm = (REALM::REALM_TYPE)r;
+		break;
+	}
+	// --- pick an enemy realm: a different existing NPC land realm.
+	for (r = REALM::FIRST_REALM; r < LAND_REALM_COUNT; ++r)
+	{
+		if (r == (LONG)HomeRealm || r == (LONG)allyRealm
+			|| !realm[r].mfExists() || realm[r].mfIsPlayerCtrl())
+			continue;
+		enemyRealm = (REALM::REALM_TYPE)r;
+		break;
+	}
+	if (allyRealm == REALM::NO_COUNTRY || enemyRealm == REALM::NO_COUNTRY)
+	{
+		snprintf(cpResult, resultLen,
+			"Need at least two other NPC realms in play to set up the test.");
+		return;
+	}
+
+	// --- diplomacy: player <-> ally full alliance; player/ally <-> enemy at war.
+	RealmStatus[HomeRealm][allyRealm]  = STATUS_FULL_ALLIANCE;
+	RealmStatus[allyRealm][HomeRealm]  = STATUS_FULL_ALLIANCE;
+	RealmStatus[HomeRealm][enemyRealm] = STATUS_AT_WAR;
+	RealmStatus[enemyRealm][HomeRealm] = STATUS_AT_WAR;
+	RealmStatus[allyRealm][enemyRealm] = STATUS_AT_WAR;
+	RealmStatus[enemyRealm][allyRealm] = STATUS_AT_WAR;
+
+	// --- create the three stacks (ally first, then player, then enemy).
+	//     Ordinary military icons are used so CreateUnit's default id lookup
+	//     (UnitTypeID[icon]) is valid; special/regent icons are out of that
+	//     table's range and must not be used here.
+	iAllyUnit   = CreateUnit((PROVINCE)stagingProv, A_INF_UNIT_ICON, 0, allyRealm, FALSE);
+	iPlayerUnit = CreateUnit((PROVINCE)stagingProv, A_KNT_UNIT_ICON, 0, HomeRealm, FALSE);
+	iEnemyUnit  = CreateUnit((PROVINCE)stagingProv, A_CAV_UNIT_ICON, 0, enemyRealm, FALSE);
+
+	if (iAllyUnit == fERROR || iPlayerUnit == fERROR || iEnemyUnit == fERROR)
+	{
+		snprintf(cpResult, resultLen,
+			"Ran out of unit slots while staging the test (player:%ld ally:%ld enemy:%ld).",
+			iPlayerUnit, iAllyUnit, iEnemyUnit);
+		return;
+	}
+
+	fRedrawAll = TRUE;
+
+	logInfo("[DEBUG] issue-38 battle test staged in prov:%s - player:%s unit:%ld ally:%s unit:%ld enemy:%s unit:%ld",
+		DebugProvinceName(stagingProv),
+		DebugRealmName((LONG)HomeRealm),  iPlayerUnit,
+		DebugRealmName((LONG)allyRealm),  iAllyUnit,
+		DebugRealmName((LONG)enemyRealm), iEnemyUnit);
+
+	snprintf(cpResult, resultLen,
+		"Staged in %s: your unit + allied %s + enemy %s, at war as needed. "
+		"Finish your turn: with the fix you should be offered the battle against "
+		"%s instead of it being starved by the ally. See winbr.log.",
+		DebugProvinceName(stagingProv),
+		DebugRealmName((LONG)allyRealm),
+		DebugRealmName((LONG)enemyRealm),
+		DebugRealmName((LONG)enemyRealm));
+}
 
 /* -----------------------------------------------------------------------
    Win32 child-window control IDs used by the debug test window.
@@ -959,7 +1100,10 @@ enum
 	DBGWIND_CTL_PURGE_ANIM_BTN = 4108,
 
 	/* "Dump realm units & regents to log" push-button. */
-	DBGWIND_CTL_DUMP_UNITS_BTN = 4109
+	DBGWIND_CTL_DUMP_UNITS_BTN = 4109,
+
+	/* "Set up issue 38 battle test" push-button. */
+	DBGWIND_CTL_SETUP_BATTLE_BTN = 4110
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -1065,6 +1209,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 312, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_DUMP_UNITS_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Set up issue 38 battle test (realm only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 350, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_SETUP_BATTLE_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -1118,6 +1268,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_DUMP_UNITS_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_DUMP_REALM_UNITS;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_SETUP_BATTLE_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_SETUP_BATTLE_TEST;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -1202,7 +1358,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 398;
+	LONG height = 436;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -1271,7 +1427,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	return selectedAction;
 }
 
-#endif
+#endif	/* _WINDOWS: debug test window and its helpers */
 
 /* ========================================================================
 	Function	- DebugShowTestWindow
@@ -1376,6 +1532,20 @@ void DebugShowTestWindow(LONG, LONG)
 			snprintf(message, sizeof(message),
 				"Dumped %ld unit(s) and %ld regent(s) to winbr.log. Zombie-regent anomalies: %ld.",
 				unitCount, regentCount, anomalyCount);
+			DebugShowResult("Debug Test", message);
+		}
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_SETUP_BATTLE_TEST)
+	{
+		if (DebugHasActiveAdventureContext() || master_game_type == GAME_BATTLE || gfInCombat)
+		{
+			DebugShowResult("Debug Test", "Battle test setup only works in realm.");
+		}
+		else
+		{
+			char message[512];
+
+			DebugSetupIssue38BattleTest(message, sizeof(message));
 			DebugShowResult("Debug Test", message);
 		}
 	}

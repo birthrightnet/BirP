@@ -4425,8 +4425,27 @@ GetNextRealm:				// if realm is invalid it loops here until a valid realm is fou
 		#endif
 
 		// wait for all battles to be fought
+		//
+		// Issue 38: resolve battles that involve a player-controlled realm
+		// (phase 0) before any NPC-vs-NPC battle (phase 1).  Without this, an
+		// NPC ally sharing a contested province can be scanned first, auto-fight
+		// the enemy, and (because Awnsheghlien such as Rhuobhe survive auto-
+		// battles and merely withdraw) push the enemy out before the player's
+		// own stack is ever reached -- so the player's battle never happens.
+		// The phase test keys only on the synced mfIsPlayerCtrl() flag and the
+		// unit array order, so every multiplayer peer resolves battles in the
+		// same sequence and stays in sync.
+		for (LONG battlePhase = 0; battlePhase < 2; ++battlePhase)
 		for (i=1; i<MAX_UNITS; ++i)
 		{
+			BOOL const fUnitIsPlayerCtrl =
+				(units[i].Realm != REALM::NO_COUNTRY
+				 && realm[units[i].Realm].mfIsPlayerCtrl());
+			if (battlePhase == 0 && !fUnitIsPlayerCtrl)
+				continue;		// phase 0 handles player-controlled realms first
+			if (battlePhase == 1 && fUnitIsPlayerCtrl)
+				continue;		// phase 1 handles the remaining NPC battles
+
 			if (units[i].Joined == FALSE
 				&& units[i].Realm != REALM::NO_COUNTRY
 				&& units[i].province
