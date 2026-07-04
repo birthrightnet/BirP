@@ -53,6 +53,7 @@ Install the following dependencies in your development environment:
 - [DirectX 5 SDK](https://archive.org/details/DX5ENG)
 - [Windows 95 DDK](https://archive.org/details/win95-win32-sdk)
 - [UASM 2.57](https://github.com/Terraspace/UASM)
+- [Inno Setup 6](https://jrsoftware.org/isdl.php) (only required to build the release installer, not for normal source builds)
 
     Keep note of the paths to all of these folders, you will need them when you configure your build environment variables.
 
@@ -64,7 +65,7 @@ You will need to copy the `DIGITALV.H` file from your now-installed [Windows 95 
 
 ### 4) Set up your environment variables for building
 
-Run [setup-env-vars-for-building.ps1](./scripts/setup-env-vars-for-building.ps1) to setup the required environment variables for [Open Watcom 2.0](https://www.openwatcom.org/), [DirectX 5 SDK](https://archive.org/details/DX5ENG), [Windows 95 DDK](https://archive.org/details/win95-win32-sdk), [UASM 2.57](https://github.com/Terraspace/UASM), `BIRTHRT_INSTALL_DIR`, and `DIGITALV_INCLUDE_DIR`.
+Run [setup-env-vars-for-building.ps1](./scripts/setup-env-vars-for-building.ps1) to setup the required environment variables for [Open Watcom 2.0](https://www.openwatcom.org/), [DirectX 5 SDK](https://archive.org/details/DX5ENG), [Windows 95 DDK](https://archive.org/details/win95-win32-sdk), [UASM 2.57](https://github.com/Terraspace/UASM), [Inno Setup 6](https://jrsoftware.org/isdl.php), `BIRTHRT_INSTALL_DIR`, and `DIGITALV_INCLUDE_DIR`.
 
 By default, this script uses these paths when overrides are NOT provided:
 
@@ -73,9 +74,10 @@ By default, this script uses these paths when overrides are NOT provided:
 - `C:\BirP-Dependencies\UASM-v2_57` (from step #2)
 - `C:\BirP-Dependencies\Windows95DDK` (from step #2)
 - `C:\BirP-Dependencies\DirectXSDK` (from step #2)
+- `C:\BirP-Dependencies\InnoSetup-6` (from step #2)
 - `C:\BirP-Dependencies\Windows95DDK-INC16-DIGITALV` (from step #3)
 
-If you installed the dependencies and toolchain to different paths than the defaults, use must the overrides on the [setup-env-vars-for-building.ps1](./scripts/setup-env-vars-for-building.ps1) script, such as `-OpenWatcomRoot`, `-UasmRoot`, `-Win95DdkRoot`, `-DxSdkRoot`, `-BirthrtInstallDir`, and `-DigitalvIncludeDir`.
+If you installed the dependencies and toolchain to different paths than the defaults, use must the overrides on the [setup-env-vars-for-building.ps1](./scripts/setup-env-vars-for-building.ps1) script, such as `-OpenWatcomRoot`, `-UasmRoot`, `-Win95DdkRoot`, `-DxSdkRoot`, `-InnoSetupRoot`, `-BirthrtInstallDir`, and `-DigitalvIncludeDir`.
 
 Examples of how to use the [setup-env-vars-for-building.ps1](./scripts/setup-env-vars-for-building.ps1) script with and without overrides:
 
@@ -83,7 +85,7 @@ Examples of how to use the [setup-env-vars-for-building.ps1](./scripts/setup-env
 
 or
 
-`powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1 -OpenWatcomRoot "C:\CustomPath\OPENWATCOM-v2_0" -UasmRoot "C:\CustomPath\UASM-v2_57" -Win95DdkRoot "C:\CustomPath\Windows95DDK" -DxSdkRoot "C:\CustomPath\DirectXSDK" -BirthrtInstallDir "C:\CustomPath\BIRTHRT" -DigitalvIncludeDir "C:\CustomPath\Windows95DDK-INC16-DIGITALV"`
+`powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1 -OpenWatcomRoot "C:\CustomPath\OPENWATCOM-v2_0" -UasmRoot "C:\CustomPath\UASM-v2_57" -Win95DdkRoot "C:\CustomPath\Windows95DDK" -DxSdkRoot "C:\CustomPath\DirectXSDK" -InnoSetupRoot "C:\CustomPath\InnoSetup-6" -BirthrtInstallDir "C:\CustomPath\BIRTHRT" -DigitalvIncludeDir "C:\CustomPath\Windows95DDK-INC16-DIGITALV"`
 
 Alternatively, you can set these environment variables manually in your system settings, but using the script is recommended to avoid typos and ensure all variables are set correctly. You can reference the script for the exact variable names and expected values.
 
@@ -118,9 +120,29 @@ Some examples:
 
 To deploy the application after building, you can either manually copy the compiled binaries from the [build-artifacts/binaries](build-artifacts/binaries) folder into your installed game directory (e.g. `C:\SIERRA\BIRTHRT`), or run one of the various `build-and-deploy-*.ps1` scripts from the [scripts folder](./scripts).
 
-For WIN builds you are looking for `nova95.exe`. For DOS builds you are lookig for `nova.exe`. For the Character Editor builds you are looking for `chared.exe`.
+For WIN builds you are looking for `nova95.exe`. For DOS builds you are looking for `nova.exe`. For the Character Editor builds you are looking for `chared.exe`.
 
-It's highly recommended that you run the [test-all-builds.ps1](./scripts/test-all-builds.ps1) script as as you commit changes to ensure that all build scenarios are working properly and to catch any issues early on. This script will build and deploy all scenarios (WIN|DOS, RELEASE|DEBUG, CHARED) and give you a summary of the results, including any warnings or errors that were found during the build process.
+### Install-directory executables
+
+The build-artifact names above are **not** the names used in a player's install directory (e.g. `C:\SIERRA\BIRTHRT`). The deploy scripts and installer rename each build to its patch/installer name (for example, the Windows build `nova95.exe` is deployed **over** `WINBR.EXE`). The table below lists every executable we're aware of in the install directory, which ones we build, and what we build them from.
+
+| EXE in install dir | What it is | Do we build it? | Build artifact | How it gets there |
+|---|---|---|---|---|
+| `WINBR.EXE` | Windows game executable (the main game on Windows) | **Yes** | `nova95.exe` | Patched build deployed/installed **over** `WINBR.EXE`; also ships from CD as stock in a fresh `game` install |
+| `NOVA.EXE` | DOS (DOS4GW) game executable, patched | **Yes** | `nova.exe` | Patched build installed as `NOVA.EXE`; stock version also on CD |
+| `CHARED.EXE` | Character editor (Windows) | **Yes** | `chared.exe` | Built and shipped **only** in the patch (`oldpatch\patch` component) |
+| `BR.EXE` | Original 1996 Sierra **DOS** executable (stock, unpatched) | No | n/a | From CD only (`game` component); never patched/replaced |
+| `DOS4GW.EXE` | DOS/4GW DOS extender runtime (loads the DOS game) | No | n/a | From CD only |
+| `HAVEVESA.EXE` | VESA-support detection utility | No | n/a | From CD only |
+| `VESATEST.EXE` | VESA test utility | No | n/a | From CD only |
+
+Notes:
+
+- We build and replace **exactly three** executables: `WINBR.EXE` (from `nova95.exe`), `NOVA.EXE` (from `nova.exe`), and `CHARED.EXE` (from `chared.exe`). Everything else is stock CD content we leave untouched.
+- `WINBR.EXE` and `NOVA.EXE` are sourced from **both** the `game` (from-CD) and patch (our-build) components in [installer/installer.iss](./installer/installer.iss); on a full install the patched build wins. `CHARED.EXE` is patch-only.
+- The build still **outputs** `nova95.exe`/`nova.exe`/`chared.exe` under those names in [build-artifacts/binaries](build-artifacts/binaries); only the deploy/install step renames them.
+
+It's highly recommended that you run the [test-all-builds.ps1](./scripts/test-all-builds.ps1) script as you commit changes to ensure that all build scenarios are working properly and to catch any issues early on. This script will build and deploy all scenarios (WIN|DOS, RELEASE|DEBUG, CHARED) and give you a summary of the results, including any warnings or errors that were found during the build process.
 
 ## Testing In-Game
 

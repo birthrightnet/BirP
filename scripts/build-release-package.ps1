@@ -18,6 +18,7 @@ $installerDir = Join-Path $repoRoot 'build-artifacts\binaries\Installer'
 if (-not (Test-Path $installerDir)) { New-Item -ItemType Directory -Path $installerDir | Out-Null }
 Remove-Item -Path "$installerDir\*.exe"
 Remove-Item -Path "$installerDir\*.zip"
+Remove-Item -Path "$installerDir\*.dat"
 
 # Define builds to run: MAKE.BAT args, expected output, and destination name in Installer dir
 $builds = @(
@@ -56,6 +57,18 @@ foreach ($b in $builds) {
     Write-Host "Copied $outPath -> $installerDir\$($b.Dest)"
 }
 
+# Stage the freshly built STRDAT. strmake writes strdat.dat into source\ as a
+# side effect of the WIN95 install builds above; ship it so the patch overwrites the
+# player's original STRDAT.DAT with the rebuilt one.
+$strdatSource = Join-Path $repoRoot 'source\strdat.dat'
+if (-not (Test-Path -LiteralPath $strdatSource)) {
+    Write-Error "Built string data not found: $strdatSource (expected from the WIN95 build)"
+    exit 1
+}
+$strdatDest = Join-Path $installerDir 'STRDAT.DAT'
+Copy-Item -Force -LiteralPath $strdatSource -Destination $strdatDest
+Write-Host "Copied $strdatSource -> $strdatDest"
+
 # Get version from WINBR.EXE
 $winbrPath = Join-Path $installerDir 'WINBR.EXE'
 $version = (Get-Item $winbrPath).VersionInfo.FileVersion
@@ -81,8 +94,19 @@ try {
     Pop-Location
 }
 
-# Build zip archive
+# Build zip archive. Mirror the installer's oldpatch\patch payload, including the
+# issue reporting tool (issue #104) so a manual extract matches an install.
+$issueToolDir = Join-Path $repoRoot 'issue-reporter'
+$zipItems = @(
+    "$installerDir\CHARED.EXE",
+    "$installerDir\NOVA.EXE",
+    "$installerDir\WINBR.EXE",
+    "$installerDir\STRDAT.DAT",
+    "$repoRoot\README.txt",
+    (Join-Path $issueToolDir 'BirP-Issue-Report.bat'),
+    (Join-Path $issueToolDir 'BirP-Issue-Report.ps1')
+)
 $zipPath = Join-Path $installerDir "$releaseName.zip"
-Compress-Archive -Force -Path "$installerDir\CHARED.EXE", "$installerDir\NOVA.EXE", "$installerDir\WINBR.EXE", "$repoRoot\README.txt" -DestinationPath $zipPath
+Compress-Archive -Force -Path $zipItems -DestinationPath $zipPath
 
 Write-Host "Release package completed successfully."

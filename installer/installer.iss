@@ -111,12 +111,18 @@ Source: "{code:GetCDPath}\VERSION"; DestDir: "{app}"; Flags: external ignorevers
 Source: "{code:GetCDPath}\VESATEST.EXE"; DestDir: "{app}"; Flags: external ignoreversion; Components: game
 Source: "{code:GetCDPath}\WINBR.EXE"; DestDir: "{app}"; Flags: external ignoreversion; Components: game
 
-Source: ..\..\birp-dependencies\Patch1004\*; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch
+Source: ..\..\birp-dependencies\Patch1004\*; DestDir: "{app}"; Flags: ignoreversion recursesubdirs; Components: oldpatch
 
 Source: "..\build-artifacts\binaries\Installer\CHARED.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
 Source: "..\build-artifacts\binaries\Installer\NOVA.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
 Source: "..\build-artifacts\binaries\Installer\WINBR.exe"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
+Source: "..\build-artifacts\binaries\Installer\STRDAT.DAT"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
 Source: "..\README.TXT"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
+
+; Issue reporting tool (issue #104). Static scripts shipped from the repo; a player
+; double-clicks the .bat to produce a diagnostic .zip. See issue-reporter\.
+Source: "..\issue-reporter\BirP-Issue-Report.bat"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
+Source: "..\issue-reporter\BirP-Issue-Report.ps1"; DestDir: "{app}"; Flags: ignoreversion; Components: oldpatch\patch
 
 [Run]
 Filename: "{app}\{#MyAppExeName}"; Description: "{cm:RunProgram,{cm:MyAppNameClean}}"; Flags: postinstall nowait skipifsilent
