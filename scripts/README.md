@@ -29,15 +29,15 @@ These scripts wrap calls to [MAKE.BAT](../MAKE.BAT) with specific arguments for 
 
 ## Deploy Scripts
 
-These scripts copy a specific built executable from [../build-artifacts/binaries](../build-artifacts/binaries) into the path defined by `BIRTHRT_INSTALL_DIR` for testing (with `C:\BIRTHRT` as a fallback if the environment variable is not set). They also support an optional path override to the source executable and validate that the source executable and destination directory exist before copying.
+These scripts copy a specific built executable from [../build-artifacts/binaries](../build-artifacts/binaries) into the path defined by `BIRTHRT_INSTALL_DIR` for testing (with `C:\BIRTHRT` as a fallback if the environment variable is not set). They also support an optional path override to the source executable and validate that the source executable and destination directory exist before copying. To mirror an actual patch installation, each script deploys under the installer/patch file name (`nova95.exe` -> `WINBR.EXE`, `nova.exe` -> `NOVA.EXE`, `chared.exe` -> `CHARED.EXE`) and also copies the freshly built string data as `STRDAT.DAT`.
 
-- [deploy-win-release.ps1](./deploy-win-release.ps1) - Deploys [../build-artifacts/binaries/Release/Windows/nova95.exe](../build-artifacts/binaries/Release/Windows/nova95.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-win-debug.ps1](./deploy-win-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/Windows/nova95.exe](../build-artifacts/binaries/Debug/Windows/nova95.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-chared-release.ps1](./deploy-chared-release.ps1) - Deploys [../build-artifacts/binaries/Release/Windows/chared.exe](../build-artifacts/binaries/Release/Windows/chared.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-chared-debug.ps1](./deploy-chared-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/Windows/chared.exe](../build-artifacts/binaries/Debug/Windows/chared.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-dos-release.ps1](./deploy-dos-release.ps1) - Deploys [../build-artifacts/binaries/Release/DOS/nova.exe](../build-artifacts/binaries/Release/DOS/nova.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-dos-debug.ps1](./deploy-dos-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/DOS/nova.exe](../build-artifacts/binaries/Debug/DOS/nova.exe) to `BIRTHRT_INSTALL_DIR`.
-- [deploy-helper.ps1](./deploy-helper.ps1) - Shared deploy helper that deploys one built executable from [../build-artifacts/binaries](../build-artifacts/binaries) into `BIRTHRT_INSTALL_DIR` (or `C:\BIRTHRT` fallback) after verifying the source executable and destination directory exist.
+- [deploy-win-release.ps1](./deploy-win-release.ps1) - Deploys [../build-artifacts/binaries/Release/Windows/nova95.exe](../build-artifacts/binaries/Release/Windows/nova95.exe) to `BIRTHRT_INSTALL_DIR` as `WINBR.EXE`.
+- [deploy-win-debug.ps1](./deploy-win-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/Windows/nova95.exe](../build-artifacts/binaries/Debug/Windows/nova95.exe) to `BIRTHRT_INSTALL_DIR` as `WINBR.EXE`.
+- [deploy-chared-release.ps1](./deploy-chared-release.ps1) - Deploys [../build-artifacts/binaries/Release/Windows/chared.exe](../build-artifacts/binaries/Release/Windows/chared.exe) to `BIRTHRT_INSTALL_DIR` as `CHARED.EXE`.
+- [deploy-chared-debug.ps1](./deploy-chared-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/Windows/chared.exe](../build-artifacts/binaries/Debug/Windows/chared.exe) to `BIRTHRT_INSTALL_DIR` as `CHARED.EXE`.
+- [deploy-dos-release.ps1](./deploy-dos-release.ps1) - Deploys [../build-artifacts/binaries/Release/DOS/nova.exe](../build-artifacts/binaries/Release/DOS/nova.exe) to `BIRTHRT_INSTALL_DIR` as `NOVA.EXE`.
+- [deploy-dos-debug.ps1](./deploy-dos-debug.ps1) - Deploys [../build-artifacts/binaries/Debug/DOS/nova.exe](../build-artifacts/binaries/Debug/DOS/nova.exe) to `BIRTHRT_INSTALL_DIR` as `NOVA.EXE`.
+- [deploy-helper.ps1](./deploy-helper.ps1) - Shared deploy helper that deploys one built executable from [../build-artifacts/binaries](../build-artifacts/binaries) into `BIRTHRT_INSTALL_DIR` (or `C:\BIRTHRT` fallback) after verifying the source executable and destination directory exist. Accepts an optional `-DestinationFileName` to deploy under the patch/installer name, and also copies the built `STRDAT.DAT` and the issue reporting tool (`BirP-Issue-Report.bat`/`.ps1` from [../issue-reporter](../issue-reporter)), mirroring the installer's patch payload.
 
 ## Build and Deploy Scripts
 

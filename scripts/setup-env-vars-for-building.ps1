@@ -5,7 +5,7 @@ Note that this is not the ONLY way you could set up your environment for working
 You can also set up your environment manually if you prefer, or use this script as a reference for what variables and paths need to be set.
 
 .DESCRIPTION
-Adds required references for Open Watcom v2.0, Windows 95 DDK, DirectX SDK, and UASM to PATH, INCLUDE, and LIB without creating duplicate entries. 
+Adds required references for Open Watcom v2.0, Windows 95 DDK, DirectX SDK, UASM, and Inno Setup 6 to PATH, INCLUDE, and LIB without creating duplicate entries.
 Also sets WATCOM, EDPATH, WHTMLHELP, WIPFC, and BIRTHRT_INSTALL_DIR in HKCU\Environment and for the current shell.
 Before applying any changes, validates that the directory paths it is about to set actually exist.
 Validation covers all directories that will be written to PATH/INCLUDE/LIB and all scalar path values (WATCOM, EDPATH, WHTMLHELP, WIPFC, BIRTHRT_INSTALL_DIR).
@@ -40,6 +40,11 @@ Defaults to C:\SIERRA\BIRTHRT.
 Optional override path for DIGITALV include files.
 Defaults to C:\BirP-Dependencies\Windows95DDK-INC16-DIGITALV.
 
+.PARAMETER InnoSetupRoot
+Optional override path for the Inno Setup 6 root (the folder containing iscc.exe).
+Used to build the release installer via birp-dev\scripts\build-release-package.ps1.
+Defaults to C:\BirP-Dependencies\InnoSetup-6.
+
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1
 
@@ -57,6 +62,9 @@ powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-v
 
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1 -DigitalvIncludeDir "D:\SDKs\Windows95DDK-INC16-DIGITALV"
+
+.EXAMPLE
+powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1 -InnoSetupRoot "D:\SDKs\InnoSetup-6"
 
 .OUTPUTS
 Writes human-readable status messages to the host stream, including:
@@ -82,6 +90,7 @@ Validation assumptions:
 - UASM path resolves to an existing UASM-v2_57 directory
 - BIRTHRT_INSTALL_DIR resolves to an existing directory
 - DigitalvIncludeDir resolves to an existing directory and is added to INCLUDE
+- Inno Setup path resolves to an existing InnoSetup-6 directory (containing iscc.exe) and is added to PATH
 
 Backup details:
 - backup files are written to birp-dev\scripts\env-backups
@@ -95,7 +104,8 @@ param(
     [string]$OpenWatcomRoot,
     [string]$UasmRoot,
     [string]$BirthrtInstallDir,
-    [string]$DigitalvIncludeDir
+    [string]$DigitalvIncludeDir,
+    [string]$InnoSetupRoot
 )
 
 $ErrorActionPreference = "Stop"
@@ -121,6 +131,7 @@ $Win95DdkRoot = Resolve-DefaultValue -Value $Win95DdkRoot -Default "C:\BirP-Depe
 $DxSdkRoot = Resolve-DefaultValue -Value $DxSdkRoot -Default "C:\BirP-Dependencies\DirectXSDK"
 $BirthrtInstallDir = Resolve-DefaultValue -Value $BirthrtInstallDir -Default "C:\SIERRA\BIRTHRT"
 $DigitalvIncludeDir = Resolve-DefaultValue -Value $DigitalvIncludeDir -Default "C:\BirP-Dependencies\Windows95DDK-INC16-DIGITALV"
+$InnoSetupRoot = Resolve-DefaultValue -Value $InnoSetupRoot -Default "C:\BirP-Dependencies\InnoSetup-6"
 
 $owBinNt64 = Join-Path $OpenWatcomRoot "binnt64"
 $owBinNt = Join-Path $OpenWatcomRoot "binnt"
@@ -140,7 +151,7 @@ $win95DdkLib = Join-Path $Win95DdkRoot "LIB"
 $dxSdkInclude = Join-Path $DxSdkRoot "sdk\inc"
 $dxSdkLib = Join-Path $DxSdkRoot "sdk\lib"
 
-$requiredPathRefs = @($owBinNt64, $owBinNt, $UasmRoot)
+$requiredPathRefs = @($owBinNt64, $owBinNt, $UasmRoot, $InnoSetupRoot)
 $requiredIncludeRefs = @($owH, $owHNt, $win95DdkInclude, $win95DdkInclude16, $DigitalvIncludeDir, $dxSdkInclude, $owHNtDx, $owHNtDdk)
 $requiredLibRefs = @($owLib386, $owLib386Nt, $win95DdkLib, $dxSdkLib)
 
@@ -312,5 +323,6 @@ Write-Host "WIN95DDK=$Win95DdkRoot"
 Write-Host "DXSDK=$DxSdkRoot"
 Write-Host "OPENWATCOM_ROOT=$OpenWatcomRoot"
 Write-Host "UASM=$UasmRoot"
+Write-Host "INNOSETUP=$InnoSetupRoot"
 Write-Host "BIRTHRT_INSTALL_DIR=$BirthrtInstallDir"
 Write-Host "DIGITALV include path in INCLUDE=$DigitalvIncludeDir"

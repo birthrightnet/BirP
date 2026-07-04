@@ -23,7 +23,7 @@ and validates that required toolchain directories exist on disk.
 Validation scope includes:
 - duplicate checks for PATH, INCLUDE, and LIB
 - presence checks for WATCOM, EDPATH, WHTMLHELP, WIPFC, and BIRTHRT_INSTALL_DIR
-- existence checks for required Open Watcom, Windows95DDK, DirectXSDK, and UASM directories referenced by PATH/INCLUDE/LIB/scalar values
+- existence checks for required Open Watcom, Windows95DDK, DirectXSDK, UASM, and Inno Setup 6 directories referenced by PATH/INCLUDE/LIB/scalar values
 
 This script reads registry values only and never writes or modifies HKCU\Environment.
 
@@ -226,7 +226,8 @@ $pathIssues = 0
 $requiredPathFromPath = @(
     [PSCustomObject]@{ Name = 'OpenWatcom binnt64'; Pattern = '(?i)\\OPENWATCOM-v2_0\\binnt64\\?$' },
     [PSCustomObject]@{ Name = 'OpenWatcom binnt'; Pattern = '(?i)\\OPENWATCOM-v2_0\\binnt\\?$' },
-    [PSCustomObject]@{ Name = 'UASM-v2_57'; Pattern = '(?i)\\UASM-v2_57\\?$' }
+    [PSCustomObject]@{ Name = 'UASM-v2_57'; Pattern = '(?i)\\UASM-v2_57\\?$' },
+    [PSCustomObject]@{ Name = 'InnoSetup-6'; Pattern = '(?i)\\InnoSetup-6\\?$' }
 )
 
 foreach ($req in $requiredPathFromPath) {
