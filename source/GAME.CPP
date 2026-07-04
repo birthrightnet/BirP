@@ -890,7 +890,7 @@ void ShowStatus(LONG tID, LONG hPossibleStats)
 		
 		SetAnimSequence(iAnim, (anim.seq * NUMROTATIONS));
     }
-	
+
 	SHORT my_menu = (AttribFlag = (fDomainTurn&&enemy))?
 		(D_AVATAR_ATTRIBUTES2):(D_AVATAR_ATTRIBUTES);
 		
@@ -906,7 +906,7 @@ void ShowStatus(LONG tID, LONG hPossibleStats)
 		SetButtonLabel(my_menu, 18, STR_AVA_ATT_ARM, 173);
 		SetButtonLabel(my_menu, 16, STR_AVA_ATT_THA, 173);
 	}
-	
+
 	ShowMenu(my_menu);
 }
 
@@ -919,7 +919,7 @@ void HideStatus(LONG MenuCombo, LONG)
 {
 	SHORT	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	if (iAnim > 0)
 	{
 		MarkOldAnimPurgable(iAnim, anim.seq);
@@ -955,14 +955,14 @@ void HideStatus2(LONG MenuCombo, LONG)
 {
 	SHORT	MenuId, ButtonId;
 	SPLIT_LONG(MenuCombo, MenuId, ButtonId);
-	
+
 	if (iAnim > 0)
 	{
 		MarkOldAnimPurgable(iAnim, anim.seq);
 		RemoveAnim(iAnim);
 		iAnim = fERROR;
 	}
-	
+
 	// click the button
 	SetButtonHilight(D_AVATAR_ATTRIBUTES2, 4, TRUE);
 	fUpdatePanels = TRUE;

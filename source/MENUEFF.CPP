@@ -20,7 +20,11 @@ void SpinOutBitmap (SHORT x, SHORT y, SHORT iBitm, SHORT bx, SHORT by, SHORT w, 
 	long Width=pBitm->w;
 	 
 	
-	AddSndObj(SND_INTRO_VOX1,0,VOLUME_EIGHTY);	//renamed sound.... gotta fix it.
+	// [issue #102] Use the short menu-zoom whoosh, matching every other menu
+	// (see MENU.C SND_UI_MENU_ZOOM_OUT). The old SND_INTRO_VOX1 was a leftover
+	// intro-voiceover clip ("renamed sound.... gotta fix it") that was far too
+	// long for a menu open/close.
+	AddSndObj(SND_UI_MENU_ZOOM_OUT,0,VOLUME_EIGHTY);
 
 	// spin out a menu
 	for (LONG i=0;i<63;i+=6)
@@ -83,10 +87,21 @@ void SpinInBitmap (SHORT x, SHORT y, SHORT iBitm, SHORT bx, SHORT by, SHORT w, S
 		DirectDrawPreFrame();
 		run_timers();
 	}
-	KillSoundsNoFade();
-	AddSndObj(SND_INTRO_VOX2,0,VOLUME_EIGHTY);	//renamed sound.... gotta fix it.
-	
-}	
+	// [issue #102] Do NOT kill all sounds here. SpinInBitmap runs only for the
+	// D_SPIN menus (the avatar status and inventory screens), so this blanket
+	// KillSoundsNoFade() was stopping the background (adventure/realm) music every
+	// time the player opened a character sheet, and nothing restarted it until the
+	// next combat. Removing it lets the streamed music keep playing during the
+	// spin-in animation. (The spin loop above calls run_timers(), which services
+	// the audio timer, so the music is not starved.)
+	// KillSoundsNoFade();
+	// [issue #102] Use the short menu-zoom whoosh, matching every other menu
+	// (see MENU.C SND_UI_MENU_ZOOM_IN). The old SND_INTRO_VOX2 was a leftover
+	// intro-voiceover clip ("renamed sound.... gotta fix it") that was far too
+	// long for a menu open.
+	AddSndObj(SND_UI_MENU_ZOOM_IN,0,VOLUME_EIGHTY);
+
+}
 
 
 void ScrollOpenBitmap (SHORT x, SHORT y, SHORT iBitm, SHORT bx, SHORT by, SHORT w, SHORT h,SHORT hDest, POINT start, POINT bck, SHORT bckw, SHORT bckh)
