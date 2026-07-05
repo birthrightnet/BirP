@@ -1,0 +1,4 @@
+# Local per-run artifacts if written under this folder (default output is
+# ../build-artifacts/test-harness, which is already untracked).
+/artifacts/
+*.tmp.png
