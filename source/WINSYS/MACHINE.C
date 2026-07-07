@@ -1059,14 +1059,17 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
 
 void UpdateFPS(void)
 {
-	static LONG lastTime = 0;
-	static LONG curTime = 0;
-	static LONG frames = 0;
+	static DWORD lastTime = 0;
+	static DWORD curTime = 0;
+	static DWORD frames = 0;
 
 	curTime = timeGetTime();
 	frames++;
 
-	if(curTime - 1000 > lastTime)
+	// Unsigned elapsed-time compare so this keeps working past ~24.8 days of
+	// uptime, when a signed timeGetTime() would go negative. DWORD subtraction
+	// wraps correctly.
+	if(curTime - lastTime > 1000)
 	{
 		fps = frames;
 		lastTime = curTime;

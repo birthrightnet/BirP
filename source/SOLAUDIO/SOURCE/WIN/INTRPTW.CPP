@@ -19,7 +19,7 @@ static	void		StopTimer(void);
 struct Server {
 	Boolean		inUse;		// is server active?
 	int			freq;			// desired freqency of service (MSec)
-	int			prevTime;	// system time of last service
+	DWORD			prevTime;	// system time of last service (unsigned: wraps correctly)
 	ServerFunc*	function;	// pointer to server function
 } servers[8];
 
@@ -75,14 +75,22 @@ InstallServer(ServerFunc* proc, int freqMSec)
 			
 			timerAccuracy = max(10, timerCapability.wPeriodMin);
 			timerMaxPeriod = timerCapability.wPeriodMax;
+			// Register this server BEFORE SetTimer so SetTimer counts it and
+			// actually starts the timer. Previously the slot was marked inUse
+			// only AFTER SetTimer ran, so a first/only server (the audio feed
+			// service) was not seen by SetTimer when it decided whether to start
+			// the timer.
+			freeSlot->function	= proc;
+			freeSlot->freq		= freqMSec - timerAccuracy;	// incase we are called a bit too soon.
+			freeSlot->prevTime	= 0;
+			freeSlot->inUse		= True;
 			// fire up the timer if not already running
 			Success = SetTimer(&TimersStillRunning);
-			if (Success == True)
+			if (Success != True)
 			{
-				freeSlot->function	= proc;
-				freeSlot->inUse		= True;
-				freeSlot->freq		= freqMSec - timerAccuracy;	// incase we are called a bit too soon.
-				freeSlot->prevTime	= 0;
+				// back out the registration if the timer could not be started
+				freeSlot->inUse		= False;
+				freeSlot->function	= 0;
 			}
 		}
 	}
@@ -191,20 +199,23 @@ TimeFunc(UINT uTimerID,UINT uMsg,DWORD dwUser,DWORD dw1,DWORD dw2)
 {
 static Boolean ServiceLock;
 Server*	cur;
-int		currTime, elapsedTime;
+DWORD		currTime, elapsedTime;
 
 	if (ServiceLock == True)
 		return;
 	ServiceLock = True;
-	// get current system time
-	currTime		= (int)timeGetTime();
+	// get current system time. Keep this UNSIGNED: timeGetTime() wraps past
+	// 2^31 ms (~24.8 days uptime) and a signed cast would go negative, making
+	// (currTime - prevTime) negative so no server ever fires. DWORD subtraction
+	// wraps correctly for intervals under ~49.7 days.
+	currTime		= timeGetTime();
 
 	//Call each server in the list.
 	for (cur = servers; cur < servers + NEls(servers); cur++) {
 		if (cur->inUse) {
 			elapsedTime = currTime - cur->prevTime;
 			// call server if enough time has elapsed
-			if (elapsedTime >= cur->freq) {
+			if (elapsedTime >= (DWORD)cur->freq) {
 				cur->prevTime = currTime;
 				(*(cur->function))();
 			}
