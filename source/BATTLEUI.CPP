@@ -4787,6 +4787,7 @@ void PaintBattleWin (LONG MenuCombo, LONG )
 	SHORT	PFBM, Troops, dummy;
 	SHORT	UnitIndex;
 	SHORT	Count = 0;
+	BOOL	fRegentEscaped = FALSE;
 	//CAvatar *pAvatar;
 	char RealmName[80];
 	(void)j;
@@ -4825,8 +4826,48 @@ void PaintBattleWin (LONG MenuCombo, LONG )
 	}
 	PFBM = gAwayUnits - PFBM;
 
+	// a defeated regent is spared by FixUnitsArray and withdraws on the
+	// realm map, so don't count them among the dead - tell the player
+	// they escaped instead
+	for (UnitIndex = SCENE_MGR::AwayIndex;
+		 UnitIndex != fERROR;
+		 UnitIndex = (SHORT) units[UnitIndex].NextUnit)
+	{
+		if(++Count > gUnitStackSize)
+			break;
+
+		if(units[UnitIndex].iHandle == fERROR)
+			continue;
+
+		CAvatar * const pAvatar = (CAvatar * const) BLKPTR(units[UnitIndex].iHandle);
+
+		if(!IsRegent(pAvatar->UnitIndex))
+			continue;
+
+		for(i=0;i<MAX_RESERVES;i++)
+		{
+			if(Reserves[0][i] == pAvatar->hThis)
+				break;
+		}
+
+		// not in the reserves, so the count above includes the regent
+		if(i == MAX_RESERVES)
+		{
+			fRegentEscaped = TRUE;
+			if(PFBM > 0)
+				PFBM--;
+		}
+		break;
+	}
+	Count = 0;
+
 	strcpy(RealmName, realm[sAwayRealm].mfGetName());
 	sprintf(buffer, STRMGR_GetStr(BTLUI_WIN_TEXT), RealmName, PFBM);
+	if(fRegentEscaped)
+	{
+		strcat(buffer, "\n");
+		strcat(buffer, STRMGR_GetStr(BTLUI_WIN_REGENT_ESCAPED));
+	}
 
 	init_gfont(FONT_TITL_16PT);
 
@@ -4838,6 +4879,10 @@ void PaintBattleWin (LONG MenuCombo, LONG )
 
 	init_gfont(FONT_SANS_12PT);
 	Y += 64;
+	// the escape line adds a fourth line to the 16pt win text (3 lines clear
+	// with the +64 above), so push the unit list down one more title line
+	if(fRegentEscaped)
+		Y += 21;
 
 	// convert the game avatars to members of an adventuer
 	for (UnitIndex = SCENE_MGR::HomeIndex;

@@ -3824,4 +3824,7 @@ STR_DP_MODEM Modem
 STR_SAVEGAME	current.sav
 
 
+// added for the battle victory screen
+BTLUI_WIN_REGENT_ESCAPED	Their regent escaped.
+
 END

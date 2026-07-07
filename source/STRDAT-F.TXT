@@ -3952,4 +3952,7 @@ STR_DP_MODEM Modem
 // save game file name
 STR_SAVEGAME		courant.sav
 
+// added for the battle victory screen
+BTLUI_WIN_REGENT_ESCAPED	Leur régent s'est échappé.
+
 END
