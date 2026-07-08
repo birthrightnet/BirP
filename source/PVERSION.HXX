@@ -16,7 +16,7 @@
 
 // The BUILD_PATCH is manually incremented by 1 during promotion to Prod.
 // Do not update this unless you are promoting to Prod.
-#define BUILD_PATCH 1
+#define BUILD_PATCH 2
 
 // The BUILD_BUILD and CHARED_BUILD_BUILD is auto-computed from latest commit at promotion to Prod. Do not update manually.
 #ifndef BUILD_BUILD

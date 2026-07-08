@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
 Version: 1.4.2.0
-Date: 2026-06-16
+Date: 2026-07-09
 
 TABLE OF CONTENTS
 
@@ -63,17 +63,19 @@ Added
 - Added a "Halt" button during adventure combat that sets all party members to defend. (#36)
 - Added "awareness" system: characters gain awareness for 30 seconds for any other character they see, and can pathfind to them even if they lose sight of them.
 - Added several new pathfinding algorithms that allow characters to path between rooms, around obstacles, etc, which has significantly reduced instances of "unable to engage" and characters stuck in walls. (#36)
+- Added an Issue Reporting tool. Double-click BirP-Issue-Report.bat in your game folder to bundle up diagnostic files (your game and Windows versions, install path, and log/config files) into a single .zip you can attach to a bug report. (#104)
+- Added mouse wheel support in Windows. Scroll the wheel to zoom the realm map and the battlefield in and out, and to scroll or page the inventory list, the save/load list, and action province lists. (#16)
 
 Changed
 
 - Player characters start each fight in a sensible default fighting style for their class and remember the fighting style you last chose for the rest of that fight. (#36) (#53)
 - Player characters remember their last used fighting style and resume using it against nearby enemies after their current target dies (#36) (#53)
-- Assassination reports now include the assassinated unit type. (#33)
 - Party members give up a chase after 15 seconds (#36)
-- Cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
-- Lieutenant action realm button now highlights during lieutenant action, and lieutenant action no longer cancels if you cancel  (#21)
+- Lieutenant action realm button now highlights during lieutenant action, and cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
 - Halved the delay before an adventure returns to exploration after combat ends. (#14)
 - Improved adventure combat messages: attacks now name the target and its armor class, and chases show which enemy is being pursued.
+- The game now remembers your magic users' prepared spells and every party member's hotbar layout between adventures, so you don't have to set them up each time. (#24)
+- When you and an ally are both in a province with a shared enemy, your own troops now attack first. (#38)
 
 Fixed
 
@@ -82,6 +84,13 @@ Fixed
 - Fixed some crashes that could occur during two-part adventures. (#52)
 - Hardened an adventure crash point so missing visuals are skipped instead of crashing the game to the desktop. (#4)
 - Fixed start-of-round crash for DOS DEBUG builds. (#57)
+- Fixed background music cutting out (until the next fight) when you open a character's Status or Inventory screen during an adventure. The music now keeps playing. (#102)
+- Fixed rebelling provinces still collecting tax. A province in rebellion now earns no tax or regency until the rebellion is dealt with. (#76)
+- Fixed domain actions with a very high chance of success sometimes always failing instead of nearly always succeeding. (#70)
+- Fixed a defeated regent or lieutenant with nowhere to retreat getting stuck on the realm map, where it could not be fought and blocked your own troops from leaving the province. Affected saved games are repaired when you load them. (#78) (#90)
+- Fixed the battle victory screen listing an enemy regent among the dead when they actually got away. A regent you beat in a manual battle escapes to a neighboring province, so the screen now says they escaped instead of counting them as killed. (#78) (#90)
+- Fixed law claims being lost when loading a saved game; the provinces you had law claims against are now restored. (#11)
+- Fixed a bug where the music could loop every second once your PC had been running for about 25 days without a restart. (#117)
 
 1.4.1
 
@@ -113,6 +122,7 @@ Changed
 
 - Allow calling all files from game directory instead of CD; the CD is no longer required in this mode (all files must first be copied from the CD to the game directory). (#2)
 - Auto-battle now duels all regular units first, then lieutenants, then regents. Before it dueled from the bottom of the unit stack, upwards, which could result in lieutenants or regents dueling before regular units. (#19)
+- Assassination reports now include the assassinated unit type. (#33)
 
 Fixed
 
