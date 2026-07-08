@@ -1,0 +1,51 @@
+name: Installer Tests
+
+# Automated installer tests (issues #89 / #122). Runs the layered suite in
+# scripts/test-installer.ps1: compile gate, localized-string lint, pure-logic
+# self-tests, silent INSTALL/PATCH scenario matrix, CD auto-detect via subst,
+# and uninstall safety. Needs no game data and no ISO: the suite generates a
+# fake CD and placeholder payloads.
+
+on:
+  push:
+    paths:
+      - 'installer/**'
+      - 'scripts/test-installer.ps1'
+      - '.github/workflows/installer-tests.yml'
+  pull_request:
+    paths:
+      - 'installer/**'
+      - 'scripts/test-installer.ps1'
+      - '.github/workflows/installer-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Installer test suite
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Install Inno Setup
+      shell: powershell
+      run: |
+        choco install innosetup -y --no-progress
+        if ($LASTEXITCODE -ne 0) { throw "choco install innosetup failed with exit code $LASTEXITCODE" }
+
+    - name: Run installer test suite
+      shell: powershell
+      run: |
+        ./scripts/test-installer.ps1
+        exit $LASTEXITCODE
+
+    - name: Upload test workspace on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: installer-test-workspace
+        path: |
+          build-artifacts/installer-tests/*.log
+          build-artifacts/installer-tests/selftest-results.txt
+        if-no-files-found: ignore

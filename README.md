@@ -139,10 +139,14 @@ The build-artifact names above are **not** the names used in a player's install 
 Notes:
 
 - We build and replace **exactly three** executables: `WINBR.EXE` (from `nova95.exe`), `NOVA.EXE` (from `nova.exe`), and `CHARED.EXE` (from `chared.exe`). Everything else is stock CD content we leave untouched.
-- `WINBR.EXE` and `NOVA.EXE` are sourced from **both** the `game` (from-CD) and patch (our-build) components in [installer/installer.iss](./installer/installer.iss); on a full install the patched build wins. `CHARED.EXE` is patch-only.
+- `WINBR.EXE` and `NOVA.EXE` are sourced from **both** the from-CD entries and the patch (our-build) entries in [installer/installer.iss](./installer/installer.iss); on a fresh Install the patched build wins. `CHARED.EXE` is patch-only.
 - The build still **outputs** `nova95.exe`/`nova.exe`/`chared.exe` under those names in [build-artifacts/binaries](build-artifacts/binaries); only the deploy/install step renames them.
 
 It's highly recommended that you run the [test-all-builds.ps1](./scripts/test-all-builds.ps1) script as you commit changes to ensure that all build scenarios are working properly and to catch any issues early on. This script will build and deploy all scenarios (WIN|DOS, RELEASE|DEBUG, CHARED) and give you a summary of the results, including any warnings or errors that were found during the build process.
+
+### Installer tests
+
+If you change anything under [installer/](./installer), run [test-installer.ps1](./scripts/test-installer.ps1). It compiles the installer, lints the localized strings, unit tests the path-safety helpers, runs silent Install/Patch/uninstall runs against generated stand-in game files, and exits 0 on pass. It needs Inno Setup 6 but no game CD and no elevation, and it never touches a real game install. The same suite runs in CI ([installer-tests.yml](./.github/workflows/installer-tests.yml)) on every installer change.
 
 ## Testing In-Game
 

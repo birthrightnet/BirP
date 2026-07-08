@@ -29,6 +29,11 @@ PrivilegesRequired=admin
 ; Lets automated test runs pass /CURRENTUSER to install without elevation.
 ; No new UI: interactive installs still default to admin with no extra dialog.
 PrivilegesRequiredOverridesAllowed=commandline
+; Always show the directory page. The Inno default (auto) skips it when a prior
+; install is remembered, so a re-run would land in the remembered folder without
+; the player ever seeing the choice. The page still prefills the remembered
+; directory, so tier 1 of the PATCH detection ladder keeps working.
+DisableDirPage=no
 OutputDir=..\build-artifacts\binaries\Installer
 OutputBaseFilename={#MyAppSetupFile}
 Compression=lzma
