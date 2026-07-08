@@ -45,6 +45,16 @@ Optional override path for the Inno Setup 6 root (the folder containing iscc.exe
 Used to build the release installer via birp-dev\scripts\build-release-package.ps1.
 Defaults to C:\BirP-Dependencies\InnoSetup-6.
 
+.PARAMETER BirthrtCdIso
+Optional path to the Birthright game CD .iso, used only by the automated test
+harness (issue #58) to install the official game content. No default - only set
+when provided (or preserved from an existing user value). Validated as a file.
+
+.PARAMETER BirthrtWinIso
+Optional path to a Windows OS install .iso, used only by the test harness VM run
+mode. No default - only set when provided. Validated as a file. Desktop mode does
+not use this.
+
 .EXAMPLE
 powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\setup-env-vars-for-building.ps1
 
@@ -105,7 +115,9 @@ param(
     [string]$UasmRoot,
     [string]$BirthrtInstallDir,
     [string]$DigitalvIncludeDir,
-    [string]$InnoSetupRoot
+    [string]$InnoSetupRoot,
+    [string]$BirthrtCdIso,
+    [string]$BirthrtWinIso
 )
 
 $ErrorActionPreference = "Stop"
@@ -132,6 +144,17 @@ $DxSdkRoot = Resolve-DefaultValue -Value $DxSdkRoot -Default "C:\BirP-Dependenci
 $BirthrtInstallDir = Resolve-DefaultValue -Value $BirthrtInstallDir -Default "C:\SIERRA\BIRTHRT"
 $DigitalvIncludeDir = Resolve-DefaultValue -Value $DigitalvIncludeDir -Default "C:\BirP-Dependencies\Windows95DDK-INC16-DIGITALV"
 $InnoSetupRoot = Resolve-DefaultValue -Value $InnoSetupRoot -Default "C:\BirP-Dependencies\InnoSetup-6"
+
+# Optional test-harness image variables (issue #58). These are user-specific .iso
+# files with no sensible default, so they are only configured when provided (via
+# parameter, or preserved from an existing user value). They are NOT required to
+# build; leaving them unset changes nothing.
+$BirthrtCdIso = Resolve-DefaultValue -Value $BirthrtCdIso -Default ([Environment]::GetEnvironmentVariable("BIRTHRT_CD_ISO", "User"))
+$BirthrtWinIso = Resolve-DefaultValue -Value $BirthrtWinIso -Default ([Environment]::GetEnvironmentVariable("BIRTHRT_WIN_ISO", "User"))
+
+$optionalFileScalars = [ordered]@{}
+if (-not [string]::IsNullOrWhiteSpace($BirthrtCdIso)) { $optionalFileScalars["BIRTHRT_CD_ISO"] = $BirthrtCdIso }
+if (-not [string]::IsNullOrWhiteSpace($BirthrtWinIso)) { $optionalFileScalars["BIRTHRT_WIN_ISO"] = $BirthrtWinIso }
 
 $owBinNt64 = Join-Path $OpenWatcomRoot "binnt64"
 $owBinNt = Join-Path $OpenWatcomRoot "binnt"
@@ -179,6 +202,23 @@ function Assert-DirectoryPathsExist {
     }
 }
 
+function Assert-FilePathsExist {
+    param(
+        [System.Collections.IDictionary]$NamedPaths,
+        [string]$Category,
+        [System.Collections.Generic.List[string]]$MissingPaths
+    )
+
+    foreach ($name in $NamedPaths.Keys) {
+        $path = $NamedPaths[$name]
+        if ([string]::IsNullOrWhiteSpace($path)) { continue }
+
+        if (-not (Test-Path -LiteralPath $path -PathType Leaf)) {
+            $MissingPaths.Add($Category + ': ' + $name + ' -> ' + $path) | Out-Null
+        }
+    }
+}
+
 function Validate-ConfiguredPaths {
     $missingPaths = New-Object 'System.Collections.Generic.List[string]'
 
@@ -186,6 +226,7 @@ function Validate-ConfiguredPaths {
     Assert-DirectoryPathsExist -Paths $requiredIncludeRefs -Category 'INCLUDE' -MissingPaths $missingPaths
     Assert-DirectoryPathsExist -Paths $requiredLibRefs -Category 'LIB' -MissingPaths $missingPaths
     Assert-DirectoryPathsExist -Paths @($requiredScalars.Values) -Category 'SCALAR' -MissingPaths $missingPaths
+    Assert-FilePathsExist -NamedPaths $optionalFileScalars -Category 'FILE' -MissingPaths $missingPaths
 
     if ($missingPaths.Count -gt 0) {
         Write-Host 'The following required directories do not exist:' -ForegroundColor Red
@@ -270,6 +311,10 @@ function Write-UserVars {
     foreach ($name in $requiredScalars.Keys) {
         Set-RegValue -RegPath $regPath -Name $name -Value $requiredScalars[$name] -Type "String"
     }
+
+    foreach ($name in $optionalFileScalars.Keys) {
+        Set-RegValue -RegPath $regPath -Name $name -Value $optionalFileScalars[$name] -Type "String"
+    }
 }
 
 Validate-ConfiguredPaths
@@ -289,6 +334,8 @@ $origUserEdPath = [Environment]::GetEnvironmentVariable("EDPATH", "User")
 $origUserWHtmlHelp = [Environment]::GetEnvironmentVariable("WHTMLHELP", "User")
 $origUserWipfc = [Environment]::GetEnvironmentVariable("WIPFC", "User")
 $origUserBirthrtInstallDir = [Environment]::GetEnvironmentVariable("BIRTHRT_INSTALL_DIR", "User")
+$origUserBirthrtCdIso = [Environment]::GetEnvironmentVariable("BIRTHRT_CD_ISO", "User")
+$origUserBirthrtWinIso = [Environment]::GetEnvironmentVariable("BIRTHRT_WIN_ISO", "User")
 
 @(
     "Original Path=$origUserPath"
@@ -299,6 +346,8 @@ $origUserBirthrtInstallDir = [Environment]::GetEnvironmentVariable("BIRTHRT_INST
     "Original WHTMLHELP=$origUserWHtmlHelp"
     "Original WIPFC=$origUserWipfc"
     "Original BIRTHRT_INSTALL_DIR=$origUserBirthrtInstallDir"
+    "Original BIRTHRT_CD_ISO=$origUserBirthrtCdIso"
+    "Original BIRTHRT_WIN_ISO=$origUserBirthrtWinIso"
 ) | Set-Content -Path $backupFile -Encoding ascii
 
 [void](Write-UserVars)
@@ -315,6 +364,9 @@ $env:LIB = $sessionLib
 foreach ($name in $requiredScalars.Keys) {
     Set-Item -Path ("Env:" + $name) -Value $requiredScalars[$name]
 }
+foreach ($name in $optionalFileScalars.Keys) {
+    Set-Item -Path ("Env:" + $name) -Value $optionalFileScalars[$name]
+}
 
 Write-Host "This shell was updated for immediate use."
 Write-Host "Recommended verification: powershell -NoProfile -ExecutionPolicy Bypass -File birp-dev\scripts\check-for-duplicate-env-vars.ps1"
@@ -326,3 +378,5 @@ Write-Host "UASM=$UasmRoot"
 Write-Host "INNOSETUP=$InnoSetupRoot"
 Write-Host "BIRTHRT_INSTALL_DIR=$BirthrtInstallDir"
 Write-Host "DIGITALV include path in INCLUDE=$DigitalvIncludeDir"
+if ($optionalFileScalars.Contains("BIRTHRT_CD_ISO")) { Write-Host "BIRTHRT_CD_ISO=$($optionalFileScalars['BIRTHRT_CD_ISO'])" } else { Write-Host "BIRTHRT_CD_ISO=(not set - optional, test harness only)" }
+if ($optionalFileScalars.Contains("BIRTHRT_WIN_ISO")) { Write-Host "BIRTHRT_WIN_ISO=$($optionalFileScalars['BIRTHRT_WIN_ISO'])" } else { Write-Host "BIRTHRT_WIN_ISO=(not set - optional, test harness VM mode only)" }
