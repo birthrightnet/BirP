@@ -115,7 +115,11 @@ function Invoke-BirpScenario {
     #    resolution), fall back to click-until-changed.
     & $Ctx.Note "Clicking through the attract loop until the main menu appears ..."
     $mainMenuRef = Join-Path $Ctx.RefDir 'main-menu.png'
-    $reached = Invoke-BirpClickUntilReference -Hwnd $hwnd -Fx 0.5 -Fy 0.5 -ReferencePath $mainMenuRef -Region $MENU_ITEMS_REGION -MaxClicks 16 -MatchThreshold 0.10
+    # 40 clicks of headroom: the attract loop is longer than it looks - a launch on a
+    # debug build measured 17 clicks to the menu, so the old limit of 16 fell one
+    # short and dropped through to the fallback, which then settled on an attract
+    # frame and failed every screen check after it.
+    $reached = Invoke-BirpClickUntilReference -Hwnd $hwnd -Fx 0.5 -Fy 0.5 -ReferencePath $mainMenuRef -Region $MENU_ITEMS_REGION -MaxClicks 40 -MatchThreshold 0.10
     if ($null -eq $reached) {
         & $Ctx.Note "No matching main-menu baseline; falling back to click-until-changed."
         $reached = Invoke-BirpClickUntilChanged -Hwnd $hwnd -Fx 0.5 -Fy 0.5 -BaselinePath $titleShot -MaxClicks 8 -ChangeThreshold 0.20

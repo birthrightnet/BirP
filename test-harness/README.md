@@ -26,6 +26,26 @@ exits cleanly. (Multiplayer is skipped: from the boot menu it either does nothin
 drops into connection setup that is hard to back out of; it belongs to a later
 in-game scenario.)
 
+Three more scenarios cover the crashes that happen when a new game is started
+while one is already running (issues #9, #12, #13). They share
+`scenarios\adventure-route.ps1`, which knows how to reach the main menu, open the
+game-type panel, enter Adventures Only, and launch an adventure:
+
+- `new-game-adventures-only` - Adventures Only started from an Adventures Only
+  game (#9). Menu-only and quick. **Only reproduces on an install with no
+  `advscn.dat`**: with that file present the game reconnects the party list and
+  the bug is hidden. Delete `advscn.dat` and `advinv.dat` first to test it.
+- `new-game-tutorial-from-adventure` - a Tutorial started from inside a running
+  adventure (#13).
+- `new-game-battles-from-adventure` - Battles Only started from inside a running
+  adventure (#12). **Only reproduces while combat is live.** The scenario opens
+  the game menu from exploration, so whether the party is engaged depends on when
+  the enemies reach it; run it more than once.
+
+All three are written to fail loudly at the step that breaks: they check the
+process is alive and no fresh `Fatal.err` exists after every risky click, and stop
+rather than clicking on blindly into a dead game.
+
 ## Two run modes
 
 - **Desktop** (default) - runs on this machine's own desktop. It works and is
