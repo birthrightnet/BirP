@@ -2615,12 +2615,22 @@ void RunAdvOnly(void)
 		SiteList[iSite].mfSetSiteState(ADVENTURE_PRACTICE_SITE::VISITED_SITE);
 	}
 	
+	// The character stats blocks are freed and rebuilt every time game files
+	// are loaded, and the party list caches a handle into them.  Reconnect
+	// every adventurer before anything reads their stats.  Without this, a
+	// second Adventures Only game reads through the previous game's freed
+	// blocks.  (issue #9)
+	for (i=0; i<LIST_SIZE; i++)
+	{
+		Adventurers[i].mfSetOnlyRegentIndex(Adventurers[i].mfGetRegentIndex());
+	}
+
 	// scan the party list for dead bodies
 	for (i=0; i<LIST_SIZE; i++)
 	{
 		Adventurers[i].mfCheckStatsDead();
 	}
-	
+
 	ClearUnitLists();
 	
 	// // clear hilight bar
@@ -3692,6 +3702,42 @@ void ResetToNonTutorialAdventures (void)
 	advsite[0].iPlaces = 54;
 }
 
+/* ========================================================================
+   Function    - EndRunningGame
+   Description - Finish leaving whatever is running before SelectGameType
+                 builds a new game.  Two things have to happen here, and in
+                 this order:
+
+                 1. Drop back to the plain map game type.  Releasing a scene
+                    returns to the map through InitDomainTurn, which reopens
+                    the adventure or battle setup screen whenever it still
+                    sees the old game type (GAMEMAP.CPP).  Leaving the old
+                    type in place made Battles Only reopen the adventure
+                    screen and write a full save out of avatar and inventory
+                    blocks the release had just freed.  (issue #12)
+
+                 2. Release the scene before the caller wipes menus, panels,
+                    requests and screen regions.  A running scene claims a
+                    region stack level in mfAdventureInit/mfBattleInit and
+                    gives it back in the matching release (SCNAI.CPP).
+                    Wiping the region stack first left that release popping
+                    an empty stack.  (issue #13)
+
+                 Nothing is harvested from the party beforehand, the way the
+                 adventure win and lose handlers do.  Every caller reloads
+                 game files straight afterwards, which discards remembered
+                 loadouts regardless.
+   Returns     - void
+   ======================================================================== */
+static void EndRunningGame(void)
+{
+	master_game_type = GAME_NORMAL;
+
+	// at the map level there is no scene to release
+	if (!fDomainTurn)
+		SCENE_MGR::mfReleaseSceneToMap(0,0);
+}
+
 void SelectGameType(LONG MenuCombo, LONG type)
 {
 	LONG	i;
@@ -3830,6 +3876,9 @@ void SelectGameType(LONG MenuCombo, LONG type)
   				if (fp == NULL)
   					break;
 
+				// leave the running game before anything is torn down
+				EndRunningGame();
+
 				master_game_type = GAME_INTRO;
    				LoadGameFiles(fp);
 	 			FileClose(fp);
@@ -3936,8 +3985,10 @@ void SelectGameType(LONG MenuCombo, LONG type)
 			}
 			else
 			{
+				// leave the running game before anything is torn down
+				EndRunningGame();
+
 				ResetToNonTutorialAdventures();
-				master_game_type = GAME_NORMAL;
 				HideMenu(D_GAME_COMPLEXITY);
 				RunMenus();
 				GAMEToggleMainMenu(FALSE,0);
@@ -3986,12 +4037,9 @@ void SelectGameType(LONG MenuCombo, LONG type)
 			}
 		
 		case 3:
-			if (!fDomainTurn)
-			{
-		    	// release a running scene
-		    	SCENE_MGR::mfReleaseSceneToMap(0,0);
-		 	}
-		 	
+			// leave the running game before anything is torn down
+			EndRunningGame();
+
 			//GEH 8/5/97
 			// reload virgin copies of the .ava and .inv files
 			//StatReadAll();
@@ -4036,12 +4084,9 @@ void SelectGameType(LONG MenuCombo, LONG type)
 			break;
 			
 		case 4:
-			if (!fDomainTurn)
-			{
-				// release a running scene
-				SCENE_MGR::mfReleaseSceneToMap(0,0);
-			}
-			
+			// leave the running game before anything is torn down
+			EndRunningGame();
+
 			//GEH 8/5/97
 			// reload virgin copies of the .ava and .inv files
 			//StatReadAll();
