@@ -3319,19 +3319,31 @@ void SelectAdventures(void)
 	
 }
 
+/* advscn.dat is a fixed size record: the site states, the seen-all-sites
+   flag, the dead and in-party flags, the regent indexes and the selected
+   site.  ReadAdvScenario checks the file against this before trusting it.
+   (issue #133) */
+#define ADV_SCENARIO_SIZE	((LONG)(  LIST_SIZE * sizeof(UBYTE)		/* site states */		\
+									+ sizeof(SHORT)					/* SeenAllSites */		\
+									+ LIST_SIZE * sizeof(UBYTE)		/* dead */				\
+									+ LIST_SIZE * sizeof(UBYTE)		/* in party */			\
+									+ LIST_SIZE * sizeof(UBYTE)		/* regent indexes */	\
+									+ sizeof(UBYTE)))				/* selected site */
+
 /* ========================================================================
    Function    - WriteAdvScenario
    Description - dump out the adventure data
-   Returns     - 
+   Returns     -
    ======================================================================== */
 static void WriteAdvScenario(void)
 {
 	SHORT	i, count;
 	FILE	*fp;
-	
-	// open Scenario file
-	fp = fopen("advscn.dat", "w");	
-	
+
+	// open Scenario file.  Binary: this is a byte for byte record, and in
+	// text mode a byte of value 10 goes to disk as two bytes. (issue #133)
+	fp = fopen("advscn.dat", "wb");
+
 	if (fp == NULL)
 		return;
 
@@ -3370,16 +3382,33 @@ static void WriteAdvScenario(void)
 static void ReadAdvScenario(void)
 {
 	SHORT	i, count;
+	LONG	lSize;
 	FILE	*fp;
-	
-	// open Scenario file
-	fp = fopen("advscn.dat", "r");	
-	
+
+	// open Scenario file.  Binary, to match WriteAdvScenario. (issue #133)
+	fp = fopen("advscn.dat", "rb");
+
 	if (fp == NULL)
 		return;
 
+	// A file of any other size was written by an older build in text mode,
+	// which turned every byte of value 10 into two bytes on disk and shifted
+	// everything after it, or it was truncated.  Reading one back would put
+	// arbitrary values into the site states and the selected site, so start
+	// over instead.  The next WriteAdvScenario replaces it. (issue #133)
+	fseek(fp, 0, SEEK_END);
+	lSize = ftell(fp);
+	if (lSize != ADV_SCENARIO_SIZE)
+	{
+		logWarn("PRACTICE.CPP - ReadAdvScenario: advscn.dat is %ld bytes, expected %ld; ignoring it",
+				lSize, ADV_SCENARIO_SIZE);
+		fclose(fp);
+		return;
+	}
+	fseek(fp, 0, SEEK_SET);
+
 	iSite = 0;
-	
+
 	for (i = 0; i < LIST_SIZE; i++)
 	{
 		UBYTE val;
@@ -3427,7 +3456,16 @@ static void ReadAdvScenario(void)
 		Adventurers[i].mfSetOnlyRegentIndex(val);
 	}
 	count = fread(&iSite, sizeof(UBYTE), 1, fp);
-	
+
+	// the selected site indexes SiteList[], so never let a value off disk
+	// out of range.  Fall back to the first site. (issue #133)
+	if (!count || iSite >= LIST_SIZE)
+	{
+		if (count)
+			logWarn("PRACTICE.CPP - ReadAdvScenario: selected site %d out of range; using the first site", iSite);
+		iSite = 0;
+	}
+
 ExitFn:
 	fclose(fp);
 }
