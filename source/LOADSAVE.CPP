@@ -1614,6 +1614,32 @@ void LoadGameDo(LONG MenuCombo, LONG )
 			return;
 		}
 
+		// Finish leaving a running scene before anything else happens.  It has
+		// to be here, ahead of both of the things that follow:
+		//
+		//   1. LoadGameFiles frees and reloads the character stats the scene's
+		//      avatars point at, so releasing after it tears the scene down
+		//      through freed blocks.
+		//   2. The region wipe below clears the stack level the scene claimed
+		//      in mfAdventureInit/mfBattleInit (SCNAI.CPP), so releasing after
+		//      it pops an empty stack, which is fatal in a debug build.
+		//
+		// Dropping back to the plain map game type first stops the release
+		// reopening the adventure or battle setup screen on its way out
+		// (GAMEMAP.CPP).  This is the same ordering the New Game path needs.
+		// (issues #13 and #132)
+		//
+		// The Load command is only offered at map level, where there is no
+		// scene, so this normally does nothing.  It is here so the load stays
+		// correct however it is reached.
+		if (SCENE_MGR::hCurrentScene != fERROR)
+		{
+			logInfo("LoadGameDo: releasing the running scene before loading");
+			master_game_type = GAME_NORMAL;
+			dturn_mode = START_NEW_OR_LOAD;
+			SCENE_MGR::mfReleaseSceneToMap(0,0);
+		}
+
 		LoadGameFiles(fp);
 	 	fclose(fp);
 
@@ -1668,24 +1694,19 @@ void LoadGameDo(LONG MenuCombo, LONG )
 		fTutorialSelected = FALSE;
 		fTutorialFirstBattle = FALSE;
 
-		// release a running scene, calls InitDomainTurn
-		if (fDomainTurn == FALSE)
-		{
-			master_game_type = GAME_NORMAL;
-			dturn_mode = START_NEW_OR_LOAD;
-			SCENE_MGR::mfReleaseSceneToMap(0,0);
-		}
-		else
-		{
-			// exit and release current domain turn
-			if (iLgMap != fERROR)		// if domain turn IS active
-				InitDomainTurn(0);
-			// start a new domain turn UI
-			fDomainTurn = FALSE;
-			master_game_type = GAME_NORMAL;
-			dturn_mode = START_NEW_OR_LOAD;
+		// Any running scene was released at the top of the load, so we are at
+		// the map level by the time we get here.  The branch that used to sit
+		// here for the scene case tested fDomainTurn, which is forced true a
+		// few lines above, so it never ran. (issue #132)
+
+		// exit and release current domain turn
+		if (iLgMap != fERROR)		// if domain turn IS active
 			InitDomainTurn(0);
-		}
+		// start a new domain turn UI
+		fDomainTurn = FALSE;
+		master_game_type = GAME_NORMAL;
+		dturn_mode = START_NEW_OR_LOAD;
+		InitDomainTurn(0);
 	}
 	ReconstructMap();
 	SetRedrawMainMapLevel();
