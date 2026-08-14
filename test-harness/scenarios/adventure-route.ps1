@@ -189,8 +189,19 @@ function Start-BirpAdventure {
       From the adventure site screen, put a few characters in the party and launch
       the adventure. Returns the loaded-scene frame path, or $null if the scene
       never loaded.
+
+      The wait for the scene is bounded rather than open-ended, because a live
+      adventure only settles into a stable frame once nothing is moving. If the
+      party is attacked on the way in, the first stable frame can be the Defeat
+      screen several minutes later, by which time the adventure is over and a
+      scenario that needed it running has nothing to work with. Callers that must
+      act while the party is alive should shorten these.
     #>
-    param([Parameter(Mandatory)][hashtable]$Ctx)
+    param(
+        [Parameter(Mandatory)][hashtable]$Ctx,
+        [int]$SceneTimeoutSec = 120,
+        [int]$SceneStableFrames = 4
+    )
 
     & $Ctx.Note "Selecting party members ..."
     $beforeParty = & $Ctx.Shot 'party-before'
@@ -219,7 +230,7 @@ function Start-BirpAdventure {
     }
 
     & $Ctx.Note "Waiting for the adventure scene to load - this is slow ..."
-    $null = Wait-BirpStable -Hwnd $Ctx.Hwnd -TimeoutSec 120 -RequiredStableFrames 4
+    $null = Wait-BirpStable -Hwnd $Ctx.Hwnd -TimeoutSec $SceneTimeoutSec -RequiredStableFrames $SceneStableFrames
     $scene = & $Ctx.Shot 'adventure-scene'
 
     # The scene must differ from both the site screen and the Prepare Magic screen,

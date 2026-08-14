@@ -26,8 +26,8 @@ exits cleanly. (Multiplayer is skipped: from the boot menu it either does nothin
 drops into connection setup that is hard to back out of; it belongs to a later
 in-game scenario.)
 
-Three more scenarios cover the crashes that happen when a new game is started
-while one is already running (issues #9, #12, #13). They share
+Four more scenarios cover the failures that happen when a new game is started
+while one is already running (issues #9, #12, #13, #31). They share
 `scenarios\adventure-route.ps1`, which knows how to reach the main menu, open the
 game-type panel, enter Adventures Only, and launch an adventure:
 
@@ -41,8 +41,14 @@ game-type panel, enter Adventures Only, and launch an adventure:
   adventure (#12). **Only reproduces while combat is live.** The scenario opens
   the game menu from exploration, so whether the party is engaged depends on when
   the enemies reach it; run it more than once.
+- `new-game-expert-from-adventure` - an Expert Full Game started from inside a
+  running adventure ([#31](https://github.com/Shiryou/BirP/issues/31)). Also
+  checks the left window comes back, by clicking a playable realm and confirming
+  the regent choices fill it in. It shortens the wait for the adventure scene so
+  it acts while the party is still alive: left to settle on its own, a scene
+  under attack only reaches a stable frame once the party is dead.
 
-A fourth scenario, `load-saved-game`, is a regression test for the load path
+A fifth scenario, `load-saved-game`, is a regression test for the load path
 ([issue #132](https://github.com/Shiryou/BirP/issues/132)). It loads the first
 saved game from the main menu, checks the realm map came up and the game button
 still works, then loads a second time without quitting and checks the same
@@ -50,7 +56,7 @@ things again. The second load is the point: a screen region left unbalanced by
 the first load shows up on the second pass, not the first. It needs at least one
 file in `<install>\SaveGame` and says so plainly if there is none.
 
-All three of the new-game scenarios are written to fail loudly at the step that breaks: they check the
+All four of the new-game scenarios are written to fail loudly at the step that breaks: they check the
 process is alive and no fresh `Fatal.err` exists after every risky click, and stop
 rather than clicking on blindly into a dead game.
 
