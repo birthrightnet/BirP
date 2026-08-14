@@ -42,7 +42,15 @@ game-type panel, enter Adventures Only, and launch an adventure:
   the game menu from exploration, so whether the party is engaged depends on when
   the enemies reach it; run it more than once.
 
-All three are written to fail loudly at the step that breaks: they check the
+A fourth scenario, `load-saved-game`, is a regression test for the load path
+([issue #132](https://github.com/Shiryou/BirP/issues/132)). It loads the first
+saved game from the main menu, checks the realm map came up and the game button
+still works, then loads a second time without quitting and checks the same
+things again. The second load is the point: a screen region left unbalanced by
+the first load shows up on the second pass, not the first. It needs at least one
+file in `<install>\SaveGame` and says so plainly if there is none.
+
+All three of the new-game scenarios are written to fail loudly at the step that breaks: they check the
 process is alive and no fresh `Fatal.err` exists after every risky click, and stop
 rather than clicking on blindly into a dead game.
 

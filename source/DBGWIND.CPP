@@ -99,7 +99,12 @@ enum DEBUG_TEST_ACTION
 	/* Stage the issue 38 scenario: a player stack, an allied NPC stack, and an
 	   enemy stack (all at war as needed) in one province, so the end-of-turn
 	   battle resolution can be exercised. */
-	DEBUG_TEST_ACTION_SETUP_BATTLE_TEST
+	DEBUG_TEST_ACTION_SETUP_BATTLE_TEST,
+
+	/* Append a stray byte to advscn.dat so it is the wrong length, the way an
+	   older text-mode build could leave it, to check the Adventures Only
+	   scenario file is refused rather than read back shifted (issue 133). */
+	DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO
 };
 
 /* ========================================================================
@@ -1065,6 +1070,66 @@ static void DebugSetupIssue38BattleTest(char *cpResult, LONG resultLen)
 		DebugRealmName((LONG)enemyRealm));
 }
 
+/* ========================================================================
+	Function	- DebugCorruptAdvScenarioFile
+	Description - Appends one byte of value 10 to advscn.dat, the Adventures
+				  Only scenario file, leaving it one byte longer than the
+				  fixed-size record the game writes.
+
+				  This reproduces what an older build could leave behind.
+				  The file used to be opened in text mode, so a byte of
+				  value 10 anywhere in it went to disk as two bytes and
+				  shifted every value after it, including the selected site
+				  that indexes the eight-entry site list.
+
+				  After clicking this, start an Adventures Only game.  The
+				  scenario file should be refused and rebuilt, with a warning
+				  in winbr.log, and the site screen should come up with the
+				  first site selected rather than a garbage one. (issue 133)
+	Parameters	- cpResult  : buffer for the message shown to the developer.
+				  resultLen : size of that buffer in bytes.
+	Returns		- (void)
+	======================================================================== */
+static void DebugCorruptAdvScenarioFile(char *cpResult, LONG resultLen)
+{
+	FILE			*fp;
+	long			 sizeBefore;
+	unsigned char	 stray = 10;
+
+	fp = fopen("advscn.dat", "rb");
+	if (fp == NULL)
+	{
+		snprintf(cpResult, resultLen,
+			"advscn.dat does not exist yet. Start an Adventures Only game and "
+			"launch an adventure first, then try again.");
+		return;
+	}
+
+	fseek(fp, 0, SEEK_END);
+	sizeBefore = ftell(fp);
+	fclose(fp);
+
+	fp = fopen("advscn.dat", "ab");
+	if (fp == NULL)
+	{
+		snprintf(cpResult, resultLen, "Could not open advscn.dat for appending.");
+		logWarn("DebugCorruptAdvScenarioFile: could not open advscn.dat for appending");
+		return;
+	}
+
+	fwrite(&stray, sizeof(stray), 1, fp);
+	fclose(fp);
+
+	logInfo("DebugCorruptAdvScenarioFile: advscn.dat grown from %ld to %ld bytes",
+			sizeBefore, sizeBefore + 1);
+
+	snprintf(cpResult, resultLen,
+		"advscn.dat grown from %ld to %ld bytes. Start an Adventures Only game: "
+		"the file should be ignored and rebuilt, with a warning in winbr.log, and "
+		"the first site should be selected.",
+		sizeBefore, sizeBefore + 1);
+}
+
 /* -----------------------------------------------------------------------
    Win32 child-window control IDs used by the debug test window.
    Values are in the 4100 range to avoid collisions with any standard
@@ -1103,7 +1168,10 @@ enum
 	DBGWIND_CTL_DUMP_UNITS_BTN = 4109,
 
 	/* "Set up issue 38 battle test" push-button. */
-	DBGWIND_CTL_SETUP_BATTLE_BTN = 4110
+	DBGWIND_CTL_SETUP_BATTLE_BTN = 4110,
+
+	/* "Corrupt advscn.dat" push-button. */
+	DBGWIND_CTL_CORRUPT_ADVSCN_BTN = 4111
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -1215,6 +1283,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 350, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_SETUP_BATTLE_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Corrupt advscn.dat - check it is refused (adventures only)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 388, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_CORRUPT_ADVSCN_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -1274,6 +1348,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_SETUP_BATTLE_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_SETUP_BATTLE_TEST;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_CORRUPT_ADVSCN_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -1358,7 +1438,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 436;
+	LONG height = 474;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -1548,6 +1628,13 @@ void DebugShowTestWindow(LONG, LONG)
 			DebugSetupIssue38BattleTest(message, sizeof(message));
 			DebugShowResult("Debug Test", message);
 		}
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO)
+	{
+		char message[512];
+
+		DebugCorruptAdvScenarioFile(message, sizeof(message));
+		DebugShowResult("Debug Test", message);
 	}
 #else
 	logWarn("DebugShowTestWindow is only available on WIN DEBUG builds");
