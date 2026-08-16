@@ -48,7 +48,16 @@ game-type panel, enter Adventures Only, and launch an adventure:
   it acts while the party is still alive: left to settle on its own, a scene
   under attack only reaches a stable frame once the party is dead.
 
-A fifth scenario, `load-saved-game`, is a regression test for the load path
+`battles-only-gorgon-report` covers the Battles Only battle report
+([issue #55](https://github.com/Shiryou/BirP/issues/55)). It selects the Defeat
+the Gorgon lesson, fights it, and captures the report so the enemy naming can be
+read. Neither side advances unless commanded, so it retreats to end the battle;
+the defeat text names the same realm the victory text would. It also picks
+scenario 1 before scenario 30, because the game remembers the lesson you last
+chose between sessions and a run starting on 30 could not tell a successful
+click from a missed one.
+
+A further scenario, `load-saved-game`, is a regression test for the load path
 ([issue #132](https://github.com/Shiryou/BirP/issues/132)). It loads the first
 saved game from the main menu, checks the realm map came up and the game button
 still works, then loads a second time without quitting and checks the same

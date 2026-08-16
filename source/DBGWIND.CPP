@@ -48,6 +48,12 @@ extern HWND hwndApp;
 extern void ShowQuestItemVictoryScreen(void);
 
 #if defined(_DEBUG)
+/* Logs the opposing army's realm for every Battles Only scenario.  Defined in
+   PRACTICE.CPP, next to the code that decides it. */
+extern LONG DebugDumpBtlScenarioRealms(void);
+#endif
+
+#if defined(_DEBUG)
 
 /* The debug test window and every helper it uses (below, through the Win32
    window implementation) are a Windows-only facility.  DOS _DEBUG builds get
@@ -104,7 +110,12 @@ enum DEBUG_TEST_ACTION
 	/* Append a stray byte to advscn.dat so it is the wrong length, the way an
 	   older text-mode build could leave it, to check the Adventures Only
 	   scenario file is refused rather than read back shifted (issue 133). */
-	DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO
+	DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO,
+
+	/* Log which realm each Battles Only scenario fields as the opposing
+	   army, so the battle report naming can be checked across all thirty
+	   without fighting them (issue 55). */
+	DEBUG_TEST_ACTION_DUMP_BTL_REALMS
 };
 
 /* ========================================================================
@@ -1171,7 +1182,10 @@ enum
 	DBGWIND_CTL_SETUP_BATTLE_BTN = 4110,
 
 	/* "Corrupt advscn.dat" push-button. */
-	DBGWIND_CTL_CORRUPT_ADVSCN_BTN = 4111
+	DBGWIND_CTL_CORRUPT_ADVSCN_BTN = 4111,
+
+	/* "Dump Battles Only enemy realms" push-button. */
+	DBGWIND_CTL_DUMP_BTL_REALMS_BTN = 4112
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -1289,6 +1303,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 388, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_CORRUPT_ADVSCN_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Dump Battles Only enemy realms to log",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 426, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_DUMP_BTL_REALMS_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -1354,6 +1374,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_CORRUPT_ADVSCN_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_CORRUPT_ADV_SCENARIO;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_DUMP_BTL_REALMS_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_DUMP_BTL_REALMS;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -1438,7 +1464,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 474;
+	LONG height = 512;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -1634,6 +1660,16 @@ void DebugShowTestWindow(LONG, LONG)
 		char message[512];
 
 		DebugCorruptAdvScenarioFile(message, sizeof(message));
+		DebugShowResult("Debug Test", message);
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_DUMP_BTL_REALMS)
+	{
+		char message[256];
+		LONG scenarios = DebugDumpBtlScenarioRealms();
+
+		snprintf(message, sizeof(message),
+			"Logged the opposing army's realm for %ld Battles Only scenario(s) to winbr.log.",
+			scenarios);
 		DebugShowResult("Debug Test", message);
 	}
 #else
