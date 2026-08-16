@@ -83,7 +83,12 @@
 #define static
 #endif
 
-#define MAX_ITEMS_IN_LIST 20
+// How many different kinds of thing one character can carry.  Quantity per kind
+// is not limited, and spells, realm spells, blood abilities and anything with
+// charges do not count against this at all (see mfCountItems).  Raised from the
+// original 20 because the shuffling it forced was worse than the limit was
+// worth.  MAX_INVENTORY_ITEMS must stay above CHARACTER_COUNT * this.  (issue #60)
+#define MAX_ITEMS_IN_LIST 30
 #define MAX_PICKUP_DISTANCE 300
 #define SAVEDIR ".\\"
 
@@ -323,9 +328,14 @@ static BOOL ShouldInsertSpellBefore(ITEMTYPE const NewType, ITEMTYPE const Exist
 // Non-spell entries keep their original relative order in the list.
 void ObjectList::mfSortSpellsByLevel()
 {
-	InvenIndex OriginalOrder[MAX_INVENTORY_ITEMS];
-	InvenIndex SortedSpellNodes[MAX_INVENTORY_ITEMS];
-	InvenIndex FinalOrder[MAX_INVENTORY_ITEMS];
+	// Static, not automatic: three pool-sized arrays are far more than the 32k
+	// stack the DOS release build links with, and stack checking is compiled out,
+	// so overflowing here would quietly corrupt whatever sits below the stack.
+	// Nothing re-enters this function and all three are filled before they are
+	// read, so one shared copy is safe.  (issue #60)
+	static InvenIndex OriginalOrder[MAX_INVENTORY_ITEMS];
+	static InvenIndex SortedSpellNodes[MAX_INVENTORY_ITEMS];
+	static InvenIndex FinalOrder[MAX_INVENTORY_ITEMS];
 
 	LONG NodeCount = 0;
 	LONG SpellCount = 0;
@@ -1264,23 +1274,26 @@ static ITEMTYPE const ObjectList::mfGameTypetoItemType(THINGTYPE const GameType)
    ======================================================================== */
 static InvenIndex ObjectList::mfFirstBlank()
 {
-	InvenIndex NewHead=-1;
+	InvenIndex NewHead;
 
 	// GWP Loop and test for end of space.
-	while (NewHead < MAX_INVENTORY_ITEMS &&
-	       AllItems[++NewHead].mfisValid())
-	       ;
-
-	if (NewHead >= MAX_INVENTORY_ITEMS)
+	// The original test incremented inside the condition, so on a full pool it
+	// read one slot past the end of the table before giving up.  (issue #60)
+	for (NewHead = 0; NewHead < MAX_INVENTORY_ITEMS; ++NewHead)
 	{
-#if defined (_DEBUG)
-		fatal_error("Exceeded max number of items in inventory %s, %d\n",
-					__FILE__,__LINE__);
-#endif
-		NewHead = -1;
+		if (!AllItems[NewHead].mfisValid())
+			return NewHead;
 	}
 
-	return NewHead;
+	logWarn("INVNTORY.CPP - mfFirstBlank: all %d inventory slots are in use",
+			MAX_INVENTORY_ITEMS);
+
+#if defined (_DEBUG)
+	fatal_error("Exceeded max number of items in inventory %s, %d\n",
+				__FILE__,__LINE__);
+#endif
+
+	return -1;
 }
 
 /* ========================================================================

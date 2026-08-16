@@ -88,7 +88,11 @@
 /* ------------------------------------------------------------------------
    Defines
    ------------------------------------------------------------------------ */
-#define MAX_INVENTORY_ITEMS 3000 
+// Every character's carried things live in one shared pool of this many slots.
+// It has to cover CHARACTER_COUNT (117) characters at MAX_ITEMS_IN_LIST kinds
+// each, plus the spells, realm spells, blood abilities and charged items that
+// are exempt from that limit.  Raised alongside the carry limit.  (issue #60)
+#define MAX_INVENTORY_ITEMS 4096
 #define MAX_SPELL_BOXES	6
 
 #define NOT_ADDED		0x00000000
