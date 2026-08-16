@@ -63,6 +63,12 @@ first and only then A for Adventures Only. The C step is the control: it proves
 the game is reading keys at all, so a failure on A cannot be mistaken for a test
 that never delivered the key.
 
+`adventure-carry-limit` covers how many different kinds of thing a character can
+carry ([issue #60](https://github.com/Shiryou/BirP/issues/60)). It is the first
+scenario to drive the F11 debug test window: it starts an adventure, presses the
+"Fill the carry limit" action, and reads the reported number back out of the log,
+then opens and scrolls the full inventory. Needs a DEBUG WIN build.
+
 A further scenario, `load-saved-game`, is a regression test for the load path
 ([issue #132](https://github.com/Shiryou/BirP/issues/132)). It loads the first
 saved game from the main menu, checks the realm map came up and the game button
@@ -179,7 +185,8 @@ function Invoke-BirpScenario {
     #   ExpectExit tells the harness the scenario is about to quit the game on purpose,
     #     so a clean process exit is scored as a pass, not a crash.
     # Module functions: Wait-BirpStable, Invoke-BirpClick, Send-BirpKey,
-    #                   Compare-BirpFrame, Compare-BirpFrameRegion, Get-BirpClientSize
+    #                   Compare-BirpFrame, Compare-BirpFrameRegion, Get-BirpClientSize,
+    #                   Open-BirpDebugWindow, Invoke-BirpDebugAction, Get-BirpLogLines
 }
 ```
 
@@ -199,11 +206,23 @@ Three things learned bringing up the menu walk:
   holding real keyboard focus, which a test cannot count on getting, so a typed ESC
   is silently dropped. `Send-BirpKey` posts the key to the game window instead and
   the game reads it from the same place a typed key would land.
-- **A key is only read by whatever is open on top.** Each menu or panel takes over
-  key handling while it is showing, and keys registered against the screen
-  underneath are hidden until it closes. This is why F11 does not open the debug
-  test window from a menu or a setup screen: it only answers inside a running
-  adventure or battle scene, where nothing is open over the game.
+- **A key is only read by whatever is open on top.** Each menu, panel or message
+  box takes over key handling while it is showing, and keys registered against the
+  screen underneath are hidden until it closes. This is why F11 does not open the
+  debug test window from a menu or a setup screen: it only answers inside a
+  running adventure or battle scene, where nothing is open over the game. The same
+  rule bites after a debug action reports its result - clear the box before
+  pressing another key.
+- **Find the debug window by walking the open windows, not by class lookup.** The
+  usual Windows "find a window by its class" call does not see the game's own
+  registered classes from another process here. `Open-BirpDebugWindow` enumerates
+  instead, which works. Its buttons are then pressed by control id with
+  `Invoke-BirpDebugAction`, and the action reports its result to `winbr.log` as
+  well as on screen, so `Get-BirpLogLines` can read the answer back.
+- **Compare a region, not the whole frame, while a scene is running.** An
+  adventure carries on underneath any dialog - enemies close in, characters take
+  hits - so a frame captured twenty seconds apart differs whether or not the thing
+  you were testing worked. Check the rectangle the dialog occupied instead.
 - **Only compare the map-free interior of a dialog when checking a transition.** The
   map behind the menu shield scrolls continuously, so a check region that includes
   it shows a few percent of diff even when nothing changed - enough to fake a

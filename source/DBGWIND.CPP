@@ -115,7 +115,12 @@ enum DEBUG_TEST_ACTION
 	/* Log which realm each Battles Only scenario fields as the opposing
 	   army, so the battle report naming can be checked across all thirty
 	   without fighting them (issue 55). */
-	DEBUG_TEST_ACTION_DUMP_BTL_REALMS
+	DEBUG_TEST_ACTION_DUMP_BTL_REALMS,
+
+	/* Hand the pick-up adventurer one of every ordinary item kind until the
+	   game refuses the next one, reporting the carry limit in force
+	   (issue 60). */
+	DEBUG_TEST_ACTION_FILL_CARRY_LIMIT
 };
 
 /* ========================================================================
@@ -743,6 +748,107 @@ static void DebugGrantAdventureItemByName(char const *cpItemName)
 }
 
 /* ========================================================================
+	Function	- DebugFillCarryLimit
+	Description - Hands the character who picks things up one of every
+				  ordinary item kind in turn, until the game refuses the
+				  next one, and reports how many kinds were accepted.
+				  This is the direct measurement of the carry limit raised
+				  for issue 60: what it reports IS the limit in force.
+
+				  Spells, realm spells, blood abilities and anything with
+				  charges are skipped, because those do not count against
+				  the limit and would make the total meaningless.  Item
+				  pick-up effects are silenced while this runs so a long
+				  run of grants cannot bury the screen in message boxes.
+	Parameters	- cpMessage : buffer that receives the result text.
+				  maxLen    : capacity of cpMessage in bytes.
+	Returns		- (void)
+	======================================================================== */
+static void DebugFillCarryLimit(char *cpMessage, LONG maxLen)
+{
+	extern BOOL fQuietItems;
+
+	SHORT const	hPickupAvatar = ADVENTURER::mfWhoGetsObjectsPickedUp();
+	CAvatar		*pAvatar;
+	PLAYER_STATS	*pPS;
+	BOOL		savedQuiet;
+	LONG		before, added, refused;
+	LONG		type;
+
+	if (hPickupAvatar == fERROR)
+	{
+		snprintf(cpMessage, maxLen, "No adventurer is picking things up. Run this inside an adventure.");
+		return;
+	}
+
+	pAvatar = (CAvatar * const)BLKPTR(hPickupAvatar);
+	if (pAvatar == NULL || pAvatar->hPlayerStats == fERROR)
+	{
+		snprintf(cpMessage, maxLen, "The pick-up adventurer has no character stats.");
+		return;
+	}
+
+	pPS = (PLAYER_STATS * const)BLKPTR(pAvatar->hPlayerStats);
+	if (pPS == NULL)
+	{
+		snprintf(cpMessage, maxLen, "The pick-up adventurer's character stats are not in memory.");
+		return;
+	}
+
+	ObjectList &Inventory = pPS->mfGetInventory();
+
+	before = Inventory.mfCountItems();
+	added = 0;
+	refused = 0;
+
+	savedQuiet = fQuietItems;
+	fQuietItems = TRUE;
+
+	logInfo("DebugFillCarryLimit: %s starts with %ld kind(s) counted against the limit",
+			pPS->mfGetName(), before);
+
+	for (type = 1; type < (LONG)MAX_ITEM_TYPES; ++type)
+	{
+		ItemCategory const cat = ItemTypes[(ITEMTYPE)type].mfCategory();
+		AddItemStatus	status;
+
+		if (cat == IC_SPELL || cat == IC_REALM_SPELL || cat == IC_BLOODAB)
+			continue;
+
+		if (ItemTypes[(ITEMTYPE)type].mfRequires(CHARGES))
+			continue;
+
+		if (Inventory.mfDoesContain((ITEMTYPE)type))
+			continue;
+
+		status = Inventory.mfAddItem((ITEMTYPE)type, 1, 0, FALSE);
+
+		if (status & LIST_OVERFLOW)
+		{
+			refused = type;
+			break;
+		}
+
+		if ((status & ADD_OK) && !(status & ADD_DUP) && !(status & EFFECT_ONLY))
+			added++;
+	}
+
+	fQuietItems = savedQuiet;
+
+	logInfo("DebugFillCarryLimit: added %ld kind(s), now carrying %ld, next add %s",
+			added, Inventory.mfCountItems(),
+			refused ? "was refused" : "was not reached");
+
+	snprintf(cpMessage, maxLen,
+		"%s went from %ld to %ld item kinds (%ld added). The next kind %s.",
+		pPS->mfGetName(),
+		before,
+		Inventory.mfCountItems(),
+		added,
+		refused ? "was refused, so this is the limit" : "was never reached - ran out of item kinds");
+}
+
+/* ========================================================================
 	Function	- DebugUnitHasRegentIcon
 	Description - Returns TRUE when the unit slot's map icon is in one of the
 				  regent icon ranges (ordinary regents plus the Gorgon,
@@ -1185,7 +1291,10 @@ enum
 	DBGWIND_CTL_CORRUPT_ADVSCN_BTN = 4111,
 
 	/* "Dump Battles Only enemy realms" push-button. */
-	DBGWIND_CTL_DUMP_BTL_REALMS_BTN = 4112
+	DBGWIND_CTL_DUMP_BTL_REALMS_BTN = 4112,
+
+	/* "Fill the carry limit" push-button. */
+	DBGWIND_CTL_FILL_CARRY_BTN = 4113
 };
 
 /* TRUE once "BirpDebugTestWindow" has been successfully registered with
@@ -1309,6 +1418,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
 				12, 426, 418, 24,
 				hwnd, (HMENU)DBGWIND_CTL_DUMP_BTL_REALMS_BTN, GetModuleHandle(NULL), NULL);
+
+			CreateWindowEx(0, "BUTTON",
+				"Fill the carry limit - add item kinds until refused (adventure)",
+				WS_CHILD | WS_VISIBLE | WS_TABSTOP | BS_PUSHBUTTON,
+				12, 464, 418, 24,
+				hwnd, (HMENU)DBGWIND_CTL_FILL_CARRY_BTN, GetModuleHandle(NULL), NULL);
 			return 0;
 
 		case WM_COMMAND:
@@ -1380,6 +1495,12 @@ static LRESULT CALLBACK DebugWindowProc(HWND hwnd, UINT msg, WPARAM wParam, LPAR
 			if (id == DBGWIND_CTL_DUMP_BTL_REALMS_BTN)
 			{
 				gSelectedAction = DEBUG_TEST_ACTION_DUMP_BTL_REALMS;
+				DestroyWindow(hwnd);
+				return 0;
+			}
+			if (id == DBGWIND_CTL_FILL_CARRY_BTN)
+			{
+				gSelectedAction = DEBUG_TEST_ACTION_FILL_CARRY_LIMIT;
 				DestroyWindow(hwnd);
 				return 0;
 			}
@@ -1464,7 +1585,7 @@ static DEBUG_TEST_ACTION DebugShowWindowAndGetSelection(char *cpItemName, LONG m
 	LONG x = CW_USEDEFAULT;
 	LONG y = CW_USEDEFAULT;
 	LONG width = 460;
-	LONG height = 512;
+	LONG height = 550;
 	RECT parentRect;
 
 	if (!DebugEnsureWindowClass())
@@ -1566,6 +1687,8 @@ void DebugShowTestWindow(LONG, LONG)
 #ifdef _WINDOWS
 	DEBUG_TEST_ACTION selectedAction;
 	char itemName[128];
+
+	logInfo("[DEBUG] F11 pressed - opening the test window");
 
 	itemName[0] = '\0';
 	selectedAction = DebugShowWindowAndGetSelection(itemName, sizeof(itemName));
@@ -1670,6 +1793,13 @@ void DebugShowTestWindow(LONG, LONG)
 		snprintf(message, sizeof(message),
 			"Logged the opposing army's realm for %ld Battles Only scenario(s) to winbr.log.",
 			scenarios);
+		DebugShowResult("Debug Test", message);
+	}
+	else if (selectedAction == DEBUG_TEST_ACTION_FILL_CARRY_LIMIT)
+	{
+		char message[512];
+
+		DebugFillCarryLimit(message, sizeof(message));
 		DebugShowResult("Debug Test", message);
 	}
 #else

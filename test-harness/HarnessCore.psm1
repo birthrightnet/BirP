@@ -46,7 +46,9 @@ public static class BirpHarness {
     [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
     [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, IntPtr extra);
     [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
+    [DllImport("user32.dll")] public static extern IntPtr SendMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
     [DllImport("user32.dll")] public static extern uint MapVirtualKey(uint code, uint type);
+    [DllImport("user32.dll")] public static extern IntPtr GetDlgItem(IntPtr h, int id);
     [DllImport("user32.dll", CharSet=CharSet.Auto)] public static extern int GetClassName(IntPtr h, StringBuilder s, int max);
     public delegate bool EnumProc(IntPtr h, IntPtr p);
     [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr p);
@@ -72,6 +74,18 @@ public static class BirpHarness {
             return true;
         }, IntPtr.Zero);
         return birp != IntPtr.Zero ? birp : best;
+    }
+
+    // First top-level window with this class name, or IntPtr.Zero.
+    // FindWindow does not reliably see the game's own registered classes from
+    // another process here, but walking the top-level list does.
+    public static IntPtr FindTopLevelByClass(string cls) {
+        IntPtr hit = IntPtr.Zero;
+        EnumWindows(delegate(IntPtr h, IntPtr p) {
+            if (ClassOf(h) == cls) { hit = h; return false; }
+            return true;
+        }, IntPtr.Zero);
+        return hit;
     }
 
     public static int ClientWidth(IntPtr h) { RECT rc; GetClientRect(h, out rc); return rc.Right - rc.Left; }
@@ -318,6 +332,78 @@ function Send-BirpKey {
     [BirpHarness]::SendKey($Hwnd, $VirtualKey)
 }
 
+function Open-BirpDebugWindow {
+    <#
+      Open the F11 debug test window and return its handle, or $null.
+
+      DEBUG WIN builds only. F11 is registered against the screen underneath the
+      game, and whatever is open on top handles keys instead, so this only works
+      where nothing is open over the game - inside a running adventure or battle
+      scene, not on a menu or a setup screen.
+    #>
+    param(
+        [Parameter(Mandatory)][IntPtr]$Hwnd,
+        [int]$TimeoutSec = 15
+    )
+    Send-BirpKey -Hwnd $Hwnd -VirtualKey 0x7A          # VK_F11
+    $deadline = (Get-Date).AddSeconds($TimeoutSec)
+    while ((Get-Date) -lt $deadline) {
+        Start-Sleep -Milliseconds 250
+        $dbg = [BirpHarness]::FindTopLevelByClass('BirpDebugTestWindow')
+        if ($dbg -ne [IntPtr]::Zero) { return $dbg }
+    }
+    return $null
+}
+
+function Invoke-BirpDebugAction {
+    <#
+      Press one of the debug test window's buttons by its control id (the
+      DBGWIND_CTL_* values in DBGWIND.CPP). The window closes itself and the
+      game runs the action, which reports its result to winbr.log as well as
+      on screen. Returns $true if the button was found and pressed.
+    #>
+    param(
+        [Parameter(Mandatory)][IntPtr]$DebugHwnd,
+        [Parameter(Mandatory)][int]$ControlId
+    )
+    $btn = [BirpHarness]::GetDlgItem($DebugHwnd, $ControlId)
+    if ($btn -eq [IntPtr]::Zero) { return $false }
+    [void][BirpHarness]::SendMessage($btn, 0x00F5, [IntPtr]::Zero, [IntPtr]::Zero)   # BM_CLICK
+    return $true
+}
+
+function Get-BirpLogLines {
+    <#
+      Return winbr.log lines written at or after SinceTime, optionally only those
+      matching -Pattern. Use to read back what a debug action reported.
+    #>
+    param(
+        [Parameter(Mandatory)][string]$InstallDir,
+        [datetime]$SinceTime = [datetime]::MinValue,
+        [string]$Pattern
+    )
+    $log = Join-Path $InstallDir 'winbr.log'
+    if (-not (Test-Path $log)) { return @() }
+
+    # The game holds the log open, so read it sharing write access.
+    $lines = @()
+    $fs = [IO.File]::Open($log, 'Open', 'Read', 'ReadWrite')
+    try {
+        $sr = New-Object IO.StreamReader($fs)
+        try { $lines = $sr.ReadToEnd() -split "`r?`n" } finally { $sr.Close() }
+    } finally { $fs.Close() }
+
+    $out = @()
+    foreach ($line in $lines) {
+        if ($line -notmatch '^\[(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})\]') { continue }
+        $ts = [datetime]::ParseExact($Matches[1], 'yyyy-MM-dd HH:mm:ss', $null)
+        if ($ts -lt $SinceTime) { continue }
+        if ($Pattern -and $line -notmatch $Pattern) { continue }
+        $out += $line
+    }
+    return $out
+}
+
 function Compare-BirpFrame {
     <# Fraction of sampled pixels that differ between two PNGs (0..1). #>
     param([Parameter(Mandatory)][string]$PathA, [Parameter(Mandatory)][string]$PathB)
@@ -458,5 +544,6 @@ function Stop-BirpGame {
 Export-ModuleMember -Function Get-BirpInstallDir, Get-BirpCdIso, Get-BirpWinIso,
     Mount-BirpIso, Dismount-BirpIso, Start-BirpGame, Wait-BirpWindow,
     Get-BirpClientSize, Save-BirpFrame, Wait-BirpStable, Invoke-BirpClick, Send-BirpKey,
+    Open-BirpDebugWindow, Invoke-BirpDebugAction, Get-BirpLogLines,
     Compare-BirpFrame, Compare-BirpFrameRegion, Invoke-BirpClickUntilChanged,
     Invoke-BirpClickUntilReference, Get-BirpLogIssues, Test-BirpCrash, Stop-BirpGame
