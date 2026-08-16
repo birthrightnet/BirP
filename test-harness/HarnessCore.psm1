@@ -45,6 +45,8 @@ public static class BirpHarness {
     [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
     [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT p);
     [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, IntPtr extra);
+    [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
+    [DllImport("user32.dll")] public static extern uint MapVirtualKey(uint code, uint type);
     [DllImport("user32.dll", CharSet=CharSet.Auto)] public static extern int GetClassName(IntPtr h, StringBuilder s, int max);
     public delegate bool EnumProc(IntPtr h, IntPtr p);
     [DllImport("user32.dll")] public static extern bool EnumWindows(EnumProc cb, IntPtr p);
@@ -52,6 +54,7 @@ public static class BirpHarness {
     [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
     [StructLayout(LayoutKind.Sequential)] public struct POINT { public int X, Y; }
     public const uint LEFTDOWN = 0x0002, LEFTUP = 0x0004, RIGHTDOWN = 0x0008, RIGHTUP = 0x0010;
+    public const uint WM_KEYDOWN = 0x0100, WM_KEYUP = 0x0101;
 
     public static string ClassOf(IntPtr h) { var sb = new StringBuilder(256); GetClassName(h, sb, sb.Capacity); return sb.ToString(); }
 
@@ -128,6 +131,20 @@ public static class BirpHarness {
         mouse_event(LEFTDOWN, 0, 0, 0, IntPtr.Zero);
         System.Threading.Thread.Sleep(80);
         mouse_event(LEFTUP, 0, 0, 0, IntPtr.Zero);
+    }
+
+    // Press and release a key on the game window. The game keeps its own key table
+    // and fills it from WM_KEYDOWN/WM_KEYUP in its own window procedure, so a posted
+    // message is read exactly like a typed key. Post rather than synthesize with
+    // keybd_event: that route needs the window to hold real keyboard focus, which a
+    // test cannot rely on getting, and a dropped key looks like a broken hot key.
+    public static void SendKey(IntPtr h, int vk) {
+        uint sc = MapVirtualKey((uint)vk, 0);
+        IntPtr down = (IntPtr)(1 | (int)(sc << 16));
+        IntPtr up   = (IntPtr)(1 | (int)(sc << 16) | (1 << 30) | (1 << 31));
+        PostMessage(h, WM_KEYDOWN, (IntPtr)vk, down);
+        System.Threading.Thread.Sleep(120);
+        PostMessage(h, WM_KEYUP, (IntPtr)vk, up);
     }
 
     public static bool IsForeground(IntPtr h) { return GetForegroundWindow() == h; }
@@ -278,6 +295,29 @@ function Invoke-BirpClick {
     [BirpHarness]::ClickClient($Hwnd, $X, $Y)
 }
 
+function Send-BirpKey {
+    <#
+      Press and release a key on the game window. Give either a single character
+      (-Key 'A') or a virtual-key code (-VirtualKey 0x7A for F11).
+
+      This is how to test a menu's underlined hot key. Injecting the key with the
+      usual Windows input functions needs the game window to hold real keyboard
+      focus, which is not reliable from a test, so the key is posted to the window
+      instead - the game reads it from the same place either way.
+    #>
+    param(
+        [Parameter(Mandatory)][IntPtr]$Hwnd,
+        [string]$Key,
+        [int]$VirtualKey = -1
+    )
+    if ($Key) {
+        if ($Key.Length -ne 1) { throw "Send-BirpKey: -Key takes a single character." }
+        $VirtualKey = [int][char]([string]$Key).ToUpper()
+    }
+    if ($VirtualKey -lt 0) { throw "Send-BirpKey: provide -Key or -VirtualKey." }
+    [BirpHarness]::SendKey($Hwnd, $VirtualKey)
+}
+
 function Compare-BirpFrame {
     <# Fraction of sampled pixels that differ between two PNGs (0..1). #>
     param([Parameter(Mandatory)][string]$PathA, [Parameter(Mandatory)][string]$PathB)
@@ -417,6 +457,6 @@ function Stop-BirpGame {
 
 Export-ModuleMember -Function Get-BirpInstallDir, Get-BirpCdIso, Get-BirpWinIso,
     Mount-BirpIso, Dismount-BirpIso, Start-BirpGame, Wait-BirpWindow,
-    Get-BirpClientSize, Save-BirpFrame, Wait-BirpStable, Invoke-BirpClick,
+    Get-BirpClientSize, Save-BirpFrame, Wait-BirpStable, Invoke-BirpClick, Send-BirpKey,
     Compare-BirpFrame, Compare-BirpFrameRegion, Invoke-BirpClickUntilChanged,
     Invoke-BirpClickUntilReference, Get-BirpLogIssues, Test-BirpCrash, Stop-BirpGame

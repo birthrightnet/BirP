@@ -57,6 +57,12 @@ scenario 1 before scenario 30, because the game remembers the lesson you last
 chose between sessions and a run starting on 30 could not tell a successful
 click from a missed one.
 
+`new-game-menu-hotkeys` covers the Begin New Game panel's underlined letters
+([issue #54](https://github.com/Shiryou/BirP/issues/54)). It presses C for Cancel
+first and only then A for Adventures Only. The C step is the control: it proves
+the game is reading keys at all, so a failure on A cannot be mistaken for a test
+that never delivered the key.
+
 A further scenario, `load-saved-game`, is a regression test for the load path
 ([issue #132](https://github.com/Shiryou/BirP/issues/132)). It loads the first
 saved game from the main menu, checks the realm map came up and the game button
@@ -65,7 +71,7 @@ things again. The second load is the point: a screen region left unbalanced by
 the first load shows up on the second pass, not the first. It needs at least one
 file in `<install>\SaveGame` and says so plainly if there is none.
 
-All four of the new-game scenarios are written to fail loudly at the step that breaks: they check the
+All of the new-game scenarios are written to fail loudly at the step that breaks: they check the
 process is alive and no fresh `Fatal.err` exists after every risky click, and stop
 rather than clicking on blindly into a dead game.
 
@@ -172,8 +178,8 @@ function Invoke-BirpScenario {
     #     the optional 3rd arg limits that check to a sub-rectangle (fractions of the frame).
     #   ExpectExit tells the harness the scenario is about to quit the game on purpose,
     #     so a clean process exit is scored as a pass, not a crash.
-    # Module functions: Wait-BirpStable, Invoke-BirpClick, Compare-BirpFrame,
-    #                   Compare-BirpFrameRegion, Get-BirpClientSize
+    # Module functions: Wait-BirpStable, Invoke-BirpClick, Send-BirpKey,
+    #                   Compare-BirpFrame, Compare-BirpFrameRegion, Get-BirpClientSize
 }
 ```
 
@@ -188,10 +194,16 @@ Three things learned bringing up the menu walk:
   the screen merely differs from the title can settle on an intermediate attract
   frame. `Invoke-BirpClickUntilReference` instead clicks until a region matches the
   committed screen (e.g. the main menu), so it stops only on the real target.
-- **Back out of a submenu by clicking its own button (e.g. Help's Done or a dialog's
-  Cancel), not by sending a key.** The game reads the mouse by polling, so injected
-  clicks always land, but it needs real keyboard focus for keys and that is not
-  reliable here - an injected ESC is silently dropped.
+- **Press keys with `Send-BirpKey`, not by typing at the desktop.** The game reads
+  the mouse by polling, so injected clicks always land. Typing only reaches a window
+  holding real keyboard focus, which a test cannot count on getting, so a typed ESC
+  is silently dropped. `Send-BirpKey` posts the key to the game window instead and
+  the game reads it from the same place a typed key would land.
+- **A key is only read by whatever is open on top.** Each menu or panel takes over
+  key handling while it is showing, and keys registered against the screen
+  underneath are hidden until it closes. This is why F11 does not open the debug
+  test window from a menu or a setup screen: it only answers inside a running
+  adventure or battle scene, where nothing is open over the game.
 - **Only compare the map-free interior of a dialog when checking a transition.** The
   map behind the menu shield scrolls continuously, so a check region that includes
   it shows a few percent of diff even when nothing changed - enough to fake a
