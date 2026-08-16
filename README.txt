@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
 Version: 1.4.2.0
-Date: 2026-07-09
+Date: 2026-08-16
 
 TABLE OF CONTENTS
 
@@ -76,6 +76,7 @@ Changed
 - Improved adventure combat messages: attacks now name the target and its armor class, and chases show which enemy is being pursued.
 - The game now remembers your magic users' prepared spells and every party member's hotbar layout between adventures, so you don't have to set them up each time. (#24)
 - When you and an ally are both in a province with a shared enemy, your own troops now attack first. (#38)
+- Each character can now carry 30 different kinds of thing, up from 20. There was never a limit on how many of each you carry, so the old limit only ever showed up as shuffling loot onto party members who were already full. Spells, realm spells, blood abilities and anything with charges still don't count towards it. Your saved games are unaffected. (#60)
 
 Fixed
 
@@ -91,6 +92,11 @@ Fixed
 - Fixed the battle victory screen listing an enemy regent among the dead when they actually got away. A regent you beat in a manual battle escapes to a neighboring province, so the screen now says they escaped instead of counting them as killed. (#78) (#90)
 - Fixed law claims being lost when loading a saved game; the provinces you had law claims against are now restored. (#11)
 - Fixed a bug where the music could loop every second once your PC had been running for about 25 days without a restart. (#117)
+- Fixed the game crashing when you start a new game from inside an adventure. Choosing Battles Only, a Tutorial, or a Realm Game from the game menu now finishes leaving the adventure before it builds the new game. This also fixes starting an Expert game that way leaving you on the realm map with no window down the left side, so you could click provinces but never see a regent or a way to begin playing. (#12) (#13) (#31)
+- Fixed the game crashing when you choose Adventures Only while an Adventures Only game is already running. The adventure site screen now comes back with a readable party. (#9)
+- Fixed the battle report in Battles Only naming the wrong enemy. Every lesson congratulated you on beating the forces of Ghoere, whoever you actually fought, so winning the last lesson against the Gorgon credited you with beating Ghoere. Lessons led by a named enemy now name that enemy's realm and fight in its colours. (#55)
+- Fixed your Adventures Only progress being read back scrambled. The file that remembers which sites you have seen and which practice adventurers are alive could corrupt itself depending on which characters you rolled, which could leave the site screen pointing at a site that isn't there. Progress that was never affected still loads, and a damaged file is now thrown away and rebuilt instead of used. (#133)
+- Fixed pressing A on the Begin New Game menu doing nothing. It now starts Adventures Only, the way every other underlined letter on that menu starts what it sits next to. (#54)
 
 1.4.1
 

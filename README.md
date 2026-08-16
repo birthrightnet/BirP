@@ -15,6 +15,10 @@ This repository is for **developers** of the Birthright Preservation Patch, and 
   - [5) Validate your environment variables](#5-validate-your-environment-variables)
 - [Building the game](#building-the-game)
 - [Building, Testing, and Deploying](#building-testing-and-deploying)
+  - [Install-directory executables](#install-directory-executables)
+  - [Installer tests](#installer-tests)
+- [Testing In-Game](#testing-in-game)
+  - [Automated game tests](#automated-game-tests)
 - [Logging](#logging)
 - [Team standards and contribution guidelines](#team-standards-and-contribution-guidelines)
   - [Coding style](#coding-style)
@@ -154,7 +158,19 @@ Every pull request that touches the game source, the build scripts, `MAKE.BAT`, 
 
 A custom test window is available in DEBUG builds that can be opened with the `F11` key. This window contains various buttons that trigger test actions in the game, such as granting items, triggering events, and simulating realm actions. This can be a useful tool for testing your changes in-game without having to go through the normal gameplay flow to trigger certain actions or events.
 
-The code for this can be found in the [DBGWINDOW.CPP](./source/DBGWINDOW.CPP) ("Debug Window") file. You can add new buttons and test actions to this window as needed to help with your testing.
+The code for this can be found in the [DBGWIND.CPP](./source/DBGWIND.CPP) ("Debug Window") file. You can add new buttons and test actions to this window as needed to help with your testing.
+
+`F11` only answers where nothing is open over the game. Every menu, panel, and message box takes over key handling while it is showing, so the window opens from inside a running adventure or battle scene but not from a menu, a setup screen, or while a dialog is up. The same rule applies to every other key the game listens for, and it is the usual reason a hot key looks dead. If you need an action on a screen where `F11` cannot reach, close what is open first.
+
+### Automated game tests
+
+A smoke-test harness drives the deployed Windows build with real mouse clicks and keystrokes, captures each screen, and reports crashes or log errors. It covers booting to the menus, starting a new game from inside a running one, loading a saved game, the Battles Only battle report, the Begin New Game hot keys, and the adventure carry limit. Some scenarios drive the `F11` test window and read the result back out of the log.
+
+Run it from [test-harness/](./test-harness):
+
+`powershell -NoProfile -ExecutionPolicy Bypass -File run-smoke-tests.ps1 -Scenario boot-and-menus`
+
+Read [test-harness/README.md](./test-harness/README.md) before writing a scenario. It records the run modes, the reference-image workflow, and the things that catch people out - the game reads the mouse by polling, keys go to whatever is open on top, and a scene keeps moving underneath any dialog you are checking.
 
 ## Logging
 
