@@ -2141,9 +2141,63 @@ close_file:
 }
 
 /* ========================================================================
+   Function    - BtlScenarioEnemyRealm
+   Description - Work out which realm the opposing army in a Battles Only
+                 scenario belongs to.
+
+                 The scenario file lists unit types and nothing else, so
+                 the opposing side used to be stamped Ghoere whoever was
+                 actually fighting.  The battle report names the losing
+                 side's realm, which is how winning the Gorgon battle
+                 congratulated you on beating the forces of Ghoere.
+                 (issue #55)
+
+                 Where a scenario fields a named leader, that leader's own
+                 realm is the answer and the regent table already holds it.
+                 Ask for the original realm rather than the current one:
+                 the current one reads back through the unit we are in the
+                 middle of creating.
+
+                 Only land realms are accepted.  The realm also selects the
+                 army's colours on the battlefield, and there are colour
+                 groups only for the land realms, so a leader belonging to
+                 one of the independent guild or wizard holdings would send
+                 SetRemapTable past the end of its table.  Those, and any
+                 scenario with no named leader, keep Ghoere as before.
+   Returns     - the realm to give the opposing units
+   ======================================================================== */
+static LONG BtlScenarioEnemyRealm(SHORT const *unitlist, SHORT count)
+{
+	SHORT	i, j;
+	LONG	id;
+	LONG	leaderRealm;
+
+	for (i = 0; i < count; i++)
+	{
+		id = BB_UnitTypes[unitlist[i]].Id;
+		if (id <= 0)
+			continue;
+
+		for (j = 0; j < CHARACTER_COUNT; j++)
+		{
+			if (regents[j].mfGetid() != id)
+				continue;
+
+			leaderRealm = (LONG)regents[j].mfGetOriginalRealm();
+			if (leaderRealm >= 0 && leaderRealm < LAND_REALM_COUNT)
+				return leaderRealm;
+
+			break;		// found the leader, but it has no realm we can use
+		}
+	}
+
+	return REALM::GHOERE;
+}
+
+/* ========================================================================
    Function    - ReadBtlScenario
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 static BOOL ReadBtlScenario(FILE *fp, BOOL fCreateUnits)
 {
@@ -2153,6 +2207,7 @@ static BOOL ReadBtlScenario(FILE *fp, BOOL fCreateUnits)
 	SHORT	unitlist[15];
 	SHORT	count;
 	SHORT	iTerrainSubType;
+	LONG	enemyRealm;
 	(void)buffer2;
 	(void)iType;
 	
@@ -2194,9 +2249,13 @@ static BOOL ReadBtlScenario(FILE *fp, BOOL fCreateUnits)
 		 
 	if (fCreateUnits)
 	{
+		// whose army this is, so the battle report names the right side
+		// and they fight in their own colours (issue #55)
+		enemyRealm = BtlScenarioEnemyRealm(unitlist, count);
+
 		for (i = 0; i < count; i++ )
 		{
-			AddUnit(985, BHELINE, BB_UnitTypes[unitlist[i]].IconType, BB_UnitTypes[unitlist[i]].Id, REALM::GHOERE );
+			AddUnit(985, BHELINE, BB_UnitTypes[unitlist[i]].IconType, BB_UnitTypes[unitlist[i]].Id, enemyRealm );
 		}
 	}
 	
@@ -2226,10 +2285,74 @@ static BOOL ReadBtlScenario(FILE *fp, BOOL fCreateUnits)
 	return TRUE;
 }
 
+#if defined(_DEBUG)
+/* ========================================================================
+   Function    - DebugDumpBtlScenarioRealms
+   Description - Log the opposing army's realm for every Battles Only
+                 scenario, so the naming can be checked without fighting
+                 all thirty battles.  (issue #55)
+   Returns     - how many scenarios were read
+   ======================================================================== */
+LONG DebugDumpBtlScenarioRealms(void)
+{
+	FILE	*fp;
+	CHAR	buffer[80];
+	CHAR	title[80];
+	SHORT	unitlist[15];
+	SHORT	total = 0, count, n;
+	LONG	enemyRealm;
+
+	fp = FileOpen("btlscn.dat", "r");
+	if (fp == NULL)
+	{
+		logWarn("PRACTICE.CPP - DebugDumpBtlScenarioRealms: could not open btlscn.dat");
+		return 0;
+	}
+
+	if (GetNextLine(fp, buffer, sizeof(buffer)) == EOF)
+	{
+		FileClose(fp);
+		return 0;
+	}
+	sscanf(buffer, "%hd", &total);
+
+	for (n = 1; n <= total; n++)
+	{
+		// scenario title
+		if (GetNextLine(fp, title, sizeof(title)) == EOF)
+			break;
+
+		// our units, not needed here
+		if (GetNextLine(fp, buffer, sizeof(buffer)) == EOF)
+			break;
+
+		// the opposing units, which is what names the side
+		if (GetNextLine(fp, buffer, sizeof(buffer)) == EOF)
+			break;
+
+		count = (SHORT)sscanf(buffer, "%hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd %hd",
+			&unitlist[0], &unitlist[1], &unitlist[2], &unitlist[3], &unitlist[4],
+			&unitlist[5], &unitlist[6], &unitlist[7], &unitlist[8], &unitlist[9],
+			&unitlist[10], &unitlist[11], &unitlist[12], &unitlist[13], &unitlist[14] );
+
+		enemyRealm = BtlScenarioEnemyRealm(unitlist, count);
+		logInfo("Battles Only scenario %hd \"%s\" - opposing army is %s",
+				n, title, realm[enemyRealm].mfGetName());
+
+		// terrain, speed and difficulty
+		if (GetNextLine(fp, buffer, sizeof(buffer)) == EOF)
+			break;
+	}
+
+	FileClose(fp);
+	return (LONG)(n - 1);
+}
+#endif
+
 /* ========================================================================
    Function    - InitScenarioTitles
-   Description - 
-   Returns     - 
+   Description -
+   Returns     -
    ======================================================================== */
 static void InitScenarioTitles(void)
 {
