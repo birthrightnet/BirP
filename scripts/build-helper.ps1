@@ -117,9 +117,11 @@ function Get-LogSnapshot {
 Write-Host "[RUN] $Name" -ForegroundColor Yellow
 
 # Get first 2 bytes (4 hex chars) of current commit and convert to int
-# Change: ensure git runs with repository as working directory (cd to repo root)
+# Must run in birp-dev, not the caller's working directory. The parent workspace is
+# its own git repository, so building from there stamped the build number with the
+# parent's commit instead of the game source commit.
 try {
-    Push-Location $repoRoot
+    Push-Location $birpDevRoot
     $shortHex = (& git rev-parse --short=4 HEAD 2>$null).Trim()
     Pop-Location
 } catch {
