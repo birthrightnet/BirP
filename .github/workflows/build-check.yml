@@ -1,0 +1,133 @@
+name: Build Check
+
+# Compiles the game on pull requests so source changes are checked before they
+# merge. Runs all six scenarios through scripts/test-all-builds.ps1: WIN and DOS,
+# RELEASE and DEBUG, plus the character editor in both. Gates on warnings and
+# errors, not just on the exit code.
+#
+# The installer suite (installer-tests.yml) covers packaging and does not build
+# the game, so before this workflow a source-only pull request ran no checks at
+# all.
+#
+# Workflow edits are included on purpose. A change to any workflow file gets a
+# full build, which is what makes a workflow-only pull request checkable at all.
+#
+# Inno Setup is deliberately not installed here. Nothing in a plain build needs
+# iscc; only the release packaging does.
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'source/**'
+      - 'scripts/**'
+      - 'MAKE.BAT'
+      - '.github/workflows/**'
+  pull_request:
+    paths:
+      - 'source/**'
+      - 'scripts/**'
+      - 'MAKE.BAT'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build all scenarios
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup Open Watcom
+      uses: open-watcom/setup-watcom@v0
+      with:
+        version: "2.0"
+
+    - name: Download UASM
+      shell: powershell
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $url = "https://www.appypedia.com/h/uasm257_x64.zip"
+        Write-Host "Downloading UASM from $url"
+        Invoke-WebRequest -Uri $url -OutFile "uasm.zip"
+        Expand-Archive -Path "uasm.zip" -DestinationPath "..\UASM" -Force
+
+    # The bundle carries RES, Patch1004, and the DirectX SDK. Without it the
+    # build fails much later as a missing-header error, so stop here instead.
+    - name: Download birp-dependencies
+      shell: powershell
+      run: |
+        $ErrorActionPreference = 'Stop'
+        $url = "https://www.appypedia.com/h/birp-dependencies.zip"
+        Write-Host "Downloading birp-dependencies from $url"
+        Invoke-WebRequest -Uri $url -OutFile "birp-dependencies.zip"
+
+    - name: Extract birp-dependencies
+      shell: powershell
+      run: |
+        $ErrorActionPreference = 'Stop'
+        Expand-Archive -Path "birp-dependencies.zip" -DestinationPath "..\BirP-Dependencies" -Force
+
+    # Same setup the release workflow uses. Kept in step with releases.yml.
+    - name: Setup Project Dependencies
+      shell: powershell
+      run: |
+        $uasmRoot = Resolve-Path "..\UASM"
+        $depsRoot = Resolve-Path "..\BirP-Dependencies"
+
+        if (Test-Path $uasmRoot) {
+            Add-Content -Path $env:GITHUB_PATH -Value $uasmRoot
+        }
+
+        $extraIncludes = @(
+            Join-Path $depsRoot "Windows95DDK\INC32"
+            Join-Path $depsRoot "Windows95DDK\INC16"
+            Join-Path $depsRoot "Windows95DDK-INC16-DIGITALV"
+            Join-Path $depsRoot "DirectXSDK\sdk\inc"
+            Join-Path $env:WATCOM "h\nt\directx"
+            Join-Path $env:WATCOM "h\nt\ddk"
+        ) | Where-Object { Test-Path $_ }
+
+        if ($extraIncludes.Count -gt 0) {
+            $currentInclude = if ([string]::IsNullOrWhiteSpace($env:INCLUDE)) { @() } else { $env:INCLUDE -split ';' }
+            $newInclude = ($currentInclude + $extraIncludes) -join ';'
+            Add-Content -Path $env:GITHUB_ENV -Value "INCLUDE=$newInclude"
+        }
+
+        $extraLibs = @(
+            Join-Path $depsRoot "Windows95DDK\LIB"
+            Join-Path $depsRoot "DirectXSDK\sdk\lib"
+        ) | Where-Object { Test-Path $_ }
+
+        if ($extraLibs.Count -gt 0) {
+            $currentLib = if ([string]::IsNullOrWhiteSpace($env:LIB)) { @() } else { $env:LIB -split ';' }
+            $newLib = ($currentLib + $extraLibs) -join ';'
+            Add-Content -Path $env:GITHUB_ENV -Value "LIB=$newLib"
+        }
+
+        Add-Content -Path $env:GITHUB_ENV -Value "BIRTHRT_INSTALL_DIR=C:\SIERRA\BIRTHRT"
+
+    # test-all-builds.ps1 looks for the game source in a "birp-dev" folder one
+    # level up from its own. The runner checks out to <workspace>\birp-dev\birp-dev,
+    # so that resolves correctly here.
+    #
+    # -ContinueOnFailure so a single broken scenario still reports the other five,
+    # rather than the run stopping at the first one.
+    - name: Build all scenarios
+      shell: powershell
+      run: |
+        ./scripts/test-all-builds.ps1 -ContinueOnFailure
+        exit $LASTEXITCODE
+
+    - name: Upload build reports on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: build-check-logs
+        path: |
+          build-artifacts/logs/*.txt
+          build-artifacts/logs/*.log
+        if-no-files-found: ignore
