@@ -76,15 +76,20 @@ Changed
 - Improved adventure combat messages: attacks now name the target and its armor class, and chases show which enemy is being pursued.
 - The game now remembers your magic users' prepared spells and every party member's hotbar layout between adventures, so you don't have to set them up each time. (#24)
 - When you and an ally are both in a province with a shared enemy, your own troops now attack first. (#38)
+- Assassination reports now include the assassinated unit type, so you can see what you lost. (#33)
+- The installer now offers two clear choices, Install and Patch, and finds things for you. Install searches your drives for the Birthright CD or USB stick and fills in the location, so you don't have to hunt for the path. Patch looks for an existing install in the usual places. Both always apply the official 1.4 patch and the latest Preservation Patch, so either way you end up fully up to date. (#89) (#122)
+- Uninstalling is now safer. It always shows exactly which folder it will remove and asks first, and it refuses obviously wrong targets such as a drive root or a system folder. It also clears out the crash dumps and memory reports the game leaves behind, and you still choose whether to keep your saved games and settings. (#89) (#122)
 - Each character can now carry 30 different kinds of thing, up from 20. There was never a limit on how many of each you carry, so the old limit only ever showed up as shuffling loot onto party members who were already full. Spells, realm spells, blood abilities and anything with charges still don't count towards it. Your saved games are unaffected. (#60)
 
 Fixed
 
+- Hostile spells can no longer hit your own party. Magic missile and lightning bolt pass through your characters instead of striking them, and a spellcaster can no longer lock on to a friend. Area spells can still catch your own party in the blast. (#36)
 - Characters can no longer attack through walls; they must have line of sight. Spectres and wraiths still phase through walls by design. (#36)
 - Party members no longer chase enemies onto lava, acid, or deep water. (#36)
 - Fixed some crashes that could occur during two-part adventures. (#52)
 - Hardened an adventure crash point so missing visuals are skipped instead of crashing the game to the desktop. (#4)
 - Fixed start-of-round crash for DOS DEBUG builds. (#57)
+- Fixed a DOS crash caused by an over-long message being written to the log file. (#57)
 - Fixed background music cutting out (until the next fight) when you open a character's Status or Inventory screen during an adventure. The music now keeps playing. (#102)
 - Fixed rebelling provinces still collecting tax. A province in rebellion now earns no tax or regency until the rebellion is dealt with. (#76)
 - Fixed domain actions with a very high chance of success sometimes always failing instead of nearly always succeeding. (#70)
@@ -128,7 +133,6 @@ Changed
 
 - Allow calling all files from game directory instead of CD; the CD is no longer required in this mode (all files must first be copied from the CD to the game directory). (#2)
 - Auto-battle now duels all regular units first, then lieutenants, then regents. Before it dueled from the bottom of the unit stack, upwards, which could result in lieutenants or regents dueling before regular units. (#19)
-- Assassination reports now include the assassinated unit type. (#33)
 
 Fixed
 
