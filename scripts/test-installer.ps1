@@ -74,6 +74,18 @@ function Get-FileHashHex([string]$Path) {
     return (Get-FileHash -LiteralPath $Path -Algorithm SHA256).Hash
 }
 
+# Windows answers "access denied" instead of "not found" for the moment a file
+# is delete-pending, and Test-Path raises that as a terminating error under
+# $ErrorActionPreference = 'Stop'. A delete-pending file is still present, so
+# report it that way and let the caller keep waiting for it to actually go.
+function Test-PathPresent([string]$Path) {
+    try {
+        return [bool](Test-Path -LiteralPath $Path)
+    } catch {
+        return $true
+    }
+}
+
 function Wait-Until([scriptblock]$Condition, [int]$TimeoutSec, [string]$What) {
     $deadline = (Get-Date).AddSeconds($TimeoutSec)
     while ((Get-Date) -lt $deadline) {
@@ -551,7 +563,7 @@ function Invoke-Uninstall([string]$Dir, [hashtable]$EnvVars, [string]$Label) {
     Assert-True (Test-Path -LiteralPath $unins) "$Label - uninstaller present"
     if (-not (Test-Path -LiteralPath $unins)) { return }
     Invoke-WithEnv $unins @('/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART') $EnvVars | Out-Null
-    $done = Wait-Until { -not (Test-Path -LiteralPath (Join-Path $Dir 'unins000.exe')) } 90 "$Label uninstall to finish"
+    $done = Wait-Until { -not (Test-PathPresent (Join-Path $Dir 'unins000.exe')) } 90 "$Label uninstall to finish"
     Assert-True $done "$Label - uninstall completed"
     Start-Sleep -Seconds 2  # let the final RemoveDir and self-delete settle
 }
