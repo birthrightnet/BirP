@@ -39,6 +39,14 @@ jobs:
       with:
         version: "2.0"
 
+    # build-release-package.ps1 compiles the installer with iscc, which is not
+    # present on the runner by default. Same step as installer-tests.yml.
+    - name: Install Inno Setup
+      shell: powershell
+      run: |
+        choco install innosetup -y --no-progress
+        if ($LASTEXITCODE -ne 0) { throw "choco install innosetup failed with exit code $LASTEXITCODE" }
+
     - name: Download UASM
       shell: powershell
       run: |
@@ -47,23 +55,21 @@ jobs:
         Invoke-WebRequest -Uri $url -OutFile "uasm.zip"
         Expand-Archive -Path "uasm.zip" -DestinationPath "..\UASM" -Force
 
+    # The bundle carries RES, Patch1004, and the DirectX SDK. Without it the build
+    # fails much later as a missing-header error, so stop here instead of warning.
     - name: Download birp-dependencies
       shell: powershell
       run: |
+        $ErrorActionPreference = 'Stop'
         $url = "https://www.appypedia.com/h/birp-dependencies.zip"
         Write-Host "Downloading birp-dependencies from $url"
-        try {
-            Invoke-WebRequest -Uri $url -OutFile "birp-dependencies.zip"
-        } catch {
-            Write-Warning "Failed to download birp-dependencies from placeholder URL."
-        }
+        Invoke-WebRequest -Uri $url -OutFile "birp-dependencies.zip"
 
     - name: Extract birp-dependencies
       shell: powershell
       run: |
-        if (Test-Path "birp-dependencies.zip") {
-            Expand-Archive -Path "birp-dependencies.zip" -DestinationPath "..\BirP-Dependencies" -Force
-        }
+        $ErrorActionPreference = 'Stop'
+        Expand-Archive -Path "birp-dependencies.zip" -DestinationPath "..\BirP-Dependencies" -Force
 
     - name: Setup Project Dependencies
       shell: powershell
