@@ -148,6 +148,8 @@ It's highly recommended that you run the [test-all-builds.ps1](./scripts/test-al
 
 If you change anything under [installer/](./installer), run [test-installer.ps1](./scripts/test-installer.ps1). It compiles the installer, lints the localized strings, unit tests the path-safety helpers, runs silent Install/Patch/uninstall runs against generated stand-in game files, and exits 0 on pass. It needs Inno Setup 6 but no game CD and no elevation, and it never touches a real game install. The same suite runs in CI ([installer-tests.yml](./.github/workflows/installer-tests.yml)) on every installer change.
 
+Every pull request that touches the game source, the build scripts, `MAKE.BAT`, or a workflow file also gets a build check ([build-check.yml](./.github/workflows/build-check.yml)). It runs [test-all-builds.ps1](./scripts/test-all-builds.ps1) on the runner, so all six scenarios have to compile before the change can merge, and it reports every scenario rather than stopping at the first failure. Run the same script locally before you push and you will see the same result. It needs no Inno Setup, because nothing in a plain build uses `iscc`.
+
 ## Testing In-Game
 
 A custom test window is available in DEBUG builds that can be opened with the `F11` key. This window contains various buttons that trigger test actions in the game, such as granting items, triggering events, and simulating realm actions. This can be a useful tool for testing your changes in-game without having to go through the normal gameplay flow to trigger certain actions or events.
