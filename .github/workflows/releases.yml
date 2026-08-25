@@ -9,7 +9,7 @@ on:
       refToBuild:
         description: 'Tag or branch to build'
         type: string
-        default: 'main'
+        default: 'develop'
 
 env:
   TAG: ${{ inputs.refToBuild || github.ref_name }}
