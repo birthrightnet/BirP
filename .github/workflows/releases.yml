@@ -33,7 +33,21 @@ jobs:
         $COMMIT_HASH = git rev-parse HEAD
         Write-Host "Commit hash: $COMMIT_HASH"
         "commit_hash=$COMMIT_HASH" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
-   
+
+    # Nothing gets built for a tag that is not ready to ship: version files that
+    # disagree, a changelog still headed Unreleased, a stale date. On a tag the
+    # tag itself already exists, so that one check is relaxed.
+    #
+    # A manual dispatch is usually a mid-cycle build test, where the changelog is
+    # meant to be uncurated. There the check reports and does not block.
+    - name: Check release readiness
+      id: readiness
+      shell: pwsh
+      continue-on-error: ${{ !startsWith(github.ref, 'refs/tags/') }}
+      run: |
+        ./scripts/check-release-readiness.ps1 -AllowExistingTag
+        exit $LASTEXITCODE
+
     - name: Setup Open Watcom
       uses: open-watcom/setup-watcom@v0
       with:
@@ -120,6 +134,33 @@ jobs:
         New-Item -ItemType Directory -Path "build-artifacts\binaries\Installer" -Force | Out-Null
         ./scripts/build-release-package.ps1
 
+    # Install what was just built and check the game files land. The installer
+    # suite proves the installer's logic against stand-in payloads; this proves
+    # the actual package, and catches one built from the wrong commit.
+    - name: Smoke test the release package
+      shell: powershell
+      run: |
+        ./scripts/smoke-test-release-package.ps1
+        exit $LASTEXITCODE
+
+    - name: Upload smoke test workspace on failure
+      uses: actions/upload-artifact@v4
+      if: failure()
+      with:
+        name: release-smoke-workspace
+        path: build-artifacts/release-smoke/*.log
+        if-no-files-found: ignore
+
+    # The release notes are the changelog section that was already curated. This
+    # is the only place they get written, so there is never a second, divergent
+    # list to keep in step.
+    - name: Build release notes
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: powershell
+      run: |
+        ./scripts/get-release-notes.ps1 -Version "${{ env.TAG }}" -OutFile "release-notes.md"
+        exit $LASTEXITCODE
+
     - name: Upload Artifacts
       uses: actions/upload-artifact@v4
       with:
@@ -140,8 +181,13 @@ jobs:
         tag: ${{ env.TAG }}
         commit: ${{ steps.get_commit.outputs.commit_hash }}
         name: "📦 Release ${{ env.TAG }}"
+        bodyFile: "release-notes.md"
         draft: true
         allowUpdates: true
         replacesArtifacts: true
         # Never flip an already published release back to draft on a re-run.
         omitDraftDuringUpdate: true
+        # Nor overwrite notes someone has since edited by hand. To refresh them
+        # from the changelog, run:
+        #   gh release edit <tag> --notes-file release-notes.md
+        omitBodyDuringUpdate: true

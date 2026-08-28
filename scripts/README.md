@@ -51,6 +51,15 @@ These scripts run the above build scenario wrapper and then, if the build succee
 - [build-and-deploy-dos-debug.ps1](./build-and-deploy-dos-debug.ps1) - Runs [build-dos-debug.ps1](./build-dos-debug.ps1) and then [deploy-dos-debug.ps1](./deploy-dos-debug.ps1) to build and deploy the DOS (DEBUG) executable.
 - [build-and-deploy-helper.ps1](./build-and-deploy-helper.ps1) - Shared helper used by each build-and-deploy scenario wrapper. It passes build-related options such as `-SkipToolchainCheck`, `-MakeBatPath`, and `-ShowInformationalOutput` through to the underlying build wrapper.
 
+## Release Scripts
+
+These scripts cut, package, and verify a release. The full process they serve is documented in [release-process.md](../../docs/release-process.md).
+
+- [check-release-readiness.ps1](./check-release-readiness.ps1) - Checks the tree is ready to be tagged: the version in [PVERSION.HXX](../source/PVERSION.HXX) and [README.txt](../README.txt) agree, the changelog carries a dated heading for this version and leaves nothing under `Unreleased`, the player readme's heading and `Date:` line carry that same date, the notes have content, and the tag is still free. Supports `-AllowExistingTag` for a run from the tag being built and `-SkipTagCheck` where no remote is reachable.
+- [get-release-notes.ps1](./get-release-notes.ps1) - Prints one version's section of [CHANGELOG.md](../CHANGELOG.md), so the published release notes are the notes already curated rather than a second list. Accepts a tag name as `-Version` and writes to `-OutFile`.
+- [build-release-package.ps1](./build-release-package.ps1) - Builds all three release binaries with the build number stamped from the current commit, stages them with the rebuilt string data, then compiles the installer with `iscc` and writes the matching zip. Needs Inno Setup 6 and a populated `birp-dependencies/Patch1004`.
+- [smoke-test-release-package.ps1](./smoke-test-release-package.ps1) - Installs the built package and checks the game files land. Verifies the asset names, that the build number identifies the current commit, that a silent patch lands the real binaries and leaves player saves and settings alone, that patching again changes nothing, that an uninstall keeps saves and touches nothing outside the game folder, and that the zip matches the installer. Runs in a scratch workspace and needs no game data.
+
 ## Misc Scripts
 
 These scripts don't fit into the above categories but are still important for development and maintenance.
