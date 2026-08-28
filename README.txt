@@ -1,6 +1,6 @@
 Birthright: The Gorgons Alliance Preservation Patch
 Version: 1.4.2.0
-Date: 2026-08-16
+Date: 2026-09-06
 
 TABLE OF CONTENTS
 
@@ -55,21 +55,20 @@ Steps to install:
 [2] WHAT THE PATCH FIXES / CHANGES
 ==================================
 
-Unreleased
+1.4.2 - 2026-09-06
 
 Added
 
-- Pressing F11 in WIN DEBUG builds shows a pop-up window with a list of testing/cheating functions.
 - Added a "Halt" button during adventure combat that sets all party members to defend. (#36)
 - Added "awareness" system: characters gain awareness for 30 seconds for any other character they see, and can pathfind to them even if they lose sight of them.
 - Added several new pathfinding algorithms that allow characters to path between rooms, around obstacles, etc, which has significantly reduced instances of "unable to engage" and characters stuck in walls. (#36)
 - Added an Issue Reporting tool. Double-click BirP-Issue-Report.bat in your game folder to bundle up diagnostic files (your game and Windows versions, install path, and log/config files) into a single .zip you can attach to a bug report. (#104)
 - Added mouse wheel support in Windows. Scroll the wheel to zoom the realm map and the battlefield in and out, and to scroll or page the inventory list, the save/load list, and action province lists. (#16)
+- Added a "Pause When Inactive" option on the Screen tab of the options screen (Windows). Turn it off to keep the game running while you are in another program. It is on by default, which is how the game has always behaved. (#131)
 
 Changed
 
-- Player characters start each fight in a sensible default fighting style for their class and remember the fighting style you last chose for the rest of that fight. (#36) (#53)
-- Player characters remember their last used fighting style and resume using it against nearby enemies after their current target dies (#36) (#53)
+- Player characters start each fight in a sensible default fighting style for their class, remember the style you last chose, and resume using it against nearby enemies once their current target dies. (#36) (#53)
 - Party members give up a chase after 15 seconds (#36)
 - Lieutenant action realm button now highlights during lieutenant action, and cancelling a lieutenant realm sub-action no longer cancels the lieutenant action. (#21)
 - Halved the delay before an adventure returns to exploration after combat ends. (#14)
@@ -88,7 +87,6 @@ Fixed
 - Party members no longer chase enemies onto lava, acid, or deep water. (#36)
 - Fixed some crashes that could occur during two-part adventures. (#52)
 - Hardened an adventure crash point so missing visuals are skipped instead of crashing the game to the desktop. (#4)
-- Fixed start-of-round crash for DOS DEBUG builds. (#57)
 - Fixed a DOS crash caused by an over-long message being written to the log file. (#57)
 - Fixed background music cutting out (until the next fight) when you open a character's Status or Inventory screen during an adventure. The music now keeps playing. (#102)
 - Fixed rebelling provinces still collecting tax. A province in rebellion now earns no tax or regency until the rebellion is dealt with. (#76)
