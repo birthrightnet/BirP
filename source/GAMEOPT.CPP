@@ -42,7 +42,8 @@
    ------------------------------------------------------------------------ */
 #define OPTIONSAVEFILE "gameopt.dat"
 #define OPTIONVERSION 0x00003104
-#define OPTIONVERSION_LEGACY 0x00003101
+#define OPTIONVERSION_RESOLUTION 0x00003103
+#define OPTIONVERSION_LEGACY_AUTORES 0x00003102
 
 #define MODE_MASK		0x00FF
 #define MODE_CHANGED	0x0100
@@ -706,10 +707,15 @@ void ReadOptionSettings(void)
 	}
 
 	fread(&ver, sizeof(ULONG), 1, fp);
-	if (ver < OPTIONVERSION_LEGACY || ver > OPTIONVERSION)
+	// Only formats whose field layout is known are read. Anything else is reset
+	// rather than guessed at: a wrong layout silently shifts every field after
+	// the mismatch and is then written back as current.
+	if (ver != OPTIONVERSION &&
+		ver != OPTIONVERSION_RESOLUTION &&
+		ver != OPTIONVERSION_LEGACY_AUTORES)
 	{
-		logWarn("ReadOptionSettings version mismatch in %s: got 0x%08lx, supported range 0x%08lx-0x%08lx; resetting file",
-			OPTIONSAVEFILE, ver, OPTIONVERSION_LEGACY, OPTIONVERSION);
+		logWarn("ReadOptionSettings version mismatch in %s: got 0x%08lx expected 0x%08lx, 0x%08lx or 0x%08lx; resetting file",
+			OPTIONSAVEFILE, ver, OPTIONVERSION, OPTIONVERSION_RESOLUTION, OPTIONVERSION_LEGACY_AUTORES);
 		fclose(fp);
 		remove(OPTIONSAVEFILE);
 		for (SHORT i=0; i < MAX_SITES; i++)
@@ -732,7 +738,8 @@ void ReadOptionSettings(void)
 		oldsfxvol = sfxvol;
 		fread(&sfxenv, sizeof(ENV_SETTING), 1, fp);
 		fread(&selected_screen_size, sizeof(SHORT), 1, fp);
-		if (ver == OPTIONVERSION_LEGACY)
+		// The deprecated Auto Resolution value sits here in 0x3102 only.
+		if (ver == OPTIONVERSION_LEGACY_AUTORES)
 		{
 			BOOL legacyAutoRes;
 			fread(&legacyAutoRes, sizeof(BOOL), 1, fp);
@@ -749,7 +756,7 @@ void ReadOptionSettings(void)
 		resolution_mode_setting = RESOLUTION_MODE_OG;
 		resolution_preset_setting = RESOLUTION_PRESET_640X480;
 		resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
-		if (ver >= OPTIONVERSION_LEGACY + 2)
+		if (ver >= OPTIONVERSION_RESOLUTION)
 		{
 			fread(&resolution_mode_setting, sizeof(SHORT), 1, fp);
 			fread(&resolution_preset_setting, sizeof(SHORT), 1, fp);
@@ -758,7 +765,7 @@ void ReadOptionSettings(void)
 
 		// Pause When Inactive, added in 0x3104 (current).
 		pause_when_inactive = TRUE;
-		if (ver >= OPTIONVERSION_LEGACY + 3)
+		if (ver >= OPTIONVERSION)
 		{
 			fread(&pause_when_inactive, sizeof(BOOL), 1, fp);
 		}
