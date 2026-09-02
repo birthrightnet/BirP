@@ -122,6 +122,16 @@ jobs:
         ./scripts/test-all-builds.ps1 -ContinueOnFailure
         exit $LASTEXITCODE
 
+    # After the build, because the first check needs strmake.exe, which the
+    # build produces. Runs even when a build scenario failed: a string table
+    # problem is worth reporting alongside a broken build, not instead of it.
+    - name: Check the string tables
+      if: always()
+      shell: powershell
+      run: |
+        ./scripts/test-string-tables.ps1
+        exit $LASTEXITCODE
+
     - name: Upload build reports on failure
       uses: actions/upload-artifact@v4
       if: failure()
