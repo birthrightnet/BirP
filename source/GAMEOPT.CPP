@@ -41,8 +41,8 @@
    Defines
    ------------------------------------------------------------------------ */
 #define OPTIONSAVEFILE "gameopt.dat"
-#define OPTIONVERSION 0x00003103
-#define OPTIONVERSION_LEGACY_AUTORES 0x00003102
+#define OPTIONVERSION 0x00003104
+#define OPTIONVERSION_LEGACY 0x00003101
 
 #define MODE_MASK		0x00FF
 #define MODE_CHANGED	0x0100
@@ -72,6 +72,8 @@ static BOOL		combat_firstperson_view = FALSE;
 BOOL			mundane_descriptions = TRUE;
 static BOOL		new_mundane = TRUE;
 static LONG		newControlMode = 1;
+extern "C" BOOL	pause_when_inactive = TRUE;
+static BOOL		new_pause_inactive = TRUE;
 
 static SHORT		num_screen_sizes = 6;
 static SHORT		resolution_mode_setting = RESOLUTION_MODE_OG;
@@ -386,6 +388,14 @@ void OptAdjLevel(LONG which, LONG what)
 				newControlMode = 0;
 			break;
 
+		case OPT_ADJ_PAUSE_INACTIVE:
+			new_pause_inactive += what;
+			if (new_pause_inactive >= 1)
+				new_pause_inactive = TRUE;
+			if (new_pause_inactive <= 0)
+				new_pause_inactive = FALSE;
+			break;
+
         default:
             break;
     }
@@ -449,7 +459,8 @@ void OpenOptions   (LONG, LONG)
 		screen_mode = 0;
 #endif
 		new_mundane = mundane_descriptions;
-		
+		new_pause_inactive = pause_when_inactive;
+
 		newControlMode = (fControlMode & MODE_MASK);
 		resolution_mode_setting = gResolutionMode;
 		resolution_preset_setting = gResolutionPreset;
@@ -599,7 +610,8 @@ void UpdateOptionSettings(void)
 #endif
 
 	mundane_descriptions = new_mundane;
-	
+	pause_when_inactive = new_pause_inactive;
+
 	if (newControlMode != (fControlMode & MODE_MASK))
 		fControlMode = newControlMode|MODE_CHANGED;
 	else	
@@ -649,6 +661,7 @@ void WriteOptionSettings(void)
 	fwrite(&resolution_mode_setting, sizeof(SHORT), 1, fp);
 	fwrite(&resolution_preset_setting, sizeof(SHORT), 1, fp);
 	fwrite(&resolution_scale_setting, sizeof(SHORT), 1, fp);
+	fwrite(&pause_when_inactive, sizeof(BOOL), 1, fp);
 #ifdef _WINDOWS
 	fwrite(&lSavedX, sizeof(LONG), 1, fp);
 	fwrite(&lSavedY, sizeof(LONG), 1, fp);
@@ -680,35 +693,33 @@ void ReadOptionSettings(void)
 {
 	FILE *fp;
 	ULONG ver;
-	BOOL migrateLegacyFormat = FALSE;
-	
+
 	if ((fp = fopen(OPTIONSAVEFILE, "rb")) == NULL)
 	{
 		logWarn("ReadOptionSettings missing %s; writing defaults", OPTIONSAVEFILE);
 		for (SHORT i=0; i < MAX_SITES; i++)
 			sitecount[i] = 0;
-			
+
 		UpdateOptionSettings();
 		WriteOptionSettings();
 		return;
 	}
-	
+
 	fread(&ver, sizeof(ULONG), 1, fp);
-	if (ver != OPTIONVERSION && ver != OPTIONVERSION_LEGACY_AUTORES)
+	if (ver < OPTIONVERSION_LEGACY || ver > OPTIONVERSION)
 	{
-		logWarn("ReadOptionSettings version mismatch in %s: got 0x%08lx expected 0x%08lx or 0x%08lx; resetting file",
-			OPTIONSAVEFILE, ver, OPTIONVERSION, OPTIONVERSION_LEGACY_AUTORES);
+		logWarn("ReadOptionSettings version mismatch in %s: got 0x%08lx, supported range 0x%08lx-0x%08lx; resetting file",
+			OPTIONSAVEFILE, ver, OPTIONVERSION_LEGACY, OPTIONVERSION);
 		fclose(fp);
 		remove(OPTIONSAVEFILE);
 		for (SHORT i=0; i < MAX_SITES; i++)
 			sitecount[i] = 0;
-			
+
 		UpdateOptionSettings();
 		WriteOptionSettings();
 	}
 	else
 	{
-		migrateLegacyFormat = (ver == OPTIONVERSION_LEGACY_AUTORES);
 		fread(&game_difficulty, sizeof(DIFFICULTY), 1, fp);
 		fread(&battle_difficulty, sizeof(DIFFICULTY), 1, fp);
 		fread(&battle_speed, sizeof(SPEED), 1, fp);
@@ -721,7 +732,7 @@ void ReadOptionSettings(void)
 		oldsfxvol = sfxvol;
 		fread(&sfxenv, sizeof(ENV_SETTING), 1, fp);
 		fread(&selected_screen_size, sizeof(SHORT), 1, fp);
-		if (migrateLegacyFormat)
+		if (ver == OPTIONVERSION_LEGACY)
 		{
 			BOOL legacyAutoRes;
 			fread(&legacyAutoRes, sizeof(BOOL), 1, fp);
@@ -733,9 +744,24 @@ void ReadOptionSettings(void)
 		fread(&screen_mode, sizeof(SHORT), 1, fp);
 		screen_mode = iGDI;
 		fread(&mundane_descriptions, sizeof(BOOL), 1, fp);
-		fread(&resolution_mode_setting, sizeof(SHORT), 1, fp);
-		fread(&resolution_preset_setting, sizeof(SHORT), 1, fp);
-		fread(&resolution_scale_setting, sizeof(SHORT), 1, fp);
+
+		// Resolution mode/preset/scale, added in 0x3103.
+		resolution_mode_setting = RESOLUTION_MODE_OG;
+		resolution_preset_setting = RESOLUTION_PRESET_640X480;
+		resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
+		if (ver >= OPTIONVERSION_LEGACY + 2)
+		{
+			fread(&resolution_mode_setting, sizeof(SHORT), 1, fp);
+			fread(&resolution_preset_setting, sizeof(SHORT), 1, fp);
+			fread(&resolution_scale_setting, sizeof(SHORT), 1, fp);
+		}
+
+		// Pause When Inactive, added in 0x3104 (current).
+		pause_when_inactive = TRUE;
+		if (ver >= OPTIONVERSION_LEGACY + 3)
+		{
+			fread(&pause_when_inactive, sizeof(BOOL), 1, fp);
+		}
 #ifdef _WINDOWS
 		if (fread(&lSavedX, sizeof(LONG), 1, fp) != 1 ||
 			fread(&lSavedY, sizeof(LONG), 1, fp) != 1)
@@ -745,6 +771,7 @@ void ReadOptionSettings(void)
 		}
 #endif
 		new_mundane = mundane_descriptions;
+		new_pause_inactive = pause_when_inactive;
 		fclose(fp);
 		logInfo("ReadOptionSettings loaded %s ver=0x%08lx mode=%d preset=%d scale=%d screen_mode=%d winPos=%ld,%ld",
 			OPTIONSAVEFILE,
@@ -761,15 +788,15 @@ void ReadOptionSettings(void)
 			0L
 #endif
 			);
-	}
-	
-	UpdateOptionSettings();
-	if (migrateLegacyFormat)
-	{
-		logInfo("ReadOptionSettings migrating legacy options format from 0x%08lx to 0x%08lx",
-			OPTIONVERSION_LEGACY_AUTORES,
-			OPTIONVERSION);
-		WriteOptionSettings();
+
+		UpdateOptionSettings();
+		if (ver != OPTIONVERSION)
+		{
+			logInfo("ReadOptionSettings migrating options format from 0x%08lx to 0x%08lx",
+				ver,
+				OPTIONVERSION);
+			WriteOptionSettings();
+		}
 	}
 	return;
 }
@@ -842,6 +869,7 @@ void OptionDefaults(LONG MenuCombo, LONG)
 	combat_firstperson_view = FALSE;
     selected_screen_size = 1;
     new_mundane = TRUE;
+	new_pause_inactive = TRUE;
 	resolution_mode_setting = RESOLUTION_MODE_OG;
 	resolution_preset_setting = RESOLUTION_PRESET_640X480;
 	resolution_scale_setting = RESOLUTION_SCALE_ASPECT_FIT;
@@ -1119,14 +1147,19 @@ void PaintOptionMenu (LONG MenuCombo, LONG LoadSave)
 		print_textf(menu_x+164, menu_y+150, 173, STRMGR_GetStr(STR_OPT_SCREEN_SIZE));
 		strcpy(buffer, STRMGR_GetStr(STR_OPT_SCREEN_SIZE_0 + selected_screen_size));
 		print_textf(menu_x+324 - gtext_width(buffer), menu_y+150, 173, "%s", buffer);
-		
+
 #ifdef _WINDOWS
 #endif
-		
+
+		print_textf(menu_x+164, menu_y+170, 173, "%s", STRMGR_GetStr(STR_OPT_PAUSE_INACTIVE));
+		strcpy(buffer, STRMGR_GetStr(STR_OPT_PAUSE_INACTIVE_OFF + (LONG) new_pause_inactive));
+		print_textf(menu_x+324 - gtext_width(buffer), menu_y+170, 173, "%s", buffer);
+
 		PaintOptionAdj(menu_x, menu_y, 0, OPT_ADJ_SCREEN_RESMODE);
 		PaintOptionAdj(menu_x, menu_y, 1, OPT_ADJ_SCREEN_PRESET);
 		PaintOptionAdj(menu_x, menu_y, 2, OPT_ADJ_SCREEN_SIZE);
-		
+		PaintOptionAdj(menu_x, menu_y, 3, OPT_ADJ_PAUSE_INACTIVE);
+
 	    break;
 	
 	case 9:  /* speed */

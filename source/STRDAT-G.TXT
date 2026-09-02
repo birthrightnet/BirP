@@ -3812,6 +3812,11 @@ STR_SAVEGAME		aktuell.sav
 // added for the battle victory screen
 BTLUI_WIN_REGENT_ESCAPED	Ihr Regent ist geflohen.
 
+// added for the pause-when-inactive option
+STR_OPT_PAUSE_INACTIVE		Bei Inaktivität pausieren
+STR_OPT_PAUSE_INACTIVE_ON	Ein
+STR_OPT_PAUSE_INACTIVE_OFF	Aus
+
 END
 
 

@@ -3955,4 +3955,9 @@ STR_SAVEGAME		courant.sav
 // added for the battle victory screen
 BTLUI_WIN_REGENT_ESCAPED	Leur régent s'est échappé.
 
+// added for the pause-when-inactive option
+STR_OPT_PAUSE_INACTIVE		Pause lorsque inactif
+STR_OPT_PAUSE_INACTIVE_ON	Allumé
+STR_OPT_PAUSE_INACTIVE_OFF	Éteint
+
 END

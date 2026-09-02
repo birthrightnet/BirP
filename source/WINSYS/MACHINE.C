@@ -46,6 +46,7 @@ X   machine_post_frame    -does postframe things, such as updating the screen
 extern char pInitScene[];
 extern char pwad[];
 extern char chCursorName[32];
+extern BOOL pause_when_inactive;
 
 /* ------------------------------------------------------------------------
    Macros
@@ -887,7 +888,10 @@ LONG WINAPI MainWndProc( HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam )
       case WM_ACTIVATE:
       {
          if(LOWORD (wParam) == WA_INACTIVE)
-				fAppHasFocus = FALSE;
+			{
+				if (pause_when_inactive)
+					fAppHasFocus = FALSE;
+			}
 			else
 			{
 				fAppHasFocus = TRUE;

@@ -3836,4 +3836,9 @@ STR_SAVEGAME	current.sav
 // added for the battle victory screen
 BTLUI_WIN_REGENT_ESCAPED	Their regent escaped.
 
+// added for the pause-when-inactive option
+STR_OPT_PAUSE_INACTIVE		Pause When Inactive
+STR_OPT_PAUSE_INACTIVE_ON	On
+STR_OPT_PAUSE_INACTIVE_OFF	Off
+
 END
