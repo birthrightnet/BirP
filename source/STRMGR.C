@@ -29,6 +29,7 @@
 #include "strint.h"
 #include "strmgr.h"
 #include "strenum.h"
+#include "logger.h"
 
 /* ------------------------------------------------------------------------
    Defines and Compile Flags
@@ -161,6 +162,20 @@ CSTRPTR STRMGR_GetStr(LONG iStrNum)
 
 	// return the string
 	lStringOffset = pStrDataBlock->stringBlock.sOffsets[lWhichString];
+
+	// A string that was never defined has an offset of zero, because the block
+	// is zeroed before it is filled in. Only the first string in a block is
+	// legitimately at zero. Asking for any other one means the caller counted
+	// past the end of a group, which used to show the block's first string as
+	// though it belonged there. Say so and return nothing instead.
+	if(lStringOffset == 0 && lWhichString != 0)
+	{
+		logError("STRMGR_GetStr string %ld is not defined (block %ld, entry %ld)",
+			iStrNum, lWhichBlock, lWhichString);
+		NullString[0] = 0;
+		return NullString;
+	}
+
 	pStr = (CSTRPTR)pStrings + lStringOffset;
 
 	// special case for ~ as a null string
