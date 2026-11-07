@@ -2,7 +2,19 @@
 
 The Birthright Preservation Patch (BirP) is an enhancement for the Windows version of Birthright: The Gorgon's Alliance. The primary goals of the project are to fix bugs, restore functionality that was never completed, and introduce quality of life features to make the game more enjoyable for new and old players alike.
 
-This repository is for **developers** of the Birthright Preservation Patch, and mirrors the [https://github.com/Shiryou/birp-dev](https://github.com/Shiryou/birp-dev). The **player** repository with installation instructions can be found at [https://github.com/Shiryou/BirP](https://github.com/Shiryou/BirP).
+This repository is for **developers** of the Birthright Preservation Patch, and mirrors the [https://github.com/Shiryou/birp-dev](https://github.com/Shiryou/birp-dev).
+
+## Installation
+
+To install the Birthright Preservation Patch, make sure to have your Birthright CD handy. It is required to use the patch. The patch can be downloaded from the [Releases page on GitHub](https://github.com/birthrightnet/BirP/releases) or the [Files page on ModDB](https://www.moddb.com/mods/birthright-preservation-patch/downloads).
+
+The easiest way to install is to download the installer and follow it's directions. If you want to do a more custom installation or are having trouble with the instaler, you can instead download the ZIP archive and follow the directions [here](https://www.kiranwelle.com/birthright/).
+
+## Reporting issues
+
+Please use GitHub to [report bugs](https://github.com/birthrightnet/BirP/issues/new?template=01-bug-report.yml) or [request features](https://github.com/birthrightnet/BirP/issues/new?template=02-feature-request.yml).
+
+If you do not have a GitHub account, you can use the [ModDB forums](https://www.moddb.com/games/birthright-the-gorgons-alliance/forum) or [Birthright.net Discord](https://discord.gg/9pjZKFx) instead. Just be aware that they are not reviewed as often.
 
 ## Table of Contents
 
