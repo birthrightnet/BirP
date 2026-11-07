@@ -31,6 +31,9 @@ body:
       multiple: true
       options:
         - Patch 1.4 (1.0.0.4)
+        - BirP 1.4.0.4
+        - BirP 1.4.1
+        - BirP 1.4.2
     validations:
       required: true
   - type: input
