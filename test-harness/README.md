@@ -139,6 +139,8 @@ Options:
   checking against them (see below).
 - `-ReferenceThreshold <0..1>` - allowed fraction of differing pixels for a
   reference match (default `0.05`).
+- `-ScaledReferenceThreshold <0..1>` - the same, for the rough check against a
+  reference of another screen size (default `0.15`).
 - `-KeepGame` - leave the game running after the scenario.
 
 The exit code is `0` on pass, `1` on fail (`2` if a mode is not yet enabled).
@@ -153,9 +155,26 @@ baseline the animated attract/title loop.
 
 - Create or refresh baselines: run once with `-UpdateReferences`, review the
   images under `references\`, and commit them.
-- Reference images are resolution- and content-specific. They capture the game at
-  the resolution and state it was in when created; a different resolution will not
-  match. Refresh them when a screen legitimately changes.
+- References are kept per screen size. `references\<scenario>\` holds the original
+  set (taken at 1600x1200); a set taken at another size lives in
+  `references\<scenario>\<width>x<height>\`, e.g. `references\boot-and-menus\1024x768\`.
+  A run uses the set for its own window size when there is one.
+- With no set for its size, a run falls back to a rough check against the original
+  set (`-ScaledReferenceThreshold`) and says so in the log. It catches a wrong dialog
+  or menu, but not which Options tab is showing. Only the game's 4:3 sizes work.
+- To make a set for a new size, run once at that size with `-UpdateReferences`, then
+  review the images before committing them. The original set is never touched.
+- Refresh the references when a screen legitimately changes.
+
+### Running on a smaller screen
+
+The whole game window, title bar included, must fit on the screen, because the
+harness clicks at real screen positions. On a 1920x1080 screen, use 1280x960, which
+has its own set.
+
+1. Start the game, open Options, then Screen. Set Resolution Mode to Modern and
+   Resolution Preset to 1280x960. Click Done, then Quit and confirm.
+2. Run the harness as usual. The log should say `References: the 1280x960 set.`
 
 ## Layout
 
@@ -168,7 +187,8 @@ baseline the animated attract/title loop.
   (scaffolded / gated on a scriptable installer).
 - `scenarios\*.ps1` - one scenario per file. Each defines
   `Invoke-BirpScenario -Ctx`.
-- `references\<scenario>\*.png` - committed baseline images for static screens.
+- `references\<scenario>\*.png` - committed baseline images for static screens,
+  with sets for other screen sizes in `references\<scenario>\<width>x<height>\`.
 
 ## Writing a scenario
 

@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed the game test harness failing every reference image check at any screen size other than 1600x1200. [#136](https://github.com/birthrightnet/BirP/issues/136)
+
 ## [1.4.2] - 2026-09-06
 
 ### Added
