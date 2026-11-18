@@ -196,6 +196,8 @@ Write-Host "NOTE: this run controls the real mouse/keyboard. Do not touch the ma
 
 $proc = $null
 try {
+    # Start every run with no Adventures Only party (see Save-BirpAdventureState).
+    Write-RunLog (Save-BirpAdventureState -InstallDir $InstallDir)
     Write-RunLog "Launching WINBR.EXE ..."
     $proc = Start-BirpGame -InstallDir $InstallDir
     $ctx.Process = $proc
@@ -251,8 +253,13 @@ catch {
     try { if ($ctx.Hwnd -ne [IntPtr]::Zero) { Save-BirpFrame -Hwnd $ctx.Hwnd -Path (Join-Path $runDir '99-exception.png') | Out-Null } } catch {}
 }
 finally {
-    if (-not $KeepGame) { Stop-BirpGame -Process $proc; Write-RunLog "Game terminated." }
-    else { Write-RunLog "Left game running (-KeepGame)." }
+    if (-not $KeepGame) {
+        Stop-BirpGame -Process $proc; Write-RunLog "Game terminated."
+        if ($proc) { try { $null = $proc.WaitForExit(10000) } catch {} }
+        $restored = Restore-BirpAdventureState -InstallDir $InstallDir
+        if ($restored) { Write-RunLog $restored }
+    }
+    else { Write-RunLog "Left game running (-KeepGame); the Adventures Only files stay set aside until the next run." }
 }
 
 # ---- write report ----

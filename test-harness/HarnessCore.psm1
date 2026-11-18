@@ -541,9 +541,67 @@ function Stop-BirpGame {
     }
 }
 
+# The Adventures Only files: who was in the last party and what they carried.
+$script:AdventureStateFiles = @('advscn.dat', 'advinv.dat')
+
+function Save-BirpAdventureState {
+    <#
+      Set advscn.dat and advinv.dat aside so every run starts with no party, after
+      first putting back any files a killed run left aside. Returns a note.
+    #>
+    param([Parameter(Mandatory)][string]$InstallDir)
+    $recovered = $false
+    foreach ($name in $script:AdventureStateFiles) {
+        $file  = Join-Path $InstallDir $name
+        $saved = "$file.harness-saved"
+        $none  = "$file.harness-none"
+        if (Test-Path -LiteralPath $saved) {
+            Copy-Item -LiteralPath $saved -Destination $file -Force
+            Remove-Item -LiteralPath $saved -Force
+            $recovered = $true
+        }
+        elseif (Test-Path -LiteralPath $none) {
+            Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $none -Force
+            $recovered = $true
+        }
+        if (Test-Path -LiteralPath $file) { Move-Item -LiteralPath $file -Destination $saved -Force }
+        else { New-Item -ItemType File -Path $none -Force | Out-Null }
+    }
+    $note = 'Set the Adventures Only files aside, so the party starts empty.'
+    if ($recovered) { $note = 'Put back the Adventures Only files an interrupted run had set aside. ' + $note }
+    return $note
+}
+
+function Restore-BirpAdventureState {
+    <#
+      Put the Adventures Only files back as they were. Call only after the game has
+      exited. Returns a note, or '' if there was nothing to undo.
+    #>
+    param([Parameter(Mandatory)][string]$InstallDir)
+    $did = $false
+    foreach ($name in $script:AdventureStateFiles) {
+        $file  = Join-Path $InstallDir $name
+        $saved = "$file.harness-saved"
+        $none  = "$file.harness-none"
+        if (Test-Path -LiteralPath $saved) {
+            Move-Item -LiteralPath $saved -Destination $file -Force
+            $did = $true
+        }
+        elseif (Test-Path -LiteralPath $none) {
+            Remove-Item -LiteralPath $file -Force -ErrorAction SilentlyContinue
+            Remove-Item -LiteralPath $none -Force
+            $did = $true
+        }
+    }
+    if ($did) { return 'Put the Adventures Only files back as they were.' }
+    return ''
+}
+
 Export-ModuleMember -Function Get-BirpInstallDir, Get-BirpCdIso, Get-BirpWinIso,
     Mount-BirpIso, Dismount-BirpIso, Start-BirpGame, Wait-BirpWindow,
     Get-BirpClientSize, Save-BirpFrame, Wait-BirpStable, Invoke-BirpClick, Send-BirpKey,
     Open-BirpDebugWindow, Invoke-BirpDebugAction, Get-BirpLogLines,
     Compare-BirpFrame, Compare-BirpFrameRegion, Invoke-BirpClickUntilChanged,
-    Invoke-BirpClickUntilReference, Get-BirpLogIssues, Test-BirpCrash, Stop-BirpGame
+    Invoke-BirpClickUntilReference, Get-BirpLogIssues, Test-BirpCrash, Stop-BirpGame,
+    Save-BirpAdventureState, Restore-BirpAdventureState

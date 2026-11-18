@@ -14,6 +14,8 @@ or log errors.
 - Compares screens to confirm a click actually changed something.
 - Watches `winbr.log` for errors and `Fatal.err` for crashes.
 - Writes a per-run folder with screenshots, a run log, and a pass/fail report.
+- Starts every run with no Adventures Only party or inventory, and puts the
+  player's `advscn.dat` and `advinv.dat` back afterwards.
 
 The first scenario, `boot-and-menus`, boots the game to the title screen, advances
 through the attract loop to the main menu, then walks the top-level menu screens: it
@@ -32,9 +34,9 @@ while one is already running (issues #9, #12, #13, #31). They share
 game-type panel, enter Adventures Only, and launch an adventure:
 
 - `new-game-adventures-only` - Adventures Only started from an Adventures Only
-  game (#9). Menu-only and quick. **Only reproduces on an install with no
-  `advscn.dat`**: with that file present the game reconnects the party list and
-  the bug is hidden. Delete `advscn.dat` and `advinv.dat` first to test it.
+  game (#9). Menu-only and quick. It only reproduces with no `advscn.dat`: with
+  that file present the game reconnects the party list and the bug is hidden.
+  Every run now starts that way (see above), so nothing needs deleting by hand.
 - `new-game-tutorial-from-adventure` - a Tutorial started from inside a running
   adventure (#13).
 - `new-game-battles-from-adventure` - Battles Only started from inside a running

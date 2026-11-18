@@ -48,6 +48,10 @@ $script:GAMEBTN_Y         = 0.0479
 # Party check boxes are added by RunAdvOnly at x 160..190, y 273 + 15*i, height 14.
 $script:PARTY_CHECK_X     = 0.2734
 $script:PARTY_CHECK_Y     = @(0.5875, 0.6188, 0.6500)
+# Each box as a region (x 160..190, its row's 14 pixels), to confirm a click ticked it.
+$script:PARTY_BOX_X       = 0.25
+$script:PARTY_BOX_W       = 0.0469
+$script:PARTY_BOX_H       = 0.0292
 $script:ADV_DONE_X        = 0.1625
 $script:ADV_DONE_Y        = 0.9542
 
@@ -205,9 +209,21 @@ function Start-BirpAdventure {
 
     & $Ctx.Note "Selecting party members ..."
     $beforeParty = & $Ctx.Shot 'party-before'
-    foreach ($fy in $script:PARTY_CHECK_Y) {
-        Invoke-BirpClick -Hwnd $Ctx.Hwnd -Fx $script:PARTY_CHECK_X -Fy $fy
-        $null = Wait-BirpStable -Hwnd $Ctx.Hwnd -TimeoutSec 10
+    # A click can fail to tick its box, leaving that adventurer out, so check each box
+    # changed and click again if not.
+    for ($i = 0; $i -lt $script:PARTY_CHECK_Y.Count; $i++) {
+        $fy = $script:PARTY_CHECK_Y[$i]
+        $box = @($script:PARTY_BOX_X, ($fy - $script:PARTY_BOX_H / 2), $script:PARTY_BOX_W, $script:PARTY_BOX_H)
+        $before = Save-BirpFrame -Hwnd $Ctx.Hwnd -Path (Join-Path $Ctx.RunDir "party-probe-$i-before.png")
+        $changed = 0.0
+        for ($try = 1; $try -le 3 -and $changed -le 0.01; $try++) {
+            if ($try -gt 1) { & $Ctx.Note "Party check box $($i + 1) did not change; clicking it again ..." }
+            Invoke-BirpClick -Hwnd $Ctx.Hwnd -Fx $script:PARTY_CHECK_X -Fy $fy
+            $null = Wait-BirpStable -Hwnd $Ctx.Hwnd -TimeoutSec 10
+            $after = Save-BirpFrame -Hwnd $Ctx.Hwnd -Path (Join-Path $Ctx.RunDir "party-probe-$i-after-$try.png")
+            $changed = Compare-BirpFrameRegion -PathA $before -PathB $after -Region $box
+        }
+        & $Ctx.Assert ($changed -gt 0.01) ("Party check box $($i + 1) ticked ({0:P1} change)." -f $changed)
     }
     $afterParty = & $Ctx.Shot 'party-selected'
     $ticked = Compare-BirpFrame -PathA $beforeParty -PathB $afterParty

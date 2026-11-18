@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 <!-- markdownlint-disable MD024 -->
 
+## [Unreleased]
+
+### Fixed
+
+- Fixed the game test harness adventure scenarios depending on the party an earlier run left behind. [#137](https://github.com/birthrightnet/BirP/issues/137)
+
 ## [1.4.2] - 2026-09-06
 
 ### Added
