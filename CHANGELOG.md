@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed the game test harness adventure scenarios depending on the party an earlier run left behind. [#137](https://github.com/birthrightnet/BirP/issues/137)
+- Fixed the game test harness failing every reference image check at any screen size other than 1600x1200. [#136](https://github.com/birthrightnet/BirP/issues/136)
 
 ## [1.4.2] - 2026-09-06
 

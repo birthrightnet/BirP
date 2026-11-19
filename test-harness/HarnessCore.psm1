@@ -115,23 +115,58 @@ public static class BirpHarness {
     // As DiffFractionFiles, but only over a sub-rectangle given as fractions of the
     // image (fx,fy = top-left; fw,fh = width/height; each 0..1). Use this to ignore
     // animated regions - e.g. the scrolling map behind a static menu.
+    //
+    // Same-size images are compared as they are. Different sizes are both shrunk to
+    // 320x240 and compared more loosely: a rough check (see README.md).
     public static double DiffFractionFilesRegion(string a, string b, double fx, double fy, double fw, double fh) {
-        using (Bitmap ba = new Bitmap(a)) using (Bitmap bb = new Bitmap(b)) {
-            int w = Math.Min(ba.Width, bb.Width), h = Math.Min(ba.Height, bb.Height);
-            int x0 = (int)(fx * w), y0 = (int)(fy * h);
-            int x1 = (int)((fx + fw) * w), y1 = (int)((fy + fh) * h);
-            if (x0 < 0) x0 = 0; if (y0 < 0) y0 = 0;
-            if (x1 > w) x1 = w; if (y1 > h) y1 = h;
-            if (x1 <= x0 || y1 <= y0) return 0.0;
-            int sx = Math.Max(1, (x1 - x0) / 160), sy = Math.Max(1, (y1 - y0) / 160);
-            int total = 0, diff = 0;
-            for (int y = y0; y < y1; y += sy) for (int x = x0; x < x1; x += sx) {
-                Color ca = ba.GetPixel(x, y), cb = bb.GetPixel(x, y);
-                int d = Math.Abs(ca.R - cb.R) + Math.Abs(ca.G - cb.G) + Math.Abs(ca.B - cb.B);
-                total++; if (d > 40) diff++;
+        using (Bitmap fa = new Bitmap(a)) using (Bitmap fb = new Bitmap(b)) {
+            if (fa.Width == fb.Width && fa.Height == fb.Height) {
+                return DiffFractionBitmapsRegion(fa, fb, fx, fy, fw, fh, 40);
             }
-            return total == 0 ? 0.0 : (double)diff / total;
+            using (Bitmap sa = ScaleTo(fa, 320, 240)) using (Bitmap sb = ScaleTo(fb, 320, 240)) {
+                return DiffFractionBitmapsRegion(sa, sb, fx, fy, fw, fh, 100);
+            }
         }
+    }
+
+    // True when two image files have the same width and height.
+    public static bool SameSize(string a, string b) {
+        using (Bitmap fa = new Bitmap(a)) using (Bitmap fb = new Bitmap(b)) {
+            return fa.Width == fb.Width && fa.Height == fb.Height;
+        }
+    }
+
+    // A copy of src at w x h, smoothly resampled. An image already that size is still
+    // copied, so the caller can always dispose the result.
+    static Bitmap ScaleTo(Bitmap src, int w, int h) {
+        Bitmap dst = new Bitmap(w, h, PixelFormat.Format24bppRgb);
+        using (Graphics g = Graphics.FromImage(dst)) {
+            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+            using (ImageAttributes attrs = new ImageAttributes()) {
+                // Clamp at the edges so the border pixels are not blended with transparency.
+                attrs.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                g.DrawImage(src, new Rectangle(0, 0, w, h), 0, 0, src.Width, src.Height, GraphicsUnit.Pixel, attrs);
+            }
+        }
+        return dst;
+    }
+
+    static double DiffFractionBitmapsRegion(Bitmap ba, Bitmap bb, double fx, double fy, double fw, double fh, int limit) {
+        int w = Math.Min(ba.Width, bb.Width), h = Math.Min(ba.Height, bb.Height);
+        int x0 = (int)(fx * w), y0 = (int)(fy * h);
+        int x1 = (int)((fx + fw) * w), y1 = (int)((fy + fh) * h);
+        if (x0 < 0) x0 = 0; if (y0 < 0) y0 = 0;
+        if (x1 > w) x1 = w; if (y1 > h) y1 = h;
+        if (x1 <= x0 || y1 <= y0) return 0.0;
+        int sx = Math.Max(1, (x1 - x0) / 160), sy = Math.Max(1, (y1 - y0) / 160);
+        int total = 0, diff = 0;
+        for (int y = y0; y < y1; y += sy) for (int x = x0; x < x1; x += sx) {
+            Color ca = ba.GetPixel(x, y), cb = bb.GetPixel(x, y);
+            int d = Math.Abs(ca.R - cb.R) + Math.Abs(ca.G - cb.G) + Math.Abs(ca.B - cb.B);
+            total++; if (d > limit) diff++;
+        }
+        return total == 0 ? 0.0 : (double)diff / total;
     }
 
     // Click at a client-space point: bring the window forward, move the real cursor,

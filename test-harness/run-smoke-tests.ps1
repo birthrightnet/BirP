@@ -46,6 +46,18 @@
 .PARAMETER KeepGame
     Leave the game running after the scenario (default: terminate it).
 
+.PARAMETER UpdateReferences
+    Capture reference images instead of checking against them. At a screen size other
+    than the original set's, they go into references\<scenario>\<width>x<height>\.
+
+.PARAMETER ReferenceThreshold
+    Allowed fraction of differing pixels when a screen is checked against a reference
+    of the same size. Default 0.05.
+
+.PARAMETER ScaledReferenceThreshold
+    Allowed fraction when the only reference is of another screen size, compared by
+    scaling. Default 0.15.
+
 .EXAMPLE
     powershell -NoProfile -ExecutionPolicy Bypass -File run-smoke-tests.ps1
 
@@ -68,7 +80,8 @@ param(
     [int]$WindowTimeoutSec = 90,
     [switch]$KeepGame,
     [switch]$UpdateReferences,
-    [double]$ReferenceThreshold = 0.05
+    [double]$ReferenceThreshold = 0.05,
+    [double]$ScaledReferenceThreshold = 0.15
 )
 
 $ErrorActionPreference = 'Stop'
@@ -143,9 +156,9 @@ $ctx = @{
         Write-RunLog "shot: $Name -> $(Split-Path -Leaf $file)"
 
         if ($Reference) {
-            $refFile = Join-Path $refDir ($safe + '.png')
+            $refFile = Join-Path $ctx.RefDir ($safe + '.png')
             if ($UpdateReferences) {
-                if (-not (Test-Path $refDir)) { New-Item -ItemType Directory -Path $refDir -Force | Out-Null }
+                if (-not (Test-Path $ctx.RefDir)) { New-Item -ItemType Directory -Path $ctx.RefDir -Force | Out-Null }
                 Copy-Item $file $refFile -Force
                 Write-RunLog "reference updated: $safe.png"
                 [void]$Run.Steps.Add([pscustomobject]@{ Type = 'note'; Ok = $true; Message = "Reference captured: $safe.png" })
@@ -156,10 +169,13 @@ $ctx = @{
                 if ($Region) { $diff = Compare-BirpFrameRegion -PathA $refFile -PathB $file -Region $Region }
                 else { $diff = Compare-BirpFrame -PathA $refFile -PathB $file }
                 $where = if ($Region) { " region [$($Region -join ',')]" } else { '' }
-                $ok = ($diff -le $ReferenceThreshold)
-                [void]$Run.Steps.Add([pscustomobject]@{ Type = 'assert'; Ok = $ok; Message = ("Screen '$Name'$where matches reference ({0:P1} diff, threshold {1:P0})" -f $diff, $ReferenceThreshold) })
-                if ($ok) { Write-RunLog ("PASS: '$Name' matches reference ({0:P1} diff)" -f $diff) }
-                else { $Run.Passed = $false; Write-RunLog ("FAIL: '$Name' differs from reference ({0:P1} diff > {1:P0})" -f $diff, $ReferenceThreshold) }
+                # A reference of another size is compared by scaling, with its own looser limit.
+                $limit = $ReferenceThreshold
+                if (-not [BirpHarness]::SameSize($refFile, $file)) { $limit = $ScaledReferenceThreshold; $where += ' (scaled)' }
+                $ok = ($diff -le $limit)
+                [void]$Run.Steps.Add([pscustomobject]@{ Type = 'assert'; Ok = $ok; Message = ("Screen '$Name'$where matches reference ({0:P1} diff, threshold {1:P0})" -f $diff, $limit) })
+                if ($ok) { Write-RunLog ("PASS: '$Name'$where matches reference ({0:P1} diff)" -f $diff) }
+                else { $Run.Passed = $false; Write-RunLog ("FAIL: '$Name'$where differs from reference ({0:P1} diff > {1:P0})" -f $diff, $limit) }
             }
             else {
                 Write-RunLog "note: no reference for '$Name' (run with -UpdateReferences to create one)"
@@ -205,6 +221,24 @@ try {
     $ctx.Hwnd = Wait-BirpWindow -Process $proc -TimeoutSec $WindowTimeoutSec
     $sz = Get-BirpClientSize -Hwnd $ctx.Hwnd
     Write-RunLog "Window up: client $($sz.Width)x$($sz.Height)."
+
+    # Use the reference set for this window size if there is one; otherwise compare
+    # against the original set by scaling (see README.md).
+    $sizeName = '{0}x{1}' -f $sz.Width, $sz.Height
+    $sizedRefDir = Join-Path $refDir $sizeName
+    $baseRef = Get-ChildItem -Path $refDir -Filter '*.png' -File -ErrorAction SilentlyContinue | Select-Object -First 1
+    $baseIsThisSize = $false
+    if ($baseRef) {
+        $img = [System.Drawing.Image]::FromFile($baseRef.FullName)
+        try { $baseIsThisSize = ($img.Width -eq $sz.Width -and $img.Height -eq $sz.Height) } finally { $img.Dispose() }
+    }
+    if ((Test-Path $sizedRefDir) -or ($UpdateReferences -and $baseRef -and -not $baseIsThisSize)) {
+        $ctx.RefDir = $sizedRefDir
+        Write-RunLog "References: the $sizeName set."
+    }
+    elseif ($baseRef -and -not $baseIsThisSize) {
+        Write-RunLog "References: no $sizeName set, so screens are compared by scaling the original set (a rough check, threshold $('{0:P0}' -f $ScaledReferenceThreshold)). Run once with -UpdateReferences to make an exact $sizeName set."
+    }
 
     # ---- run the scenario ----
     . $scenarioFile
