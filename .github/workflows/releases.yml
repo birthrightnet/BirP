@@ -173,6 +173,7 @@ jobs:
     # create a tag with that name and a release to match. Dispatch runs still
     # build and upload the artifacts above, which is enough to test the build.
     - name: Update Release
+      id: release
       uses: ncipollo/release-action@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
@@ -191,3 +192,24 @@ jobs:
         # from the changelog, run:
         #   gh release edit <tag> --notes-file release-notes.md
         omitBodyDuringUpdate: true
+
+    # A release drafted by hand before the tag push is updated, not created, so
+    # the step above leaves its notes empty. Fill them, and fail if still empty.
+    - name: Check release notes
+      if: startsWith(github.ref, 'refs/tags/')
+      shell: pwsh
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        RELEASE_URL: repos/${{ github.repository }}/releases/${{ steps.release.outputs.id }}
+      run: |
+        $body = gh api $env:RELEASE_URL --jq .body | Out-String
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        if ([string]::IsNullOrWhiteSpace($body)) {
+          Write-Host "The $env:TAG release has no notes. Writing them from release-notes.md."
+          gh api -X PATCH $env:RELEASE_URL -F body=@release-notes.md --silent
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $body = gh api $env:RELEASE_URL --jq .body | Out-String
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        }
+        if ([string]::IsNullOrWhiteSpace($body)) { throw "The $env:TAG release still has no notes." }
+        Write-Host "The $env:TAG release has notes ($($body.Length) characters)."
